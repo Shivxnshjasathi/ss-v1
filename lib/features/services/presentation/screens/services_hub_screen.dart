@@ -46,9 +46,9 @@ class ServicesHubScreen extends StatelessWidget {
               children: [
                  _buildServiceGridItem(context, 'Home Loans', Icons.account_balance, 'Instant Approval', '/services/loan', isHot: true),
                  _buildServiceGridItem(context, 'Construction', Icons.architecture, 'Top Contractors', '/services/construction'),
+                 _buildServiceGridItem(context, 'Movers', Icons.local_shipping_outlined, 'Safe Relocation', '/services/movers'),
                  _buildServiceGridItem(context, 'Legal Docs', Icons.gavel, 'Verified Lawyers', '/services/legal'),
-                 _buildServiceGridItem(context, 'Insurance', Icons.shield_outlined, 'Property Cover', '/services'),
-                 _buildServiceGridItem(context, 'Investments', Icons.trending_up, 'ROI Analytics', '/services'),
+                 _buildServiceGridItem(context, 'Marketplace', Icons.shopping_bag_outlined, 'Materials & More', '/services/marketplace'),
                  _buildServiceGridItem(context, 'Management', Icons.description_outlined, 'Rent Tracking', '/services'),
               ],
             ),

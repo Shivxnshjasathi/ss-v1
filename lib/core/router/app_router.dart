@@ -13,7 +13,7 @@ import 'package:sampatti_bazar/features/properties/presentation/screens/saved_pr
 import 'package:sampatti_bazar/features/services/presentation/screens/construction_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/home_loan_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/legal_screen.dart';
-import 'package:sampatti_bazar/features/services/presentation/screens/materials_screen.dart';
+import 'package:sampatti_bazar/features/services/presentation/screens/marketplace_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/movers_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/services_hub_screen.dart';
 import 'package:sampatti_bazar/features/profile/presentation/screens/profile_screen.dart';
@@ -112,8 +112,8 @@ final goRouter = GoRouter(
       builder: (context, state) => const ConstructionScreen(),
     ),
     GoRoute(
-      path: '/services/materials',
-      builder: (context, state) => const MaterialsScreen(),
+      path: '/services/marketplace',
+      builder: (context, state) => const MarketplaceScreen(),
     ),
     GoRoute(
       path: '/services/legal',
