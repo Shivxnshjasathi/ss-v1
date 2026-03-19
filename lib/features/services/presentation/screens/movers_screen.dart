@@ -46,10 +46,16 @@ class MoversScreen extends StatelessWidget {
                        prefixIcon: Icon(Icons.calendar_today),
                      ),
                      const SizedBox(height: 16),
-                     const CustomTextField(
-                       controller: null,
-                       labelText: 'House Size (1 BHK, 2 BHK, etc.)',
-                       prefixIcon: Icon(Icons.home),
+                     DropdownButtonFormField<String>(
+                       decoration: const InputDecoration(
+                         labelText: 'House Size',
+                         prefixIcon: Icon(Icons.home),
+                         border: OutlineInputBorder(),
+                       ),
+                       items: ['1 RK', '1 BHK', '2 BHK', '3 BHK', '4+ BHK', 'Villa']
+                           .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                           .toList(),
+                       onChanged: (val) {},
                      ),
                      const SizedBox(height: 24),
                      PrimaryButton(

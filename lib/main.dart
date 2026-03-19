@@ -3,17 +3,32 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sampatti_bazar/core/router/app_router.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'dart:async';
+import 'package:flutter/foundation.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  // TODO: Initialize Firebase here once config is ready.
-  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  
-  runApp(
-    const ProviderScope(
-      child: SampattiBazarApp(),
-    ),
-  );
+  runZonedGuarded<Future<void>>(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    // TODO: Initialize Firebase here once config is ready.
+    // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    
+    // Pass all uncaught "fatal" errors from the framework to Crashlytics
+    // FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+    // PlatformDispatcher.instance.onError = (error, stack) {
+    //   FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    //   return true;
+    // };
+
+    runApp(
+      const ProviderScope(
+        child: SampattiBazarApp(),
+      ),
+    );
+  }, (error, stack) {
+    // Catch errors outside the framework
+    // FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    debugPrint('Uncaught Error: $error');
+  });
 }
 
 class SampattiBazarApp extends ConsumerWidget {

@@ -182,10 +182,9 @@ class PropertyDetailScreen extends StatelessWidget {
               ),
               const SizedBox(width: 16),
               Expanded(
-                flex: 2,
                 child: PrimaryButton(
-                  text: 'Call Owner',
-                  onPressed: () {},
+                  text: 'Schedule Tour',
+                  onPressed: () => _scheduleTour(context),
                 ),
               ),
             ],
@@ -193,6 +192,26 @@ class PropertyDetailScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _scheduleTour(BuildContext context) async {
+    final date = await showDatePicker(
+             context: context,
+             initialDate: DateTime.now().add(const Duration(days: 1)),
+             firstDate: DateTime.now(),
+             lastDate: DateTime.now().add(const Duration(days: 30)),
+           );
+    if (date == null) return;
+    if (!context.mounted) return;
+    final time = await showTimePicker(
+             context: context,
+             initialTime: const TimeOfDay(hour: 10, minute: 0),
+           );
+    if (time == null) return;
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+             SnackBar(content: Text('Tour Scheduled for ${date.day}/${date.month} at ${time.format(context)}'))
+           );
   }
 
   Widget _buildSpecItem(BuildContext context, String label, String value, IconData icon) {

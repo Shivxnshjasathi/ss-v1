@@ -1,10 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:sampatti_bazar/shared/widgets/app_card.dart';
 import 'package:sampatti_bazar/shared/widgets/custom_text_field.dart';
 import 'package:sampatti_bazar/shared/widgets/primary_button.dart';
 
-class ConstructionScreen extends StatelessWidget {
+class ConstructionScreen extends StatefulWidget {
   const ConstructionScreen({super.key});
+
+  @override
+  State<ConstructionScreen> createState() => _ConstructionScreenState();
+}
+
+class _ConstructionScreenState extends State<ConstructionScreen> {
+  String? _selectedFileName;
+
+  Future<void> _pickFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.any, // Using any for simplicity right now
+    );
+
+    if (result != null) {
+      setState(() {
+        _selectedFileName = result.files.single.name;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +80,34 @@ class ConstructionScreen extends StatelessWidget {
                      const CustomTextField(
                        controller: null,
                        labelText: 'Budget Estimate (Optional)',
+                     ),
+                     const SizedBox(height: 16),
+                     Container(
+                       padding: const EdgeInsets.all(12),
+                       decoration: BoxDecoration(
+                         border: Border.all(color: Colors.grey.shade300),
+                         borderRadius: BorderRadius.circular(12),
+                       ),
+                       child: Row(
+                         children: [
+                           Expanded(
+                             child: Text(
+                               _selectedFileName ?? 'Upload Blueprint / Plot Map (Optional)',
+                               style: TextStyle(
+                                 color: _selectedFileName != null ? Colors.black : Colors.grey[600],
+                                 fontStyle: _selectedFileName != null ? FontStyle.normal : FontStyle.italic,
+                               ),
+                               maxLines: 1,
+                               overflow: TextOverflow.ellipsis,
+                             ),
+                           ),
+                           OutlinedButton.icon(
+                             onPressed: _pickFile,
+                             icon: const Icon(Icons.upload_file),
+                             label: const Text('Browse'),
+                           ),
+                         ],
+                       ),
                      ),
                      const SizedBox(height: 24),
                      PrimaryButton(

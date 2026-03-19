@@ -10,11 +10,10 @@ class HomeLoanScreen extends StatefulWidget {
   @override
   State<HomeLoanScreen> createState() => _HomeLoanScreenState();
 }
-
 class _HomeLoanScreenState extends State<HomeLoanScreen> {
-  final _amountController = TextEditingController(text: '5000000');
-  final _rateController = TextEditingController(text: '8.5');
-  final _tenureController = TextEditingController(text: '20');
+  double _amount = 5000000;
+  double _rate = 8.5;
+  double _tenure = 20;
 
   double _emi = 0;
 
@@ -25,9 +24,9 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
   }
 
   void _calculateEmi() {
-    double p = double.tryParse(_amountController.text) ?? 0;
-    double r = (double.tryParse(_rateController.text) ?? 0) / 12 / 100;
-    double n = (double.tryParse(_tenureController.text) ?? 0) * 12;
+    double p = _amount;
+    double r = _rate / 12 / 100;
+    double n = _tenure * 12;
 
     if (p > 0 && r > 0 && n > 0) {
       setState(() {
@@ -57,34 +56,47 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
                      'EMI Calculator',
                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                    ),
-                   const SizedBox(height: 16),
-                   CustomTextField(
-                     controller: _amountController,
-                     labelText: 'Loan Amount (₹)',
-                     keyboardType: TextInputType.number,
+                   const SizedBox(height: 24),
+                   _buildSliderLabel('Loan Amount (₹)', _amount, '1L', '5Cr'),
+                   Slider(
+                     value: _amount,
+                     min: 100000,
+                     max: 50000000,
+                     onChanged: (val) {
+                       setState(() {
+                         _amount = val;
+                         _calculateEmi();
+                       });
+                     },
                    ),
                    const SizedBox(height: 16),
-                   Row(
-                     children: [
-                       Expanded(
-                         child: CustomTextField(
-                           controller: _rateController,
-                           labelText: 'Interest Rate (%)',
-                           keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                         ),
-                       ),
-                       const SizedBox(width: 16),
-                       Expanded(
-                         child: CustomTextField(
-                           controller: _tenureController,
-                           labelText: 'Tenure (Years)',
-                           keyboardType: TextInputType.number,
-                         ),
-                       ),
-                     ],
+                   _buildSliderLabel('Interest Rate (%)', _rate, '5%', '15%'),
+                   Slider(
+                     value: _rate,
+                     min: 5.0,
+                     max: 15.0,
+                     divisions: 100,
+                     onChanged: (val) {
+                       setState(() {
+                         _rate = val;
+                         _calculateEmi();
+                       });
+                     },
                    ),
                    const SizedBox(height: 16),
-                   PrimaryButton(text: 'Calculate', onPressed: _calculateEmi),
+                   _buildSliderLabel('Tenure (Years)', _tenure, '1Y', '30Y'),
+                   Slider(
+                     value: _tenure,
+                     min: 1,
+                     max: 30,
+                     divisions: 29,
+                     onChanged: (val) {
+                       setState(() {
+                         _tenure = val;
+                         _calculateEmi();
+                       });
+                     },
+                   ),
                    const SizedBox(height: 24),
                    Container(
                      padding: const EdgeInsets.all(16),
@@ -144,6 +156,40 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSliderLabel(String title, double value, String minLabel, String maxLabel) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
+            Text(
+              title.contains('%') 
+                  ? '${value.toStringAsFixed(1)}%' 
+                  : title.contains('Years') 
+                      ? '${value.toInt()} Yrs' 
+                      : '₹${value.toInt()}',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.primary,
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(minLabel, style: TextStyle(color: Colors.grey[500], fontSize: 12)),
+            Text(maxLabel, style: TextStyle(color: Colors.grey[500], fontSize: 12)),
+          ],
+        ),
+      ],
     );
   }
 }
