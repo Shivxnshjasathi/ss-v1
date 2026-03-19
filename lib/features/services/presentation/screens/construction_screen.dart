@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/shared/widgets/custom_text_field.dart';
 
 class ConstructionScreen extends StatefulWidget {
@@ -11,14 +13,15 @@ class ConstructionScreen extends StatefulWidget {
 
 class _ConstructionScreenState extends State<ConstructionScreen> {
   String _selectedCategory = 'Residential'; // Residential or Commercial
-  String _selectedService = 'Construction'; // Construction, Architecture, Interiors, Consultation, Borewell
+  String _selectedService =
+      'Construction'; // Construction, Architecture, Interiors, Consultation, Borewell
 
   final List<String> _services = [
     'Construction',
     'Architecture',
     'Interiors',
     'Consultation',
-    'Borewell'
+    'Borewell',
   ];
 
   // Specific state for interior scope
@@ -28,15 +31,19 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator(color: Color(0xFF0066FF))),
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(color: AppTheme.primaryBlue),
+      ),
     );
     Future.delayed(const Duration(seconds: 2), () {
       if (!mounted) return;
       context.pop();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Request Sent! A verified engineer/architect will contact you with a quote.'),
-          backgroundColor: Color(0xFF0066FF),
+          content: Text(
+            'Request Sent! A verified engineer/architect will contact you with a quote.',
+          ),
+          backgroundColor: AppTheme.primaryBlue,
         ),
       );
       context.pop();
@@ -54,14 +61,25 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
           icon: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: const Color(0xFF00E5FF).withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
+              color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 16),
+            child: const Icon(
+              Icons.arrow_back_ios_new,
+              color: Colors.black,
+              size: 14,
+            ),
           ),
           onPressed: () => context.pop(),
         ),
-        title: const Text('Building & Design', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 18)),
+        title: const Text(
+          'Building & Design',
+          style: TextStyle(
+            fontWeight: FontWeight.w900,
+            color: Colors.black,
+            fontSize: 18,
+          ),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.headset_mic_outlined, color: Colors.black87),
@@ -75,30 +93,32 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Category Toggle (from image)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Construction Category', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: -0.2)),
-                  const SizedBox(height: 12),
-                  _buildCategoryToggle(),
-                ],
-              ),
-            ),
-            
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+            //   child: Column(
+            //     crossAxisAlignment: CrossAxisAlignment.start,
+            //     children: [
+            //       const Text('Construction Category', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: -0.2)),
+            //       const SizedBox(height: 12),
+            //       _buildCategoryToggle(),
+            //     ],
+            //   ),
+            // ),
+
             // Service Selector (Horizontal Scroll)
             const SizedBox(height: 8),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Row(
-                children: _services.map((service) => _buildServiceChip(service)).toList(),
+                children: _services
+                    .map((service) => _buildServiceChip(service))
+                    .toList(),
               ),
             ),
-            
+
             const SizedBox(height: 32),
-            
+
             // Dynamic Form based on selected service
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -111,7 +131,13 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
         padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
         decoration: BoxDecoration(
           color: Colors.white,
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 20, offset: const Offset(0, -10))],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 20,
+              offset: const Offset(0, -10),
+            ),
+          ],
         ),
         child: SafeArea(
           top: false,
@@ -120,11 +146,21 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
             child: ElevatedButton(
               onPressed: _submitForm,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0066FF),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              backgroundColor: AppTheme.primaryBlue,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 elevation: 0,
               ),
-              child: const Text('REQUEST QUOTE & TIMELINE', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: Colors.white, letterSpacing: 1)),
+              child: const Text(
+                'REQUEST QUOTE & TIMELINE',
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 13,
+                  color: Colors.white,
+                  letterSpacing: 1,
+                ),
+              ),
             ),
           ),
         ),
@@ -145,14 +181,30 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
             child: GestureDetector(
               onTap: () => setState(() => _selectedCategory = 'Residential'),
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 20,
+                  horizontal: 16,
+                ),
                 color: isRes ? Colors.black : Colors.white,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('RESIDENTIAL', style: TextStyle(color: isRes ? Colors.white : Colors.black, fontWeight: FontWeight.w900, fontSize: 12)),
+                    Text(
+                      'RESIDENTIAL',
+                      style: TextStyle(
+                        color: isRes ? Colors.white : Colors.black,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 12,
+                      ),
+                    ),
                     const SizedBox(height: 4),
-                    Text('Homes & Villas', style: TextStyle(color: isRes ? Colors.grey[400] : Colors.grey, fontSize: 10)),
+                    Text(
+                      'Homes & Villas',
+                      style: TextStyle(
+                        color: isRes ? Colors.grey[400] : Colors.grey,
+                        fontSize: 10,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -162,14 +214,30 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
             child: GestureDetector(
               onTap: () => setState(() => _selectedCategory = 'Commercial'),
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 20,
+                  horizontal: 16,
+                ),
                 color: !isRes ? Colors.black : Colors.white,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('COMMERCIAL', style: TextStyle(color: !isRes ? Colors.white : Colors.black, fontWeight: FontWeight.w900, fontSize: 12)),
+                    Text(
+                      'COMMERCIAL',
+                      style: TextStyle(
+                        color: !isRes ? Colors.white : Colors.black,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 12,
+                      ),
+                    ),
                     const SizedBox(height: 4),
-                    Text('Office & Retail', style: TextStyle(color: !isRes ? Colors.grey[400] : Colors.grey, fontSize: 10)),
+                    Text(
+                      'Office & Retail',
+                      style: TextStyle(
+                        color: !isRes ? Colors.grey[400] : Colors.grey,
+                        fontSize: 10,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -189,14 +257,18 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFF0066FF) : const Color(0xFFF5F5F5),
-            borderRadius: BorderRadius.circular(24),
+            color: isSelected
+                ? AppTheme.primaryBlue
+                : const Color(0xFFF8F9FB),
+            borderRadius: BorderRadius.circular(30),
+            border: isSelected ? null : Border.all(color: Colors.grey.shade100),
           ),
           child: Text(
-            label,
+            label.toUpperCase(),
             style: TextStyle(
               fontWeight: FontWeight.w900,
-              fontSize: 12,
+              fontSize: 10,
+              letterSpacing: 0.5,
               color: isSelected ? Colors.white : Colors.black54,
             ),
           ),
@@ -207,12 +279,18 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
 
   Widget _buildDynamicBody() {
     switch (_selectedService) {
-      case 'Construction': return _buildConstructionForm();
-      case 'Architecture': return _buildArchitectureForm();
-      case 'Interiors': return _buildInteriorsForm();
-      case 'Consultation': return _buildConsultationForm();
-      case 'Borewell': return _buildBorewellForm();
-      default: return const SizedBox();
+      case 'Construction':
+        return _buildConstructionForm();
+      case 'Architecture':
+        return _buildArchitectureForm();
+      case 'Interiors':
+        return _buildInteriorsForm();
+      case 'Consultation':
+        return _buildConsultationForm();
+      case 'Borewell':
+        return _buildBorewellForm();
+      default:
+        return const SizedBox();
     }
   }
 
@@ -221,23 +299,57 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader('Construction Details', 'Verified civil engineers only. No open contractor pool to ensure extreme quality control.'),
+        _buildSectionHeader(
+          'Construction Details',
+          'Verified civil engineers only. No open contractor pool to ensure extreme quality control.',
+        ),
         const SizedBox(height: 24),
-        _buildTextField('PLOT SIZE (SQ. FT.)', 'e.g., 2400', TextInputType.number),
+        _buildTextField(
+          'PLOT SIZE (SQ. FT.)',
+          'e.g., 2400',
+          TextInputType.number,
+        ),
         const SizedBox(height: 16),
-        _buildTextField('EXACT LOCATION', 'City, Neighborhood or Coordinates', TextInputType.text),
+        _buildTextField(
+          'EXACT LOCATION',
+          'City, Neighborhood or Coordinates',
+          TextInputType.text,
+        ),
         const SizedBox(height: 16),
         Row(
           children: [
-            Expanded(child: _buildTextField('BUDGET (₹)', 'Estimated amount', TextInputType.number)),
+            Expanded(
+              child: _buildTextField(
+                'BUDGET (₹)',
+                'Estimated amount',
+                TextInputType.number,
+              ),
+            ),
             const SizedBox(width: 16),
-            Expanded(child: _buildTextField('TIMELINE', 'e.g., 6 Months', TextInputType.text)),
+            Expanded(
+              child: _buildTextField(
+                'TIMELINE',
+                'e.g., 6 Months',
+                TextInputType.text,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 16),
-        _buildTextField('TYPE OF CONSTRUCTION', 'House, Building, Duplex, etc.', TextInputType.text),
+        _buildTextField(
+          'TYPE OF CONSTRUCTION',
+          'House, Building, Duplex, etc.',
+          TextInputType.text,
+        ),
         const SizedBox(height: 32),
-        const Text('DOCUMENT UPLOAD', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11, letterSpacing: 0.5)),
+        const Text(
+          'DOCUMENT UPLOAD',
+          style: TextStyle(
+            fontWeight: FontWeight.w900,
+            fontSize: 11,
+            letterSpacing: 0.5,
+          ),
+        ),
         const SizedBox(height: 12),
         _buildUploadBox('Upload plot map and local approvals'),
         const SizedBox(height: 32),
@@ -250,29 +362,68 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader('Architectural Design', 'Map planning and structural design by licensed architects.'),
+        _buildSectionHeader(
+          'Architectural Design',
+          'Map planning and structural design by licensed architects.',
+        ),
         const SizedBox(height: 24),
         Row(
           children: [
-            Expanded(child: _buildTextField('PLOT DIMENSIONS', 'L x W (in ft)', TextInputType.text)),
+            Expanded(
+              child: _buildTextField(
+                'PLOT DIMENSIONS',
+                'L x W (in ft)',
+                TextInputType.text,
+              ),
+            ),
             const SizedBox(width: 16),
-            Expanded(child: _buildTextField('FACING', 'North, East, etc.', TextInputType.text)),
+            Expanded(
+              child: _buildTextField(
+                'FACING',
+                'North, East, etc.',
+                TextInputType.text,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 16),
         Row(
           children: [
-            Expanded(child: _buildTextField('NO. OF FLOORS', 'e.g., G+2', TextInputType.text)),
+            Expanded(
+              child: _buildTextField(
+                'NO. OF FLOORS',
+                'e.g., G+2',
+                TextInputType.text,
+              ),
+            ),
             const SizedBox(width: 16),
-            Expanded(child: _buildTextField('ROOM REQUIREMENT', 'e.g., 4 BHK', TextInputType.text)),
+            Expanded(
+              child: _buildTextField(
+                'ROOM REQUIREMENT',
+                'e.g., 4 BHK',
+                TextInputType.text,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 16),
-        _buildTextField('PARKING CAPACITY', 'No. of Cars / Bikes', TextInputType.text),
+        _buildTextField(
+          'PARKING CAPACITY',
+          'No. of Cars / Bikes',
+          TextInputType.text,
+        ),
         const SizedBox(height: 16),
-        _buildTextField('SPECIAL NEEDS (OPTIONAL)', 'Vastu compliance, Garden, Pool, etc.', TextInputType.text),
+        _buildTextField(
+          'SPECIAL NEEDS (OPTIONAL)',
+          'Vastu compliance, Garden, Pool, etc.',
+          TextInputType.text,
+        ),
         const SizedBox(height: 32),
-        _buildSelectionBox('OUTPUT REQUIRED', 'Conceptual Plan (MVP)', ['Conceptual Plan (MVP)', 'Structural Plan', '3D Elevation (Phase 2)']),
+        _buildSelectionBox('OUTPUT REQUIRED', 'Conceptual Plan (MVP)', [
+          'Conceptual Plan (MVP)',
+          'Structural Plan',
+          '3D Elevation (Phase 2)',
+        ]),
         const SizedBox(height: 32),
       ],
     );
@@ -283,27 +434,67 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader('Interior Designing', 'Transform spaces with our curated interior design partners.'),
+        _buildSectionHeader(
+          'Interior Designing',
+          'Transform spaces with our curated interior design partners.',
+        ),
         const SizedBox(height: 24),
         Row(
           children: [
-            Expanded(child: _buildTextField('PROPERTY TYPE', 'Apartment, Villa', TextInputType.text)),
+            Expanded(
+              child: _buildTextField(
+                'PROPERTY TYPE',
+                'Apartment, Villa',
+                TextInputType.text,
+              ),
+            ),
             const SizedBox(width: 16),
-            Expanded(child: _buildTextField('BHK / ROOMS', 'e.g., 3 BHK', TextInputType.text)),
+            Expanded(
+              child: _buildTextField(
+                'BHK / ROOMS',
+                'e.g., 3 BHK',
+                TextInputType.text,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 16),
         Row(
           children: [
-            Expanded(child: _buildTextField('CARPET AREA', 'In Sq. Ft.', TextInputType.number)),
+            Expanded(
+              child: _buildTextField(
+                'CARPET AREA',
+                'In Sq. Ft.',
+                TextInputType.number,
+              ),
+            ),
             const SizedBox(width: 16),
-            Expanded(child: _buildTextField('BUDGET (₹)', 'Expected total', TextInputType.number)),
+            Expanded(
+              child: _buildTextField(
+                'BUDGET (₹)',
+                'Expected total',
+                TextInputType.number,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 16),
-        _buildSelectionBox('STYLE PREFERENCE', 'Modern Minimalist', ['Modern Minimalist', 'Traditional Indian', 'Contemporary', 'Industrial', 'Luxury']),
+        _buildSelectionBox('STYLE PREFERENCE', 'Modern Minimalist', [
+          'Modern Minimalist',
+          'Traditional Indian',
+          'Contemporary',
+          'Industrial',
+          'Luxury',
+        ]),
         const SizedBox(height: 32),
-        const Text('SCOPE SELECTION', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11, letterSpacing: 0.5)),
+        const Text(
+          'SCOPE SELECTION',
+          style: TextStyle(
+            fontWeight: FontWeight.w900,
+            fontSize: 11,
+            letterSpacing: 0.5,
+          ),
+        ),
         const SizedBox(height: 12),
         _buildCheckbox('Full Home Interior'),
         _buildCheckbox('Modular Kitchen'),
@@ -319,28 +510,62 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader('Expert Consultation', 'Civil-engineer-led consultation to inspect or advise on building matters.'),
+        _buildSectionHeader(
+          'Expert Consultation',
+          'Civil-engineer-led consultation to inspect or advise on building matters.',
+        ),
         const SizedBox(height: 24),
-        _buildTextField('CONSULTATION TOPIC', 'Structural Audit, Material Quality, Seepage, etc.', TextInputType.text),
+        _buildTextField(
+          'CONSULTATION TOPIC',
+          'Structural Audit, Material Quality, Seepage, etc.',
+          TextInputType.text,
+        ),
         const SizedBox(height: 16),
-        _buildTextField('PROPERTY ADDRESS', 'Where is the property?', TextInputType.text),
+        _buildTextField(
+          'PROPERTY ADDRESS',
+          'Where is the property?',
+          TextInputType.text,
+        ),
         const SizedBox(height: 16),
-        _buildTextField('DETAILED QUERY', 'Describe the issue or advice needed...', TextInputType.multiline, maxLines: 4),
+        _buildTextField(
+          'DETAILED QUERY',
+          'Describe the issue or advice needed...',
+          TextInputType.multiline,
+          maxLines: 4,
+        ),
         const SizedBox(height: 32),
         Container(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: const Color(0xFFF4FAFD), borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFF00D1FF).withValues(alpha: 0.3))),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF4FAFD),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: AppTheme.cyanAccent.withValues(alpha: 0.1),
+            ),
+          ),
           child: Row(
             children: [
-              const Icon(Icons.verified_user_outlined, color: Color(0xFF0066FF)),
+              const Icon(
+                Icons.verified_user_outlined,
+                color: AppTheme.primaryBlue,
+              ),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: const [
-                    Text('VERIFIED EXPERTS ONLY', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11)),
+                    Text(
+                      'VERIFIED EXPERTS ONLY',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 11,
+                      ),
+                    ),
                     SizedBox(height: 4),
-                    Text('Your lead is routed smartly and securely.', style: TextStyle(color: Colors.black54, fontSize: 10)),
+                    Text(
+                      'Your lead is routed smartly and securely.',
+                      style: TextStyle(color: Colors.black54, fontSize: 10),
+                    ),
                   ],
                 ),
               ),
@@ -357,19 +582,42 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader('Boring & Borewell', 'Expert surveying and drilling tailored to geographical constraints.'),
+        _buildSectionHeader(
+          'Boring & Borewell',
+          'Expert surveying and drilling tailored to geographical constraints.',
+        ),
         const SizedBox(height: 24),
-        _buildTextField('EXACT LOCATION / PLOT NO.', 'Enter landmark', TextInputType.text),
+        _buildTextField(
+          'EXACT LOCATION / PLOT NO.',
+          'Enter landmark',
+          TextInputType.text,
+        ),
         const SizedBox(height: 16),
         Row(
           children: [
-            Expanded(child: _buildTextField('TYPE OF SOIL (IF KNOWN)', 'e.g., Rocky, Red', TextInputType.text)),
+            Expanded(
+              child: _buildTextField(
+                'TYPE OF SOIL (IF KNOWN)',
+                'e.g., Rocky, Red',
+                TextInputType.text,
+              ),
+            ),
             const SizedBox(width: 16),
-            Expanded(child: _buildTextField('EXPECTED DEPTH', 'In Feet', TextInputType.number)),
+            Expanded(
+              child: _buildTextField(
+                'EXPECTED DEPTH',
+                'In Feet',
+                TextInputType.number,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 16),
-        _buildSelectionBox('PURPOSE', 'Residential Water Supply', ['Residential Water Supply', 'Agriculture / Farming', 'Industrial Supply']),
+        _buildSelectionBox('PURPOSE', 'Residential Water Supply', [
+          'Residential Water Supply',
+          'Agriculture / Farming',
+          'Industrial Supply',
+        ]),
         const SizedBox(height: 32),
       ],
     );
@@ -381,18 +629,46 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 24, letterSpacing: -0.5)),
+        Text(
+          title,
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w900,
+            fontSize: 24,
+            letterSpacing: -1.0,
+          ),
+        ),
         const SizedBox(height: 6),
-        Text(subtitle, style: TextStyle(color: Colors.grey[600], fontSize: 12, height: 1.5, fontWeight: FontWeight.w500)),
+        Text(
+          subtitle,
+          style: TextStyle(
+            color: Colors.grey[600],
+            fontSize: 12,
+            height: 1.5,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildTextField(String labelText, String hintText, TextInputType type, {int maxLines = 1}) {
+  Widget _buildTextField(
+    String labelText,
+    String hintText,
+    TextInputType type, {
+    int maxLines = 1,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(labelText, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 10, color: Colors.black87, letterSpacing: 0.5)),
+        Text(
+          labelText,
+          style: const TextStyle(
+            fontWeight: FontWeight.w900,
+            fontSize: 10,
+            color: Colors.black87,
+            letterSpacing: 0.5,
+          ),
+        ),
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
@@ -402,13 +678,32 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
           child: TextField(
             maxLines: maxLines,
             keyboardType: type,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black),
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+            ),
             decoration: InputDecoration(
               hintText: hintText,
-              hintStyle: TextStyle(color: Colors.grey.shade400, fontWeight: FontWeight.w500),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF0066FF), width: 1.5)),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              hintStyle: TextStyle(
+                color: Colors.grey.shade400,
+                fontWeight: FontWeight.w500,
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(
+                  color: AppTheme.primaryBlue,
+                  width: 1.5,
+                ),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 16,
+              ),
               isDense: true,
             ),
           ),
@@ -417,11 +712,23 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
     );
   }
 
-  Widget _buildSelectionBox(String label, String value, List<String> dummyOptions) {
+  Widget _buildSelectionBox(
+    String label,
+    String value,
+    List<String> dummyOptions,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 10, color: Colors.black87, letterSpacing: 0.5)),
+        Text(
+          label,
+          style: const TextStyle(
+            fontWeight: FontWeight.w900,
+            fontSize: 10,
+            color: Colors.black87,
+            letterSpacing: 0.5,
+          ),
+        ),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -432,7 +739,14 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black)),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
+                ),
+              ),
               const Icon(Icons.arrow_drop_down, color: Colors.grey),
             ],
           ),
@@ -446,23 +760,40 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          if (isChecked) _interiorScopes.remove(label);
-          else _interiorScopes.add(label);
+          if (isChecked)
+            _interiorScopes.remove(label);
+          else
+            _interiorScopes.add(label);
         });
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
-          color: isChecked ? const Color(0xFF0066FF).withValues(alpha: 0.05) : Colors.white,
-          border: Border.all(color: isChecked ? const Color(0xFF0066FF) : Colors.grey.shade200),
+          color: isChecked
+              ? AppTheme.primaryBlue.withValues(alpha: 0.05)
+              : Colors.white,
+          border: Border.all(
+            color: isChecked ? AppTheme.primaryBlue : Colors.grey.shade200,
+          ),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: [
-            Icon(isChecked ? Icons.check_circle : Icons.circle_outlined, color: isChecked ? const Color(0xFF0066FF) : Colors.grey.shade300, size: 20),
+            Icon(
+              isChecked ? Icons.check_circle : Icons.circle_outlined,
+              color: isChecked ? AppTheme.primaryBlue : Colors.grey.shade300,
+              size: 20,
+            ),
             const SizedBox(width: 12),
-            Text(label, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: isChecked ? Colors.black : Colors.black87)),
+            Text(
+              label,
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                fontSize: 13,
+                color: isChecked ? Colors.black : Colors.black87,
+              ),
+            ),
           ],
         ),
       ),
@@ -474,9 +805,9 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       decoration: BoxDecoration(
-         color: const Color(0xFFF5F5F5),
-         border: Border.all(color: Colors.grey.shade300),
-         borderRadius: BorderRadius.circular(12),
+        color: const Color(0xFFF5F5F5),
+        border: Border.all(color: Colors.grey.shade300),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
         children: [
@@ -487,12 +818,26 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
               shape: BoxShape.circle,
               border: Border.all(color: Colors.grey.shade200),
             ),
-            child: const Icon(Icons.cloud_upload_outlined, color: Color(0xFF0066FF)),
+            child: const Icon(
+              Icons.cloud_upload_outlined,
+              color: AppTheme.primaryBlue,
+            ),
           ),
           const SizedBox(height: 16),
-          const Text('Tap to upload files', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
+          const Text(
+            'Tap to upload files',
+            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14),
+          ),
           const SizedBox(height: 6),
-          Text(subtitle, textAlign: TextAlign.center, style: const TextStyle(fontSize: 11, color: Colors.grey, fontWeight: FontWeight.w500)),
+          Text(
+            subtitle,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 11,
+              color: Colors.grey,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ],
       ),
     );

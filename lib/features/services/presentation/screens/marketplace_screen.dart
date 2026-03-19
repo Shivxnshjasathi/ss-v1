@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/services/domain/cart_service.dart';
 
 class MarketplaceScreen extends StatefulWidget {
@@ -88,7 +90,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('$title added to cart!'),
-        backgroundColor: const Color(0xFF1E60FF),
+        backgroundColor: AppTheme.primaryBlue,
         duration: const Duration(seconds: 2),
         action: SnackBarAction(
           label: 'VIEW CART',
@@ -112,14 +114,14 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
           icon: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: const Color(0xFF00E5FF).withValues(alpha: 0.1),
+              color: AppTheme.cyanAccent.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 16),
           ),
           onPressed: () => context.pop(),
         ),
-        title: const Text('Marketplace', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 18)),
+        title: Text('Marketplace', style: GoogleFonts.inter(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 18)),
         actions: [
           ListenableBuilder(
             listenable: cart,
@@ -198,10 +200,10 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text('BULK ORDERS', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12)),
-                        SizedBox(height: 4),
-                        Text('Flat 15% off on construction steel', style: TextStyle(fontSize: 10, color: Colors.grey)),
+                      children: [
+                        Text('BULK ORDERS', style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12)),
+                        const SizedBox(height: 4),
+                        const Text('Flat 15% off on construction steel', style: TextStyle(fontSize: 10, color: Colors.grey)),
                       ],
                     ),
                     Container(
@@ -272,16 +274,17 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFF1E60FF) : Colors.white,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: isSelected ? const Color(0xFF1E60FF) : Colors.grey.shade300),
+          color: isSelected ? AppTheme.primaryBlue : const Color(0xFFF8F9FB),
+          borderRadius: BorderRadius.circular(30),
+          border: isSelected ? null : Border.all(color: Colors.grey.shade100),
           ),
           child: Text(
             label,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
+            style: GoogleFonts.inter(
+              fontWeight: FontWeight.w900,
               color: isSelected ? Colors.white : Colors.black87,
               fontSize: 12,
+              letterSpacing: 0.5,
             ),
           ),
         ),
@@ -323,9 +326,9 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(category, style: const TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 0.5)),
+                      Text(category, style: GoogleFonts.inter(fontSize: 8, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)),
                       const SizedBox(height: 4),
-                      Text(title, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 12, height: 1.2), maxLines: 2, overflow: TextOverflow.ellipsis),
+                      Text(title, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12, height: 1.2), maxLines: 2, overflow: TextOverflow.ellipsis),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -333,7 +336,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                     crossAxisAlignment: CrossAxisAlignment.baseline,
                     textBaseline: TextBaseline.alphabetic,
                     children: [
-                      Text(_formatCurrency(price), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
+                      Text(_formatCurrency(price), style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 16)),
                       const SizedBox(width: 4),
                       Flexible(child: Text('/ $unit', style: const TextStyle(fontSize: 10, color: Colors.grey), overflow: TextOverflow.ellipsis)),
                     ],
@@ -345,10 +348,10 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                     child: ElevatedButton(
                       onPressed: () => _addToCart(id, category, title, price, unit, image),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF1E60FF),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        backgroundColor: AppTheme.primaryBlue,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
-                      child: const Text('Add to Cart', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.white)),
+                      child: Text('Add to Cart', style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12, color: Colors.white)),
                     ),
                   ),
                 ],

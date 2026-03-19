@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:sampatti_bazar/core/theme/app_theme.dart';
 
 class MoversScreen extends StatefulWidget {
   const MoversScreen({super.key});
@@ -44,7 +46,7 @@ class _MoversScreenState extends State<MoversScreen> {
       builder: (context, child) {
         return Theme(
           data: ThemeData.light().copyWith(
-            colorScheme: const ColorScheme.light(primary: Color(0xFF0066FF)),
+            colorScheme: ColorScheme.light(primary: AppTheme.primaryBlue),
           ),
           child: child!,
         );
@@ -64,7 +66,7 @@ class _MoversScreenState extends State<MoversScreen> {
       builder: (context, child) {
         return Theme(
           data: ThemeData.light().copyWith(
-            colorScheme: const ColorScheme.light(primary: Color(0xFF0066FF)),
+            colorScheme: ColorScheme.light(primary: AppTheme.primaryBlue),
           ),
           child: child!,
         );
@@ -88,7 +90,7 @@ class _MoversScreenState extends State<MoversScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator(color: Color(0xFF0066FF))),
+      builder: (context) => const Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue)),
     );
 
     Future.delayed(const Duration(seconds: 2), () {
@@ -115,7 +117,7 @@ class _MoversScreenState extends State<MoversScreen> {
                     context.go('/home');
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF0066FF),
+                    backgroundColor: AppTheme.primaryBlue,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   child: const Text('Back to Home', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
@@ -140,7 +142,7 @@ class _MoversScreenState extends State<MoversScreen> {
           padding: const EdgeInsets.only(left: 16.0, top: 8, bottom: 8),
           child: Container(
             decoration: BoxDecoration(
-              color: const Color(0xFF0066FF),
+              color: AppTheme.primaryBlue,
               borderRadius: BorderRadius.circular(8),
             ),
             child: IconButton(
@@ -150,7 +152,15 @@ class _MoversScreenState extends State<MoversScreen> {
             ),
           ),
         ),
-        title: const Text('Packers & Movers', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 18, letterSpacing: -0.5)),
+        title: Text(
+          'Packers & Movers',
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w900,
+            color: Colors.black,
+            fontSize: 18,
+            letterSpacing: -0.5,
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -197,15 +207,15 @@ class _MoversScreenState extends State<MoversScreen> {
                     width: double.infinity,
                     height: 54,
                     child: OutlinedButton.icon(
-                      icon: Icon(_includePacking ? Icons.check_box : Icons.check_box_outline_blank, color: _includePacking ? const Color(0xFF0066FF) : Colors.grey),
+                      icon: Icon(_includePacking ? Icons.check_box : Icons.check_box_outline_blank, color: _includePacking ? AppTheme.primaryBlue : Colors.grey),
                       onPressed: () {
                         setState(() {
                           _includePacking = !_includePacking;
                         });
                       },
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: _includePacking ? const Color(0xFF0066FF) : Colors.grey.shade300, width: 2),
-                        backgroundColor: _includePacking ? const Color(0xFF0066FF).withValues(alpha: 0.05) : Colors.transparent,
+                        side: BorderSide(color: _includePacking ? AppTheme.primaryBlue : Colors.grey.shade300, width: 2),
+                        backgroundColor: _includePacking ? AppTheme.primaryBlue.withValues(alpha: 0.05) : Colors.transparent,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                       label: Row(
@@ -226,7 +236,7 @@ class _MoversScreenState extends State<MoversScreen> {
                     child: ElevatedButton(
                       onPressed: _confirmBooking,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF0066FF),
+                        backgroundColor: AppTheme.primaryBlue,
                         elevation: 0,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
@@ -246,7 +256,7 @@ class _MoversScreenState extends State<MoversScreen> {
   Widget _buildSectionLabel(String label) {
     return Text(
       label,
-      style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 11, letterSpacing: 0.5, color: Colors.black),
+      style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 11, letterSpacing: 0.5, color: Colors.black),
     );
   }
 
@@ -280,14 +290,14 @@ class _MoversScreenState extends State<MoversScreen> {
                     height: 24,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xFF0066FF), width: 2),
+                      border: Border.all(color: AppTheme.primaryBlue, width: 2),
                     ),
                     child: Center(
                       child: Container(
                         width: 8,
                         height: 8,
                         decoration: const BoxDecoration(
-                          color: Color(0xFF0066FF),
+                          color: AppTheme.primaryBlue,
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -381,9 +391,9 @@ class _MoversScreenState extends State<MoversScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF0066FF) : Colors.white,
-          border: Border.all(color: isSelected ? const Color(0xFF0066FF) : Colors.grey.shade300, width: 1.5),
-          borderRadius: BorderRadius.circular(12),
+          color: isSelected ? AppTheme.primaryBlue : const Color(0xFFF8F9FB),
+          border: isSelected ? null : Border.all(color: Colors.grey.shade100, width: 1.5),
+          borderRadius: BorderRadius.circular(30),
         ),
         child: Text(
           label,
@@ -469,15 +479,15 @@ class _MoversScreenState extends State<MoversScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Booking Summary', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
+                Text('Booking Summary', style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 14)),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF00E5FF).withValues(alpha: 0.1),
-                    border: Border.all(color: const Color(0xFF00E5FF).withValues(alpha: 0.2)),
+                    color: AppTheme.cyanAccent.withValues(alpha: 0.1),
+                    border: Border.all(color: AppTheme.cyanAccent.withValues(alpha: 0.2)),
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: const Text('PREMIUM CARE', style: TextStyle(color: Color(0xFF00D1FF), fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
+                  child: Text('PREMIUM CARE', style: GoogleFonts.inter(color: AppTheme.cyanAccent, fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
                 ),
               ],
             ),
@@ -515,12 +525,12 @@ class _MoversScreenState extends State<MoversScreen> {
               children: [
                 Row(
                   children: const [
-                    Icon(Icons.verified_outlined, color: Color(0xFF0066FF), size: 18),
+                    Icon(Icons.verified_outlined, color: AppTheme.primaryBlue, size: 18),
                     SizedBox(width: 8),
                     Text('Est. Quote', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: Colors.grey)),
                   ],
                 ),
-                Text(formatCurrency(totalQuote), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 24, color: Color(0xFF0066FF))),
+                Text(formatCurrency(totalQuote), style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 24, color: AppTheme.primaryBlue)),
               ],
             ),
           ),
