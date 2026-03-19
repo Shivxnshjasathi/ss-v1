@@ -32,7 +32,7 @@ class _OtpScreenState extends State<OtpScreen> {
   }
 
   void _onVerify() {
-    context.push('/role-selection');
+    context.go('/home');
   }
 
   @override

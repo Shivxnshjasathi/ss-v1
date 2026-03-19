@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:sampatti_bazar/core/router/main_layout_screen.dart';
 import 'package:sampatti_bazar/features/auth/presentation/screens/login_screen.dart';
 import 'package:sampatti_bazar/features/auth/presentation/screens/otp_screen.dart';
-import 'package:sampatti_bazar/features/auth/presentation/screens/role_selection_screen.dart';
 import 'package:sampatti_bazar/features/auth/presentation/screens/onboarding_screen.dart';
 import 'package:sampatti_bazar/features/chatbot/presentation/screens/chatbot_screen.dart';
 import 'package:sampatti_bazar/features/home/presentation/screens/home_screen.dart';
@@ -39,10 +38,7 @@ final goRouter = GoRouter(
         return OtpScreen(phoneNumber: phoneNumber);
       },
     ),
-    GoRoute(
-      path: '/role-selection',
-      builder: (context, state) => const RoleSelectionScreen(),
-    ),
+
     GoRoute(
       path: '/chatbot',
       builder: (context, state) => const ChatbotScreen(),

@@ -12,9 +12,9 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Jabalpur',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 24),
+          style: Theme.of(context).textTheme.displaySmall?.copyWith(fontSize: 24),
         ),
         actions: [
           Padding(
@@ -98,10 +98,10 @@ class HomeScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       'FEATURED ZERO-BROKERAGE',
-                      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, height: 1.2),
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
                   ),
                   GestureDetector(
@@ -110,9 +110,8 @@ class HomeScreen extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'SEE\nALL',
-                          style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 12),
-                          textAlign: TextAlign.center,
+                          'SEE ALL',
+                          style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w900, fontSize: 12),
                         ),
                         const SizedBox(width: 4),
                         Icon(Icons.arrow_forward, size: 16, color: Theme.of(context).colorScheme.primary),
@@ -139,11 +138,11 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 32),
 
             // Newly Added Section
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
                 'NEWLY ADDED',
-                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
+                style: Theme.of(context).textTheme.titleLarge,
               ),
             ),
             const SizedBox(height: 16),

@@ -12,9 +12,9 @@ class ServicesHubScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         automaticallyImplyLeading: false,
-        title: const Text(
+        title: Text(
           'Services Hub',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 24),
+          style: Theme.of(context).textTheme.displaySmall?.copyWith(fontSize: 24),
         ),
         actions: [
           IconButton(icon: const Icon(Icons.search, color: Colors.black), onPressed: () {}),
@@ -26,9 +26,9 @@ class ServicesHubScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Financial\nEcosystem',
-              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32, height: 1.1, letterSpacing: -1),
+              style: Theme.of(context).textTheme.displayMedium,
             ),
             const SizedBox(height: 8),
             Text(

@@ -9,9 +9,9 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: const Text('PROFILE'),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.chevron_left, size: 32),
           onPressed: () => context.pop(),
         ),
       ),
@@ -28,7 +28,7 @@ class ProfileScreen extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               'Shivansh Jasathi',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 4),
             Text(
@@ -54,10 +54,6 @@ class ProfileScreen extends StatelessWidget {
                   _buildProfileMenuItem(context, 'Edit Profile', Icons.person_outline, () {}),
                   const Divider(),
                   _buildProfileMenuItem(context, 'Saved Properties', Icons.favorite_outline, () {}),
-                  const Divider(),
-                  _buildProfileMenuItem(context, 'Switch Role', Icons.swap_horiz, () {
-                    context.push('/role-selection');
-                  }),
                   const Divider(),
                   _buildProfileMenuItem(context, 'App Settings', Icons.settings_outlined, () {}),
                   const Divider(),
