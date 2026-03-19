@@ -12,25 +12,27 @@ class PropertyFeedScreen extends StatefulWidget {
 class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
   final List<Map<String, dynamic>> _properties = [
     {
-      'title': 'The Onyx Penthouse',
+      'title': 'The Glass Pavilion',
       'location': 'Downtown Heights',
-      'price': '\$4.2M',
+      'price': '\$3,450,000',
       'beds': '4',
-      'baths': '3',
-      'sqft': '3,200',
+      'baths': '3.5',
+      'sqft': '4,200',
       'isVerified': true,
-      'listedBy': 'MARCUS V.',
-      'image': 'https://images.unsplash.com/photo-1600607687931-57d1eb14cbfc?w=800&q=80',
-      'avatar': 'https://i.pravatar.cc/150?u=marcus'
+      'isExclusive': true,
+      'listedBy': 'ELENA R.',
+      'image': 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
+      'avatar': 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80'
     },
     {
       'title': 'Silverleaf Estate',
       'location': 'Oakwood Valley',
-      'price': '\$2.8M',
+      'price': '\$2,800,000',
       'beds': '5',
       'baths': '4',
       'sqft': '4,500',
       'isVerified': true,
+      'isExclusive': false,
       'listedBy': 'SARAH J.',
       'image': 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80',
       'avatar': 'https://i.pravatar.cc/150?u=sarah'
@@ -38,14 +40,15 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
     {
       'title': 'Vanguard Modern',
       'location': 'Neo District',
-      'price': '\$1.9M',
+      'price': '\$1,900,000',
       'beds': '3',
       'baths': '2',
       'sqft': '2,100',
-      'isVerified': true,
-      'listedBy': 'ELENA R.',
+      'isVerified': false,
+      'isExclusive': false,
+      'listedBy': 'MARCUS V.',
       'image': 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80',
-      'avatar': 'https://i.pravatar.cc/150?u=elena'
+      'avatar': 'https://i.pravatar.cc/150?u=marcus'
     },
   ];
 
@@ -57,10 +60,13 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.chevron_left, color: Colors.black, size: 32),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
           onPressed: () => context.pop(),
         ),
-        title: const Text('PROPERTIES', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 16, letterSpacing: 1.2)),
+        title: const Text(
+          'PROPERTIES', 
+          style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 16, letterSpacing: 1.2)
+        ),
         centerTitle: true,
       ),
       body: Column(
@@ -75,7 +81,7 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
                     height: 56,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black),
+                      border: Border.all(color: Colors.grey[300]!),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -91,13 +97,16 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
                             ),
                           ),
                         ),
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.circular(8),
+                        GestureDetector(
+                          onTap: () => _showFilterSheet(context),
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.black,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(Icons.tune, color: Colors.white, size: 18),
                           ),
-                          child: const Icon(Icons.tune, color: Colors.white, size: 18),
                         ),
                       ],
                     ),
@@ -128,10 +137,10 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Featured Collections', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
+                 const Text('Featured Collections', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, letterSpacing: -0.5)),
                 TextButton(
                   onPressed: () {},
-                  child: const Text('See All', style: TextStyle(color: Color(0xFF00D1FF), fontWeight: FontWeight.w900, fontSize: 14)),
+                  child: const Text('See All', style: TextStyle(color: Color(0xFF00E5FF), fontWeight: FontWeight.w900, fontSize: 14)),
                 ),
               ],
             ),
@@ -143,7 +152,7 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               itemCount: _properties.length,
               itemBuilder: (context, index) {
-                return _buildPropertyCard(_properties[index]);
+                return _buildPropertyCard(context, _properties[index]);
               },
             ),
           ),
@@ -152,13 +161,133 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
     );
   }
 
-  Widget _buildFilterChip(String label, bool isSelected) {
+  void _showFilterSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.8,
+          maxChildSize: 0.9,
+          minChildSize: 0.5,
+          builder: (_, controller) {
+            return Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Filter Properties', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: -0.5)),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => context.pop(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  
+                  Expanded(
+                    child: ListView(
+                      controller: controller,
+                      children: [
+                        const Text('PROPERTY TYPE', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 1)),
+                        const SizedBox(height: 12),
+                        Wrap(
+                          spacing: 12,
+                          runSpacing: 12,
+                          children: [
+                            _buildSelectableChip('Apartment', true),
+                            _buildSelectableChip('Villa', false),
+                            _buildSelectableChip('Penthouse', false),
+                            _buildSelectableChip('Studio', false),
+                          ],
+                        ),
+                        
+                        const SizedBox(height: 32),
+                        const Text('PRICE RANGE', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 1)),
+                        const SizedBox(height: 12),
+                        RangeSlider(
+                          values: const RangeValues(1, 5),
+                          min: 0,
+                          max: 10,
+                          activeColor: const Color(0xFF00E5FF),
+                          inactiveColor: Colors.grey[200],
+                          onChanged: (values) {},
+                        ),
+                        const Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('\$1M', style: TextStyle(fontWeight: FontWeight.w900)),
+                            Text('\$5M+', style: TextStyle(fontWeight: FontWeight.w900)),
+                          ],
+                        ),
+                        
+                        const SizedBox(height: 32),
+                        const Text('BEDROOMS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 1)),
+                        const SizedBox(height: 12),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildCircleButton('Any', false),
+                            _buildCircleButton('1+', false),
+                            _buildCircleButton('2+', false),
+                            _buildCircleButton('3+', true),
+                            _buildCircleButton('4+', false),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Bottom Button
+                  SafeArea(
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton(
+                        onPressed: () => context.pop(),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF00E5FF),
+                          foregroundColor: Colors.black,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                        child: const Text(
+                          'APPLY FILTERS',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildSelectableChip(String label, bool isSelected) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFF00D1FF) : Colors.white,
+        color: isSelected ? Colors.black : Colors.white,
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: isSelected ? const Color(0xFF00D1FF) : Colors.grey.shade200),
+        border: Border.all(color: isSelected ? Colors.black : Colors.grey.shade300),
       ),
       child: Text(
         label,
@@ -170,152 +299,230 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
     );
   }
 
-  Widget _buildPropertyCard(Map<String, dynamic> property) {
+  Widget _buildCircleButton(String label, bool isSelected) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 24),
+      width: 50,
+      height: 50,
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
+        color: isSelected ? Colors.black : Colors.white,
+        shape: BoxShape.circle,
+        border: Border.all(color: isSelected ? Colors.black : Colors.grey.shade300),
       ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Image Section
-          Stack(
-            children: [
-              CachedNetworkImage(
-                imageUrl: property['image'],
-                height: 240,
-                width: double.infinity,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => Container(color: Colors.grey[100]),
-              ),
-              // Gradient Overlay
-              Positioned.fill(
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [Colors.transparent, Colors.black.withValues(alpha: 0.6)],
+      child: Center(
+        child: Text(
+          label,
+          style: TextStyle(
+            fontWeight: FontWeight.w900,
+            color: isSelected ? Colors.white : Colors.black,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilterChip(String label, bool isSelected) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      decoration: BoxDecoration(
+        color: isSelected ? const Color(0xFF00E5FF) : Colors.white,
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: isSelected ? const Color(0xFF00E5FF) : Colors.grey.shade200),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontWeight: FontWeight.w900,
+          color: isSelected ? Colors.black : Colors.black54,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPropertyCard(BuildContext context, Map<String, dynamic> property) {
+    return GestureDetector(
+      onTap: () => context.push('/properties/detail/123'),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey.shade200),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image Section
+            Stack(
+              children: [
+                CachedNetworkImage(
+                  imageUrl: property['image'],
+                  height: 240,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(color: Colors.grey[100]),
+                ),
+                // Gradient Overlay
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Colors.transparent, Colors.black.withValues(alpha: 0.6)],
+                        stops: const [0.4, 1.0],
+                      ),
                     ),
                   ),
                 ),
-              ),
-              // Price Badge
-              Positioned(
-                top: 16,
-                left: 16,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    property['price'],
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 16),
-                  ),
-                ),
-              ),
-              // Verified Badge
-              if (property['isVerified'])
+                // Top Tags
                 Positioned(
                   top: 16,
-                  right: 16,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF00D1FF),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      children: const [
-                        Icon(Icons.verified, color: Colors.white, size: 10),
-                        SizedBox(width: 4),
-                        Text('VERIFIED', style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
-                      ],
-                    ),
+                  left: 16,
+                  child: Row(
+                    children: [
+                      if (property['isExclusive'] == true)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF00E5FF),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Text(
+                            'EXCLUSIVE',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                      if (property['isExclusive'] == true && property['isVerified'] == true)
+                        const SizedBox(width: 8),
+                      if (property['isVerified'] == true)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.9),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: Colors.white),
+                          ),
+                          child: const Text(
+                            'VERIFIED',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
-              // Title and Location
-              Positioned(
-                bottom: 16,
-                left: 16,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      property['title'],
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 20),
-                    ),
-                    Text(
-                      property['location'],
-                      style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w600),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          // Amenities
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildAmenity(Icons.king_bed_outlined, property['beds']),
-                    _buildAmenity(Icons.bathtub_outlined, property['baths']),
-                    _buildAmenity(Icons.square_foot_outlined, '${property['sqft']} sqft'),
-                    const Icon(Icons.chevron_right, color: Colors.black54),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                const Divider(height: 1),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 12,
-                      backgroundImage: CachedNetworkImageProvider(property['avatar']),
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      'LISTED BY ${property['listedBy']}',
-                      style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5),
-                    ),
-                    const Spacer(),
-                    TextButton(
-                      onPressed: () {},
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        minimumSize: Size.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                // Title and Prices
+                Positioned(
+                  bottom: 16,
+                  left: 16,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        property['title'],
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 22, letterSpacing: -0.5),
                       ),
-                      child: const Text(
-                        'VIEW DETAILS',
-                        style: TextStyle(color: Color(0xFF00D1FF), fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 0.5),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          const Icon(Icons.location_on_outlined, color: Color(0xFF00E5FF), size: 14),
+                          const SizedBox(width: 4),
+                          Text(
+                            property['location'],
+                            style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
-          ),
-        ],
+            // Details Section
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('ASKING PRICE', style: TextStyle(color: Color(0xFF00E5FF), fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)),
+                            const SizedBox(height: 4),
+                            Text(property['price'], style: const TextStyle(color: Colors.black, fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: -1)),
+                          ],
+                        ),
+                      ),
+                      _buildAmenity(Icons.king_bed_outlined, property['beds']),
+                      const SizedBox(width: 16),
+                      _buildAmenity(Icons.bathtub_outlined, property['baths']),
+                      const SizedBox(width: 16),
+                      _buildAmenity(Icons.aspect_ratio_outlined, '${property['sqft']}'),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  const Divider(height: 1, color: Color(0xFFEEEEEE)),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 14,
+                        backgroundImage: CachedNetworkImageProvider(property['avatar']),
+                      ),
+                      const SizedBox(width: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'LISTED BY ${property['listedBy']}',
+                            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5),
+                          ),
+                        ],
+                      ),
+                      const Spacer(),
+                      ElevatedButton(
+                        onPressed: () => context.push('/properties/detail/123'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                          minimumSize: const Size(60, 36),
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                        child: const Text('VIEW', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1)),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildAmenity(IconData icon, String value) {
-    return Row(
+    return Column(
       children: [
         Icon(icon, size: 20, color: Colors.black54),
-        const SizedBox(width: 8),
+        const SizedBox(height: 4),
         Text(value, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
       ],
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'dart:math';
 
 class HomeLoanScreen extends StatefulWidget {
   const HomeLoanScreen({super.key});
@@ -12,6 +13,28 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
   double loanAmount = 5000000;
   double tenure = 20;
   double interestRate = 8.5;
+
+  String _formatCurrency(num amount) {
+    String text = amount.toStringAsFixed(0);
+    text = text.replaceAllMapped(RegExp(r'(\d)(?=(\d\d)+\d$)'), (Match m) => '${m[1]},');
+    return '₹$text';
+  }
+
+  double get _emi {
+    double p = loanAmount;
+    double r = interestRate / 12 / 100;
+    double n = tenure * 12;
+    if (r == 0) return p / n;
+    return (p * r * pow((1 + r), n)) / (pow((1 + r), n) - 1);
+  }
+
+  double get _totalPayable {
+    return _emi * tenure * 12;
+  }
+
+  double get _totalInterest {
+    return _totalPayable - loanAmount;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,9 +75,9 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
             _buildSliderCard(
               icon: Icons.attach_money,
               label: 'LOAN AMOUNT',
-              valueText: '5,000,000 INR',
-              minLabel: '100,000 INR',
-              maxLabel: '10,000,000 INR',
+              valueText: '${_formatCurrency(loanAmount)}',
+              minLabel: '₹1,00,000',
+              maxLabel: '₹1,00,00,000',
               value: loanAmount,
               min: 100000,
               max: 10000000,
@@ -64,9 +87,9 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
             _buildSliderCard(
               icon: Icons.calendar_today,
               label: 'TENURE',
-              valueText: '20 YEARS',
-              minLabel: '1 YEARS',
-              maxLabel: '30 YEARS',
+              valueText: '${tenure.toInt()} YEARS',
+              minLabel: '1 YR',
+              maxLabel: '30 YRS',
               value: tenure,
               min: 1,
               max: 30,
@@ -76,7 +99,7 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
             _buildSliderCard(
               icon: Icons.percent,
               label: 'INTEREST RATE',
-              valueText: '8.5 %',
+              valueText: '${interestRate.toStringAsFixed(1)} %',
               minLabel: '5 %',
               maxLabel: '15 %',
               value: interestRate,
@@ -186,7 +209,7 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              const Text('₹43,391', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32, height: 1)),
+              Text(_formatCurrency(_emi), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 32, height: 1)),
               const SizedBox(width: 12),
               Container(
                 margin: const EdgeInsets.only(bottom: 4),
@@ -205,20 +228,20 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text('TOTAL INTEREST', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
-                    SizedBox(height: 4),
-                    Text('₹5,413,840', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
+                  children: [
+                    const Text('TOTAL INTEREST', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
+                    const SizedBox(height: 4),
+                    Text(_formatCurrency(_totalInterest), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
                   ],
                 ),
               ),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text('TOTAL PAYABLE', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
-                    SizedBox(height: 4),
-                    Text('₹10,413,840', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
+                  children: [
+                    const Text('TOTAL PAYABLE', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
+                    const SizedBox(height: 4),
+                    Text(_formatCurrency(_totalPayable), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
                   ],
                 ),
               ),

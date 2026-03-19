@@ -12,9 +12,21 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Text(
-          'Jabalpur',
-          style: Theme.of(context).textTheme.displaySmall?.copyWith(fontSize: 24),
+        centerTitle: false,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Welcome Back,',
+              style: Theme.of(context).textTheme.displaySmall?.copyWith(fontSize: 16
+              ),
+            ),
+            Text(
+              'Shivansh',
+              style: Theme.of(context).textTheme.displaySmall?.copyWith(fontSize: 16
+              ),
+            ),
+          ],
         ),
         actions: [
           Padding(
@@ -211,103 +223,106 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildFeaturedCard(BuildContext context, String title, String price, String location, String imageUrl) {
-    return Container(
-      width: 240,
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(16),
-        image: DecorationImage(
-          image: CachedNetworkImageProvider(imageUrl),
-          fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: () => context.push('/properties/detail/123'),
+      child: Container(
+        width: 240,
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          borderRadius: BorderRadius.circular(16),
+          image: DecorationImage(
+            image: CachedNetworkImageProvider(imageUrl),
+            fit: BoxFit.cover,
+          ),
         ),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Stack(
-        children: [
-          // Gradient Overlay
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.black.withValues(alpha: 0.8), Colors.transparent],
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-                stops: const [0.0, 0.5],
-              ),
-            ),
-          ),
-          // Zero Brokerage Badge
-          Positioned(
-            top: 16,
-            left: 16,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        clipBehavior: Clip.antiAlias,
+        child: Stack(
+          children: [
+            // Gradient Overlay
+            Container(
               decoration: BoxDecoration(
-                color: const Color(0xFF1E60FF),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Text(
-                'Zero Brokerage',
-                style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                gradient: LinearGradient(
+                  colors: [Colors.black.withValues(alpha: 0.8), Colors.transparent],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  stops: const [0.0, 0.5],
+                ),
               ),
             ),
-          ),
-          // Info Section
-          Positioned(
-            bottom: 16,
-            left: 16,
-            right: 16,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.location_on, color: Colors.white70, size: 14),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        location,
-                        style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+            // Zero Brokerage Badge
+            Positioned(
+              top: 16,
+              left: 16,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1E60FF),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Text(
+                  'Zero Brokerage',
+                  style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            // Info Section
+            Positioned(
+              bottom: 16,
+              left: 16,
+              right: 16,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.location_on, color: Colors.white70, size: 14),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          location,
+                          style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  title,
-                  style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  children: [
-                    Text(
-                      price,
-                      style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900),
-                    ),
-                    const SizedBox(width: 4),
-                    const Text(
-                      '/ month',
-                      style: TextStyle(color: Colors.white70, fontSize: 12),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    title,
+                    style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      Text(
+                        price,
+                        style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900),
+                      ),
+                      const SizedBox(width: 4),
+                      const Text(
+                        '/ month',
+                        style: TextStyle(color: Colors.white70, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildNewlyAddedItem({required BuildContext context, required String title, required String price, required String type, required String image}) {
     return GestureDetector(
-      onTap: () => context.push('/properties'),
+      onTap: () => context.push('/properties/detail/123'),
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(

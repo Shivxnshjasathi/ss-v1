@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sampatti_bazar/core/router/main_layout_screen.dart';
+import 'package:sampatti_bazar/features/splash/presentation/screens/splash_screen.dart';
 import 'package:sampatti_bazar/features/auth/presentation/screens/login_screen.dart';
 import 'package:sampatti_bazar/features/auth/presentation/screens/otp_screen.dart';
 import 'package:sampatti_bazar/features/auth/presentation/screens/onboarding_screen.dart';
@@ -13,16 +14,23 @@ import 'package:sampatti_bazar/features/services/presentation/screens/constructi
 import 'package:sampatti_bazar/features/services/presentation/screens/home_loan_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/legal_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/marketplace_screen.dart';
+import 'package:sampatti_bazar/features/services/presentation/screens/cart_screen.dart';
+import 'package:sampatti_bazar/features/services/presentation/screens/checkout_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/movers_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/services_hub_screen.dart';
+import 'package:sampatti_bazar/features/services/presentation/screens/service_tracking_screen.dart';
 import 'package:sampatti_bazar/features/profile/presentation/screens/profile_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final goRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: '/onboarding',
+  initialLocation: '/',
   routes: [
+    GoRoute(
+      path: '/',
+      builder: (context, state) => const SplashScreen(),
+    ),
     GoRoute(
       path: '/onboarding',
       builder: (context, state) => const OnboardingScreen(),
@@ -72,15 +80,11 @@ final goRouter = GoRouter(
             ),
           ],
         ),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/profile',
-              builder: (context, state) => const ProfileScreen(),
-            ),
-          ],
-        ),
       ],
+    ),
+    GoRoute(
+      path: '/profile',
+      builder: (context, state) => const ProfileScreen(),
     ),
     GoRoute(
       path: '/properties',
@@ -110,10 +114,24 @@ final goRouter = GoRouter(
     GoRoute(
       path: '/services/marketplace',
       builder: (context, state) => const MarketplaceScreen(),
+      routes: [
+        GoRoute(
+          path: 'cart',
+          builder: (context, state) => const CartScreen(),
+        ),
+        GoRoute(
+          path: 'checkout',
+          builder: (context, state) => const CheckoutScreen(),
+        ),
+      ]
     ),
     GoRoute(
       path: '/services/legal',
       builder: (context, state) => const LegalScreen(),
+    ),
+    GoRoute(
+      path: '/services/tracking',
+      builder: (context, state) => const ServiceTrackingScreen(),
     ),
   ],
 );

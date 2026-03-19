@@ -12,24 +12,7 @@ class OtpScreen extends StatefulWidget {
 class _OtpScreenState extends State<OtpScreen> {
   String _otpCode = '';
 
-  void _onKeypadTap(String value) {
-    setState(() {
-      if (value == 'clear') {
-        if (_otpCode.isNotEmpty) {
-          _otpCode = _otpCode.substring(0, _otpCode.length - 1);
-        }
-      } else {
-        if (_otpCode.length < 6) {
-          _otpCode += value;
-        }
-      }
-    });
 
-    if (_otpCode.length == 6) {
-      // Auto-submit simulation
-      Future.delayed(const Duration(milliseconds: 300), _onVerify);
-    }
-  }
 
   void _onVerify() {
     context.go('/home');
@@ -62,9 +45,37 @@ class _OtpScreenState extends State<OtpScreen> {
                   const SizedBox(height: 48),
                   
                   // Custom OTP Boxes
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: List.generate(6, (index) => _buildOtpBox(index)),
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: List.generate(6, (index) => _buildOtpBox(index)),
+                      ),
+                      Positioned.fill(
+                        child: TextField(
+                          keyboardType: TextInputType.number,
+                          maxLength: 6,
+                          autofocus: true,
+                          cursorColor: Colors.transparent,
+                          style: const TextStyle(color: Colors.transparent, fontSize: 1),
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            counterText: '',
+                            fillColor: Colors.transparent,
+                            filled: true,
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _otpCode = value;
+                            });
+                            if (value.length == 6) {
+                              Future.delayed(const Duration(milliseconds: 300), _onVerify);
+                            }
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                   
                   const SizedBox(height: 32),
@@ -85,19 +96,6 @@ class _OtpScreenState extends State<OtpScreen> {
             ),
           ),
           
-          // Custom Keypad
-          Container(
-            color: Colors.grey.shade50,
-            padding: const EdgeInsets.only(top: 16, bottom: 32),
-            child: Column(
-              children: [
-                _buildKeypadRow(['1', '2', '3']),
-                _buildKeypadRow(['4', '5', '6']),
-                _buildKeypadRow(['7', '8', '9']),
-                _buildKeypadRow(['', '0', 'clear']),
-              ],
-            ),
-          ),
         ],
       ),
     );
@@ -125,39 +123,6 @@ class _OtpScreenState extends State<OtpScreen> {
         digit,
         style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 32, color: Colors.black),
       ),
-    );
-  }
-
-  Widget _buildKeypadRow(List<String> keys) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: keys.map((k) {
-        if (k.isEmpty) {
-          return const SizedBox(width: 80, height: 64);
-        }
-        if (k == 'clear') {
-          return InkWell(
-            onTap: () => _onKeypadTap('clear'),
-            child: const SizedBox(
-              width: 80,
-              height: 64,
-              child: Center(
-                child: Icon(Icons.backspace_outlined, color: Colors.redAccent, size: 24),
-              ),
-            ),
-          );
-        }
-        return InkWell(
-          onTap: () => _onKeypadTap(k),
-          child: SizedBox(
-            width: 80,
-            height: 64,
-            child: Center(
-              child: Text(k, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 24)),
-            ),
-          ),
-        );
-      }).toList(),
     );
   }
 }

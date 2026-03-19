@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sampatti_bazar/shared/widgets/app_card.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -8,66 +7,133 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('PROFILE'),
+        backgroundColor: Colors.white,
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.chevron_left, size: 32),
+          icon: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: const Color(0xFF00E5FF).withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 16),
+          ),
           onPressed: () => context.pop(),
         ),
+        title: const Text('My Profile', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 18)),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_none, color: Colors.black87),
+            onPressed: () {},
+          ),
+        ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
-            const Center(
-              child: CircleAvatar(
-                radius: 50,
-                backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=11'),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Shivansh Jasathi',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              '+91 98765 43210',
-              style: TextStyle(color: Colors.grey[600]),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withAlpha(50),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Text(
-                'Seeker, Owner & Landlord',
-                style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 12),
-              ),
-            ),
-            const SizedBox(height: 32),
-            AppCard(
-              child: Column(
+            const SizedBox(height: 24),
+            // Avatar & Name Section
+            Center(
+              child: Stack(
                 children: [
-                  _buildProfileMenuItem(context, 'Edit Profile', Icons.person_outline, () {}),
-                  const Divider(),
-                  _buildProfileMenuItem(context, 'Saved Properties', Icons.favorite_outline, () {}),
-                  const Divider(),
-                  _buildProfileMenuItem(context, 'App Settings', Icons.settings_outlined, () {}),
-                  const Divider(),
-                  _buildProfileMenuItem(context, 'Help & Support', Icons.help_outline, () {}),
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.grey.shade200, width: 4),
+                    ),
+                    child: const CircleAvatar(
+                      radius: 54,
+                      backgroundImage: NetworkImage('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80'),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    right: 8,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF00E5FF),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.verified, color: Colors.white, size: 16),
+                    ),
+                  ),
                 ],
               ),
             ),
-            const SizedBox(height: 32),
-            TextButton.icon(
-              onPressed: () {
-                context.go('/login');
-              },
-              icon: const Icon(Icons.logout, color: Colors.red),
-              label: const Text('Logout', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            const Text(
+              'Shivansh Jasathi',
+              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24, letterSpacing: -0.5),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '+91 98765 43210 • info@sampatti.com',
+              style: TextStyle(color: Colors.grey[600], fontSize: 12, fontWeight: FontWeight.w500),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF0066FF).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Text(
+                'PREMIUM MEMBER',
+                style: TextStyle(color: Color(0xFF0066FF), fontWeight: FontWeight.w900, fontSize: 10, letterSpacing: 0.5),
+              ),
+            ),
+            const SizedBox(height: 40),
+
+            // Profile Options Menu
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('ACCOUNT', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: Colors.grey, letterSpacing: 1)),
+                  const SizedBox(height: 16),
+                  _buildMenuCard(
+                    context,
+                    items: [
+                      _buildMenuItem('Personal Information', Icons.person_outline, const Color(0xFF0066FF), () {}),
+                      _buildMenuItem('Saved Properties', Icons.favorite_border, Colors.pinkAccent, () {}),
+                      _buildMenuItem('My Documents', Icons.description_outlined, Colors.orange, () {}),
+                    ],
+                  ),
+                  const SizedBox(height: 32),
+                  const Text('PREFERENCES', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: Colors.grey, letterSpacing: 1)),
+                  const SizedBox(height: 16),
+                  _buildMenuCard(
+                    context,
+                    items: [
+                      _buildMenuItem('App Settings', Icons.settings_outlined, Colors.grey[800]!, () {}),
+                      _buildMenuItem('Help & Support', Icons.help_outline, Colors.teal, () {}),
+                      _buildMenuItem('Terms & Privacy', Icons.privacy_tip_outlined, Colors.indigo, () {}),
+                    ],
+                  ),
+                  const SizedBox(height: 32),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: OutlinedButton.icon(
+                      onPressed: () => context.go('/login'),
+                      icon: const Icon(Icons.logout, color: Colors.redAccent, size: 20),
+                      label: const Text(
+                        'LOG OUT',
+                        style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w900, letterSpacing: 1),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: Colors.redAccent.withValues(alpha: 0.3)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                ],
+              ),
             ),
           ],
         ),
@@ -75,19 +141,55 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileMenuItem(BuildContext context, String title, IconData icon, VoidCallback onTap) {
+  Widget _buildMenuCard(BuildContext context, {required List<Widget> items}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: items.asMap().entries.map((entry) {
+          int idx = entry.key;
+          Widget item = entry.value;
+          return Column(
+            children: [
+              item,
+              if (idx != items.length - 1)
+                Padding(
+                  padding: const EdgeInsets.only(left: 64.0),
+                  child: Divider(height: 1, color: Colors.grey.shade100),
+                ),
+            ],
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildMenuItem(String title, IconData icon, Color iconColor, VoidCallback onTap) {
     return ListTile(
-      contentPadding: EdgeInsets.zero,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.grey[100],
-          shape: BoxShape.circle,
+          color: iconColor.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(icon, color: Colors.black87),
+        child: Icon(icon, color: iconColor, size: 20),
       ),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
-      trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+      title: Text(
+        title,
+        style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: Colors.black87),
+      ),
+      trailing: const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
       onTap: onTap,
     );
   }

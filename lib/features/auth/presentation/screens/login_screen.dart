@@ -11,16 +11,10 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _phoneController = TextEditingController();
 
-  void _onKeypadTap(String value) {
-    if (value == 'clear') {
-      if (_phoneController.text.isNotEmpty) {
-        _phoneController.text = _phoneController.text.substring(0, _phoneController.text.length - 1);
-      }
-    } else {
-      if (_phoneController.text.length < 10) {
-        _phoneController.text += value;
-      }
-    }
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    super.dispose();
   }
 
   void _onGetOtp() {
@@ -69,7 +63,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         Expanded(
                           child: TextField(
                             controller: _phoneController,
-                            readOnly: true, // Controlled via custom keypad
+                            readOnly: false,
+                            keyboardType: TextInputType.phone,
                             showCursor: true,
                             cursorColor: const Color(0xFF1E60FF),
                             style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 24, color: Colors.black, letterSpacing: 2.0),
@@ -122,55 +117,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-            // Custom Keypad matches Figma exactly
-            Container(
-              color: Colors.grey.shade50,
-              padding: const EdgeInsets.only(top: 16, bottom: 32),
-              child: Column(
-                children: [
-                  _buildKeypadRow(['1', '2', '3']),
-                  _buildKeypadRow(['4', '5', '6']),
-                  _buildKeypadRow(['7', '8', '9']),
-                  _buildKeypadRow(['', '0', 'clear']),
-                ],
-              ),
-            ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildKeypadRow(List<String> keys) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: keys.map((k) {
-        if (k.isEmpty) {
-          return const SizedBox(width: 80, height: 64);
-        }
-        if (k == 'clear') {
-          return InkWell(
-            onTap: () => _onKeypadTap('clear'),
-            child: const SizedBox(
-              width: 80,
-              height: 64,
-              child: Center(
-                child: Icon(Icons.backspace_outlined, color: Colors.redAccent, size: 24),
-              ),
-            ),
-          );
-        }
-        return InkWell(
-          onTap: () => _onKeypadTap(k),
-          child: SizedBox(
-            width: 80,
-            height: 64,
-            child: Center(
-              child: Text(k, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 24)),
-            ),
-          ),
-        );
-      }).toList(),
     );
   }
 }

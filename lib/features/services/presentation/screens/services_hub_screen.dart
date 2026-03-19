@@ -12,9 +12,10 @@ class ServicesHubScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         automaticallyImplyLeading: false,
+        centerTitle: false,
         title: Text(
           'Services Hub',
-          style: Theme.of(context).textTheme.displaySmall?.copyWith(fontSize: 24),
+          style: Theme.of(context).textTheme.displaySmall?.copyWith(fontSize: 20),
         ),
         actions: [
           IconButton(icon: const Icon(Icons.search, color: Colors.black), onPressed: () {}),
@@ -49,7 +50,7 @@ class ServicesHubScreen extends StatelessWidget {
                  _buildServiceGridItem(context, 'Movers', Icons.local_shipping_outlined, 'Safe Relocation', '/services/movers'),
                  _buildServiceGridItem(context, 'Legal Docs', Icons.gavel, 'Verified Lawyers', '/services/legal'),
                  _buildServiceGridItem(context, 'Marketplace', Icons.shopping_bag_outlined, 'Materials & More', '/services/marketplace'),
-                 _buildServiceGridItem(context, 'Management', Icons.description_outlined, 'Rent Tracking', '/services'),
+                 _buildServiceGridItem(context, 'Service Tracking', Icons.receipt_long_outlined, 'Track Orders', '/services/tracking'),
               ],
             ),
             const SizedBox(height: 32),
