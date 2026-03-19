@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sampatti_bazar/shared/widgets/app_card.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -8,15 +8,39 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Sampatti Bazar', style: TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: const Text(
+          'Jabalpur',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 24),
+        ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.account_circle),
-            onPressed: () {
-              context.push('/profile');
-            },
-          )
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: GestureDetector(
+              onTap: () => context.push('/profile'),
+              child: Stack(
+                alignment: Alignment.bottomRight,
+                children: [
+                  const CircleAvatar(
+                    backgroundImage: CachedNetworkImageProvider('https://i.pravatar.cc/150?u=a042581f4e29026704d'),
+                    radius: 20,
+                  ),
+                  Container(
+                    width: 12,
+                    height: 12,
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -25,16 +49,22 @@ class HomeScreen extends StatelessWidget {
           children: [
             // Search Bar
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
               child: TextField(
                 readOnly: true,
                 onTap: () => context.push('/properties'),
                 decoration: InputDecoration(
                   hintText: 'Search for properties...',
-                  prefixIcon: const Icon(Icons.search),
+                  hintStyle: TextStyle(color: Colors.grey[500]),
+                  prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                  suffixIcon: const Icon(Icons.tune, color: Colors.grey),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30),
-                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
                   ),
                   filled: true,
                   fillColor: Colors.white,
@@ -43,63 +73,103 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
 
-            // Services Grid
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                'Our Services',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(height: 16),
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 3,
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              children: [
-                _buildServiceItem(context, 'Properties', Icons.apartment, Colors.blue, '/properties'),
-                _buildServiceItem(context, 'Home Loan', Icons.account_balance, Colors.green, '/services/loan'),
-                _buildServiceItem(context, 'Movers', Icons.local_shipping, Colors.orange, '/services/movers'),
-                _buildServiceItem(context, 'Construction', Icons.architecture, Colors.purple, '/services/construction'),
-                _buildServiceItem(context, 'Materials', Icons.shopping_cart, Colors.teal, '/services/materials'),
-                _buildServiceItem(context, 'Legal', Icons.gavel, Colors.red, '/services/legal'),
-              ],
-            ),
+            const SizedBox(height: 24),
 
-            const SizedBox(height: 32),
-            // Featured Properties Carousel
+            // Categories Row
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Featured Properties',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  _buildCategoryItem(context, 'BUY', Icons.home_outlined, () {}),
+                  _buildCategoryItem(context, 'RENT', Icons.domain, () {}),
+                  _buildCategoryItem(context, 'PG', Icons.bed_outlined, () {}),
+                  _buildCategoryItem(context, 'SERVICES', Icons.work_outline, () => context.push('/services')),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 32),
+
+            // Featured Zero-Brokerage Section
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Expanded(
+                    child: Text(
+                      'FEATURED ZERO-BROKERAGE',
+                      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, height: 1.2),
+                    ),
                   ),
-                  TextButton(
-                    onPressed: () => context.push('/properties'),
-                    child: const Text('See All'),
+                  GestureDetector(
+                    onTap: () => context.push('/properties'),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'SEE\nALL',
+                          style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold, fontSize: 12),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(width: 4),
+                        Icon(Icons.arrow_forward, size: 16, color: Theme.of(context).colorScheme.primary),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 16),
             SizedBox(
-              height: 250,
-              child: ListView.builder(
+              height: 320,
+              child: ListView(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                itemCount: 3,
-                itemBuilder: (context, index) {
-                  return const _FeaturedPropertyCard();
-                },
+                children: [
+                  _buildFeaturedCard(context, 'Silver Oak Residency', '₹45,000', 'VIJAY NAGAR, JABALPUR', 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80'),
+                  const SizedBox(width: 16),
+                  _buildFeaturedCard(context, 'The Grand Horizon', '₹32,000', 'CIVIL LINES, JABALPUR', 'https://images.unsplash.com/photo-1600607687931-57d1eb14cbfc?w=600&q=80'),
+                ],
               ),
             ),
+
             const SizedBox(height: 32),
+
+            // Newly Added Section
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'NEWLY ADDED',
+                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                children: [
+                   _buildNewlyAddedItem(
+                    context: context,
+                    title: 'Cozy 2BHK Apartment',
+                    price: '₹18,500',
+                    type: 'Rent',
+                    image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=300&q=80',
+                  ),
+                  const SizedBox(height: 12),
+                  _buildNewlyAddedItem(
+                    context: context,
+                    title: 'Luxury PG for Students',
+                    price: '₹8,000',
+                    type: 'PG',
+                    image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=300&q=80',
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 100), // padding for FAB
           ],
         ),
       ),
@@ -107,86 +177,203 @@ class HomeScreen extends StatelessWidget {
         onPressed: () {
            context.push('/chatbot');
         },
-        backgroundColor: const Color(0xFF0D47A1),
-        child: const Icon(Icons.smart_toy, color: Colors.white),
+        backgroundColor: const Color(0xFF1E60FF),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        elevation: 4,
+        child: const Icon(Icons.chat_bubble_outline, color: Colors.white),
       ),
     );
   }
 
-  Widget _buildServiceItem(BuildContext context, String title, IconData icon, Color color, String route) {
+  Widget _buildCategoryItem(BuildContext context, String title, IconData icon, VoidCallback onTap) {
     return GestureDetector(
-      onTap: () => context.push(route),
+      onTap: onTap,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            padding: const EdgeInsets.all(16),
+            width: 70,
+            height: 70,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              shape: BoxShape.circle,
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.grey.shade200, width: 1.5),
             ),
-            child: Icon(icon, color: color, size: 28),
+            child: Icon(icon, color: Colors.black87, size: 28),
           ),
           const SizedBox(height: 8),
           Text(
             title,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w500),
-            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.5),
           ),
         ],
       ),
     );
   }
-}
 
-class _FeaturedPropertyCard extends StatelessWidget {
-  const _FeaturedPropertyCard();
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildFeaturedCard(BuildContext context, String title, String price, String location, String imageUrl) {
     return Container(
-      width: 200,
-      margin: const EdgeInsets.only(right: 16),
-      child: AppCard(
-        padding: EdgeInsets.zero,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              height: 120,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                // image: DecorationImage(image: NetworkImage('...'), fit: BoxFit.cover),
+      width: 240,
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(16),
+        image: DecorationImage(
+          image: CachedNetworkImageProvider(imageUrl),
+          fit: BoxFit.cover,
+        ),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Stack(
+        children: [
+          // Gradient Overlay
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.black.withValues(alpha: 0.8), Colors.transparent],
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+                stops: const [0.0, 0.5],
               ),
-              child: const Center(child: Icon(Icons.image, color: Colors.grey)),
             ),
-            Padding(
-              padding: const EdgeInsets.all(12.0),
+          ),
+          // Zero Brokerage Badge
+          Positioned(
+            top: 16,
+            left: 16,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1E60FF),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Text(
+                'Zero Brokerage',
+                style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          // Info Section
+          Positioned(
+            bottom: 16,
+            left: 16,
+            right: 16,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.location_on, color: Colors.white70, size: 14),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        location,
+                        style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  title,
+                  style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    Text(
+                      price,
+                      style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900),
+                    ),
+                    const SizedBox(width: 4),
+                    const Text(
+                      '/ month',
+                      style: TextStyle(color: Colors.white70, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNewlyAddedItem({required BuildContext context, required String title, required String price, required String type, required String image}) {
+    return GestureDetector(
+      onTap: () => context.push('/properties'),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey.shade200),
+        ),
+        child: Row(
+          children: [
+            // Image
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                image: DecorationImage(
+                  image: CachedNetworkImageProvider(image),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            // Details
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    '₹ 15,000/mo',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary,
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          title,
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                          maxLines: 2,
                         ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          type,
+                          style: const TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: Colors.black54),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    price,
+                    style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    '2 BHK Flat',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Koramangala, Bangalore',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
-                        ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  Row(
+                    children: [
+                      const Icon(Icons.flash_on, color: Color(0xFF1E60FF), size: 12),
+                      const SizedBox(width: 4),
+                      const Text(
+                        'DIRECT OWNER',
+                        style: TextStyle(color: Color(0xFF1E60FF), fontSize: 10, fontWeight: FontWeight.w900),
+                      ),
+                    ],
                   ),
                 ],
               ),

@@ -12,9 +12,31 @@ class PropertyFeedScreen extends StatefulWidget {
 
 class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
   bool _isMapView = false;
+  
+  // Filter State
+  String _selectedBhk = 'All';
+  bool _isOwnerOnly = false;
+
+  final List<Map<String, dynamic>> _allProperties = [
+    {'bhk': '1 RK', 'type': 'PG', 'owner': true, 'price': '₹ 10,000', 'title': '1 RK Studio in BTM', 'area': '350 sqft', 'image': 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80'},
+    {'bhk': '2 BHK', 'type': 'Apartment', 'owner': false, 'price': '₹ 18,000', 'title': '2 BHK Flat In HSR Layout', 'area': '1000 sqft', 'image': 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80'},
+    {'bhk': '3 BHK', 'type': 'Apartment', 'owner': true, 'price': '₹ 25,000', 'title': '3 BHK Premium Showcase', 'area': '1500 sqft', 'image': 'https://images.unsplash.com/photo-1600607687931-57d1eb14cbfc?w=800&q=80'},
+    {'bhk': '1 BHK', 'type': 'Independent', 'owner': true, 'price': '₹ 12,000', 'title': '1 BHK Independent House', 'area': '600 sqft', 'image': 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80'},
+    {'bhk': '2 BHK', 'type': 'Villa', 'owner': false, 'price': '₹ 35,000', 'title': '2 BHK Luxury Villa', 'area': '2000 sqft', 'image': 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80'},
+  ];
+
+  List<Map<String, dynamic>> get _filteredProperties {
+    return _allProperties.where((p) {
+      if (_selectedBhk != 'All' && p['bhk'] != _selectedBhk) return false;
+      if (_isOwnerOnly && p['owner'] != true) return false;
+      return true;
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final properties = _filteredProperties;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Properties'),
@@ -43,30 +65,36 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
                     padding: const EdgeInsets.all(16.0),
                     child: Row(
                       children: [
-                        _buildFilterChip(context, 'City: Bangalore', Icons.location_city),
+                        _buildFilterChip(context, 'City: Bangalore', Icons.location_city, () {}),
                         const SizedBox(width: 8),
-                        _buildFilterChip(context, 'Rent', Icons.home),
+                        _buildFilterChip(context, _selectedBhk == 'All' ? 'BHK' : _selectedBhk, Icons.bed, () => _showAdvancedFilters(context)),
                         const SizedBox(width: 8),
-                        _buildFilterChip(context, '2 BHK', Icons.bed),
-                        const SizedBox(width: 8),
-                        _buildFilterChip(context, 'Budget: Under 20k', Icons.attach_money),
-                        const SizedBox(width: 8),
-                        _buildFilterChip(context, 'Owner Only', Icons.person),
+                        _buildFilterChip(context, _isOwnerOnly ? 'Owner Only' : 'Owner/Broker', Icons.person, () => _showAdvancedFilters(context)),
                       ],
                     ),
                   ),
                 ),
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        return _PropertyListItem(index: index);
-                      },
-                      childCount: 10,
+                if (properties.isEmpty)
+                  SliverFillRemaining(
+                    child: Center(
+                      child: const Text('No properties match your filters.', style: TextStyle(color: Colors.grey)),
+                    ),
+                  )
+                else
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          return _PropertyListItem(
+                            property: properties[index],
+                            index: index,
+                          );
+                        },
+                        childCount: properties.length,
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
     );
@@ -88,71 +116,88 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
     );
   }
 
-  Widget _buildFilterChip(BuildContext context, String label, IconData icon) {
+  Widget _buildFilterChip(BuildContext context, String label, IconData icon, VoidCallback onTap) {
     return ActionChip(
       avatar: Icon(icon, size: 16),
       label: Text(label),
-      onPressed: () {
-        _showAdvancedFilters(context);
-      },
+      onPressed: onTap,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      side: BorderSide(color: Theme.of(context).colorScheme.primary.withOpacity(0.2)),
+      side: BorderSide(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2)),
     );
   }
 
   void _showAdvancedFilters(BuildContext context) {
+    String tempBhk = _selectedBhk;
+    bool tempOwner = _isOwnerOnly;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
       ),
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text('Advanced Filters', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 24),
-              Text('BHK Types', style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                children: ['1 RK', '1 BHK', '2 BHK', '3 BHK', '4+ BHK']
-                    .map((e) => FilterChip(label: Text(e), onSelected: (_) {}))
-                    .toList(),
-              ),
-              const SizedBox(height: 24),
-              Text('Property Type', style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                children: ['Apartment', 'Independent House', 'Villa', 'PG']
-                    .map((e) => FilterChip(label: Text(e), onSelected: (_) {}))
-                    .toList(),
-              ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      builder: (bottomSheetContext) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text('Show Owner Listings Only', style: Theme.of(context).textTheme.titleMedium),
-                  Switch(value: true, onChanged: (_) {}),
+                  Text('Advanced Filters', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 24),
+                  Text('BHK Types', style: Theme.of(context).textTheme.titleMedium),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    children: ['All', '1 RK', '1 BHK', '2 BHK', '3 BHK', '4+ BHK']
+                        .map((e) => FilterChip(
+                              label: Text(e),
+                              selected: tempBhk == e,
+                              onSelected: (_) {
+                                setModalState(() {
+                                  tempBhk = e;
+                                });
+                              },
+                            ))
+                        .toList(),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Show Owner Listings Only', style: Theme.of(context).textTheme.titleMedium),
+                      Switch(
+                        value: tempOwner,
+                        onChanged: (val) {
+                          setModalState(() {
+                            tempOwner = val;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 32),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _selectedBhk = tempBhk;
+                        _isOwnerOnly = tempOwner;
+                      });
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                    ),
+                    child: const Text('Apply Filters'),
+                  ),
+                  const SizedBox(height: 32),
                 ],
               ),
-              const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: () => Navigator.pop(context),
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                ),
-                child: const Text('Apply Filters'),
-              ),
-              const SizedBox(height: 32),
-            ],
-          ),
+            );
+          },
         );
       },
     );
@@ -160,24 +205,18 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
 }
 
 class _PropertyListItem extends StatelessWidget {
+  final Map<String, dynamic> property;
   final int index;
-  const _PropertyListItem({required this.index});
+
+  const _PropertyListItem({required this.property, required this.index});
 
   @override
   Widget build(BuildContext context) {
-    final images = [
-      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80',
-      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
-      'https://images.unsplash.com/photo-1600607687931-57d1eb14cbfc?w=800&q=80',
-      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80',
-    ];
-    final imageUrl = images[index % images.length];
-
     return Padding(
       padding: const EdgeInsets.only(bottom: 24.0),
       child: AppCard(
         padding: EdgeInsets.zero,
-        onTap: () => context.push('/properties/detail/1'),
+        onTap: () => context.push('/properties/detail/$index'),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -192,18 +231,19 @@ class _PropertyListItem extends StatelessWidget {
                 fit: StackFit.expand,
                 children: [
                    CachedNetworkImage(
-                     imageUrl: imageUrl,
+                     imageUrl: property['image'],
                      fit: BoxFit.cover,
                      placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
                      errorWidget: (context, url, error) => const Center(child: Icon(Icons.error)),
                    ),
+                   if (property['owner'])
                      Positioned(
                        top: 16,
                        right: 16,
                        child: Container(
                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                          decoration: BoxDecoration(
-                           color: Colors.black.withOpacity(0.7),
+                           color: Colors.black.withValues(alpha: 0.7),
                            borderRadius: BorderRadius.circular(12),
                          ),
                          child: const Text(
@@ -224,7 +264,7 @@ class _PropertyListItem extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '₹ 18,000',
+                        property['price'],
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.primary,
@@ -240,7 +280,7 @@ class _PropertyListItem extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '2 BHK Flat In HSR Layout',
+                    property['title'],
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
@@ -250,7 +290,7 @@ class _PropertyListItem extends StatelessWidget {
                     children: [
                       const Icon(Icons.square_foot, size: 16, color: Colors.grey),
                       const SizedBox(width: 4),
-                      Text('1000 sqft', style: TextStyle(color: Colors.grey[700])),
+                      Text(property['area'], style: TextStyle(color: Colors.grey[700])),
                       const SizedBox(width: 16),
                       const Icon(Icons.chair, size: 16, color: Colors.grey),
                       const SizedBox(width: 4),

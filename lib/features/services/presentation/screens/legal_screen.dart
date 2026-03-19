@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sampatti_bazar/shared/widgets/app_card.dart';
 import 'package:sampatti_bazar/shared/widgets/custom_text_field.dart';
 import 'package:sampatti_bazar/shared/widgets/primary_button.dart';
 
