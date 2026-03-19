@@ -23,9 +23,9 @@ class RoleSelectionScreen extends StatelessWidget {
             ),
             const SizedBox(height: 32),
             _RoleCard(
-              title: 'Seeker',
-              description: 'I want to rent, buy, or find PGs.',
-              icon: Icons.search_rounded,
+              title: 'Seeker, Owner & Landlord',
+              description: 'I want to rent, buy, find PGs, list properties, or manage leads.',
+              icon: Icons.real_estate_agent_rounded,
               color: Colors.blue.shade50,
               onTap: () {
                 // TODO: Save role in Firestore
@@ -34,18 +34,7 @@ class RoleSelectionScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             _RoleCard(
-              title: 'Owner / Landlord',
-              description: 'I want to list properties and manage leads.',
-              icon: Icons.real_estate_agent_rounded,
-              color: Colors.green.shade50,
-              onTap: () {
-                // TODO: Save role in Firestore
-                context.go('/home');
-              },
-            ),
-            const SizedBox(height: 16),
-            _RoleCard(
-              title: 'Service Partner',
+              title: 'Service Partner & Other',
               description: 'I am a Civil Engineer, Mover, Lawyer, etc.',
               icon: Icons.handyman_rounded,
               color: Colors.orange.shade50,

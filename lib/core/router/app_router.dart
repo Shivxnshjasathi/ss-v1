@@ -4,6 +4,7 @@ import 'package:sampatti_bazar/features/auth/presentation/screens/login_screen.d
 import 'package:sampatti_bazar/features/auth/presentation/screens/otp_screen.dart';
 import 'package:sampatti_bazar/features/auth/presentation/screens/role_selection_screen.dart';
 import 'package:sampatti_bazar/features/chatbot/presentation/screens/chatbot_screen.dart';
+import 'package:sampatti_bazar/features/auth/presentation/screens/onboarding_screen.dart';
 import 'package:sampatti_bazar/features/home/presentation/screens/home_screen.dart';
 import 'package:sampatti_bazar/features/properties/presentation/screens/property_detail_screen.dart';
 import 'package:sampatti_bazar/features/properties/presentation/screens/property_feed_screen.dart';
@@ -12,13 +13,18 @@ import 'package:sampatti_bazar/features/services/presentation/screens/home_loan_
 import 'package:sampatti_bazar/features/services/presentation/screens/legal_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/materials_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/movers_screen.dart';
+import 'package:sampatti_bazar/features/profile/presentation/screens/profile_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final goRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: '/login',
+  initialLocation: '/onboarding',
   routes: [
+    GoRoute(
+      path: '/onboarding',
+      builder: (context, state) => const OnboardingScreen(),
+    ),
     GoRoute(
       path: '/login',
       builder: (context, state) => const LoginScreen(),
@@ -74,6 +80,10 @@ final goRouter = GoRouter(
     GoRoute(
       path: '/services/legal',
       builder: (context, state) => const LegalScreen(),
+    ),
+    GoRoute(
+      path: '/profile',
+      builder: (context, state) => const ProfileScreen(),
     ),
   ],
 );

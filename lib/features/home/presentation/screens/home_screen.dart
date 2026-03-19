@@ -14,7 +14,7 @@ class HomeScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.account_circle),
             onPressed: () {
-              // TODO: Profile Sheet or Screen
+              context.push('/profile');
             },
           )
         ],
