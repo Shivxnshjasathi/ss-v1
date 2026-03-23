@@ -101,6 +101,22 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
 
+            const SizedBox(height: 16),
+
+            // Quick Access Services Row
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildCategoryItem(context, 'LOAN', Icons.account_balance_outlined, () => context.push('/services/loan')),
+                  _buildCategoryItem(context, 'CONSTRUCT', Icons.architecture_outlined, () => context.push('/services/construction')),
+                  _buildCategoryItem(context, 'LEGAL', Icons.gavel_outlined, () => context.push('/services/legal')),
+                  _buildCategoryItem(context, 'MOVERS', Icons.local_shipping_outlined, () => context.push('/services/movers')),
+                ],
+              ),
+            ),
+
             const SizedBox(height: 32),
 
             // Featured Zero-Brokerage Section

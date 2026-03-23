@@ -155,20 +155,23 @@ class _LegalScreenState extends State<LegalScreen> {
         onTap: () => setState(() {
           _selectedService = label;
         }),
-        child: Container(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected ? AppTheme.primaryBlue : const Color(0xFFF8F9FB),
+            color: isSelected ? AppTheme.primaryBlue : Colors.white,
             borderRadius: BorderRadius.circular(30),
-            border: isSelected ? null : Border.all(color: Colors.grey.shade100),
+            border: Border.all(color: isSelected ? AppTheme.primaryBlue : Colors.grey.shade300),
+            boxShadow: isSelected 
+                ? [BoxShadow(color: AppTheme.primaryBlue.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 3))] 
+                : [],
           ),
           child: Text(
-            label.toUpperCase(),
+            label,
             style: TextStyle(
-              fontWeight: FontWeight.w900,
-              fontSize: 10,
-              letterSpacing: 0.5,
-              color: isSelected ? Colors.white : Colors.black54,
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+              color: isSelected ? Colors.white : Colors.black87,
             ),
           ),
         ),
@@ -250,50 +253,51 @@ class _LegalScreenState extends State<LegalScreen> {
   }
 
   Widget _buildStepper() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildStepIndicator('REVIEW', 0),
-        _buildStepLine(0),
-        _buildStepIndicator('VERIFY', 1),
-        _buildStepLine(1),
-        _buildStepIndicator('SIGN', 2),
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildStepIndicator('REVIEW', 0),
+          Expanded(child: _buildStepLine(0)),
+          _buildStepIndicator('VERIFY', 1),
+          Expanded(child: _buildStepLine(1)),
+          _buildStepIndicator('SIGN', 2),
+        ],
+      ),
     );
   }
 
   Widget _buildStepIndicator(String title, int stepIndex) {
     bool isCompleted = _currentStep > stepIndex;
     bool isActive = _currentStep == stepIndex;
-    Color bgColor = isCompleted ? Colors.black : (isActive ? AppTheme.primaryBlue : Colors.white);
+    Color bgColor = isCompleted ? AppTheme.primaryBlue : (isActive ? AppTheme.primaryBlue : Colors.white);
     Color textColor = (isCompleted || isActive) ? Colors.white : Colors.grey.shade400;
-    Border? border = (!isCompleted && !isActive) ? Border.all(color: Colors.grey.shade200) : null;
+    Border? border = (!isCompleted && !isActive) ? Border.all(color: Colors.grey.shade300, width: 2) : null;
 
     return Column(
       children: [
         Container(
           width: 32,
           height: 32,
-          decoration: BoxDecoration(color: bgColor, border: border, borderRadius: BorderRadius.circular(8)),
+          decoration: BoxDecoration(color: bgColor, border: border, shape: BoxShape.circle),
           child: Center(
             child: isCompleted
-                ? const Icon(Icons.check, color: Colors.white, size: 18)
-                : Text('${stepIndex + 1}', style: TextStyle(color: textColor, fontWeight: FontWeight.w900, fontSize: 13)),
+                ? const Icon(Icons.check, color: Colors.white, size: 16)
+                : Text('${stepIndex + 1}', style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 13)),
           ),
         ),
         const SizedBox(height: 8),
-        Text(title, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: isCompleted ? Colors.black : (isActive ? AppTheme.primaryBlue : Colors.grey), letterSpacing: 0.5)),
+        Text(title, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: isCompleted ? AppTheme.primaryBlue : (isActive ? AppTheme.primaryBlue : Colors.grey), letterSpacing: 0.5)),
       ],
     );
   }
 
   Widget _buildStepLine(int stepIndex) {
     return Container(
-      width: 32,
       height: 2,
-      margin: const EdgeInsets.only(top: 15, left: 12, right: 12),
-      color: _currentStep > stepIndex ? Colors.black : Colors.grey.shade100,
+      margin: const EdgeInsets.only(top: 15, left: 8, right: 8),
+      color: _currentStep > stepIndex ? AppTheme.primaryBlue : Colors.grey.shade200,
     );
   }
 
@@ -310,21 +314,21 @@ class _LegalScreenState extends State<LegalScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Draft Agreement', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 28, letterSpacing: -1.0)),
+        const Text('Draft Agreement', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24, letterSpacing: -0.5)),
         const SizedBox(height: 8),
-        Text('Fill in the specific terms of the rental lease before verification.', style: TextStyle(color: Colors.grey[600], fontSize: 13, height: 1.5, fontWeight: FontWeight.w500)),
+        Text('Fill in the specific terms of the rental lease before verification.', style: TextStyle(color: Colors.black54, fontSize: 13, height: 1.5)),
         const SizedBox(height: 32),
-        _buildTextFieldWidget(_lessorController, 'LESSOR (LANDLORD) NAME'),
+        _buildTextFieldWidget(_lessorController, 'LESSOR (LANDLORD) NAME', icon: Icons.person_outline),
         const SizedBox(height: 20),
-        _buildTextFieldWidget(_lesseeController, 'LESSEE (TENANT) NAME'),
+        _buildTextFieldWidget(_lesseeController, 'LESSEE (TENANT) NAME', icon: Icons.person_outline),
         const SizedBox(height: 20),
-        _buildTextFieldWidget(_addressController, 'PROPERTY ADDRESS'),
+        _buildTextFieldWidget(_addressController, 'PROPERTY ADDRESS', icon: Icons.location_on_outlined),
         const SizedBox(height: 20),
         Row(
           children: [
-            Expanded(child: _buildTextFieldWidget(_rentController, 'MONTHLY RENT (₹)', keyboardType: TextInputType.number)),
+            Expanded(child: _buildTextFieldWidget(_rentController, 'MONTHLY RENT (₹)', keyboardType: TextInputType.number, icon: Icons.currency_rupee)),
             const SizedBox(width: 16),
-            Expanded(child: _buildTextFieldWidget(_depositController, 'DEPOSIT (₹)', keyboardType: TextInputType.number)),
+            Expanded(child: _buildTextFieldWidget(_depositController, 'DEPOSIT (₹)', keyboardType: TextInputType.number, icon: Icons.account_balance_wallet_outlined)),
           ],
         ),
         const SizedBox(height: 32),
@@ -486,13 +490,13 @@ class _LegalScreenState extends State<LegalScreen> {
         ),
         const SizedBox(height: 32),
 
-        _buildTextFieldWidget(TextEditingController(), 'FULL NAME'),
+        _buildTextFieldWidget(TextEditingController(), 'FULL NAME', icon: Icons.person_outline),
         const SizedBox(height: 16),
-        _buildTextFieldWidget(TextEditingController(), 'PHONE NUMBER', keyboardType: TextInputType.phone),
+        _buildTextFieldWidget(TextEditingController(), 'PHONE NUMBER', keyboardType: TextInputType.phone, icon: Icons.phone_outlined),
         const SizedBox(height: 16),
-        _buildTextFieldWidget(TextEditingController(), 'CITY / REGION'),
+        _buildTextFieldWidget(TextEditingController(), 'CITY / REGION', icon: Icons.location_city_outlined),
         const SizedBox(height: 16),
-        _buildTextFieldWidget(TextEditingController(), 'PROPERTY ID (IF ANY)'),
+        _buildTextFieldWidget(TextEditingController(), 'PROPERTY ID (IF ANY)', icon: Icons.home_work_outlined),
         const SizedBox(height: 16),
         _buildDropdownField('LEGAL REQUIREMENT', 'Buying Property', ['Buying Property', 'Legal Dispute', 'Document Verification', 'Other']),
         const SizedBox(height: 32),
@@ -534,9 +538,9 @@ class _LegalScreenState extends State<LegalScreen> {
         ),
         const SizedBox(height: 32),
 
-        _buildTextFieldWidget(_propIdController, 'PROPERTY ID / RERA ID (OPTIONAL)'),
+        _buildTextFieldWidget(_propIdController, 'PROPERTY ID / RERA ID (OPTIONAL)', icon: Icons.home_work_outlined),
         const SizedBox(height: 16),
-        _buildTextFieldWidget(_propLocationController, 'EXACT LOCALITY OR PROJECT NAME'),
+        _buildTextFieldWidget(_propLocationController, 'EXACT LOCALITY OR PROJECT NAME', icon: Icons.location_on_outlined),
         const SizedBox(height: 16),
         _buildDropdownField('TYPE OF ASSET', 'Apartment', ['Apartment', 'Villa / Row House', 'Commercial Office', 'Plot / Land']),
         const SizedBox(height: 24),
@@ -566,19 +570,31 @@ class _LegalScreenState extends State<LegalScreen> {
 
   // --- Core Shared Builders ---
 
-  Widget _buildTextFieldWidget(TextEditingController controller, String labelText, {TextInputType keyboardType = TextInputType.text}) {
+  Widget _buildTextFieldWidget(TextEditingController controller, String labelText, {TextInputType keyboardType = TextInputType.text, IconData? icon}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(labelText, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 10, color: Colors.black87, letterSpacing: 0.5)),
+        Text(labelText, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.black54, letterSpacing: 0.5)),
         const SizedBox(height: 8),
         Container(
-          decoration: BoxDecoration(color: const Color(0xFFF8F9FB), borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.grey.shade100)),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.shade200),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.02),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
           child: TextField(
             controller: controller,
             keyboardType: keyboardType,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black),
+            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.black87),
             decoration: InputDecoration(
+              prefixIcon: icon != null ? Icon(icon, color: Colors.grey.shade400, size: 20) : null,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
               focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppTheme.primaryBlue, width: 1.5)),
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -594,19 +610,26 @@ class _LegalScreenState extends State<LegalScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 10, color: Colors.black87, letterSpacing: 0.5)),
+        Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.black54, letterSpacing: 0.5)),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           decoration: BoxDecoration(
-            color: const Color(0xFFF8F9FB),
+            color: Colors.white,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade100),
+            border: Border.all(color: Colors.grey.shade200),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.02),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(value, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black)),
+              Text(value, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.black87)),
               const Icon(Icons.arrow_drop_down, color: Colors.grey),
             ],
           ),

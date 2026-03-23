@@ -7,28 +7,27 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 void main() async {
-  runZonedGuarded<Future<void>>(() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    // TODO: Initialize Firebase here once config is ready.
-    // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-    
-    // Pass all uncaught "fatal" errors from the framework to Crashlytics
-    // FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-    // PlatformDispatcher.instance.onError = (error, stack) {
-    //   FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    //   return true;
-    // };
+  runZonedGuarded<Future<void>>(
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
+      // TODO: Initialize Firebase here once config is ready.
+      // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-    runApp(
-      const ProviderScope(
-        child: SampattiBazarApp(),
-      ),
-    );
-  }, (error, stack) {
-    // Catch errors outside the framework
-    // FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    debugPrint('Uncaught Error: $error');
-  });
+      // Pass all uncaught "fatal" errors from the framework to Crashlytics
+      // FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+      // PlatformDispatcher.instance.onError = (error, stack) {
+      //   FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      //   return true;
+      // };
+
+      runApp(const ProviderScope(child: SampattiBazarApp()));
+    },
+    (error, stack) {
+      // Catch errors outside the framework
+      // FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      debugPrint('Uncaught Error: $error');
+    },
+  );
 }
 
 class SampattiBazarApp extends ConsumerWidget {
