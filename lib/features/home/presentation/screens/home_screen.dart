@@ -93,9 +93,9 @@ class HomeScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildCategoryItem(context, 'BUY', Icons.home_outlined, () {}),
-                  _buildCategoryItem(context, 'RENT', Icons.domain, () {}),
-                  _buildCategoryItem(context, 'PG', Icons.bed_outlined, () {}),
+                  _buildCategoryItem(context, 'BUY', Icons.home_outlined, () => context.push('/properties')),
+                  _buildCategoryItem(context, 'RENT', Icons.domain, () => context.push('/properties')),
+                  _buildCategoryItem(context, 'LIST', Icons.add_home_work_outlined, () => context.push('/add-property')),
                   _buildCategoryItem(context, 'SERVICES', Icons.work_outline, () => context.push('/services')),
                 ],
               ),
@@ -232,6 +232,7 @@ class HomeScreen extends StatelessWidget {
           Text(
             title,
             style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+            textAlign: TextAlign.center,
           ),
         ],
       ),

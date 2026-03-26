@@ -7,6 +7,7 @@ import 'package:sampatti_bazar/features/auth/presentation/screens/otp_screen.dar
 import 'package:sampatti_bazar/features/auth/presentation/screens/onboarding_screen.dart';
 import 'package:sampatti_bazar/features/chatbot/presentation/screens/chatbot_screen.dart';
 import 'package:sampatti_bazar/features/home/presentation/screens/home_screen.dart';
+import 'package:sampatti_bazar/features/properties/presentation/screens/add_property_screen.dart';
 import 'package:sampatti_bazar/features/properties/presentation/screens/property_detail_screen.dart';
 import 'package:sampatti_bazar/features/properties/presentation/screens/property_feed_screen.dart';
 import 'package:sampatti_bazar/features/properties/presentation/screens/saved_properties_screen.dart';
@@ -50,6 +51,10 @@ final goRouter = GoRouter(
     GoRoute(
       path: '/chatbot',
       builder: (context, state) => const ChatbotScreen(),
+    ),
+    GoRoute(
+      path: '/add-property',
+      builder: (context, state) => const AddPropertyScreen(),
     ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
