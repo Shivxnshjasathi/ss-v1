@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'dart:math';
 
 class HomeLoanScreen extends StatefulWidget {
@@ -39,9 +40,9 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.scaffoldColor,
         elevation: 0,
         leading: IconButton(
           icon: Container(
@@ -54,10 +55,10 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
           ),
           onPressed: () => context.pop(),
         ),
-        title: const Text('Finance', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 18)),
+        title: Text('Finance', style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 18)),
         actions: [
-          IconButton(icon: const Icon(Icons.notifications_none, color: Colors.black), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.person_outline, color: Colors.black), onPressed: () {}),
+          IconButton(icon: Icon(Icons.notifications_none, color: context.iconColor), onPressed: () {}),
+          IconButton(icon: Icon(Icons.person_outline, color: context.iconColor), onPressed: () {}),
         ],
       ),
       body: SingleChildScrollView(
@@ -151,9 +152,9 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardColor,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: context.borderColor),
       ),
       child: Column(
         children: [
@@ -199,7 +200,8 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color(0xFFF4FAFD),
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -251,7 +253,8 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: context.cardColor,
+              borderRadius: BorderRadius.circular(12),
               border: Border.all(color: const Color(0xFF1E60FF).withValues(alpha: 0.2)),
             ),
             child: Row(

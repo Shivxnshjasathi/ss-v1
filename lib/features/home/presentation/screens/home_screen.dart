@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:sampatti_bazar/core/theme/app_theme.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -8,9 +9,9 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.scaffoldColor,
         elevation: 0,
         centerTitle: false,
         title: Column(
@@ -72,14 +73,14 @@ class HomeScreen extends StatelessWidget {
                   suffixIcon: const Icon(Icons.tune, color: Colors.grey),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
+                    borderSide: BorderSide(color: context.borderColor),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
+                    borderSide: BorderSide(color: context.borderColor),
                   ),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: context.surfaceColor,
                   contentPadding: const EdgeInsets.symmetric(vertical: 0),
                 ),
               ),
@@ -222,16 +223,16 @@ class HomeScreen extends StatelessWidget {
             width: 70,
             height: 70,
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.grey.shade200, width: 1.5),
+              color: context.cardColor,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: context.borderColor, width: 1.0),
             ),
-            child: Icon(icon, color: Colors.black87, size: 28),
+            child: Icon(icon, color: context.iconColor, size: 28),
           ),
           const SizedBox(height: 8),
           Text(
             title,
-            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+            style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.5, color: context.primaryTextColor),
             textAlign: TextAlign.center,
           ),
         ],
@@ -245,7 +246,7 @@ class HomeScreen extends StatelessWidget {
       child: Container(
         width: 240,
         decoration: BoxDecoration(
-          color: Colors.grey[200],
+          color: context.cardColor,
           borderRadius: BorderRadius.circular(16),
           image: DecorationImage(
             image: CachedNetworkImageProvider(imageUrl),
@@ -343,9 +344,9 @@ class HomeScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.cardColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.shade200),
+          border: Border.all(color: context.borderColor),
         ),
         child: Row(
           children: [
@@ -380,12 +381,12 @@ class HomeScreen extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade300),
+                          border: Border.all(color: context.borderColor),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           type,
-                          style: const TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: Colors.black54),
+                          style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: context.isDarkMode ? Colors.white54 : Colors.black54),
                         ),
                       ),
                     ],

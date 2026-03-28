@@ -53,9 +53,9 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.scaffoldColor,
         elevation: 0,
         leading: IconButton(
           icon: Container(
@@ -64,25 +64,25 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
               color: AppTheme.primaryBlue.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.arrow_back_ios_new,
-              color: Colors.black,
+              color: context.iconColor,
               size: 14,
             ),
           ),
           onPressed: () => context.pop(),
         ),
-        title: const Text(
+        title: Text(
           'Building & Design',
           style: TextStyle(
             fontWeight: FontWeight.w900,
-            color: Colors.black,
+            color: context.primaryTextColor,
             fontSize: 18,
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.headset_mic_outlined, color: Colors.black87),
+            icon: Icon(Icons.headset_mic_outlined, color: context.iconColor),
             onPressed: () {},
           ),
           const SizedBox(width: 8),
@@ -130,7 +130,7 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
       bottomNavigationBar: Container(
         padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.scaffoldColor,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.03),
@@ -172,8 +172,8 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
     bool isRes = _selectedCategory == 'Residential';
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.grey.shade300),
+        color: context.cardColor,
+        border: Border.all(color: context.borderColor),
       ),
       child: Row(
         children: [
@@ -259,9 +259,9 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
           decoration: BoxDecoration(
             color: isSelected
                 ? AppTheme.primaryBlue
-                : const Color(0xFFF8F9FB),
+                : context.cardColor,
             borderRadius: BorderRadius.circular(30),
-            border: isSelected ? null : Border.all(color: Colors.grey.shade100),
+            border: isSelected ? null : Border.all(color: context.borderColor),
           ),
           child: Text(
             label.toUpperCase(),
@@ -269,7 +269,7 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
               fontWeight: FontWeight.w900,
               fontSize: 10,
               letterSpacing: 0.5,
-              color: isSelected ? Colors.white : Colors.black54,
+              color: isSelected ? Colors.white : context.primaryTextColor,
             ),
           ),
         ),
@@ -662,26 +662,26 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
       children: [
         Text(
           labelText,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.w900,
             fontSize: 10,
-            color: Colors.black87,
+            color: context.primaryTextColor,
             letterSpacing: 0.5,
           ),
         ),
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: const Color(0xFFF5F5F5),
+            color: context.surfaceColor,
             borderRadius: BorderRadius.circular(12),
           ),
           child: TextField(
             maxLines: maxLines,
             keyboardType: type,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: Colors.black,
+              color: context.primaryTextColor,
             ),
             decoration: InputDecoration(
               hintText: hintText,
@@ -722,10 +722,10 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.w900,
             fontSize: 10,
-            color: Colors.black87,
+            color: context.primaryTextColor,
             letterSpacing: 0.5,
           ),
         ),
@@ -733,7 +733,7 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           decoration: BoxDecoration(
-            color: const Color(0xFFF5F5F5),
+            color: context.surfaceColor,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
@@ -741,10 +741,10 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
             children: [
               Text(
                 value,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color: context.primaryTextColor,
                 ),
               ),
               const Icon(Icons.arrow_drop_down, color: Colors.grey),
@@ -772,9 +772,9 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
         decoration: BoxDecoration(
           color: isChecked
               ? AppTheme.primaryBlue.withValues(alpha: 0.05)
-              : Colors.white,
+              : context.cardColor,
           border: Border.all(
-            color: isChecked ? AppTheme.primaryBlue : Colors.grey.shade200,
+            color: isChecked ? AppTheme.primaryBlue : context.borderColor,
           ),
           borderRadius: BorderRadius.circular(12),
         ),
@@ -791,7 +791,7 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
               style: TextStyle(
                 fontWeight: FontWeight.w900,
                 fontSize: 13,
-                color: isChecked ? Colors.black : Colors.black87,
+                color: context.primaryTextColor,
               ),
             ),
           ],

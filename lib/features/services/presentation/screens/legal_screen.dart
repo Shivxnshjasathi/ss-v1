@@ -90,9 +90,9 @@ class _LegalScreenState extends State<LegalScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.scaffoldColor,
         elevation: 0,
         leading: IconButton(
           icon: Container(
@@ -101,7 +101,7 @@ class _LegalScreenState extends State<LegalScreen> {
               color: AppTheme.primaryBlue.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 14),
+            child: Icon(Icons.arrow_back_ios_new, color: context.iconColor, size: 14),
           ),
           onPressed: () {
             if (_selectedService == 'Rent Agreement' && _currentStep > 0) {
@@ -111,7 +111,7 @@ class _LegalScreenState extends State<LegalScreen> {
             }
           },
         ),
-        title: const Text('Legal Hub', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 18)),
+        title: Text('Legal Hub', style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 18)),
         centerTitle: true,
       ),
       body: Column(
@@ -159,9 +159,9 @@ class _LegalScreenState extends State<LegalScreen> {
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected ? AppTheme.primaryBlue : Colors.white,
+            color: isSelected ? AppTheme.primaryBlue : context.cardColor,
             borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: isSelected ? AppTheme.primaryBlue : Colors.grey.shade300),
+            border: Border.all(color: isSelected ? AppTheme.primaryBlue : context.borderColor),
             boxShadow: isSelected 
                 ? [BoxShadow(color: AppTheme.primaryBlue.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 3))] 
                 : [],
@@ -171,7 +171,7 @@ class _LegalScreenState extends State<LegalScreen> {
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 13,
-              color: isSelected ? Colors.white : Colors.black87,
+              color: isSelected ? Colors.white : context.primaryTextColor,
             ),
           ),
         ),
@@ -195,7 +195,7 @@ class _LegalScreenState extends State<LegalScreen> {
       return Container(
         padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.scaffoldColor,
           boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 20, offset: const Offset(0, -10))],
         ),
         child: SafeArea(
@@ -271,9 +271,9 @@ class _LegalScreenState extends State<LegalScreen> {
   Widget _buildStepIndicator(String title, int stepIndex) {
     bool isCompleted = _currentStep > stepIndex;
     bool isActive = _currentStep == stepIndex;
-    Color bgColor = isCompleted ? AppTheme.primaryBlue : (isActive ? AppTheme.primaryBlue : Colors.white);
+    Color bgColor = isCompleted ? AppTheme.primaryBlue : (isActive ? AppTheme.primaryBlue : context.cardColor);
     Color textColor = (isCompleted || isActive) ? Colors.white : Colors.grey.shade400;
-    Border? border = (!isCompleted && !isActive) ? Border.all(color: Colors.grey.shade300, width: 2) : null;
+    Border? border = (!isCompleted && !isActive) ? Border.all(color: context.borderColor, width: 2) : null;
 
     return Column(
       children: [
@@ -429,9 +429,9 @@ class _LegalScreenState extends State<LegalScreen> {
                   height: 54,
                   child: OutlinedButton.icon(
                     onPressed: () {},
-                    icon: const Icon(Icons.download, size: 18, color: Colors.black),
-                    label: const Text('Download', style: TextStyle(color: Colors.black, fontSize: 13, fontWeight: FontWeight.w900)),
-                    style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), side: BorderSide(color: Colors.grey.shade200)),
+                    icon: Icon(Icons.download, size: 18, color: context.primaryTextColor),
+                    label: Text('Download', style: TextStyle(color: context.primaryTextColor, fontSize: 13, fontWeight: FontWeight.w900)),
+                    style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), side: BorderSide(color: context.borderColor)),
                   ),
                 ),
               ),
@@ -478,10 +478,10 @@ class _LegalScreenState extends State<LegalScreen> {
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text('DISCLAIMER', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11, color: Colors.red, letterSpacing: 0.5)),
-                    SizedBox(height: 4),
-                    Text('This form does not establish an attorney-client relationship. Information provided is not legal advice until a lawyer is officially retained.', style: TextStyle(fontSize: 10, color: Colors.black87, height: 1.5, fontWeight: FontWeight.w500)),
+                  children: [
+                    const Text('DISCLAIMER', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11, color: Colors.red, letterSpacing: 0.5)),
+                    const SizedBox(height: 4),
+                    Text('This form does not establish an attorney-client relationship. Information provided is not legal advice until a lawyer is officially retained.', style: TextStyle(fontSize: 10, color: context.primaryTextColor, height: 1.5, fontWeight: FontWeight.w500)),
                   ],
                 ),
               ),
@@ -578,9 +578,9 @@ class _LegalScreenState extends State<LegalScreen> {
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: context.cardColor,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
+            border: Border.all(color: context.borderColor),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.02),
@@ -592,7 +592,7 @@ class _LegalScreenState extends State<LegalScreen> {
           child: TextField(
             controller: controller,
             keyboardType: keyboardType,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.black87),
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: context.primaryTextColor),
             decoration: InputDecoration(
               prefixIcon: icon != null ? Icon(icon, color: Colors.grey.shade400, size: 20) : null,
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
@@ -615,9 +615,9 @@ class _LegalScreenState extends State<LegalScreen> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: context.cardColor,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade200),
+            border: Border.all(color: context.borderColor),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.02),
@@ -629,7 +629,7 @@ class _LegalScreenState extends State<LegalScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(value, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.black87)),
+              Text(value, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: context.primaryTextColor)),
               const Icon(Icons.arrow_drop_down, color: Colors.grey),
             ],
           ),

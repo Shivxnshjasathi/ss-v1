@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/services/domain/cart_service.dart';
 
 class CartScreen extends StatefulWidget {
@@ -22,9 +23,9 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.scaffoldColor,
         elevation: 0,
         leading: IconButton(
           icon: Container(
@@ -33,11 +34,11 @@ class _CartScreenState extends State<CartScreen> {
               color: const Color(0xFF00E5FF).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 16),
+            child: Icon(Icons.arrow_back_ios_new, color: context.iconColor, size: 16),
           ),
           onPressed: () => context.pop(),
         ),
-        title: const Text('My Cart', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 18)),
+        title: Text('My Cart', style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 18)),
       ),
       body: ListenableBuilder(
         listenable: cart,
@@ -71,7 +72,7 @@ class _CartScreenState extends State<CartScreen> {
                           width: 80,
                           height: 80,
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade100,
+                            color: context.surfaceColor,
                             borderRadius: BorderRadius.circular(12),
                             image: DecorationImage(
                               image: CachedNetworkImageProvider(item.image),
@@ -99,7 +100,7 @@ class _CartScreenState extends State<CartScreen> {
                             const SizedBox(height: 8),
                             Container(
                               decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey.shade300),
+                                border: Border.all(color: context.borderColor),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Row(
@@ -130,7 +131,7 @@ class _CartScreenState extends State<CartScreen> {
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: context.scaffoldColor,
                   boxShadow: [
                     BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 20, offset: const Offset(0, -5))
                   ],

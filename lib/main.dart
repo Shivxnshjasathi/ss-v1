@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sampatti_bazar/core/router/app_router.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
+import 'package:sampatti_bazar/core/providers/theme_provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
@@ -39,7 +40,7 @@ class SampattiBazarApp extends ConsumerWidget {
       title: 'Sampatti Bazar',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
+      themeMode: ref.watch(themeProvider),
       routerConfig: goRouter,
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,

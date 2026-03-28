@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sampatti_bazar/core/theme/app_theme.dart';
 
 class ChatbotScreen extends StatefulWidget {
   const ChatbotScreen({super.key});
@@ -70,20 +71,20 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldColor,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: context.scaffoldColor,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new, color: context.iconColor, size: 20),
           onPressed: () => context.pop(),
         ),
-        title: const Text('Sampatti Bot', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w900, fontSize: 18)),
+        title: Text('Sampatti Bot', style: TextStyle(color: context.primaryTextColor, fontWeight: FontWeight.w900, fontSize: 18)),
         actions: [
           Center(
             child: Padding(
               padding: const EdgeInsets.only(right: 24.0),
-              child: const Text('Online', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w900, fontSize: 10)),
+              child: Text('Online', style: TextStyle(color: context.primaryTextColor, fontWeight: FontWeight.w900, fontSize: 10)),
             ),
           ),
         ],
@@ -124,12 +125,12 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(4),
       ),
-      child: const Text(
+      child: Text(
         'TODAY, OCT 24',
-        style: TextStyle(fontSize: 8, fontWeight: FontWeight.w900, color: Colors.black87, letterSpacing: 0.5),
+        style: TextStyle(fontSize: 8, fontWeight: FontWeight.w900, color: context.primaryTextColor, letterSpacing: 0.5),
       ),
     );
   }
@@ -146,7 +147,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
             Container(
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
-                color: const Color(0xFFFFF0F5),
+                color: context.surfaceColor,
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.smart_toy, color: Color(0xFF1E60FF), size: 16),
@@ -160,7 +161,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                 Container(
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
-                    color: isUser ? const Color(0xFF0066FF) : const Color(0xFFF5F5F5),
+                    color: isUser ? AppTheme.primaryBlue : context.surfaceColor,
                     borderRadius: BorderRadius.only(
                       topLeft: const Radius.circular(16),
                       topRight: const Radius.circular(16),
@@ -171,7 +172,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                   child: Text(
                     msg['text'] ?? '',
                     style: TextStyle(
-                      color: isUser ? Colors.white : Colors.black87,
+                      color: isUser ? Colors.white : context.primaryTextColor,
                       fontSize: 13,
                       height: 1.5,
                       fontWeight: isUser ? FontWeight.w600 : FontWeight.w500,
@@ -216,7 +217,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(height: 1, color: Colors.grey.shade100),
+        Container(height: 1, color: context.borderColor),
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 16, 24, 12),
           child: Row(
@@ -253,16 +254,16 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardColor,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: context.borderColor),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: const Color(0xFF0066FF)),
+          Icon(icon, size: 14, color: AppTheme.primaryBlue),
           const SizedBox(width: 8),
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 11)),
+          Text(label, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11, color: context.primaryTextColor)),
         ],
       ),
     );
@@ -277,7 +278,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
             Container(
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
-                color: const Color(0xFFF5F5F5),
+                color: context.surfaceColor,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -285,7 +286,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                   Expanded(
                     child: TextField(
                       controller: _messageController,
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: context.primaryTextColor),
                       decoration: const InputDecoration(
                         hintText: 'Ask me anything...',
                         hintStyle: TextStyle(color: Colors.grey, fontSize: 14),

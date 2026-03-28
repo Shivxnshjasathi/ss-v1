@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sampatti_bazar/core/theme/app_theme.dart';
 
 class AddPropertyScreen extends StatefulWidget {
   const AddPropertyScreen({super.key});
@@ -68,18 +69,18 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.scaffoldColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: context.iconColor),
           onPressed: _previousStep,
         ),
-        title: const Text(
+        title: Text(
           'List Your Property',
           style: TextStyle(
-            color: Colors.black,
+            color: context.primaryTextColor,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
@@ -105,7 +106,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
             // Progress Bar
             LinearProgressIndicator(
               value: _currentStep / 3,
-              backgroundColor: Colors.grey.shade200,
+              backgroundColor: context.borderColor,
               valueColor: AlwaysStoppedAnimation<Color>(
                 Theme.of(context).colorScheme.primary,
               ),
@@ -128,7 +129,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
             Container(
               padding: const EdgeInsets.all(16.0),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: context.cardColor,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.05),
@@ -434,18 +435,18 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                 child: Icon(icon, color: Colors.grey),
               ),
         filled: true,
-        fillColor: Colors.grey.shade50,
+        fillColor: context.surfaceColor,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 16,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade200),
+          borderSide: BorderSide(color: context.borderColor),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade200),
+          borderSide: BorderSide(color: context.borderColor),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -476,10 +477,10 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
           selected: isSelected,
           onSelected: (_) => onSelect(option),
           labelStyle: TextStyle(
-            color: isSelected ? Colors.white : Colors.black87,
+            color: isSelected ? Colors.white : context.primaryTextColor,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),
-          backgroundColor: Colors.white,
+          backgroundColor: context.surfaceColor,
           selectedColor: Theme.of(context).colorScheme.primary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
@@ -509,12 +510,12 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
         decoration: BoxDecoration(
           color: isSelected
               ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
-              : Colors.white,
+              : context.surfaceColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected
                 ? Theme.of(context).colorScheme.primary
-                : Colors.grey.shade200,
+                : context.borderColor,
             width: isSelected ? 2 : 1,
           ),
         ),

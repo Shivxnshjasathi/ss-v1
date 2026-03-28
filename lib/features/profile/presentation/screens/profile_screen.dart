@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sampatti_bazar/core/providers/theme_provider.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: theme.appBarTheme.backgroundColor ?? theme.scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
           icon: Container(
@@ -18,14 +23,22 @@ class ProfileScreen extends StatelessWidget {
               color: const Color(0xFF00E5FF).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 16),
+            child: Icon(Icons.arrow_back_ios_new, color: isDark ? Colors.white : Colors.black87, size: 16),
           ),
           onPressed: () => context.pop(),
         ),
-        title: const Text('My Profile', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 18)),
+        title: Text('My Profile', style: TextStyle(fontWeight: FontWeight.w900, color: isDark ? Colors.white : Colors.black, fontSize: 18)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_none, color: Colors.black87),
+            icon: Icon(
+              isDark ? Icons.light_mode : Icons.dark_mode,
+            ),
+            onPressed: () {
+              ref.read(themeProvider.notifier).toggleTheme();
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.notifications_none),
             onPressed: () {},
           ),
         ],
@@ -64,9 +77,9 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Shivansh Jasathi',
-              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24, letterSpacing: -0.5),
+              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24, letterSpacing: -0.5, color: isDark ? Colors.white : Colors.black),
             ),
             const SizedBox(height: 4),
             Text(
@@ -98,9 +111,9 @@ class ProfileScreen extends StatelessWidget {
                   _buildMenuCard(
                     context,
                     items: [
-                      _buildMenuItem('Personal Information', Icons.person_outline, const Color(0xFF0066FF), () {}),
-                      _buildMenuItem('Saved Properties', Icons.favorite_border, Colors.pinkAccent, () {}),
-                      _buildMenuItem('My Documents', Icons.description_outlined, Colors.orange, () {}),
+                      _buildMenuItem(context, 'Personal Information', Icons.person_outline, const Color(0xFF0066FF), () {}),
+                      _buildMenuItem(context, 'Saved Properties', Icons.favorite_border, Colors.pinkAccent, () {}),
+                      _buildMenuItem(context, 'My Documents', Icons.description_outlined, Colors.orange, () {}),
                     ],
                   ),
                   const SizedBox(height: 32),
@@ -109,9 +122,9 @@ class ProfileScreen extends StatelessWidget {
                   _buildMenuCard(
                     context,
                     items: [
-                      _buildMenuItem('App Settings', Icons.settings_outlined, Colors.grey[800]!, () {}),
-                      _buildMenuItem('Help & Support', Icons.help_outline, Colors.teal, () {}),
-                      _buildMenuItem('Terms & Privacy', Icons.privacy_tip_outlined, Colors.indigo, () {}),
+                      _buildMenuItem(context, 'App Settings', Icons.settings_outlined, Colors.grey[800]!, () {}),
+                      _buildMenuItem(context, 'Help & Support', Icons.help_outline, Colors.teal, () {}),
+                      _buildMenuItem(context, 'Terms & Privacy', Icons.privacy_tip_outlined, Colors.indigo, () {}),
                     ],
                   ),
                   const SizedBox(height: 32),
@@ -142,11 +155,14 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildMenuCard(BuildContext context, {required List<Widget> items}) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: isDark ? Colors.grey.shade800 : Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.02),
@@ -174,7 +190,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuItem(String title, IconData icon, Color iconColor, VoidCallback onTap) {
+  Widget _buildMenuItem(BuildContext context, String title, IconData icon, Color iconColor, VoidCallback onTap) {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
       leading: Container(
@@ -187,7 +203,7 @@ class ProfileScreen extends StatelessWidget {
       ),
       title: Text(
         title,
-        style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: Colors.black87),
+        style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black87),
       ),
       trailing: const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
       onTap: onTap,

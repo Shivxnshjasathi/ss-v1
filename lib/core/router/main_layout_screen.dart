@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sampatti_bazar/core/theme/app_theme.dart';
 
 class MainLayoutScreen extends StatelessWidget {
   const MainLayoutScreen({super.key, required this.navigationShell});
@@ -13,7 +14,12 @@ class MainLayoutScreen extends StatelessWidget {
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           boxShadow: [
-            BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, -5))
+            BoxShadow(
+              color: Theme.of(context).brightness == Brightness.dark 
+                 ? Colors.black.withValues(alpha: 0.3) 
+                 : Colors.black.withValues(alpha: 0.05), 
+              blurRadius: 10, 
+              offset: const Offset(0, -5))
           ]
         ),
         child: BottomNavigationBar(
@@ -25,9 +31,9 @@ class MainLayoutScreen extends StatelessWidget {
             );
           },
           type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.white,
+          backgroundColor: context.scaffoldColor,
           selectedItemColor: Theme.of(context).colorScheme.primary,
-          unselectedItemColor: Colors.grey[600],
+          unselectedItemColor: Theme.of(context).brightness == Brightness.dark ? Colors.white54 : Colors.grey[400],
           selectedFontSize: 12,
           unselectedFontSize: 12,
           elevation: 0,

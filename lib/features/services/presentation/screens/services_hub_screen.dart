@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sampatti_bazar/core/theme/app_theme.dart';
 
 class ServicesHubScreen extends StatelessWidget {
   const ServicesHubScreen({super.key});
@@ -7,9 +8,9 @@ class ServicesHubScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.scaffoldColor,
         elevation: 0,
         automaticallyImplyLeading: false,
         centerTitle: false,
@@ -18,8 +19,8 @@ class ServicesHubScreen extends StatelessWidget {
           style: Theme.of(context).textTheme.displaySmall?.copyWith(fontSize: 20),
         ),
         actions: [
-          IconButton(icon: const Icon(Icons.search, color: Colors.black), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.notifications_none, color: Colors.black), onPressed: () {}),
+          IconButton(icon: Icon(Icons.search, color: context.iconColor), onPressed: () {}),
+          IconButton(icon: Icon(Icons.notifications_none, color: context.iconColor), onPressed: () {}),
         ],
       ),
       body: SingleChildScrollView(
@@ -75,9 +76,9 @@ class ServicesHubScreen extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.cardColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.shade200),
+          border: Border.all(color: context.borderColor),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,10 +90,10 @@ class ServicesHubScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.grey[100],
+                    color: context.surfaceColor,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(icon, color: Colors.black87, size: 24),
+                  child: Icon(icon, color: context.primaryTextColor, size: 24),
                 ),
                 if (isHot)
                   Container(
@@ -134,19 +135,19 @@ class ServicesHubScreen extends StatelessWidget {
   Widget _buildListTile(BuildContext context, String title, String subtitle, IconData icon, VoidCallback onTap) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: context.borderColor),
       ),
       child: ListTile(
         onTap: onTap,
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.grey[100],
+            color: context.surfaceColor,
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(icon, color: Colors.black87),
+          child: Icon(icon, color: context.primaryTextColor),
         ),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
         subtitle: Text(subtitle, style: TextStyle(color: Colors.grey[600], fontSize: 12)),

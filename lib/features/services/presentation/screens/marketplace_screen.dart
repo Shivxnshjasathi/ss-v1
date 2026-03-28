@@ -106,9 +106,9 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
     final filtered = _filteredProducts;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.scaffoldColor,
         elevation: 0,
         leading: IconButton(
           icon: Container(
@@ -117,11 +117,11 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
               color: AppTheme.cyanAccent.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 16),
+            child: Icon(Icons.arrow_back_ios_new, color: context.iconColor, size: 16),
           ),
           onPressed: () => context.pop(),
         ),
-        title: Text('Marketplace', style: GoogleFonts.inter(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 18)),
+        title: Text('Marketplace', style: GoogleFonts.inter(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 18)),
         actions: [
           ListenableBuilder(
             listenable: cart,
@@ -130,7 +130,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                 alignment: Alignment.center,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.shopping_cart_outlined, color: Colors.black87),
+                    icon: Icon(Icons.shopping_cart_outlined, color: context.iconColor),
                     onPressed: () => context.push('/services/marketplace/cart'),
                   ),
                   if (cart.itemCount > 0)
@@ -191,8 +191,8 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFAFBFC),
-                  border: Border.all(color: Colors.grey.shade200),
+                  color: context.cardColor,
+                  border: Border.all(color: context.borderColor),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -209,11 +209,11 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Colors.grey.shade300),
+                        color: context.surfaceColor,
+                        border: Border.all(color: context.borderColor),
                         borderRadius: BorderRadius.circular(4),
                       ),
-                      child: const Icon(Icons.arrow_forward, size: 16, color: Colors.black),
+                      child: Icon(Icons.arrow_forward, size: 16, color: context.iconColor),
                     ),
                   ],
                 ),
@@ -274,15 +274,15 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           decoration: BoxDecoration(
-          color: isSelected ? AppTheme.primaryBlue : const Color(0xFFF8F9FB),
+          color: isSelected ? AppTheme.primaryBlue : context.cardColor,
           borderRadius: BorderRadius.circular(30),
-          border: isSelected ? null : Border.all(color: Colors.grey.shade100),
+          border: isSelected ? null : Border.all(color: context.borderColor),
           ),
           child: Text(
             label,
             style: GoogleFonts.inter(
               fontWeight: FontWeight.w900,
-              color: isSelected ? Colors.white : Colors.black87,
+              color: isSelected ? Colors.white : context.primaryTextColor,
               fontSize: 12,
               letterSpacing: 0.5,
             ),
@@ -295,9 +295,9 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
   Widget _buildProductCard(String id, String category, String title, double price, String unit, String image) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: context.borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -306,7 +306,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
             flex: 4,
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.grey[100],
+                color: context.surfaceColor,
                 borderRadius: const BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
                 image: DecorationImage(
                   image: CachedNetworkImageProvider(image),

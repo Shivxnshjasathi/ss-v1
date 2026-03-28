@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:sampatti_bazar/core/theme/app_theme.dart';
 
 class PropertyFeedScreen extends StatefulWidget {
   const PropertyFeedScreen({super.key});
@@ -52,20 +53,23 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
     },
   ];
 
+  String _selectedCategory = 'Rent';
+  final List<String> _categories = ['Rent', 'Buy', 'Commercial'];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.scaffoldColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new, color: context.iconColor, size: 20),
           onPressed: () => context.pop(),
         ),
-        title: const Text(
-          'PROPERTIES', 
-          style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 16, letterSpacing: 1.2)
+        title: Text(
+          'Properties', 
+          style: TextStyle(fontWeight: FontWeight.bold, color: context.primaryTextColor, fontSize: 18)
         ),
         centerTitle: true,
       ),
@@ -81,18 +85,19 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
                     height: 56,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey[300]!),
+                      color: context.surfaceColor,
+                      border: Border.all(color: context.borderColor),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.search, color: Colors.black54),
+                        const Icon(Icons.search, color: Colors.grey),
                         const SizedBox(width: 12),
                         const Expanded(
                           child: TextField(
                             decoration: InputDecoration(
-                              hintText: 'Search by area or developer',
-                              hintStyle: TextStyle(color: Colors.black26, fontSize: 14, fontWeight: FontWeight.normal),
+                              hintText: 'Search by area or developer...',
+                              hintStyle: TextStyle(color: Colors.black38, fontSize: 14),
                               border: InputBorder.none,
                             ),
                           ),
@@ -102,10 +107,10 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
                           child: Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: Colors.black,
+                              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Icon(Icons.tune, color: Colors.white, size: 18),
+                            child: Icon(Icons.tune, color: Theme.of(context).colorScheme.primary, size: 18),
                           ),
                         ),
                       ],
@@ -119,15 +124,32 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
           // Filters
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
-              children: [
-                _buildFilterChip('Rent', true),
-                const SizedBox(width: 12),
-                _buildFilterChip('Buy', false),
-                const SizedBox(width: 12),
-                _buildFilterChip('Commercial', false),
-              ],
+              children: _categories.map((category) {
+                final isSelected = _selectedCategory == category;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 12.0),
+                  child: ChoiceChip(
+                    label: Text(category),
+                    selected: isSelected,
+                    onSelected: (_) => setState(() => _selectedCategory = category),
+                    labelStyle: TextStyle(
+                      color: isSelected ? Colors.white : context.primaryTextColor,
+                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                    ),
+                    backgroundColor: context.cardColor,
+                    selectedColor: Theme.of(context).colorScheme.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(
+                        color: isSelected ? Theme.of(context).colorScheme.primary : context.borderColor,
+                      ),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  ),
+                );
+              }).toList(),
             ),
           ),
           
@@ -137,10 +159,13 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                 const Text('Featured Collections', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, letterSpacing: -0.5)),
+                 const Text('Featured Collections', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20)),
                 TextButton(
                   onPressed: () {},
-                  child: const Text('See All', style: TextStyle(color: Color(0xFF00E5FF), fontWeight: FontWeight.w900, fontSize: 14)),
+                  child: Text(
+                    'See All', 
+                    style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w900, fontSize: 14)
+                  ),
                 ),
               ],
             ),
@@ -149,7 +174,7 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
           // Property Cards
           Expanded(
             child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               itemCount: _properties.length,
               itemBuilder: (context, index) {
                 return _buildPropertyCard(context, _properties[index]);
@@ -162,179 +187,161 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
   }
 
   void _showFilterSheet(BuildContext context) {
+    String selectedType = 'Apartment';
+    String selectedBedrooms = '3+';
+    RangeValues priceRange = const RangeValues(1, 5);
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldColor,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
-        return DraggableScrollableSheet(
-          expand: false,
-          initialChildSize: 0.8,
-          maxChildSize: 0.9,
-          minChildSize: 0.5,
-          builder: (_, controller) {
-            return Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setModalState) {
+            return DraggableScrollableSheet(
+              expand: false,
+              initialChildSize: 0.8,
+              maxChildSize: 0.9,
+              minChildSize: 0.5,
+              builder: (_, controller) {
+                return Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Filter Properties', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: -0.5)),
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () => context.pop(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Filter Properties', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900)),
+                          IconButton(
+                            icon: const Icon(Icons.close),
+                            onPressed: () => context.pop(),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      
+                      Expanded(
+                        child: ListView(
+                          controller: controller,
+                          children: [
+                            const Text('PROPERTY TYPE', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1)),
+                            const SizedBox(height: 12),
+                            Wrap(
+                              spacing: 12,
+                              runSpacing: 12,
+                              children: ['Apartment', 'Villa', 'Penthouse', 'Studio'].map((type) {
+                                final isSelected = selectedType == type;
+                                return ChoiceChip(
+                                  label: Text(type),
+                                  selected: isSelected,
+                                  onSelected: (_) => setModalState(() => selectedType = type),
+                                  labelStyle: TextStyle(
+                                    color: isSelected ? Colors.white : context.primaryTextColor,
+                                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                                  ),
+                                  backgroundColor: context.cardColor,
+                                  selectedColor: Theme.of(context).colorScheme.primary,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                    side: BorderSide(
+                                      color: isSelected ? Theme.of(context).colorScheme.primary : context.borderColor,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                            
+                            const SizedBox(height: 32),
+                            const Text('PRICE RANGE (MILLIONS)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1)),
+                            const SizedBox(height: 12),
+                            RangeSlider(
+                              values: priceRange,
+                              min: 0,
+                              max: 10,
+                              activeColor: Theme.of(context).colorScheme.primary,
+                              inactiveColor: Colors.grey.shade200,
+                              onChanged: (values) {
+                                setModalState(() {
+                                  priceRange = values;
+                                });
+                              },
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('\$${priceRange.start.toStringAsFixed(1)}M', style: const TextStyle(fontWeight: FontWeight.bold)),
+                                Text('\$${priceRange.end.toStringAsFixed(1)}M+', style: const TextStyle(fontWeight: FontWeight.bold)),
+                              ],
+                            ),
+                            
+                            const SizedBox(height: 32),
+                            const Text('BEDROOMS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1)),
+                            const SizedBox(height: 12),
+                            Wrap(
+                              spacing: 12,
+                              runSpacing: 12,
+                              children: ['Any', '1+', '2+', '3+', '4+'].map((beds) {
+                                final isSelected = selectedBedrooms == beds;
+                                return ChoiceChip(
+                                  label: Text(beds),
+                                  selected: isSelected,
+                                  onSelected: (_) => setModalState(() => selectedBedrooms = beds),
+                                  labelStyle: TextStyle(
+                                    color: isSelected ? Colors.white : Colors.black87,
+                                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                                  ),
+                                  backgroundColor: Colors.white,
+                                  selectedColor: Theme.of(context).colorScheme.primary,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                    side: BorderSide(
+                                      color: isSelected ? Theme.of(context).colorScheme.primary : Colors.grey.shade300,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // Bottom Button
+                      SafeArea(
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: ElevatedButton(
+                            onPressed: () => context.pop(),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Theme.of(context).colorScheme.primary,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: const Text(
+                              'Apply Filters',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 24),
-                  
-                  Expanded(
-                    child: ListView(
-                      controller: controller,
-                      children: [
-                        const Text('PROPERTY TYPE', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 1)),
-                        const SizedBox(height: 12),
-                        Wrap(
-                          spacing: 12,
-                          runSpacing: 12,
-                          children: [
-                            _buildSelectableChip('Apartment', true),
-                            _buildSelectableChip('Villa', false),
-                            _buildSelectableChip('Penthouse', false),
-                            _buildSelectableChip('Studio', false),
-                          ],
-                        ),
-                        
-                        const SizedBox(height: 32),
-                        const Text('PRICE RANGE', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 1)),
-                        const SizedBox(height: 12),
-                        RangeSlider(
-                          values: const RangeValues(1, 5),
-                          min: 0,
-                          max: 10,
-                          activeColor: const Color(0xFF00E5FF),
-                          inactiveColor: Colors.grey[200],
-                          onChanged: (values) {},
-                        ),
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('\$1M', style: TextStyle(fontWeight: FontWeight.w900)),
-                            Text('\$5M+', style: TextStyle(fontWeight: FontWeight.w900)),
-                          ],
-                        ),
-                        
-                        const SizedBox(height: 32),
-                        const Text('BEDROOMS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 1)),
-                        const SizedBox(height: 12),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            _buildCircleButton('Any', false),
-                            _buildCircleButton('1+', false),
-                            _buildCircleButton('2+', false),
-                            _buildCircleButton('3+', true),
-                            _buildCircleButton('4+', false),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Bottom Button
-                  SafeArea(
-                    child: SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: () => context.pop(),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF00E5FF),
-                          foregroundColor: Colors.black,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                        child: const Text(
-                          'APPLY FILTERS',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                );
+              },
             );
-          },
+          }
         );
       },
-    );
-  }
-
-  Widget _buildSelectableChip(String label, bool isSelected) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      decoration: BoxDecoration(
-        color: isSelected ? Colors.black : Colors.white,
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: isSelected ? Colors.black : Colors.grey.shade300),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontWeight: FontWeight.w900,
-          color: isSelected ? Colors.white : Colors.black,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCircleButton(String label, bool isSelected) {
-    return Container(
-      width: 50,
-      height: 50,
-      decoration: BoxDecoration(
-        color: isSelected ? Colors.black : Colors.white,
-        shape: BoxShape.circle,
-        border: Border.all(color: isSelected ? Colors.black : Colors.grey.shade300),
-      ),
-      child: Center(
-        child: Text(
-          label,
-          style: TextStyle(
-            fontWeight: FontWeight.w900,
-            color: isSelected ? Colors.white : Colors.black,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFilterChip(String label, bool isSelected) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-      decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFF00E5FF) : Colors.white,
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: isSelected ? const Color(0xFF00E5FF) : Colors.grey.shade200),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontWeight: FontWeight.w900,
-          color: isSelected ? Colors.black : Colors.black54,
-        ),
-      ),
     );
   }
 
@@ -344,9 +351,16 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
       child: Container(
         margin: const EdgeInsets.only(bottom: 24),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.cardColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.shade200),
+          border: Border.all(color: context.borderColor),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            )
+          ],
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(
@@ -362,14 +376,14 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
                   fit: BoxFit.cover,
                   placeholder: (context, url) => Container(color: Colors.grey[100]),
                 ),
-                // Gradient Overlay
+                // Gradient Overlay for text readability
                 Positioned.fill(
                   child: Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        colors: [Colors.transparent, Colors.black.withValues(alpha: 0.6)],
+                        colors: [Colors.transparent, Colors.black.withValues(alpha: 0.7)],
                         stops: const [0.4, 1.0],
                       ),
                     ),
@@ -383,68 +397,80 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
                     children: [
                       if (property['isExclusive'] == true)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF00E5FF),
-                            borderRadius: BorderRadius.circular(20),
+                            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.85),
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Text(
-                            'EXCLUSIVE',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 0.5,
-                            ),
+                          child: const Row(
+                            children: [
+                              Icon(Icons.star, color: Colors.white, size: 12),
+                              SizedBox(width: 4),
+                              Text(
+                                'EXCLUSIVE',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       if (property['isExclusive'] == true && property['isVerified'] == true)
                         const SizedBox(width: 8),
                       if (property['isVerified'] == true)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.9),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Colors.white),
+                            color: Colors.white.withValues(alpha: 0.95),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.grey.shade200),
                           ),
-                          child: const Text(
-                            'VERIFIED',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 0.5,
-                            ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.verified, color: Theme.of(context).colorScheme.primary, size: 12),
+                              const SizedBox(width: 4),
+                              const Text(
+                                'VERIFIED',
+                                style: TextStyle(
+                                  color: Colors.black87,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                     ],
                   ),
                 ),
-                // Title and Prices
+                // Title and Location
                 Positioned(
                   bottom: 16,
                   left: 16,
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        property['title'],
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 22, letterSpacing: -0.5),
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          const Icon(Icons.location_on_outlined, color: Color(0xFF00E5FF), size: 14),
-                          const SizedBox(width: 4),
-                          Text(
-                            property['location'],
-                            style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                     crossAxisAlignment: CrossAxisAlignment.start,
+                     children: [
+                       Text(
+                         property['title'],
+                         style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+                       ),
+                       const SizedBox(height: 4),
+                       Row(
+                         children: [
+                           const Icon(Icons.location_on, color: Colors.white70, size: 16),
+                           const SizedBox(width: 4),
+                           Text(
+                             property['location'],
+                             style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500),
+                           ),
+                         ],
+                       ),
+                     ],
+                   ),
                 ),
               ],
             ),
@@ -460,35 +486,45 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('ASKING PRICE', style: TextStyle(color: Color(0xFF00E5FF), fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1)),
+                            Text(
+                              'ASKING PRICE',
+                              style: TextStyle(color: Colors.grey.shade500, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)
+                            ),
                             const SizedBox(height: 4),
-                            Text(property['price'], style: const TextStyle(color: Colors.black, fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: -1)),
+                            Text(
+                              property['price'],
+                              style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 22, fontWeight: FontWeight.w900)
+                            ),
                           ],
                         ),
                       ),
-                      _buildAmenity(Icons.king_bed_outlined, property['beds']),
+                      _buildAmenity(Icons.king_bed_outlined, '${property['beds']} Bed'),
                       const SizedBox(width: 16),
-                      _buildAmenity(Icons.bathtub_outlined, property['baths']),
+                      _buildAmenity(Icons.bathtub_outlined, '${property['baths']} Bath'),
                       const SizedBox(width: 16),
-                      _buildAmenity(Icons.aspect_ratio_outlined, '${property['sqft']}'),
+                      _buildAmenity(Icons.square_foot_outlined, '${property['sqft']} sqft'),
                     ],
                   ),
                   const SizedBox(height: 20),
-                  const Divider(height: 1, color: Color(0xFFEEEEEE)),
+                  Divider(height: 1, color: Colors.grey.shade200),
                   const SizedBox(height: 16),
                   Row(
                     children: [
                       CircleAvatar(
-                        radius: 14,
+                        radius: 16,
                         backgroundImage: CachedNetworkImageProvider(property['avatar']),
                       ),
                       const SizedBox(width: 12),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                           const Text(
+                            'LISTED BY',
+                            style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 0.5),
+                          ),
                           Text(
-                            'LISTED BY ${property['listedBy']}',
-                            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5),
+                            property['listedBy'],
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.primaryTextColor),
                           ),
                         ],
                       ),
@@ -496,16 +532,16 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
                       ElevatedButton(
                         onPressed: () => context.push('/properties/detail/123'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
-                          foregroundColor: Colors.white,
+                          backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                          foregroundColor: Theme.of(context).colorScheme.primary,
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                           minimumSize: const Size(60, 36),
                           elevation: 0,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: const Text('VIEW', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, letterSpacing: 1)),
+                        child: const Text('View Details', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                       ),
                     ],
                   ),
@@ -520,10 +556,12 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
 
   Widget _buildAmenity(IconData icon, String value) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Icon(icon, size: 20, color: Colors.black54),
-        const SizedBox(height: 4),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
+        Icon(icon, size: 22, color: Colors.grey.shade600),
+        const SizedBox(height: 6),
+        Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: context.primaryTextColor)),
       ],
     );
   }

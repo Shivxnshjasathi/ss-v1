@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sampatti_bazar/core/theme/app_theme.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -26,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -47,10 +48,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 32),
-                    const Text('WELCOME TO', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1, color: Colors.black, height: 1.1)),
+                    Text('WELCOME TO', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1, color: context.primaryTextColor, height: 1.1)),
                     const Text('SAMPATTI\nBAZAR', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1, color: Color(0xFF1E60FF), height: 1.1)),
                     const SizedBox(height: 16),
-                    const Text('Enter your phone number to get started', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black87)),
+                    Text('Enter your phone number to get started', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.primaryTextColor)),
                     const SizedBox(height: 32),
                     const Text('MOBILE NUMBER', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1.0)),
                     const SizedBox(height: 12),
@@ -58,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       crossAxisAlignment: CrossAxisAlignment.baseline,
                       textBaseline: TextBaseline.alphabetic,
                       children: [
-                        const Text('+91', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24, color: Colors.black)),
+                        Text('+91', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24, color: context.primaryTextColor)),
                         const SizedBox(width: 8),
                         Expanded(
                           child: TextField(
@@ -67,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             keyboardType: TextInputType.phone,
                             showCursor: true,
                             cursorColor: const Color(0xFF1E60FF),
-                            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 24, color: Colors.black, letterSpacing: 2.0),
+                            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24, color: context.primaryTextColor, letterSpacing: 2.0),
                             decoration: InputDecoration(
                               hintText: '00000 00000',
                               hintStyle: TextStyle(fontWeight: FontWeight.w900, fontSize: 24, color: Colors.grey.shade300, letterSpacing: 2.0),
@@ -81,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     Container(
                       height: 2,
-                      color: Colors.black,
+                      color: context.primaryTextColor,
                       margin: const EdgeInsets.only(top: 8),
                     ),
                     const SizedBox(height: 32),
@@ -103,11 +104,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Text.rich(
                         TextSpan(
                           text: 'By continuing, you agree to our\n',
-                          style: const TextStyle(fontSize: 10, color: Colors.black54),
-                          children: const [
-                            TextSpan(text: 'Terms of Service', style: TextStyle(color: Colors.black, decoration: TextDecoration.underline, fontWeight: FontWeight.bold)),
-                            TextSpan(text: ' & '),
-                            TextSpan(text: 'Privacy Policy', style: TextStyle(color: Colors.black, decoration: TextDecoration.underline, fontWeight: FontWeight.bold)),
+                          style: TextStyle(fontSize: 10, color: context.primaryTextColor.withValues(alpha: 0.7)),
+                          children: [
+                            TextSpan(text: 'Terms of Service', style: TextStyle(color: context.primaryTextColor, decoration: TextDecoration.underline, fontWeight: FontWeight.bold)),
+                            const TextSpan(text: ' & '),
+                            TextSpan(text: 'Privacy Policy', style: TextStyle(color: context.primaryTextColor, decoration: TextDecoration.underline, fontWeight: FontWeight.bold)),
                           ],
                         ),
                         textAlign: TextAlign.center,

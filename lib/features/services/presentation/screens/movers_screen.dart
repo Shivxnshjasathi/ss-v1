@@ -133,9 +133,9 @@ class _MoversScreenState extends State<MoversScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.scaffoldColor,
         elevation: 0,
         leadingWidth: 72,
         leading: Padding(
@@ -156,7 +156,7 @@ class _MoversScreenState extends State<MoversScreen> {
           'Packers & Movers',
           style: GoogleFonts.inter(
             fontWeight: FontWeight.w900,
-            color: Colors.black,
+            color: context.primaryTextColor,
             fontSize: 18,
             letterSpacing: -0.5,
           ),
@@ -166,7 +166,7 @@ class _MoversScreenState extends State<MoversScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(height: 1, color: Colors.grey[100]),
+            Container(height: 1, color: context.borderColor),
             Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(
@@ -256,7 +256,7 @@ class _MoversScreenState extends State<MoversScreen> {
   Widget _buildSectionLabel(String label) {
     return Text(
       label,
-      style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 11, letterSpacing: 0.5, color: Colors.black),
+      style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 11, letterSpacing: 0.5, color: context.primaryTextColor),
     );
   }
 
@@ -264,9 +264,9 @@ class _MoversScreenState extends State<MoversScreen> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
+        color: context.cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: context.borderColor),
       ),
       child: Stack(
         children: [
@@ -391,8 +391,8 @@ class _MoversScreenState extends State<MoversScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
         decoration: BoxDecoration(
-          color: isSelected ? AppTheme.primaryBlue : const Color(0xFFF8F9FB),
-          border: isSelected ? null : Border.all(color: Colors.grey.shade100, width: 1.5),
+          color: isSelected ? AppTheme.primaryBlue : context.cardColor,
+          border: isSelected ? null : Border.all(color: context.borderColor, width: 1.5),
           borderRadius: BorderRadius.circular(30),
         ),
         child: Text(
@@ -400,7 +400,7 @@ class _MoversScreenState extends State<MoversScreen> {
           style: TextStyle(
             fontWeight: FontWeight.w900,
             fontSize: 12,
-            color: isSelected ? Colors.white : Colors.black87,
+            color: isSelected ? Colors.white : context.primaryTextColor,
           ),
         ),
       ),
@@ -417,15 +417,15 @@ class _MoversScreenState extends State<MoversScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: Colors.grey.shade300),
+                color: context.cardColor,
+                border: Border.all(color: context.borderColor),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.calendar_today_outlined, size: 18, color: Colors.black87),
+                  Icon(Icons.calendar_today_outlined, size: 18, color: context.primaryTextColor),
                   const SizedBox(width: 12),
-                  Text(DateFormat('MMM d, yyyy').format(_selectedDate), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: Colors.black87)),
+                  Text(DateFormat('MMM d, yyyy').format(_selectedDate), style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: context.primaryTextColor)),
                 ],
               ),
             ),
@@ -445,9 +445,9 @@ class _MoversScreenState extends State<MoversScreen> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.schedule, size: 18, color: Colors.black87),
+                  Icon(Icons.schedule, size: 18, color: context.primaryTextColor),
                   const SizedBox(width: 8),
-                  Text(_selectedTime.format(context), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: Colors.black87)),
+                  Text(_selectedTime.format(context), style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: context.primaryTextColor)),
                 ],
               ),
             ),
@@ -468,8 +468,8 @@ class _MoversScreenState extends State<MoversScreen> {
 
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF9FAFB),
-        border: Border.all(color: Colors.grey.shade200),
+        color: context.cardColor,
+        border: Border.all(color: context.borderColor),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -516,9 +516,9 @@ class _MoversScreenState extends State<MoversScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: context.surfaceColor,
               borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(16), bottomRight: Radius.circular(16)),
-              border: Border(top: BorderSide(color: Colors.grey.shade100)),
+              border: Border(top: BorderSide(color: context.borderColor)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -545,7 +545,7 @@ class _MoversScreenState extends State<MoversScreen> {
       children: [
         Text(label, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: Colors.black54, letterSpacing: 0.5)),
         const SizedBox(height: 6),
-        Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.black87)),
+        Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: context.primaryTextColor)),
       ],
     );
   }

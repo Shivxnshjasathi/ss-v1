@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/shared/widgets/custom_text_field.dart';
 import 'package:sampatti_bazar/features/services/domain/cart_service.dart';
 
@@ -69,15 +70,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final total = cart.totalPrice;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.scaffoldColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 16),
+          icon: Icon(Icons.arrow_back_ios_new, color: context.iconColor, size: 16),
           onPressed: () => context.pop(),
         ),
-        title: const Text('Checkout', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 18)),
+        title: Text('Checkout', style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 18)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -136,7 +137,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.scaffoldColor,
           boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 20, offset: const Offset(0, -5))],
         ),
         child: SafeArea(

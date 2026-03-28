@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sampatti_bazar/core/theme/app_theme.dart';
 
 class ServiceTrackingScreen extends StatelessWidget {
   const ServiceTrackingScreen({super.key});
@@ -7,9 +8,9 @@ class ServiceTrackingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.scaffoldColor,
         elevation: 0,
         leading: IconButton(
           icon: Container(
@@ -18,14 +19,14 @@ class ServiceTrackingScreen extends StatelessWidget {
               color: const Color(0xFF00E5FF).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 16),
+            child: Icon(Icons.arrow_back_ios_new, color: context.iconColor, size: 16),
           ),
           onPressed: () => context.pop(),
         ),
-        title: const Text('Tracking Hub', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 18)),
+        title: Text('Tracking Hub', style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 18)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.filter_list, color: Colors.black87),
+            icon: Icon(Icons.filter_list, color: context.iconColor),
             onPressed: () {},
           ),
         ],
@@ -98,11 +99,11 @@ class ServiceTrackingScreen extends StatelessWidget {
             const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-              child: const Text('Past History', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
+              child: Text('Past History', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: context.primaryTextColor)),
             ),
             
-            _buildPastHistoryTile('Legal Consultation', 'Property Agreement Review', 'Oct 15, 2026', Icons.gavel, Colors.green),
-            _buildPastHistoryTile('Construction Visit', 'Site Assessment', 'Sep 28, 2026', Icons.architecture, Colors.grey),
+            _buildPastHistoryTile(context, 'Legal Consultation', 'Property Agreement Review', 'Oct 15, 2026', Icons.gavel, Colors.green),
+            _buildPastHistoryTile(context, 'Construction Visit', 'Site Assessment', 'Sep 28, 2026', Icons.architecture, Colors.grey),
 
             const SizedBox(height: 40),
           ],
@@ -127,9 +128,9 @@ class ServiceTrackingScreen extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(left: 24, right: 24, bottom: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: context.borderColor),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -193,7 +194,7 @@ class ServiceTrackingScreen extends StatelessWidget {
               ],
             ),
           ),
-          Container(height: 1, color: Colors.grey.shade100),
+          Container(height: 1, color: context.borderColor),
           Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -228,7 +229,7 @@ class ServiceTrackingScreen extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             decoration: BoxDecoration(
-              color: const Color(0xFFF8F9FA),
+              color: context.surfaceColor,
               borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(16), bottomRight: Radius.circular(16)),
             ),
             child: Row(
@@ -236,9 +237,9 @@ class ServiceTrackingScreen extends StatelessWidget {
               children: [
                 Text(
                   actionText,
-                  style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
+                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: context.primaryTextColor),
                 ),
-                const Icon(Icons.arrow_forward_ios, size: 12, color: Colors.black87),
+                Icon(Icons.arrow_forward_ios, size: 12, color: context.iconColor),
               ],
             ),
           ),
@@ -247,7 +248,7 @@ class ServiceTrackingScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPastHistoryTile(String title, String subtitle, String date, IconData icon, Color iconColor) {
+  Widget _buildPastHistoryTile(BuildContext context, String title, String subtitle, String date, IconData icon, Color iconColor) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
       child: Row(
@@ -255,7 +256,7 @@ class ServiceTrackingScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.grey[100],
+              color: context.surfaceColor,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(icon, color: Colors.grey[600], size: 20),
@@ -265,7 +266,7 @@ class ServiceTrackingScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
+                Text(title, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: context.primaryTextColor)),
                 const SizedBox(height: 2),
                 Text(subtitle, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
               ],

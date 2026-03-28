@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sampatti_bazar/core/theme/app_theme.dart';
 
 class OtpScreen extends StatefulWidget {
   final String phoneNumber;
@@ -21,12 +22,12 @@ class _OtpScreenState extends State<OtpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.scaffoldColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.scaffoldColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.chevron_left, color: Colors.black, size: 32),
+          icon: Icon(Icons.chevron_left, color: context.iconColor, size: 32),
           onPressed: () => context.pop(),
         ),
       ),
@@ -38,10 +39,10 @@ class _OtpScreenState extends State<OtpScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('VERIFY YOUR', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1, color: Colors.black, height: 1.1)),
+                  Text('VERIFY YOUR', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1, color: context.primaryTextColor, height: 1.1)),
                   const Text('NUMBER', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1, color: Color(0xFF1E60FF), height: 1.1)),
                   const SizedBox(height: 16),
-                  Text('Enter the 6-digit code sent to\n+91 ${widget.phoneNumber}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black87, height: 1.5)),
+                  Text('Enter the 6-digit code sent to\n+91 ${widget.phoneNumber}', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.primaryTextColor, height: 1.5)),
                   const SizedBox(height: 48),
                   
                   // Custom OTP Boxes
@@ -84,7 +85,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     child: Text.rich(
                       TextSpan(
                         text: 'Didn\'t receive code? ',
-                        style: const TextStyle(fontSize: 12, color: Colors.black54, fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize: 12, color: context.primaryTextColor.withValues(alpha: 0.6), fontWeight: FontWeight.bold),
                         children: const [
                           TextSpan(text: 'Resend in 00:45', style: TextStyle(color: Color(0xFF1E60FF), fontWeight: FontWeight.bold)),
                         ],
@@ -111,17 +112,17 @@ class _OtpScreenState extends State<OtpScreen> {
       height: 56,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.scaffoldColor,
         border: Border(
            bottom: BorderSide(
-             color: isActive ? const Color(0xFF1E60FF) : (hasValue ? Colors.black : Colors.grey.shade300),
+             color: isActive ? AppTheme.primaryBlue : (hasValue ? context.primaryTextColor : context.borderColor),
              width: isActive ? 3 : 2,
            ),
         ),
       ),
       child: Text(
         digit,
-        style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 32, color: Colors.black),
+        style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32, color: context.primaryTextColor),
       ),
     );
   }
