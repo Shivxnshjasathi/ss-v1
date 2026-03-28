@@ -1,22 +1,61 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter/foundation.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
+import 'package:sampatti_bazar/features/auth/data/auth_repository.dart';
+import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 
-class OtpScreen extends StatefulWidget {
+class OtpScreen extends ConsumerStatefulWidget {
   final String phoneNumber;
-  const OtpScreen({super.key, required this.phoneNumber});
+  final String verificationId;
+  const OtpScreen({super.key, required this.phoneNumber, required this.verificationId});
 
   @override
-  State<OtpScreen> createState() => _OtpScreenState();
+  ConsumerState<OtpScreen> createState() => _OtpScreenState();
 }
 
-class _OtpScreenState extends State<OtpScreen> {
+class _OtpScreenState extends ConsumerState<OtpScreen> {
   String _otpCode = '';
+  bool _isLoading = false;
 
-
-
-  void _onVerify() {
-    context.go('/home');
+  Future<void> _onVerify() async {
+    debugPrint('👆 [OtpScreen] Triggered _onVerify with OTP length: ${_otpCode.length}');
+    if (_otpCode.length < 6) return;
+    
+    setState(() { _isLoading = true; });
+    try {
+      final authRepo = ref.read(authRepositoryProvider);
+      debugPrint('🔥 [OtpScreen] Attempting verifyOTP with verificationId: ${widget.verificationId}');
+      final userCredential = await authRepo.verifyOTP(verificationId: widget.verificationId, smsCode: _otpCode);
+      
+      if (userCredential.user != null && mounted) {
+        debugPrint('✅ [OtpScreen] OTP Verified for UID: ${userCredential.user!.uid}');
+        // Check if user exists in Firestore
+        final userRepo = ref.read(userRepositoryProvider);
+        debugPrint('🔍 [OtpScreen] Checking for existing user profile...');
+        final userDoc = await userRepo.getUser(userCredential.user!.uid);
+        
+        if (mounted) {
+          if (userDoc == null || userDoc.name == null || userDoc.name!.isEmpty) {
+            debugPrint('⚠️ [OtpScreen] No profile found. Routing to /onboarding');
+            context.go('/onboarding');
+          } else {
+            debugPrint('🏠 [OtpScreen] Profile found. Routing to /home');
+            context.go('/home');
+          }
+        }
+      } else {
+        debugPrint('❌ [OtpScreen] UserCredential user is null!');
+      }
+    } catch (e, stackTrace) {
+      debugPrint('💥 [OtpScreen] Error during OTP verification: $e');
+      debugPrint('🥞 [OtpScreen] StackTrace: $stackTrace');
+      if (mounted) {
+        setState(() { _isLoading = false; });
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Invalid OTP or error occurred: $e')));
+      }
+    }
   }
 
   @override
@@ -59,6 +98,7 @@ class _OtpScreenState extends State<OtpScreen> {
                           maxLength: 6,
                           autofocus: true,
                           cursorColor: Colors.transparent,
+                          enabled: !_isLoading,
                           style: const TextStyle(color: Colors.transparent, fontSize: 1),
                           decoration: const InputDecoration(
                             border: InputBorder.none,
@@ -78,6 +118,12 @@ class _OtpScreenState extends State<OtpScreen> {
                       ),
                     ],
                   ),
+                  
+                  if (_isLoading)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 24.0),
+                      child: Center(child: CircularProgressIndicator(color: Color(0xFF1E60FF))),
+                    ),
                   
                   const SizedBox(height: 32),
                   

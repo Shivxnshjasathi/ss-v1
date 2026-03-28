@@ -6,13 +6,20 @@ import 'package:sampatti_bazar/core/providers/theme_provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 void main() async {
   runZonedGuarded<Future<void>>(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
-      // TODO: Initialize Firebase here once config is ready.
-      // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+      
+      // Initialize Firebase
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      
+      debugPrint('Firebase initialized successfully: ${Firebase.app().name}');
 
       // Pass all uncaught "fatal" errors from the framework to Crashlytics
       // FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;

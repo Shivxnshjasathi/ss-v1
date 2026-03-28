@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   void initState() {
     super.initState();
@@ -16,10 +19,27 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _navigateToNext() async {
-    // Simulate loading/initialization time
-    await Future.delayed(const Duration(seconds: 3));
+    // Wait for minimum splash duration
+    await Future.delayed(const Duration(seconds: 2));
+    
     if (mounted) {
-      context.go('/onboarding');
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        context.go('/login');
+      } else {
+        try {
+          final profile = await ref.read(userRepositoryProvider).getUser(user.uid);
+          if (mounted) {
+            if (profile == null) {
+              context.go('/onboarding');
+            } else {
+              context.go('/home');
+            }
+          }
+        } catch (e) {
+          if (mounted) context.go('/login');
+        }
+      }
     }
   }
 

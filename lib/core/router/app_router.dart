@@ -43,8 +43,10 @@ final goRouter = GoRouter(
     GoRoute(
       path: '/otp',
       builder: (context, state) {
-        final phoneNumber = state.extra as String? ?? '';
-        return OtpScreen(phoneNumber: phoneNumber);
+        final extra = state.extra as Map<String, dynamic>? ?? {};
+        final phoneNumber = extra['phoneNumber'] as String? ?? '';
+        final verificationId = extra['verificationId'] as String? ?? '';
+        return OtpScreen(phoneNumber: phoneNumber, verificationId: verificationId);
       },
     ),
 

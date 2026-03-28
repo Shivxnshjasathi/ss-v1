@@ -1,13 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
+import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
+import 'package:sampatti_bazar/features/properties/data/property_repository.dart';
 
-class HomeScreen extends StatelessWidget {
+import 'package:sampatti_bazar/core/services/location_provider.dart';
+
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userAsync = ref.watch(currentUserDataProvider);
+    final propertiesAsync = ref.watch(propertiesStreamProvider);
+    final locationAsync = ref.watch(userLocationProvider);
+    
+    final fullName = userAsync.value?.name ?? 'User';
+    final firstName = fullName.split(' ')[0];
+    final currentLocation = locationAsync.when(
+      data: (city) => city,
+      loading: () => 'Fetching...',
+      error: (_, __) => 'Location Error',
+    );
+
     return Scaffold(
       backgroundColor: context.scaffoldColor,
       appBar: AppBar(
@@ -18,14 +35,35 @@ class HomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Welcome Back,',
-              style: Theme.of(context).textTheme.displaySmall?.copyWith(fontSize: 16
+              'Welcome back,',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w500,
               ),
             ),
-            Text(
-              'Shivansh',
-              style: Theme.of(context).textTheme.displaySmall?.copyWith(fontSize: 16
-              ),
+            Row(
+              children: [
+                Text(
+                  '$firstName!',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                    color: context.primaryTextColor,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Icon(Icons.location_on, size: 14, color: Color(0xFF1E60FF)),
+                const SizedBox(width: 2),
+                Text(
+                  currentLocation,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -120,82 +158,105 @@ class HomeScreen extends StatelessWidget {
 
             const SizedBox(height: 32),
 
-            // Featured Zero-Brokerage Section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Text(
-                      'FEATURED ZERO-BROKERAGE',
-                      style: Theme.of(context).textTheme.titleLarge,
+            // Dynamic Properties Section
+            propertiesAsync.when(
+              data: (properties) {
+                if (properties.isEmpty) {
+                  return const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(32),
+                      child: Text('No properties listed yet.', style: TextStyle(color: Colors.grey)),
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: () => context.push('/properties'),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'SEE ALL',
-                          style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w900, fontSize: 12),
-                        ),
-                        const SizedBox(width: 4),
-                        Icon(Icons.arrow_forward, size: 16, color: Theme.of(context).colorScheme.primary),
-                      ],
+                  );
+                }
+                
+                final zeroBrokerage = properties.where((p) => p.isZeroBrokerage).toList();
+                final featured = zeroBrokerage.isNotEmpty ? zeroBrokerage : properties.take(5).toList();
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Featured Zero-Brokerage Section
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'FEATURED ZERO-BROKERAGE',
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () => context.push('/properties'),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'SEE ALL',
+                                  style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w900, fontSize: 12),
+                                ),
+                                const SizedBox(width: 4),
+                                Icon(Icons.arrow_forward, size: 16, color: Theme.of(context).colorScheme.primary),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            SizedBox(
-              height: 320,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                children: [
-                  _buildFeaturedCard(context, 'Silver Oak Residency', '₹45,000', 'VIJAY NAGAR, JABALPUR', 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80'),
-                  const SizedBox(width: 16),
-                  _buildFeaturedCard(context, 'The Grand Horizon', '₹32,000', 'CIVIL LINES, JABALPUR', 'https://images.unsplash.com/photo-1600607687931-57d1eb14cbfc?w=600&q=80'),
-                ],
-              ),
-            ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      height: 320,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        itemCount: featured.length,
+                        itemBuilder: (context, index) {
+                          final prop = featured[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 16.0),
+                            child: _buildFeaturedCard(context, prop.title, '₹${prop.price.toInt()}', prop.city, prop.imageUrls.isNotEmpty ? prop.imageUrls.first : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80', prop.id),
+                          );
+                        },
+                      ),
+                    ),
 
-            const SizedBox(height: 32),
+                    const SizedBox(height: 32),
 
-            // Newly Added Section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                'NEWLY ADDED',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                children: [
-                   _buildNewlyAddedItem(
-                    context: context,
-                    title: 'Cozy 2BHK Apartment',
-                    price: '₹18,500',
-                    type: 'Rent',
-                    image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=300&q=80',
-                  ),
-                  const SizedBox(height: 12),
-                  _buildNewlyAddedItem(
-                    context: context,
-                    title: 'Luxury PG for Students',
-                    price: '₹8,000',
-                    type: 'PG',
-                    image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=300&q=80',
-                  ),
-                ],
-              ),
+                    // Newly Added Section
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Text(
+                        'NEWLY ADDED',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                        children: properties.take(5).map((prop) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 12.0),
+                            child: _buildNewlyAddedItem(
+                              context: context,
+                              title: prop.title,
+                              price: '₹${prop.price.toInt()}',
+                              type: prop.type,
+                              image: prop.imageUrls.isNotEmpty ? prop.imageUrls.first : 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=300&q=80',
+                              propertyId: prop.id,
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ],
+                );
+              },
+              loading: () => const Center(child: Padding(padding: EdgeInsets.all(32), child: CircularProgressIndicator())),
+              error: (err, stack) => Center(child: Padding(padding: const EdgeInsets.all(32), child: Text('Error: $err'))),
             ),
             const SizedBox(height: 100), // padding for FAB
           ],
@@ -240,9 +301,9 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFeaturedCard(BuildContext context, String title, String price, String location, String imageUrl) {
+  Widget _buildFeaturedCard(BuildContext context, String title, String price, String location, String imageUrl, String propertyId) {
     return GestureDetector(
-      onTap: () => context.push('/properties/detail/123'),
+      onTap: () => context.push('/properties/detail/$propertyId'),
       child: Container(
         width: 240,
         decoration: BoxDecoration(
@@ -338,9 +399,9 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildNewlyAddedItem({required BuildContext context, required String title, required String price, required String type, required String image}) {
+  Widget _buildNewlyAddedItem({required BuildContext context, required String title, required String price, required String type, required String image, required String propertyId}) {
     return GestureDetector(
-      onTap: () => context.push('/properties/detail/123'),
+      onTap: () => context.push('/properties/detail/$propertyId'),
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(

@@ -1,63 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
+import 'package:sampatti_bazar/features/properties/data/property_repository.dart';
+import 'package:sampatti_bazar/features/properties/domain/property_model.dart';
 
-class PropertyFeedScreen extends StatefulWidget {
+class PropertyFeedScreen extends ConsumerStatefulWidget {
   const PropertyFeedScreen({super.key});
 
   @override
-  State<PropertyFeedScreen> createState() => _PropertyFeedScreenState();
+  ConsumerState<PropertyFeedScreen> createState() => _PropertyFeedScreenState();
 }
 
-class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
-  final List<Map<String, dynamic>> _properties = [
-    {
-      'title': 'The Glass Pavilion',
-      'location': 'Downtown Heights',
-      'price': '\$3,450,000',
-      'beds': '4',
-      'baths': '3.5',
-      'sqft': '4,200',
-      'isVerified': true,
-      'isExclusive': true,
-      'listedBy': 'ELENA R.',
-      'image': 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
-      'avatar': 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80'
-    },
-    {
-      'title': 'Silverleaf Estate',
-      'location': 'Oakwood Valley',
-      'price': '\$2,800,000',
-      'beds': '5',
-      'baths': '4',
-      'sqft': '4,500',
-      'isVerified': true,
-      'isExclusive': false,
-      'listedBy': 'SARAH J.',
-      'image': 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80',
-      'avatar': 'https://i.pravatar.cc/150?u=sarah'
-    },
-    {
-      'title': 'Vanguard Modern',
-      'location': 'Neo District',
-      'price': '\$1,900,000',
-      'beds': '3',
-      'baths': '2',
-      'sqft': '2,100',
-      'isVerified': false,
-      'isExclusive': false,
-      'listedBy': 'MARCUS V.',
-      'image': 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80',
-      'avatar': 'https://i.pravatar.cc/150?u=marcus'
-    },
-  ];
-
-  String _selectedCategory = 'Rent';
-  final List<String> _categories = ['Rent', 'Buy', 'Commercial'];
+class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
+  String _selectedCategory = 'All';
+  final List<String> _categories = ['All', 'Sell', 'Rent/Lease'];
+  
+  // Advanced Filter State
+  String _selectedPropertyType = 'All';
+  String _selectedBedrooms = 'Any';
+  RangeValues _priceRange = const RangeValues(0, 100); // 0 to 100M+
+  
+  final List<String> _propertyTypes = ['All', 'Apartment', 'Villa', 'Penthouse', 'Studio'];
+  final List<String> _bedroomOptions = ['Any', '1+', '2+', '3+', '4+'];
 
   @override
   Widget build(BuildContext context) {
+    final propertiesAsync = ref.watch(propertiesStreamProvider);
     return Scaffold(
       backgroundColor: context.scaffoldColor,
       appBar: AppBar(
@@ -121,7 +91,7 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
             ),
           ),
           
-          // Filters
+          // Categories
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -173,12 +143,45 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
           
           // Property Cards
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              itemCount: _properties.length,
-              itemBuilder: (context, index) {
-                return _buildPropertyCard(context, _properties[index]);
+            child: propertiesAsync.when(
+              data: (properties) {
+                final filtered = properties.where((p) {
+                  // Category Filter (Sell/Rent)
+                  if (_selectedCategory != 'All' && p.type != _selectedCategory) return false;
+                  
+                  // Property Type Filter
+                  if (_selectedPropertyType != 'All' && p.propertyType != _selectedPropertyType) return false;
+                  
+                  // Bedrooms Filter
+                  if (_selectedBedrooms != 'Any') {
+                    final requiredBeds = int.tryParse(_selectedBedrooms.replaceAll('+', '')) ?? 0;
+                    if (p.bedrooms < requiredBeds) return false;
+                  }
+                  
+                  // Price Filter (assuming price is stored in currency units, convert to millions for check if needed)
+                  // For now, mapping millions to flat numbers
+                  final priceInMillions = p.price / 1000000;
+                  if (priceInMillions < _priceRange.start || (_priceRange.end < 100 && priceInMillions > _priceRange.end)) {
+                    return false;
+                  }
+
+                  return true;
+                }).toList();
+
+                if (filtered.isEmpty) {
+                   return const Center(child: Text('No properties found matches your filters.', style: TextStyle(color: Colors.grey)));
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  itemCount: filtered.length,
+                  itemBuilder: (context, index) {
+                    return _buildPropertyCard(context, filtered[index]);
+                  },
+                );
               },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, stack) => Center(child: Text('Error: $err')),
             ),
           ),
         ],
@@ -187,9 +190,10 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
   }
 
   void _showFilterSheet(BuildContext context) {
-    String selectedType = 'Apartment';
-    String selectedBedrooms = '3+';
-    RangeValues priceRange = const RangeValues(1, 5);
+    // Local state for the modal until "Apply" is pressed
+    String tempType = _selectedPropertyType;
+    String tempBedrooms = _selectedBedrooms;
+    RangeValues tempPriceRange = _priceRange;
 
     showModalBottomSheet(
       context: context,
@@ -201,143 +205,115 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
       builder: (context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setModalState) {
-            return DraggableScrollableSheet(
-              expand: false,
-              initialChildSize: 0.8,
-              maxChildSize: 0.9,
-              minChildSize: 0.5,
-              builder: (_, controller) {
-                return Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            return Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('Filter Properties', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900)),
-                          IconButton(
-                            icon: const Icon(Icons.close),
-                            onPressed: () => context.pop(),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-                      
-                      Expanded(
-                        child: ListView(
-                          controller: controller,
-                          children: [
-                            const Text('PROPERTY TYPE', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1)),
-                            const SizedBox(height: 12),
-                            Wrap(
-                              spacing: 12,
-                              runSpacing: 12,
-                              children: ['Apartment', 'Villa', 'Penthouse', 'Studio'].map((type) {
-                                final isSelected = selectedType == type;
-                                return ChoiceChip(
-                                  label: Text(type),
-                                  selected: isSelected,
-                                  onSelected: (_) => setModalState(() => selectedType = type),
-                                  labelStyle: TextStyle(
-                                    color: isSelected ? Colors.white : context.primaryTextColor,
-                                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                                  ),
-                                  backgroundColor: context.cardColor,
-                                  selectedColor: Theme.of(context).colorScheme.primary,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                    side: BorderSide(
-                                      color: isSelected ? Theme.of(context).colorScheme.primary : context.borderColor,
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                            
-                            const SizedBox(height: 32),
-                            const Text('PRICE RANGE (MILLIONS)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1)),
-                            const SizedBox(height: 12),
-                            RangeSlider(
-                              values: priceRange,
-                              min: 0,
-                              max: 10,
-                              activeColor: Theme.of(context).colorScheme.primary,
-                              inactiveColor: Colors.grey.shade200,
-                              onChanged: (values) {
-                                setModalState(() {
-                                  priceRange = values;
-                                });
-                              },
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text('\$${priceRange.start.toStringAsFixed(1)}M', style: const TextStyle(fontWeight: FontWeight.bold)),
-                                Text('\$${priceRange.end.toStringAsFixed(1)}M+', style: const TextStyle(fontWeight: FontWeight.bold)),
-                              ],
-                            ),
-                            
-                            const SizedBox(height: 32),
-                            const Text('BEDROOMS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1)),
-                            const SizedBox(height: 12),
-                            Wrap(
-                              spacing: 12,
-                              runSpacing: 12,
-                              children: ['Any', '1+', '2+', '3+', '4+'].map((beds) {
-                                final isSelected = selectedBedrooms == beds;
-                                return ChoiceChip(
-                                  label: Text(beds),
-                                  selected: isSelected,
-                                  onSelected: (_) => setModalState(() => selectedBedrooms = beds),
-                                  labelStyle: TextStyle(
-                                    color: isSelected ? Colors.white : Colors.black87,
-                                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                                  ),
-                                  backgroundColor: Colors.white,
-                                  selectedColor: Theme.of(context).colorScheme.primary,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                    side: BorderSide(
-                                      color: isSelected ? Theme.of(context).colorScheme.primary : Colors.grey.shade300,
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      // Bottom Button
-                      SafeArea(
-                        child: SizedBox(
-                          width: double.infinity,
-                          height: 56,
-                          child: ElevatedButton(
-                            onPressed: () => context.pop(),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Theme.of(context).colorScheme.primary,
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: const Text(
-                              'Apply Filters',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
+                      const Text('Filter Properties', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900)),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.pop(context),
                       ),
                     ],
                   ),
-                );
-              },
+                  const SizedBox(height: 32),
+                  
+                  const Text('PROPERTY TYPE', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1)),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
+                    children: _propertyTypes.map((type) {
+                      final isSelected = tempType == type;
+                      return _buildModalChoiceChip(
+                        label: type,
+                        isSelected: isSelected,
+                        onSelected: (val) {
+                          if (val) setModalState(() => tempType = type);
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  
+                  const SizedBox(height: 40),
+                  const Text('PRICE RANGE (MILLIONS)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1)),
+                  const SizedBox(height: 12),
+                  RangeSlider(
+                    values: tempPriceRange,
+                    min: 0,
+                    max: 100, // Up to 100M+
+                    activeColor: Theme.of(context).colorScheme.primary,
+                    inactiveColor: context.borderColor,
+                    onChanged: (values) {
+                      setModalState(() {
+                        tempPriceRange = values;
+                      });
+                    },
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('\$${tempPriceRange.start.toStringAsFixed(1)}M', style: const TextStyle(fontWeight: FontWeight.bold)),
+                      Text(tempPriceRange.end >= 100 ? '\$100M+' : '\$${tempPriceRange.end.toStringAsFixed(1)}M', style: const TextStyle(fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                  
+                  const SizedBox(height: 40),
+                  const Text('BEDROOMS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1)),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
+                    children: _bedroomOptions.map((beds) {
+                      final isSelected = tempBedrooms == beds;
+                      return _buildModalChoiceChip(
+                        label: beds,
+                        isSelected: isSelected,
+                        onSelected: (val) {
+                          if (val) setModalState(() => tempBedrooms = beds);
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 48),
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _selectedPropertyType = tempType;
+                          _selectedBedrooms = tempBedrooms;
+                          _priceRange = tempPriceRange;
+                        });
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Apply Filters',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+              ),
             );
           }
         );
@@ -345,9 +321,34 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
     );
   }
 
-  Widget _buildPropertyCard(BuildContext context, Map<String, dynamic> property) {
+  Widget _buildModalChoiceChip({
+    required String label,
+    required bool isSelected,
+    required Function(bool) onSelected,
+  }) {
+    return ChoiceChip(
+      label: Text(label),
+      selected: isSelected,
+      onSelected: onSelected,
+      labelStyle: TextStyle(
+        color: isSelected ? Colors.white : context.primaryTextColor,
+        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+      ),
+      backgroundColor: context.cardColor,
+      selectedColor: Theme.of(context).colorScheme.primary,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(
+          color: isSelected ? Theme.of(context).colorScheme.primary : context.borderColor,
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+    );
+  }
+
+  Widget _buildPropertyCard(BuildContext context, PropertyModel property) {
     return GestureDetector(
-      onTap: () => context.push('/properties/detail/123'),
+      onTap: () => context.push('/properties/detail/${property.id}'),
       child: Container(
         margin: const EdgeInsets.only(bottom: 24),
         decoration: BoxDecoration(
@@ -370,7 +371,7 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
             Stack(
               children: [
                 CachedNetworkImage(
-                  imageUrl: property['image'],
+                  imageUrl: property.imageUrls.isNotEmpty ? property.imageUrls.first : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
                   height: 240,
                   width: double.infinity,
                   fit: BoxFit.cover,
@@ -395,7 +396,7 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
                   left: 16,
                   child: Row(
                     children: [
-                      if (property['isExclusive'] == true)
+                      if (property.isZeroBrokerage)
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                           decoration: BoxDecoration(
@@ -407,7 +408,7 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
                               Icon(Icons.star, color: Colors.white, size: 12),
                               SizedBox(width: 4),
                               Text(
-                                'EXCLUSIVE',
+                                '0 BROKERAGE',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 10,
@@ -418,9 +419,9 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
                             ],
                           ),
                         ),
-                      if (property['isExclusive'] == true && property['isVerified'] == true)
+                      if (property.isZeroBrokerage && property.isVerified)
                         const SizedBox(width: 8),
-                      if (property['isVerified'] == true)
+                      if (property.isVerified)
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                           decoration: BoxDecoration(
@@ -455,7 +456,7 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
                      crossAxisAlignment: CrossAxisAlignment.start,
                      children: [
                        Text(
-                         property['title'],
+                         property.title,
                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
                        ),
                        const SizedBox(height: 4),
@@ -464,7 +465,7 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
                            const Icon(Icons.location_on, color: Colors.white70, size: 16),
                            const SizedBox(width: 4),
                            Text(
-                             property['location'],
+                             property.city,
                              style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500),
                            ),
                          ],
@@ -492,17 +493,17 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              property['price'],
+                              '₹${property.price.toInt()}',
                               style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 22, fontWeight: FontWeight.w900)
                             ),
                           ],
                         ),
                       ),
-                      _buildAmenity(Icons.king_bed_outlined, '${property['beds']} Bed'),
+                      _buildAmenity(Icons.king_bed_outlined, '${property.bedrooms} Bed'),
                       const SizedBox(width: 16),
-                      _buildAmenity(Icons.bathtub_outlined, '${property['baths']} Bath'),
+                      _buildAmenity(Icons.bathtub_outlined, '${property.bathrooms} Bath'),
                       const SizedBox(width: 16),
-                      _buildAmenity(Icons.square_foot_outlined, '${property['sqft']} sqft'),
+                      _buildAmenity(Icons.square_foot_outlined, '${property.areaSqFt.toInt()} sqft'),
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -510,9 +511,9 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
                   const SizedBox(height: 16),
                   Row(
                     children: [
-                      CircleAvatar(
+                      const CircleAvatar(
                         radius: 16,
-                        backgroundImage: CachedNetworkImageProvider(property['avatar']),
+                        backgroundImage: CachedNetworkImageProvider('https://i.pravatar.cc/150?u=marcus'),
                       ),
                       const SizedBox(width: 12),
                       Column(
@@ -523,14 +524,14 @@ class _PropertyFeedScreenState extends State<PropertyFeedScreen> {
                             style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 0.5),
                           ),
                           Text(
-                            property['listedBy'],
+                            property.ownerId.isNotEmpty ? 'Owner' : 'Unknown',
                             style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.primaryTextColor),
                           ),
                         ],
                       ),
                       const Spacer(),
                       ElevatedButton(
-                        onPressed: () => context.push('/properties/detail/123'),
+                        onPressed: () => context.push('/properties/detail/${property.id}'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                           foregroundColor: Theme.of(context).colorScheme.primary,
