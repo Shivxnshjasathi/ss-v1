@@ -22,6 +22,7 @@ import 'package:sampatti_bazar/features/services/presentation/screens/movers_scr
 import 'package:sampatti_bazar/features/services/presentation/screens/services_hub_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/service_tracking_screen.dart';
 import 'package:sampatti_bazar/features/profile/presentation/screens/profile_screen.dart';
+import 'package:sampatti_bazar/features/auth/presentation/screens/notification_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -143,6 +144,10 @@ final goRouter = GoRouter(
     GoRoute(
       path: '/services/tracking',
       builder: (context, state) => const ServiceTrackingScreen(),
+    ),
+    GoRoute(
+      path: '/notifications',
+      builder: (context, state) => const NotificationScreen(),
     ),
   ],
 );

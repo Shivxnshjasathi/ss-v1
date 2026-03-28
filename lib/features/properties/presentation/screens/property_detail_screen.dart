@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sampatti_bazar/features/properties/data/property_repository.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
+import 'package:sampatti_bazar/core/services/logger_service.dart';
 import 'package:sampatti_bazar/features/services/data/booking_repository.dart';
 import 'package:sampatti_bazar/features/services/domain/booking_model.dart';
+import 'package:sampatti_bazar/features/properties/domain/property_model.dart';
 
 class PropertyDetailScreen extends ConsumerWidget {
   final String propertyId;
@@ -33,7 +36,7 @@ class PropertyDetailScreen extends ConsumerWidget {
             : const AsyncValue.data(false);
 
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: context.scaffoldColor,
           body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -68,6 +71,13 @@ class PropertyDetailScreen extends ConsumerWidget {
                      return;
                    }
                    await ref.read(propertyRepositoryProvider).toggleSaveProperty(currentUser.uid, propertyId);
+                   LoggerService.trackEvent(
+                     isSavedAsync.value == true ? 'property_unsaved' : 'property_saved',
+                     parameters: {
+                       'property_id': propertyId,
+                       'property_title': property.title,
+                     },
+                   );
                  },
                  style: IconButton.styleFrom(
                    backgroundColor: Colors.black.withValues(alpha: 0.3),
@@ -82,6 +92,10 @@ class PropertyDetailScreen extends ConsumerWidget {
                      'Check out this property on Sampatti Bazar: ${property.title} in ${property.city} for ₹${property.price.toInt()}.',
                      subject: 'Property Shared: ${property.title}',
                    );
+                   LoggerService.trackEvent('property_shared', parameters: {
+                     'property_id': propertyId,
+                     'property_title': property.title,
+                   });
                  },
                  style: IconButton.styleFrom(
                    backgroundColor: Colors.black.withValues(alpha: 0.3),
@@ -199,68 +213,48 @@ class PropertyDetailScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   Text(
-                     'ASKING PRICE',
-                     style: TextStyle(
-                       color: Colors.grey.shade500,
-                       fontSize: 12,
-                       fontWeight: FontWeight.bold,
-                       letterSpacing: 1,
-                     ),
-                   ),
-                   const SizedBox(height: 4),
-                   Text(
-                     '₹${property.price.toInt()}',
-                     style: TextStyle(
-                       color: Theme.of(context).colorScheme.primary,
-                       fontSize: 36,
-                       fontWeight: FontWeight.w900,
-                       letterSpacing: -1,
-                     ),
-                   ),
-                   const SizedBox(height: 12),
-                   Row(
-                     crossAxisAlignment: CrossAxisAlignment.start,
-                     children: [
-                       Icon(Icons.location_on, size: 20, color: Colors.grey.shade500),
-                       const SizedBox(width: 8),
-                       Expanded(
-                         child: Text(
-                           '${property.location}, ${property.city}',
-                           style: const TextStyle(
-                             color: Colors.black87,
-                             fontSize: 14,
-                             height: 1.4,
-                             fontWeight: FontWeight.w500,
-                           ),
-                         ),
-                       ),
-                     ],
-                   ),
+                  Text(
+                    property.title,
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: Theme.of(context).textTheme.bodyLarge?.color, letterSpacing: -0.5),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                  children: [
+                    Icon(Icons.location_on, color: Theme.of(context).colorScheme.primary, size: 18),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${property.location}, ${property.city}',
+                      style: TextStyle(color: context.secondaryTextColor, fontSize: 14, fontWeight: FontWeight.w500),
+                    ),
+                  ],
+                ),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('ASKING PRICE', style: TextStyle(color: context.secondaryTextColor, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                            const SizedBox(height: 4),
+                            Text('₹${property.price.toInt()}', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 24, fontWeight: FontWeight.w900)),
+                        ],
+                      ),
+                    ),
+                    _buildSpecBox(property.areaSqFt.toInt().toString(), 'SQ FT', Icons.square_foot_outlined),
+                  ],
+                ),
                    
                    const SizedBox(height: 32),
+                   Text('OVERVIEW', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1.5)),
+                   const SizedBox(height: 16),
+                   _buildOverviewGrid(context, property),
                    
-                   Container(
-                     decoration: BoxDecoration(
-                       color: Colors.grey.shade50,
-                       border: Border.all(color: Colors.grey.shade200),
-                       borderRadius: BorderRadius.circular(12),
-                     ),
-                     padding: const EdgeInsets.symmetric(vertical: 20),
-                     child: IntrinsicHeight(
-                       child: Row(
-                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                         children: [
-                           _buildSpecBox(property.bedrooms.toString(), 'BEDS', Icons.king_bed_outlined),
-                           VerticalDivider(color: Colors.grey[300], width: 1, thickness: 1),
-                           _buildSpecBox(property.bathrooms.toString(), 'BATHS', Icons.bathtub_outlined),
-                           VerticalDivider(color: Colors.grey[300], width: 1, thickness: 1),
-                           _buildSpecBox(property.areaSqFt.toInt().toString(), 'SQ FT', Icons.square_foot_outlined),
-                         ],
-                       ),
-                     ),
-                   ),
-
+                   const SizedBox(height: 32),
+                   Text('AMENITIES', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1.5)),
+                   const SizedBox(height: 16),
+                   _buildAmenities(context, property.amenities),
+                   
                    const SizedBox(height: 32),
                    
                    const Text(
@@ -271,15 +265,15 @@ class PropertyDetailScreen extends ConsumerWidget {
                      ),
                    ),
                    const SizedBox(height: 16),
-                   Text(
-                     property.description.isNotEmpty ? property.description : 'No description provided for this listing.',
-                     style: const TextStyle(
-                       color: Colors.black87,
-                       fontSize: 14,
-                       height: 1.6,
-                       fontWeight: FontWeight.w400,
+                     Text(
+                       property.description.isNotEmpty ? property.description : 'No description provided for this listing.',
+                       style: TextStyle(
+                         color: context.secondaryTextColor,
+                         fontSize: 14,
+                         height: 1.6,
+                         fontWeight: FontWeight.w400,
+                       ),
                      ),
-                   ),
                    const SizedBox(height: 16),
                    Text(
                      'Read Full Specification',
@@ -295,7 +289,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                    Container(
                      padding: const EdgeInsets.all(16),
                      decoration: BoxDecoration(
-                       color: Colors.white,
+                       color: context.cardColor,
                        borderRadius: BorderRadius.circular(12),
                        boxShadow: [
                          BoxShadow(
@@ -304,7 +298,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                            offset: const Offset(0, 4),
                          )
                        ],
-                       border: Border.all(color: Colors.grey.shade100),
+                       border: Border.all(color: context.borderColor),
                      ),
                      child: ownerAsync.when(
                         data: (owner) => Row(
@@ -339,21 +333,12 @@ class PropertyDetailScreen extends ConsumerWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    owner?.name ?? 'Anonymous User',
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w900,
-                                      height: 1.1,
-                                    ),
+                                    owner?.name ?? 'Loading...',
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: context.primaryTextColor),
                                   ),
-                                  const SizedBox(height: 6),
                                   Text(
-                                    owner?.role ?? 'Property Owner',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey[600],
-                                      fontWeight: FontWeight.w500,
-                                    ),
+                                    owner?.role ?? 'Owner',
+                                    style: TextStyle(fontSize: 12, color: context.secondaryTextColor, fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               ),
@@ -365,11 +350,15 @@ class PropertyDetailScreen extends ConsumerWidget {
                               ),
                               child: IconButton(
                                 icon: Icon(Icons.chat_bubble, size: 20, color: Theme.of(context).colorScheme.primary),
-                                onPressed: () {
-                                  if (owner?.phoneNumber != null) {
-                                    launchUrl(Uri.parse('sms:${owner!.phoneNumber}'));
-                                  }
-                                },
+                                 onPressed: () {
+                                   if (owner?.phoneNumber != null) {
+                                     launchUrl(Uri.parse('sms:${owner!.phoneNumber}'));
+                                     LoggerService.trackEvent('property_message_owner', parameters: {
+                                       'property_id': property.id,
+                                       'owner_id': property.ownerId,
+                                     });
+                                   }
+                                 },
                                 constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
                                 padding: EdgeInsets.zero,
                               ),
@@ -382,11 +371,15 @@ class PropertyDetailScreen extends ConsumerWidget {
                               ),
                               child: IconButton(
                                 icon: Icon(Icons.phone, size: 20, color: Theme.of(context).colorScheme.primary),
-                                onPressed: () {
-                                  if (owner?.phoneNumber != null) {
-                                    launchUrl(Uri.parse('tel:${owner!.phoneNumber}'));
-                                  }
-                                },
+                                 onPressed: () {
+                                   if (owner?.phoneNumber != null) {
+                                     launchUrl(Uri.parse('tel:${owner!.phoneNumber}'));
+                                     LoggerService.trackEvent('property_call_owner', parameters: {
+                                       'property_id': property.id,
+                                       'owner_id': property.ownerId,
+                                     });
+                                   }
+                                 },
                                 constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
                                 padding: EdgeInsets.zero,
                               ),
@@ -397,8 +390,6 @@ class PropertyDetailScreen extends ConsumerWidget {
                         error: (e, st) => Text('Error loading owner info'),
                       ),
                    ),
-
-                   // Removed Location Intelligence Section entirely
 
                    const SizedBox(height: 32),
                    
@@ -416,9 +407,9 @@ class PropertyDetailScreen extends ConsumerWidget {
                          child: Container(
                            padding: const EdgeInsets.all(16),
                            decoration: BoxDecoration(
-                             color: Colors.grey.shade50,
+                             color: context.cardColor,
                              borderRadius: BorderRadius.circular(12),
-                             border: Border.all(color: Colors.grey.shade200),
+                             border: Border.all(color: context.borderColor),
                            ),
                            child: Column(
                              crossAxisAlignment: CrossAxisAlignment.start,
@@ -494,7 +485,7 @@ class PropertyDetailScreen extends ConsumerWidget {
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.cardColor,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.05),
@@ -578,6 +569,12 @@ class PropertyDetailScreen extends ConsumerWidget {
       );
 
       await ref.read(bookingRepositoryProvider).addBooking(booking);
+      
+      LoggerService.trackEvent('property_book_visit', parameters: {
+        'property_id': property.id,
+        'booking_id': booking.id,
+        'booking_date': bookingDateTime.toIso8601String(),
+      });
 
       if (context.mounted) {
         showDialog(
@@ -596,6 +593,70 @@ class PropertyDetailScreen extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to schedule visit: $e')));
       }
     }
+  }
+
+  Widget _buildOverviewGrid(BuildContext context, PropertyModel property) {
+    return GridView.count(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisCount: 2,
+      childAspectRatio: 1.6,
+      mainAxisSpacing: 16,
+      crossAxisSpacing: 16,
+      children: [
+        _buildOverviewItem(context, Icons.king_bed_outlined, 'BEDROOMS', property.bedrooms.toString()),
+        _buildOverviewItem(context, Icons.bathtub_outlined, 'BATHROOMS', property.bathrooms.toString()),
+        _buildOverviewItem(context, Icons.square_foot_outlined, 'TOTAL AREA', '${property.areaSqFt.toInt()} SF'),
+        if (property.builtIn != null) _buildOverviewItem(context, Icons.calendar_today_outlined, 'BUILT YEAR', property.builtIn.toString()),
+        if (property.lotSizeSqFt != null) _buildOverviewItem(context, Icons.landscape_outlined, 'LOT SIZE', '${property.lotSizeSqFt!.toInt()} SF'),
+        _buildOverviewItem(context, Icons.apartment_outlined, 'TYPE', property.propertyType),
+      ],
+    );
+  }
+
+  Widget _buildOverviewItem(BuildContext context, IconData icon, String label, String value) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.cardColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: Theme.of(context).colorScheme.primary, size: 20),
+          const SizedBox(height: 12),
+          Text(label, style: TextStyle(fontSize: 10, color: Colors.grey[500], fontWeight: FontWeight.bold)),
+          const SizedBox(height: 4),
+          Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: context.primaryTextColor)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAmenities(BuildContext context, List<String> amenities) {
+    if (amenities.isEmpty) return const Text('No amenities listed.');
+    return Wrap(
+      spacing: 12,
+      runSpacing: 12,
+      children: amenities.map((amenity) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)),
+        ),
+        child: Text(
+          amenity,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.primary,
+            fontWeight: FontWeight.bold,
+            fontSize: 13,
+          ),
+        ),
+      )).toList(),
+    );
   }
 
   Widget _buildSpecBox(String value, String label, IconData icon) {

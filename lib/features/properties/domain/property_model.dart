@@ -12,6 +12,7 @@ class PropertyModel {
   final int bathrooms;
   final double areaSqFt;
   final List<String> imageUrls;
+  final List<String> amenities;
   final DateTime createdAt;
   final bool isVerified;
   final bool isZeroBrokerage;
@@ -32,6 +33,7 @@ class PropertyModel {
     required this.bathrooms,
     required this.areaSqFt,
     required this.imageUrls,
+    this.amenities = const [],
     required this.createdAt,
     this.isVerified = false,
     this.isZeroBrokerage = false,
@@ -54,6 +56,7 @@ class PropertyModel {
       'bathrooms': bathrooms,
       'areaSqFt': areaSqFt,
       'imageUrls': imageUrls,
+      'amenities': amenities,
       'createdAt': createdAt.toIso8601String(),
       'isVerified': isVerified,
       'isZeroBrokerage': isZeroBrokerage,
@@ -77,6 +80,7 @@ class PropertyModel {
       bathrooms: map['bathrooms']?.toInt() ?? 0,
       areaSqFt: (map['areaSqFt'] ?? 0).toDouble(),
       imageUrls: List<String>.from(map['imageUrls'] ?? []),
+      amenities: List<String>.from(map['amenities'] ?? []),
       createdAt: map['createdAt'] != null ? DateTime.parse(map['createdAt']) : DateTime.now(),
       isVerified: map['isVerified'] ?? false,
       isZeroBrokerage: map['isZeroBrokerage'] ?? false,

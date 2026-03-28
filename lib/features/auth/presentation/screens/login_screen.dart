@@ -174,7 +174,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24, color: context.primaryTextColor, letterSpacing: 2.0),
                               decoration: InputDecoration(
                                 hintText: '00000 00000',
-                                hintStyle: TextStyle(fontWeight: FontWeight.w900, fontSize: 24, color: Colors.grey.shade300, letterSpacing: 2.0),
+                                hintStyle: TextStyle(fontWeight: FontWeight.w900, fontSize: 24, color: context.secondaryTextColor.withValues(alpha: 0.3), letterSpacing: 2.0),
                                 border: InputBorder.none,
                                 isDense: true,
                                 contentPadding: EdgeInsets.zero,
@@ -194,7 +194,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: context.primaryTextColor),
                         decoration: InputDecoration(
                           hintText: 'you@example.com',
-                          hintStyle: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: Colors.grey.shade300),
+                          hintStyle: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: context.secondaryTextColor.withValues(alpha: 0.3)),
                           border: const UnderlineInputBorder(),
                           focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: context.primaryTextColor, width: 2)),
                         ),
@@ -209,7 +209,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: context.primaryTextColor),
                         decoration: InputDecoration(
                           hintText: '••••••••',
-                          hintStyle: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: Colors.grey.shade300),
+                          hintStyle: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: context.secondaryTextColor.withValues(alpha: 0.3)),
                           border: const UnderlineInputBorder(),
                           focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: context.primaryTextColor, width: 2)),
                         ),

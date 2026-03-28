@@ -218,7 +218,7 @@ class _LegalScreenState extends State<LegalScreen> {
       return Container(
         padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.scaffoldColor,
           boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 20, offset: const Offset(0, -10))],
         ),
         child: SafeArea(
@@ -316,7 +316,7 @@ class _LegalScreenState extends State<LegalScreen> {
       children: [
         const Text('Draft Agreement', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24, letterSpacing: -0.5)),
         const SizedBox(height: 8),
-        Text('Fill in the specific terms of the rental lease before verification.', style: TextStyle(color: Colors.black54, fontSize: 13, height: 1.5)),
+        Text('Fill in the specific terms of the rental lease before verification.', style: TextStyle(color: context.secondaryTextColor, fontSize: 13, height: 1.5)),
         const SizedBox(height: 32),
         _buildTextFieldWidget(_lessorController, 'LESSOR (LANDLORD) NAME', icon: Icons.person_outline),
         const SizedBox(height: 20),
@@ -342,7 +342,7 @@ class _LegalScreenState extends State<LegalScreen> {
       children: [
         Text('E-KYC Verification', style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 28, letterSpacing: -1.0)),
         const SizedBox(height: 8),
-        Text('Verify identities securely before stamping the document digitally.', style: TextStyle(color: Colors.grey[600], fontSize: 13, height: 1.5, fontWeight: FontWeight.w500)),
+        Text('Verify identities securely before stamping the document digitally.', style: TextStyle(color: context.secondaryTextColor, fontSize: 13, height: 1.5, fontWeight: FontWeight.w500)),
         const SizedBox(height: 32),
         _buildVerificationCard('Landlord KYC', _lessorController.text, true),
         const SizedBox(height: 16),
@@ -364,12 +364,12 @@ class _LegalScreenState extends State<LegalScreen> {
           decoration: BoxDecoration(color: AppTheme.cyanAccent.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(12), border: Border.all(color: AppTheme.cyanAccent.withValues(alpha: 0.1))),
           child: Row(
             children: [
-               Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)), child: const Icon(Icons.verified_user_outlined, color: AppTheme.cyanAccent, size: 20)),
+               Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: context.scaffoldColor, borderRadius: BorderRadius.circular(8)), child: const Icon(Icons.verified_user_outlined, color: AppTheme.cyanAccent, size: 20)),
                const SizedBox(width: 12),
                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                  Text('DIGITAL VERIFICATION', style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: -0.2)),
                  const SizedBox(height: 2),
-                 const Text('E-STAMPED DOCUMENT • 2024 SERIES', style: TextStyle(fontSize: 9, color: Colors.grey, fontWeight: FontWeight.w800, letterSpacing: 0.5))
+                 Text('E-STAMPED DOCUMENT • 2024 SERIES', style: TextStyle(fontSize: 9, color: context.secondaryTextColor, fontWeight: FontWeight.w800, letterSpacing: 0.5))
                ]),
             ],
           ),
@@ -388,13 +388,13 @@ class _LegalScreenState extends State<LegalScreen> {
         _buildClause('04', 'NOTICE PERIOD', 'Both parties agree to a mandatory 2-month notice period prior to early termination by either party.'),
         Container(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: const Color(0xFFF8F9FB), borderRadius: BorderRadius.circular(12)),
+          decoration: BoxDecoration(color: context.cardColor, borderRadius: BorderRadius.circular(12), border: Border.all(color: context.borderColor)),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Icon(Icons.info_outline, size: 16, color: Colors.grey),
               const SizedBox(width: 8),
-              Expanded(child: Text('This document is digitally prepared by Sampatti Bazar Legal. By signing, you agree to the Terms of Service and digital e-stamp protocols.', style: TextStyle(fontSize: 10, color: Colors.grey[700], height: 1.5, fontWeight: FontWeight.w500))),
+              Expanded(child: Text('This document is digitally prepared by Sampatti Bazar Legal. By signing, you agree to the Terms of Service and digital e-stamp protocols.', style: TextStyle(fontSize: 10, color: context.secondaryTextColor, height: 1.5, fontWeight: FontWeight.w500))),
             ],
           ),
         ),
@@ -415,7 +415,7 @@ class _LegalScreenState extends State<LegalScreen> {
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
       decoration: BoxDecoration(
-        color: Colors.white, 
+        color: context.scaffoldColor, 
         boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 20, offset: const Offset(0, -10))],
       ),
       child: SafeArea(
@@ -464,7 +464,7 @@ class _LegalScreenState extends State<LegalScreen> {
       children: [
         Text('Legal Counsel', style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 28, letterSpacing: -1.0)),
         const SizedBox(height: 8),
-        Text('Receive trusted guidance from locally verified real-estate attorneys.', style: TextStyle(color: Colors.grey[600], fontSize: 13, height: 1.5, fontWeight: FontWeight.w500)),
+        Text('Receive trusted guidance from locally verified real-estate attorneys.', style: TextStyle(color: context.secondaryTextColor, fontSize: 13, height: 1.5, fontWeight: FontWeight.w500)),
         const SizedBox(height: 32),
         
         Container(
@@ -522,17 +522,17 @@ class _LegalScreenState extends State<LegalScreen> {
           ],
         ),
         const SizedBox(height: 8),
-        Text('We thoroughly verify ownership history, title encumbrances, and structural clearances to keep you safe from fraud.', style: TextStyle(color: Colors.grey[600], fontSize: 13, height: 1.5, fontWeight: FontWeight.w500)),
+        Text('We thoroughly verify ownership history, title encumbrances, and structural clearances to keep you safe from fraud.', style: TextStyle(color: context.secondaryTextColor, fontSize: 13, height: 1.5, fontWeight: FontWeight.w500)),
         const SizedBox(height: 32),
 
         Container(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: const Color(0xFFF4FAFD), borderRadius: BorderRadius.circular(12), border: Border.all(color: AppTheme.cyanAccent.withValues(alpha: 0.1))),
+          decoration: BoxDecoration(color: context.cardColor, borderRadius: BorderRadius.circular(12), border: Border.all(color: context.borderColor)),
           child: Row(
             children: [
                const Icon(Icons.shield, color: AppTheme.primaryBlue, size: 18),
                const SizedBox(width: 12),
-               Expanded(child: Text('Verification ensures all local municipal NOCs and past ownership trails are legitimate.', style: TextStyle(color: Colors.black87, fontSize: 11, fontWeight: FontWeight.w600, height: 1.5))),
+               Expanded(child: Text('Verification ensures all local municipal NOCs and past ownership trails are legitimate.', style: TextStyle(color: context.primaryTextColor, fontSize: 11, fontWeight: FontWeight.w600, height: 1.5))),
             ],
           ),
         ),
@@ -549,17 +549,17 @@ class _LegalScreenState extends State<LegalScreen> {
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
           decoration: BoxDecoration(
-             color: const Color(0xFFF5F5F5),
-             border: Border.all(color: Colors.grey.shade300),
+             color: context.cardColor,
+             border: Border.all(color: context.borderColor),
              borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
             children: [
-              Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle, border: Border.all(color: Colors.grey.shade100)), child: const Icon(Icons.cloud_upload_outlined, color: AppTheme.primaryBlue)),
+              Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: context.scaffoldColor, shape: BoxShape.circle, border: Border.all(color: context.borderColor)), child: const Icon(Icons.cloud_upload_outlined, color: AppTheme.primaryBlue)),
               const SizedBox(height: 16),
               const Text('Attach Documents for Verification', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
               const SizedBox(height: 6),
-              const Text('Sale deeds, NOCs, or previous agreements.', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: Colors.grey, fontWeight: FontWeight.w500)),
+              Text('Sale deeds, NOCs, or previous agreements.', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: context.secondaryTextColor, fontWeight: FontWeight.w500)),
             ],
           ),
         ),
@@ -574,7 +574,7 @@ class _LegalScreenState extends State<LegalScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(labelText, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.black54, letterSpacing: 0.5)),
+        Text(labelText, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: context.secondaryTextColor, letterSpacing: 0.5)),
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
@@ -610,7 +610,7 @@ class _LegalScreenState extends State<LegalScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.black54, letterSpacing: 0.5)),
+        Text(label, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: context.secondaryTextColor, letterSpacing: 0.5)),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -641,14 +641,14 @@ class _LegalScreenState extends State<LegalScreen> {
   Widget _buildVerificationCard(String role, String name, bool isVerified) {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.05) : Colors.white, border: Border.all(color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.1) : Colors.grey.shade100), borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.05) : context.cardColor, border: Border.all(color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.1) : context.borderColor), borderRadius: BorderRadius.circular(16)),
       child: Row(
         children: [
-          Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.1) : const Color(0xFFF8F9FB), borderRadius: BorderRadius.circular(12)), child: Icon(isVerified ? Icons.verified : Icons.account_circle_outlined, color: isVerified ? AppTheme.primaryBlue : Colors.grey.shade400, size: 24)),
+          Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.1) : context.scaffoldColor, borderRadius: BorderRadius.circular(12)), child: Icon(isVerified ? Icons.verified : Icons.account_circle_outlined, color: isVerified ? AppTheme.primaryBlue : Colors.grey.shade400, size: 24)),
           const SizedBox(width: 16),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(role.toUpperCase(), style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey[400], letterSpacing: 0.5)), const SizedBox(height: 4), Text(name, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: -0.3))])),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(role.toUpperCase(), style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey[400], letterSpacing: 0.5)), const SizedBox(height: 4), Text(name, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: context.primaryTextColor, letterSpacing: -0.3))])),
           if (isVerified) const Icon(Icons.check_circle, color: AppTheme.primaryBlue, size: 20)
-          else Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: const Color(0xFFF8F9FB), borderRadius: BorderRadius.circular(8)), child: const Text('PENDING', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5))),
+          else Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: context.scaffoldColor, borderRadius: BorderRadius.circular(8)), child: const Text('PENDING', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5))),
         ],
       ),
     );
@@ -662,7 +662,7 @@ class _LegalScreenState extends State<LegalScreen> {
         children: [
           Text(number, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey)),
           const SizedBox(width: 16),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: -0.2)), const SizedBox(height: 6), Text(body, style: TextStyle(color: Colors.grey[700], fontSize: 12, height: 1.5, fontWeight: FontWeight.w500)), const SizedBox(height: 16), Divider(height: 1, color: Colors.grey.shade100)])),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: context.primaryTextColor, letterSpacing: -0.2)), const SizedBox(height: 6), Text(body, style: TextStyle(color: context.secondaryTextColor, fontSize: 12, height: 1.5, fontWeight: FontWeight.w500)), const SizedBox(height: 16), Divider(height: 1, color: context.borderColor)])),
         ],
       ),
     );

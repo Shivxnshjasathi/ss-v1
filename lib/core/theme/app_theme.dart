@@ -114,6 +114,7 @@ extension ThemeExtension on BuildContext {
   Color get surfaceColor => colorScheme.surface;
   Color get scaffoldColor => theme.scaffoldBackgroundColor;
   Color get primaryTextColor => textTheme.bodyLarge?.color ?? Colors.black;
+  Color get secondaryTextColor => isDarkMode ? Colors.white70 : Colors.black54;
   Color get borderColor => isDarkMode ? Colors.grey.shade800 : Colors.grey.shade200;
   Color get cardColor => theme.cardColor;
   Color get iconColor => theme.iconTheme.color ?? Colors.black;

@@ -44,7 +44,7 @@ class ServiceTrackingScreen extends ConsumerWidget {
             dividerColor: Colors.transparent,
             indicatorColor: AppTheme.primaryBlue,
             labelColor: AppTheme.primaryBlue,
-            unselectedLabelColor: Colors.grey,
+            unselectedLabelColor: Colors.grey[500],
             labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
             tabs: const [
               Tab(text: 'MY BOOKINGS'),
@@ -135,7 +135,7 @@ class ServiceTrackingScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(booking.propertyTitle, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: -0.3)),
+                      Text(booking.propertyTitle, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: context.primaryTextColor, letterSpacing: -0.3)),
                       const SizedBox(height: 4),
                       Text(dateStr, style: TextStyle(color: AppTheme.primaryBlue, fontSize: 12, fontWeight: FontWeight.bold)),
                     ],
@@ -172,7 +172,7 @@ class ServiceTrackingScreen extends ConsumerWidget {
                       const SizedBox(width: 8),
                       Text(
                         isOwner ? 'Visitor: ${otherParty?.name ?? 'User'}' : 'Owner: ${otherParty?.name ?? 'User'}',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.grey[800]),
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.primaryTextColor),
                       ),
                       if (otherParty?.phoneNumber != null) ...[
                         const Spacer(),

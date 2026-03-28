@@ -169,10 +169,10 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.black,
+                      color: context.primaryTextColor,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Icon(Icons.filter_list, color: Colors.white, size: 16),
+                    child: Icon(Icons.filter_list, color: context.scaffoldColor, size: 16),
                   ),
                   const SizedBox(width: 12),
                   _buildCategoryChip('All'),
@@ -328,7 +328,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                     children: [
                       Text(category, style: GoogleFonts.inter(fontSize: 8, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)),
                       const SizedBox(height: 4),
-                      Text(title, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12, height: 1.2), maxLines: 2, overflow: TextOverflow.ellipsis),
+                      Text(title, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12, height: 1.2, color: context.primaryTextColor), maxLines: 2, overflow: TextOverflow.ellipsis),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -336,9 +336,9 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                     crossAxisAlignment: CrossAxisAlignment.baseline,
                     textBaseline: TextBaseline.alphabetic,
                     children: [
-                      Text(_formatCurrency(price), style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 16)),
+                      Text(_formatCurrency(price), style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 16, color: context.primaryTextColor)),
                       const SizedBox(width: 4),
-                      Flexible(child: Text('/ $unit', style: const TextStyle(fontSize: 10, color: Colors.grey), overflow: TextOverflow.ellipsis)),
+                      Flexible(child: Text('/ $unit', style: TextStyle(fontSize: 10, color: context.secondaryTextColor), overflow: TextOverflow.ellipsis)),
                     ],
                   ),
                   const Spacer(),

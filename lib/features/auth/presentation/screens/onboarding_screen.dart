@@ -19,6 +19,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   String _selectedRole = 'Buyer / Tenant';
   bool _isLoading = false;
   bool _isFetchingLocation = false;
@@ -26,9 +27,21 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final List<String> _roles = ['Buyer / Tenant', 'Owner / Landlord', 'Real Estate Agent', 'Builder'];
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final user = ref.read(authRepositoryProvider).currentUser;
+      if (user?.phoneNumber != null && user!.phoneNumber!.isNotEmpty) {
+        _phoneController.text = user.phoneNumber!;
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _nameController.dispose();
     _locationController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -79,7 +92,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           LoggerService.i('Attempting to save user profile');
           final userModel = UserModel(
             uid: user.uid,
-            phoneNumber: user.phoneNumber ?? '',
+            phoneNumber: _phoneController.text.trim().isNotEmpty 
+                ? _phoneController.text.trim() 
+                : (user.phoneNumber ?? ''),
             name: _nameController.text.trim(),
             location: _locationController.text.trim(),
             role: _selectedRole,
@@ -156,7 +171,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             children: [
               Text('Welcome to Sampatti Bazar!', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24, color: context.primaryTextColor)),
               const SizedBox(height: 8),
-              Text('Tell us a bit about yourself to personalize your experience.', style: TextStyle(color: Colors.grey[600], fontSize: 14)),
+              Text('Tell us a bit about yourself to personalize your experience.', style: TextStyle(color: context.secondaryTextColor, fontSize: 14)),
               const SizedBox(height: 32),
               
               const Text('FULL NAME', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
@@ -172,6 +187,23 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 ),
                 style: TextStyle(color: context.primaryTextColor),
                 validator: (value) => value == null || value.isEmpty ? 'Please enter your name' : null,
+              ),
+              const SizedBox(height: 24),
+
+              const Text('PHONE NUMBER', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _phoneController,
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(
+                  hintText: 'e.g. +91 9876543210',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
+                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
+                  filled: true,
+                  fillColor: context.cardColor,
+                ),
+                style: TextStyle(color: context.primaryTextColor),
+                validator: (value) => value == null || value.isEmpty ? 'Please enter your phone number' : null,
               ),
               const SizedBox(height: 24),
               

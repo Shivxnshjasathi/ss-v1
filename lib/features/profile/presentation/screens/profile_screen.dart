@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sampatti_bazar/core/providers/theme_provider.dart';
+import 'package:sampatti_bazar/core/theme/app_theme.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -23,11 +24,11 @@ class ProfileScreen extends ConsumerWidget {
               color: const Color(0xFF00E5FF).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(Icons.arrow_back_ios_new, color: isDark ? Colors.white : Colors.black87, size: 16),
+            child: Icon(Icons.arrow_back_ios_new, color: context.iconColor, size: 16),
           ),
           onPressed: () => context.pop(),
         ),
-        title: Text('My Profile', style: TextStyle(fontWeight: FontWeight.w900, color: isDark ? Colors.white : Colors.black, fontSize: 18)),
+        title: Text('My Profile', style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 18)),
         actions: [
           IconButton(
             icon: Icon(
@@ -54,7 +55,7 @@ class ProfileScreen extends ConsumerWidget {
                   Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.grey.shade200, width: 4),
+                      border: Border.all(color: context.borderColor, width: 4),
                     ),
                     child: const CircleAvatar(
                       radius: 54,
@@ -79,12 +80,12 @@ class ProfileScreen extends ConsumerWidget {
             const SizedBox(height: 16),
             Text(
               'Shivansh Jasathi',
-              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24, letterSpacing: -0.5, color: isDark ? Colors.white : Colors.black),
+              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24, letterSpacing: -0.5, color: context.primaryTextColor),
             ),
             const SizedBox(height: 4),
             Text(
               '+91 98765 43210 • info@sampatti.com',
-              style: TextStyle(color: Colors.grey[600], fontSize: 12, fontWeight: FontWeight.w500),
+              style: TextStyle(color: context.secondaryTextColor, fontSize: 12, fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 12),
             Container(
@@ -106,7 +107,7 @@ class ProfileScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('ACCOUNT', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: Colors.grey, letterSpacing: 1)),
+                   Text('ACCOUNT', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: context.secondaryTextColor, letterSpacing: 1)),
                   const SizedBox(height: 16),
                   _buildMenuCard(
                     context,
@@ -117,7 +118,7 @@ class ProfileScreen extends ConsumerWidget {
                     ],
                   ),
                   const SizedBox(height: 32),
-                  const Text('PREFERENCES', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: Colors.grey, letterSpacing: 1)),
+                   Text('PREFERENCES', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: context.secondaryTextColor, letterSpacing: 1)),
                   const SizedBox(height: 16),
                   _buildMenuCard(
                     context,
@@ -141,6 +142,7 @@ class ProfileScreen extends ConsumerWidget {
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(color: Colors.redAccent.withValues(alpha: 0.3)),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                     ),
                   ),
@@ -181,7 +183,7 @@ class ProfileScreen extends ConsumerWidget {
               if (idx != items.length - 1)
                 Padding(
                   padding: const EdgeInsets.only(left: 64.0),
-                  child: Divider(height: 1, color: Colors.grey.shade100),
+                  child: Divider(height: 1, color: context.borderColor),
                 ),
             ],
           );
@@ -203,9 +205,9 @@ class ProfileScreen extends ConsumerWidget {
       ),
       title: Text(
         title,
-        style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black87),
+        style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: context.primaryTextColor),
       ),
-      trailing: const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+      trailing: Icon(Icons.arrow_forward_ios, size: 14, color: context.secondaryTextColor),
       onTap: onTap,
     );
   }

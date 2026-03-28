@@ -13,6 +13,7 @@ class SavedPropertiesScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    LoggerService.trackScreen('SavedPropertiesScreen');
     final userAsync = ref.watch(currentUserDataProvider);
     
     return userAsync.when(
@@ -39,13 +40,13 @@ class SavedPropertiesScreen extends ConsumerWidget {
           body: savedAsync.when(
             data: (properties) {
               if (properties.isEmpty) {
-                return const Center(
+                return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.favorite_border, size: 64, color: Colors.grey),
-                      SizedBox(height: 16),
-                      Text('You have no saved properties yet.', style: TextStyle(color: Colors.grey)),
+                      Icon(Icons.favorite_border, size: 64, color: context.secondaryTextColor),
+                      const SizedBox(height: 16),
+                      Text('You have no saved properties yet.', style: TextStyle(color: context.secondaryTextColor)),
                     ],
                   ),
                 );
@@ -124,11 +125,11 @@ class SavedPropertiesScreen extends ConsumerWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.location_on, size: 12, color: Colors.grey),
+                       Icon(Icons.location_on, size: 12, color: context.secondaryTextColor),
                       const SizedBox(width: 4),
                       Text(
                         property.city,
-                        style: const TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.bold),
+                        style: TextStyle(color: context.secondaryTextColor, fontSize: 12, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -144,9 +145,9 @@ class SavedPropertiesScreen extends ConsumerWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      _buildSpecSmall(Icons.king_bed_outlined, '${property.bedrooms}'),
+                      _buildSpecSmall(context, Icons.king_bed_outlined, '${property.bedrooms}'),
                       const SizedBox(width: 12),
-                      _buildSpecSmall(Icons.bathtub_outlined, '${property.bathrooms}'),
+                      _buildSpecSmall(context, Icons.bathtub_outlined, '${property.bathrooms}'),
                     ],
                   ),
                 ],
@@ -158,12 +159,12 @@ class SavedPropertiesScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSpecSmall(IconData icon, String value) {
+  Widget _buildSpecSmall(BuildContext context, IconData icon, String value) {
     return Row(
       children: [
-        Icon(icon, size: 14, color: Colors.grey),
+        Icon(icon, size: 14, color: context.secondaryTextColor),
         const SizedBox(width: 4),
-        Text(value, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey)),
+        Text(value, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor)),
       ],
     );
   }

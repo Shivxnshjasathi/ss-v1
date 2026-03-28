@@ -65,15 +65,16 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.search, color: Colors.grey),
+                        Icon(Icons.search, color: context.secondaryTextColor),
                         const SizedBox(width: 12),
-                        const Expanded(
+                        Expanded(
                           child: TextField(
                             decoration: InputDecoration(
                               hintText: 'Search by area or developer...',
-                              hintStyle: TextStyle(color: Colors.black38, fontSize: 14),
+                              hintStyle: TextStyle(color: context.secondaryTextColor.withValues(alpha: 0.5), fontSize: 14),
                               border: InputBorder.none,
                             ),
+                            style: TextStyle(color: context.primaryTextColor),
                           ),
                         ),
                         GestureDetector(
@@ -174,7 +175,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                 }).toList();
 
                 if (filtered.isEmpty) {
-                   return const Center(child: Text('No properties matches your filters.', style: TextStyle(color: Colors.grey)));
+                   return Center(child: Text('No properties matches your filters.', style: TextStyle(color: context.secondaryTextColor)));
                 }
 
                 return ListView.builder(
@@ -227,7 +228,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Filter Properties', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900)),
+                      Text('Filter Properties', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: context.primaryTextColor)),
                       IconButton(
                         icon: const Icon(Icons.close),
                         onPressed: () => Navigator.pop(context),
@@ -236,7 +237,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                   ),
                   const SizedBox(height: 32),
                   
-                  const Text('PROPERTY TYPE', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1)),
+                  Text('PROPERTY TYPE', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1)),
                   const SizedBox(height: 12),
                   Wrap(
                     spacing: 12,
@@ -254,7 +255,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                   ),
                   
                   const SizedBox(height: 40),
-                  const Text('PRICE RANGE (₹)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1)),
+                  Text('PRICE RANGE (₹)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1)),
                   const SizedBox(height: 12),
                   RangeSlider(
                     values: tempPriceRange,
@@ -268,16 +269,16 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                       });
                     },
                   ),
-                  Row(
+                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(_formatPrice(tempPriceRange.start), style: const TextStyle(fontWeight: FontWeight.bold)),
-                      Text(tempPriceRange.end >= 100 ? '${_formatPrice(tempPriceRange.end)}+' : _formatPrice(tempPriceRange.end), style: const TextStyle(fontWeight: FontWeight.bold)),
+                      Text(_formatPrice(tempPriceRange.start), style: TextStyle(fontWeight: FontWeight.bold, color: context.primaryTextColor)),
+                      Text(tempPriceRange.end >= 100 ? '${_formatPrice(tempPriceRange.end)}+' : _formatPrice(tempPriceRange.end), style: TextStyle(fontWeight: FontWeight.bold, color: context.primaryTextColor)),
                     ],
                   ),
                   
                   const SizedBox(height: 40),
-                  const Text('BEDROOMS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1)),
+                  Text('BEDROOMS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1)),
                   const SizedBox(height: 12),
                   Wrap(
                     spacing: 12,
@@ -389,7 +390,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                   width: double.infinity,
                   fit: BoxFit.cover,
                   memCacheHeight: 400, // Performance: Limit memory cache size
-                  placeholder: (context, url) => Container(color: Colors.grey[100]),
+                  placeholder: (context, url) => Container(color: context.cardColor),
                 ),
                 // Gradient Overlay for text readability
                 Positioned.fill(
@@ -439,18 +440,18 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.95),
+                            color: context.scaffoldColor.withValues(alpha: 0.95),
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.grey.shade200),
+                            border: Border.all(color: context.borderColor),
                           ),
                           child: Row(
                             children: [
                               Icon(Icons.verified, color: Theme.of(context).colorScheme.primary, size: 12),
                               const SizedBox(width: 4),
-                              const Text(
+                              Text(
                                 'VERIFIED',
                                 style: TextStyle(
-                                  color: Colors.black87,
+                                  color: context.primaryTextColor,
                                   fontSize: 10,
                                   fontWeight: FontWeight.w900,
                                   letterSpacing: 0.5,
@@ -503,7 +504,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                           children: [
                             Text(
                               'ASKING PRICE',
-                              style: TextStyle(color: Colors.grey.shade500, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)
+                              style: TextStyle(color: context.secondaryTextColor, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)
                             ),
                             const SizedBox(height: 4),
                             Text(
@@ -520,8 +521,8 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                       _buildAmenity(Icons.square_foot_outlined, '${property.areaSqFt.toInt()} sqft'),
                     ],
                   ),
-                  const SizedBox(height: 20),
-                  Divider(height: 1, color: Colors.grey.shade200),
+                   const SizedBox(height: 20),
+                  Divider(height: 1, color: context.borderColor),
                   const SizedBox(height: 16),
                   Row(
                     children: [
@@ -533,9 +534,9 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                           const Text(
+                           Text(
                             'LISTED BY',
-                            style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 0.5),
+                            style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 0.5),
                           ),
                           Text(
                             property.ownerId.isNotEmpty ? 'Owner' : 'Unknown',
@@ -574,7 +575,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Icon(icon, size: 22, color: Colors.grey.shade600),
+        Icon(icon, size: 22, color: context.secondaryTextColor),
         const SizedBox(height: 6),
         Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: context.primaryTextColor)),
       ],

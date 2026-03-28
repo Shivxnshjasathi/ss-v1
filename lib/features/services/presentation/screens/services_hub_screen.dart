@@ -19,8 +19,13 @@ class ServicesHubScreen extends StatelessWidget {
           style: Theme.of(context).textTheme.displaySmall?.copyWith(fontSize: 20),
         ),
         actions: [
-          IconButton(icon: Icon(Icons.search, color: context.iconColor), onPressed: () {}),
-          IconButton(icon: Icon(Icons.notifications_none, color: context.iconColor), onPressed: () {}),
+          IconButton(
+            icon: Icon(Icons.search, color: context.iconColor), 
+            onPressed: () {
+              showSearch(context: context, delegate: GlobalSearchDelegate());
+            }
+          ),
+          IconButton(icon: Icon(Icons.notifications_none, color: context.iconColor), onPressed: () => context.push('/notifications')),
         ],
       ),
       body: SingleChildScrollView(
@@ -35,7 +40,7 @@ class ServicesHubScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'Secure, end-to-end property solutions\npowered by Sampatti.',
-              style: TextStyle(color: Colors.grey[700], fontSize: 14),
+              style: TextStyle(color: context.secondaryTextColor, fontSize: 14),
             ),
             const SizedBox(height: 24),
             GridView.count(
@@ -62,7 +67,7 @@ class ServicesHubScreen extends StatelessWidget {
             const SizedBox(height: 16),
             _buildToolsSupportList(context),
             const SizedBox(height: 32),
-            _buildVerifiedBanner(),
+            _buildVerifiedBanner(context),
             const SizedBox(height: 32),
           ],
         ),
@@ -99,10 +104,10 @@ class ServicesHubScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF00D1FF),
+                      color: Theme.of(context).colorScheme.primary,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Text('Hot', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                    child: Text('Hot', style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor, fontSize: 10, fontWeight: FontWeight.bold)),
                   ),
               ],
             ),
@@ -114,7 +119,7 @@ class ServicesHubScreen extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               subtitle,
-              style: TextStyle(color: Colors.grey[600], fontSize: 10),
+              style: TextStyle(color: context.secondaryTextColor, fontSize: 10),
             ),
           ],
         ),
@@ -150,18 +155,19 @@ class ServicesHubScreen extends StatelessWidget {
           child: Icon(icon, color: context.primaryTextColor),
         ),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
-        subtitle: Text(subtitle, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
-        trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+        subtitle: Text(subtitle, style: TextStyle(color: context.secondaryTextColor, fontSize: 12)),
+        trailing: Icon(Icons.chevron_right, color: context.secondaryTextColor),
       ),
     );
   }
 
-  Widget _buildVerifiedBanner() {
+  Widget _buildVerifiedBanner(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color(0xFFF4FAFD),
+        color: context.cardColor,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.borderColor),
       ),
       child: Row(
         children: [
@@ -173,13 +179,92 @@ class ServicesHubScreen extends StatelessWidget {
                 const SizedBox(height: 4),
                 const Text('Gold Standard Protection', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
                 const SizedBox(height: 4),
-                Text('All service partners are strictly vetted.', style: TextStyle(color: Colors.grey[700], fontSize: 12)),
+                Text('All service partners are strictly vetted.', style: TextStyle(color: context.secondaryTextColor, fontSize: 12)),
               ],
             ),
           ),
           const SizedBox(width: 16),
           const Icon(Icons.bolt, color: Color(0xFF00D1FF), size: 48),
         ],
+      ),
+    );
+  }
+}
+
+class GlobalSearchDelegate extends SearchDelegate {
+  final List<Map<String, dynamic>> _features = [
+    {'name': 'Home Loans', 'route': '/services/loan', 'icon': Icons.account_balance, 'cat': 'Financial'},
+    {'name': 'Construction', 'route': '/services/construction', 'icon': Icons.architecture, 'cat': 'Services'},
+    {'name': 'Movers & Packers', 'route': '/services/movers', 'icon': Icons.local_shipping_outlined, 'cat': 'Services'},
+    {'name': 'Legal Documents', 'route': '/services/legal', 'icon': Icons.gavel, 'cat': 'Legal'},
+    {'name': 'Marketplace', 'route': '/services/marketplace', 'icon': Icons.shopping_bag_outlined, 'cat': 'Materials'},
+    {'name': 'Service Tracking', 'route': '/services/tracking', 'icon': Icons.receipt_long_outlined, 'cat': 'Activity'},
+    {'name': 'Buy Property', 'route': '/properties', 'icon': Icons.home, 'cat': 'Properties'},
+    {'name': 'Rent/Lease', 'route': '/properties', 'icon': Icons.vignette_outlined, 'cat': 'Properties'},
+    {'name': 'List Property', 'route': '/properties/add', 'icon': Icons.add_business_outlined, 'cat': 'Activity'},
+    {'name': 'Saved Properties', 'route': '/properties/saved', 'icon': Icons.favorite_border, 'cat': 'Activity'},
+    {'name': 'EMI Calculator', 'route': '/services/loan', 'icon': Icons.calculate_outlined, 'cat': 'Tools'},
+    {'name': 'Live Support', 'route': '/profile', 'icon': Icons.headset_mic_outlined, 'cat': 'Support'},
+  ];
+
+  @override
+  List<Widget>? buildActions(BuildContext context) {
+    return [
+      IconButton(icon: const Icon(Icons.clear, color: Colors.grey), onPressed: () => query = ''),
+    ];
+  }
+
+  @override
+  Widget? buildLeading(BuildContext context) {
+    return IconButton(
+      icon: Icon(Icons.arrow_back, color: context.iconColor),
+      onPressed: () => close(context, null),
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) => buildSuggestions(context);
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    final filtered = _features.where((f) => 
+      f['name'].toString().toLowerCase().contains(query.toLowerCase()) ||
+      f['cat'].toString().toLowerCase().contains(query.toLowerCase())
+    ).toList();
+
+    return Container(
+      color: context.scaffoldColor,
+      child: ListView.builder(
+        itemCount: filtered.length,
+        itemBuilder: (context, index) {
+          final feature = filtered[index];
+          return ListTile(
+            leading: Icon(feature['icon'] as IconData, color: context.iconColor),
+            title: Text(feature['name'] as String, style: TextStyle(color: context.primaryTextColor, fontWeight: FontWeight.bold)),
+            subtitle: Text(feature['cat'] as String, style: TextStyle(color: context.secondaryTextColor, fontSize: 12)),
+            trailing: Icon(Icons.arrow_forward_ios, size: 14, color: context.secondaryTextColor),
+            onTap: () {
+              close(context, null);
+              context.push(feature['route'] as String);
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  @override
+  ThemeData appBarTheme(BuildContext context) {
+    final theme = Theme.of(context);
+    return theme.copyWith(
+      appBarTheme: theme.appBarTheme.copyWith(
+        backgroundColor: context.scaffoldColor,
+        elevation: 0,
+        iconTheme: IconThemeData(color: context.iconColor),
+      ),
+      inputDecorationTheme: const InputDecorationTheme(
+        border: InputBorder.none,
+        hintStyle: TextStyle(color: Colors.grey),
       ),
     );
   }
