@@ -5,8 +5,10 @@ import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/core/providers/theme_provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/foundation.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -21,18 +23,25 @@ void main() async {
       
       debugPrint('Firebase initialized successfully: ${Firebase.app().name}');
 
-      // Pass all uncaught "fatal" errors from the framework to Crashlytics
-      // FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-      // PlatformDispatcher.instance.onError = (error, stack) {
-      //   FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-      //   return true;
-      // };
+      // Initialize Crashlytics
+      FlutterError.onError = (errorDetails) {
+        FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
+      };
+      
+      // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
+      PlatformDispatcher.instance.onError = (error, stack) {
+        FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+        return true;
+      };
+      
+      // Ensure analytics is enabled
+      await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
 
       runApp(const ProviderScope(child: SampattiBazarApp()));
     },
     (error, stack) {
       // Catch errors outside the framework
-      // FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
       debugPrint('Uncaught Error: $error');
     },
   );

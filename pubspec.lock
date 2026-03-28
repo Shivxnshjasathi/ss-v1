@@ -257,6 +257,30 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.9.3+5"
+  firebase_analytics:
+    dependency: "direct main"
+    description:
+      name: firebase_analytics
+      sha256: e5679ed436d5554e230013287bbe993e41b97850e34972962d62140908e7b4ae
+      url: "https://pub.dev"
+    source: hosted
+    version: "12.2.0"
+  firebase_analytics_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_analytics_platform_interface
+      sha256: "121e8c54c69f7c4da0b99fc616d513db130dd407c8720ddd8cb63b4adaab70e6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.1.0"
+  firebase_analytics_web:
+    dependency: transitive
+    description:
+      name: firebase_analytics_web
+      sha256: "0cabfa34f122858fde79719c88e49d76e16999df30d03d1601a457f25dfed7ab"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.1+4"
   firebase_auth:
     dependency: "direct main"
     description:
@@ -725,6 +749,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.0"
+  logger:
+    dependency: "direct main"
+    description:
+      name: logger
+      sha256: "25aee487596a6257655a1e091ec2ae66bc30e7af663592cc3a27e6591e05035c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.7.0"
   logging:
     dependency: transitive
     description:
@@ -925,6 +957,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
+  share_plus:
+    dependency: "direct main"
+    description:
+      name: share_plus
+      sha256: fce43200aa03ea87b91ce4c3ac79f0cecd52e2a7a56c7a4185023c271fbfa6da
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.1.4"
+  share_plus_platform_interface:
+    dependency: transitive
+    description:
+      name: share_plus_platform_interface
+      sha256: cc012a23fc2d479854e6c80150696c4a5f5bb62cb89af4de1c505cf78d0a5d0b
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.2"
   shared_preferences:
     dependency: "direct main"
     description:

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:sampatti_bazar/features/properties/data/property_repository.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/services/data/booking_repository.dart';
@@ -26,6 +27,10 @@ class PropertyDetailScreen extends ConsumerWidget {
         }
         final property = properties[propertyIdx];
         final ownerAsync = ref.watch(userProfileProvider(property.ownerId));
+        final currentUser = ref.watch(currentUserDataProvider).value;
+        final isSavedAsync = currentUser != null 
+            ? ref.watch(isPropertySavedProvider((userId: currentUser.uid, propertyId: propertyId)))
+            : const AsyncValue.data(false);
 
         return Scaffold(
           backgroundColor: Colors.white,
@@ -53,8 +58,17 @@ class PropertyDetailScreen extends ConsumerWidget {
             ),
             actions: [
                IconButton(
-                 icon: const Icon(Icons.favorite_border, color: Colors.white),
-                 onPressed: () {},
+                 icon: Icon(
+                   isSavedAsync.value == true ? Icons.favorite : Icons.favorite_border, 
+                   color: isSavedAsync.value == true ? Colors.red : Colors.white
+                 ),
+                 onPressed: () async {
+                   if (currentUser == null) {
+                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please log in to save properties')));
+                     return;
+                   }
+                   await ref.read(propertyRepositoryProvider).toggleSaveProperty(currentUser.uid, propertyId);
+                 },
                  style: IconButton.styleFrom(
                    backgroundColor: Colors.black.withValues(alpha: 0.3),
                    minimumSize: const Size(40, 40),
@@ -63,7 +77,12 @@ class PropertyDetailScreen extends ConsumerWidget {
                const SizedBox(width: 8),
                IconButton(
                  icon: const Icon(Icons.share_outlined, color: Colors.white),
-                 onPressed: () {},
+                 onPressed: () {
+                   Share.share(
+                     'Check out this property on Sampatti Bazar: ${property.title} in ${property.city} for ₹${property.price.toInt()}.',
+                     subject: 'Property Shared: ${property.title}',
+                   );
+                 },
                  style: IconButton.styleFrom(
                    backgroundColor: Colors.black.withValues(alpha: 0.3),
                    minimumSize: const Size(40, 40),
@@ -80,6 +99,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                         ? property.imageUrls.first 
                         : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
                      fit: BoxFit.cover,
+                     memCacheHeight: 600,
                    ),
                    Container(
                      decoration: BoxDecoration(

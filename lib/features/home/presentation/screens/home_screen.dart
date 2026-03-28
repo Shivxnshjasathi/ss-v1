@@ -7,6 +7,7 @@ import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/properties/data/property_repository.dart';
 
 import 'package:sampatti_bazar/core/services/location_provider.dart';
+import 'package:sampatti_bazar/core/services/logger_service.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -126,32 +127,44 @@ class HomeScreen extends ConsumerWidget {
 
             const SizedBox(height: 24),
 
-            // Categories Row
+            // Categories Grid
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildCategoryItem(context, 'BUY', Icons.home_outlined, () => context.push('/properties')),
-                  _buildCategoryItem(context, 'RENT', Icons.domain, () => context.push('/properties')),
-                  _buildCategoryItem(context, 'LIST', Icons.add_home_work_outlined, () => context.push('/add-property')),
-                  _buildCategoryItem(context, 'SERVICES', Icons.work_outline, () => context.push('/services')),
+              child: _buildAdaptiveCategoryGrid(
+                context,
+                [
+                  _CategoryData('BUY', Icons.home_outlined, () {
+                    LoggerService.i('Home: Buy tapped');
+                    context.push('/properties');
+                  }),
+                  _CategoryData('RENT', Icons.domain, () {
+                    LoggerService.i('Home: Rent tapped');
+                    context.push('/properties');
+                  }),
+                  _CategoryData('LIST', Icons.add_home_work_outlined, () {
+                    LoggerService.i('Home: List property tapped');
+                    context.push('/add-property');
+                  }),
+                  _CategoryData('SERVICES', Icons.work_outline, () {
+                    LoggerService.i('Home: Services tapped');
+                    context.push('/services');
+                  }),
                 ],
               ),
             ),
 
             const SizedBox(height: 16),
 
-            // Quick Access Services Row
+            // Quick Access Services Grid
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildCategoryItem(context, 'LOAN', Icons.account_balance_outlined, () => context.push('/services/loan')),
-                  _buildCategoryItem(context, 'CONSTRUCT', Icons.architecture_outlined, () => context.push('/services/construction')),
-                  _buildCategoryItem(context, 'LEGAL', Icons.gavel_outlined, () => context.push('/services/legal')),
-                  _buildCategoryItem(context, 'MOVERS', Icons.local_shipping_outlined, () => context.push('/services/movers')),
+              child: _buildAdaptiveCategoryGrid(
+                context,
+                [
+                  _CategoryData('LOAN', Icons.account_balance_outlined, () => context.push('/services/loan')),
+                  _CategoryData('CONSTRUCT', Icons.architecture_outlined, () => context.push('/services/construction')),
+                  _CategoryData('LEGAL', Icons.gavel_outlined, () => context.push('/services/legal')),
+                  _CategoryData('MOVERS', Icons.local_shipping_outlined, () => context.push('/services/movers')),
                 ],
               ),
             ),
@@ -274,33 +287,49 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildCategoryItem(BuildContext context, String title, IconData icon, VoidCallback onTap) {
+  Widget _buildAdaptiveCategoryGrid(BuildContext context, List<_CategoryData> items) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final itemWidth = (constraints.maxWidth - (items.length - 1) * 12) / items.length;
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: items.map((item) => _buildCategoryItem(context, item.title, item.icon, item.onTap, itemWidth)).toList(),
+        );
+      },
+    );
+  }
+
+  Widget _buildCategoryItem(BuildContext context, String title, IconData icon, VoidCallback onTap, double width) {
     return GestureDetector(
       onTap: onTap,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 70,
-            height: 70,
+            width: width.clamp(50.0, 70.0),
+            height: width.clamp(50.0, 70.0),
             decoration: BoxDecoration(
               color: context.cardColor,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(color: context.borderColor, width: 1.0),
             ),
-            child: Icon(icon, color: context.iconColor, size: 28),
+            child: Icon(icon, color: context.iconColor, size: width.clamp(20.0, 28.0)),
           ),
           const SizedBox(height: 8),
-          Text(
-            title,
-            style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.5, color: context.primaryTextColor),
-            textAlign: TextAlign.center,
+          SizedBox(
+            width: width,
+            child: Text(
+              title,
+              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
         ],
       ),
     );
   }
-
   Widget _buildFeaturedCard(BuildContext context, String title, String price, String location, String imageUrl, String propertyId) {
     return GestureDetector(
       onTap: () => context.push('/properties/detail/$propertyId'),
@@ -310,7 +339,10 @@ class HomeScreen extends ConsumerWidget {
           color: context.cardColor,
           borderRadius: BorderRadius.circular(16),
           image: DecorationImage(
-            image: CachedNetworkImageProvider(imageUrl),
+            image: ResizeImage(
+              CachedNetworkImageProvider(imageUrl),
+              width: 500,
+            ),
             fit: BoxFit.cover,
           ),
         ),
@@ -476,4 +508,11 @@ class HomeScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+class _CategoryData {
+  final String title;
+  final IconData icon;
+  final VoidCallback onTap;
+  _CategoryData(this.title, this.icon, this.onTap);
 }

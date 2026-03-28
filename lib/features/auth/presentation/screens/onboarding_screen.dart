@@ -6,6 +6,7 @@ import 'package:sampatti_bazar/features/auth/data/auth_repository.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/auth/domain/user_model.dart';
 import 'package:sampatti_bazar/core/services/location_service.dart';
+import 'package:sampatti_bazar/core/services/logger_service.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -66,16 +67,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 
   Future<void> _onCompleteSetup() async {
-    debugPrint('👆 [OnboardingScreen] Tapped Complete Setup');
+    LoggerService.i('Tapped Complete Setup');
     if (_formKey.currentState!.validate()) {
-      debugPrint('✅ [OnboardingScreen] Form validation passed');
+      LoggerService.i('Form validation passed');
       setState(() { _isLoading = true; });
       try {
         final user = ref.read(authRepositoryProvider).currentUser;
-        debugPrint('👤 [OnboardingScreen] Current user UID: ${user?.uid}');
+        LoggerService.i('Current user UID: ${user?.uid}');
         
         if (user != null) {
-          debugPrint('💾 [OnboardingScreen] Attempting to save user profile...');
+          LoggerService.i('Attempting to save user profile');
           final userModel = UserModel(
             uid: user.uid,
             phoneNumber: user.phoneNumber ?? '',
@@ -85,10 +86,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             createdAt: DateTime.now(),
           );
           await ref.read(userRepositoryProvider).saveUser(userModel);
-          debugPrint('🚀 [OnboardingScreen] Profile saved successfully! Navigating to /home');
+          LoggerService.i('Profile saved successfully! Setting user ID and navigating to /home');
+          await LoggerService.setUserId(user.uid);
           if (mounted) context.go('/home');
         } else {
-          debugPrint('❌ [OnboardingScreen] Current user is NULL. Showing auth dialog.');
+          LoggerService.e('Current user is NULL during onboarding');
           if (mounted) {
             showDialog(
               context: context,
@@ -109,8 +111,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           }
         }
       } catch (e, stackTrace) {
-        debugPrint('💥 [OnboardingScreen] CRITICAL ERROR catching exception: $e');
-        debugPrint('🥞 [OnboardingScreen] StackTrace: $stackTrace');
+        LoggerService.e('CRITICAL ERROR saving profile', error: e, stack: stackTrace);
         if (mounted) {
           showDialog(
             context: context,

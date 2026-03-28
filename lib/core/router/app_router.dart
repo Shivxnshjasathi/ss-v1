@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:sampatti_bazar/core/router/main_layout_screen.dart';
 import 'package:sampatti_bazar/features/splash/presentation/screens/splash_screen.dart';
 import 'package:sampatti_bazar/features/auth/presentation/screens/login_screen.dart';
@@ -27,6 +28,9 @@ final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 final goRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/',
+  observers: [
+    FirebaseAnalyticsObserver(analytics: FirebaseAnalytics.instance),
+  ],
   routes: [
     GoRoute(
       path: '/',

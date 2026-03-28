@@ -20,8 +20,12 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
   // Advanced Filter State
   String _selectedPropertyType = 'All';
   String _selectedBedrooms = 'Any';
-  RangeValues _priceRange = const RangeValues(0, 100); // 0 to 100M+
+  RangeValues _priceRange = const RangeValues(0, 100); // 0 to 100 on slider
   
+  // 1 unit on slider = 10 Lakhs
+  // 10 units = 1 Crore
+  // 100 units = 10 Crores
+
   final List<String> _propertyTypes = ['All', 'Apartment', 'Villa', 'Penthouse', 'Studio'];
   final List<String> _bedroomOptions = ['Any', '1+', '2+', '3+', '4+'];
 
@@ -158,18 +162,19 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                     if (p.bedrooms < requiredBeds) return false;
                   }
                   
-                  // Price Filter (assuming price is stored in currency units, convert to millions for check if needed)
-                  // For now, mapping millions to flat numbers
-                  final priceInMillions = p.price / 1000000;
-                  if (priceInMillions < _priceRange.start || (_priceRange.end < 100 && priceInMillions > _priceRange.end)) {
-                    return false;
-                  }
+                  // Price Filter logic
+                  // 1 unit = 10 Lakhs = 1,000,000
+                  final minPrice = _priceRange.start * 1000000;
+                  final maxPrice = _priceRange.end * 1000000;
+                  
+                  if (p.price < minPrice) return false;
+                  if (_priceRange.end < 100 && p.price > maxPrice) return false;
 
                   return true;
                 }).toList();
 
                 if (filtered.isEmpty) {
-                   return const Center(child: Text('No properties found matches your filters.', style: TextStyle(color: Colors.grey)));
+                   return const Center(child: Text('No properties matches your filters.', style: TextStyle(color: Colors.grey)));
                 }
 
                 return ListView.builder(
@@ -187,6 +192,14 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
         ],
       ),
     );
+  }
+
+  String _formatPrice(double value) {
+    if (value >= 10) {
+      return '₹${(value / 10).toStringAsFixed(1)} Cr';
+    } else {
+      return '₹${value.toInt() * 10} L';
+    }
   }
 
   void _showFilterSheet(BuildContext context) {
@@ -241,12 +254,12 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                   ),
                   
                   const SizedBox(height: 40),
-                  const Text('PRICE RANGE (MILLIONS)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1)),
+                  const Text('PRICE RANGE (₹)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1)),
                   const SizedBox(height: 12),
                   RangeSlider(
                     values: tempPriceRange,
                     min: 0,
-                    max: 100, // Up to 100M+
+                    max: 100, // 0 to 10 Cr+
                     activeColor: Theme.of(context).colorScheme.primary,
                     inactiveColor: context.borderColor,
                     onChanged: (values) {
@@ -258,8 +271,8 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('\$${tempPriceRange.start.toStringAsFixed(1)}M', style: const TextStyle(fontWeight: FontWeight.bold)),
-                      Text(tempPriceRange.end >= 100 ? '\$100M+' : '\$${tempPriceRange.end.toStringAsFixed(1)}M', style: const TextStyle(fontWeight: FontWeight.bold)),
+                      Text(_formatPrice(tempPriceRange.start), style: const TextStyle(fontWeight: FontWeight.bold)),
+                      Text(tempPriceRange.end >= 100 ? '${_formatPrice(tempPriceRange.end)}+' : _formatPrice(tempPriceRange.end), style: const TextStyle(fontWeight: FontWeight.bold)),
                     ],
                   ),
                   
@@ -375,6 +388,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                   height: 240,
                   width: double.infinity,
                   fit: BoxFit.cover,
+                  memCacheHeight: 400, // Performance: Limit memory cache size
                   placeholder: (context, url) => Container(color: Colors.grey[100]),
                 ),
                 // Gradient Overlay for text readability

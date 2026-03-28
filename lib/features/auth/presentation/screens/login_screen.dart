@@ -5,6 +5,7 @@ import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/auth_repository.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:sampatti_bazar/core/services/logger_service.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -32,14 +33,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final phone = _phoneController.text.trim();
     if (phone.length >= 10) {
       setState(() { _isLoading = true; });
+      LoggerService.i('Attempting OTP verification for: +91$phone');
       try {
         await ref.read(authRepositoryProvider).verifyPhoneNumber(
           phoneNumber: '+91$phone',
           verificationCompleted: (credential) async {
+            LoggerService.i('Auto-verification completed for: +91$phone');
             await FirebaseAuth.instance.signInWithCredential(credential);
             if (mounted) context.go('/home');
           },
           verificationFailed: (e) {
+            LoggerService.e('Phone verification failed', error: e, stack: StackTrace.current);
             if (mounted) {
               setState(() { _isLoading = false; });
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message ?? 'Verification failed')));
@@ -47,6 +51,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           },
           codeSent: (verificationId) {
             if (mounted) {
+              LoggerService.i('OTP code sent to: +91$phone');
               setState(() { _isLoading = false; });
               context.push('/otp', extra: {'phoneNumber': phone, 'verificationId': verificationId});
             }
@@ -54,6 +59,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           codeAutoRetrievalTimeout: (verificationId) {},
         );
       } catch (e) {
+        LoggerService.e('Error during phone authentication', error: e, stack: StackTrace.current);
         if (mounted) {
           setState(() { _isLoading = false; });
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
@@ -70,11 +76,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       return;
     }
     
-    setState(() { _isLoading = true; });
+    LoggerService.i('Attempting email login for: $email');
     try {
       final authRepo = ref.read(authRepositoryProvider);
       try {
         await authRepo.signInWithEmailAndPassword(email, password);
+        LoggerService.i('Email login successful for: $email');
       } on FirebaseAuthException catch (e) {
         if (e.code == 'user-not-found' || e.code == 'invalid-credential' || e.code == 'invalid-email') {
           try {
@@ -101,6 +108,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         }
       }
     } catch (e) {
+      LoggerService.e('Error during email authentication', error: e, stack: StackTrace.current);
       if (mounted) {
         setState(() { _isLoading = false; });
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString().replaceAll('Exception: ', ''))));
@@ -132,8 +140,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 32),
-                    Text('WELCOME TO', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1, color: context.primaryTextColor, height: 1.1)),
-                    const Text('SAMPATTI\nBAZAR', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1, color: Color(0xFF1E60FF), height: 1.1)),
+                    const FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text('WELCOME TO', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1, height: 1.1)),
+                    ),
+                    const FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text('SAMPATTI\nBAZAR', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1, color: Color(0xFF1E60FF), height: 1.1)),
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       _isEmailLogin ? 'Enter your email to continue' : 'Enter your phone number to get started', 

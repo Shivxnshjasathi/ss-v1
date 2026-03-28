@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
-import 'package:sampatti_bazar/shared/widgets/custom_text_field.dart';
 
 class ConstructionScreen extends StatefulWidget {
   const ConstructionScreen({super.key});

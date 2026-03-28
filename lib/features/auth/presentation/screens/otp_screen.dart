@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter/foundation.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/auth_repository.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
+import 'package:sampatti_bazar/core/services/logger_service.dart';
 
 class OtpScreen extends ConsumerStatefulWidget {
   final String phoneNumber;
@@ -20,37 +20,36 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   bool _isLoading = false;
 
   Future<void> _onVerify() async {
-    debugPrint('👆 [OtpScreen] Triggered _onVerify with OTP length: ${_otpCode.length}');
+    LoggerService.i('Triggered OTP verification for: ${widget.phoneNumber}');
     if (_otpCode.length < 6) return;
     
     setState(() { _isLoading = true; });
     try {
       final authRepo = ref.read(authRepositoryProvider);
-      debugPrint('🔥 [OtpScreen] Attempting verifyOTP with verificationId: ${widget.verificationId}');
+      LoggerService.i('Attempting verifyOTP');
       final userCredential = await authRepo.verifyOTP(verificationId: widget.verificationId, smsCode: _otpCode);
       
       if (userCredential.user != null && mounted) {
-        debugPrint('✅ [OtpScreen] OTP Verified for UID: ${userCredential.user!.uid}');
+        LoggerService.i('OTP Verified for UID: ${userCredential.user!.uid}');
         // Check if user exists in Firestore
         final userRepo = ref.read(userRepositoryProvider);
-        debugPrint('🔍 [OtpScreen] Checking for existing user profile...');
+        LoggerService.i('Checking for existing user profile');
         final userDoc = await userRepo.getUser(userCredential.user!.uid);
         
         if (mounted) {
           if (userDoc == null || userDoc.name == null || userDoc.name!.isEmpty) {
-            debugPrint('⚠️ [OtpScreen] No profile found. Routing to /onboarding');
+            LoggerService.i('No profile found. Routing to /onboarding');
             context.go('/onboarding');
           } else {
-            debugPrint('🏠 [OtpScreen] Profile found. Routing to /home');
+            LoggerService.i('Profile found. Routing to /home');
             context.go('/home');
           }
         }
       } else {
-        debugPrint('❌ [OtpScreen] UserCredential user is null!');
+        LoggerService.e('UserCredential user is null after verification');
       }
     } catch (e, stackTrace) {
-      debugPrint('💥 [OtpScreen] Error during OTP verification: $e');
-      debugPrint('🥞 [OtpScreen] StackTrace: $stackTrace');
+      LoggerService.e('Error during OTP verification', error: e, stack: stackTrace);
       if (mounted) {
         setState(() { _isLoading = false; });
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Invalid OTP or error occurred: $e')));
@@ -78,8 +77,16 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('VERIFY YOUR', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1, color: context.primaryTextColor, height: 1.1)),
-                  const Text('NUMBER', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1, color: Color(0xFF1E60FF), height: 1.1)),
+                  const FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text('VERIFY YOUR', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1, height: 1.1)),
+                  ),
+                  const FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text('NUMBER', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1, color: Color(0xFF1E60FF), height: 1.1)),
+                  ),
                   const SizedBox(height: 16),
                   Text('Enter the 6-digit code sent to\n+91 ${widget.phoneNumber}', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.primaryTextColor, height: 1.5)),
                   const SizedBox(height: 48),
@@ -154,7 +161,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     String digit = hasValue ? _otpCode[index] : '';
 
     return Container(
-      width: 48,
+      width: 44, // Slightly smaller for better fit on narrow screens
       height: 56,
       alignment: Alignment.center,
       decoration: BoxDecoration(

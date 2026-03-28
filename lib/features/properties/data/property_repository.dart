@@ -12,6 +12,14 @@ final propertiesStreamProvider = StreamProvider<List<PropertyModel>>((ref) {
   return ref.watch(propertyRepositoryProvider).streamProperties();
 });
 
+final savedPropertiesProvider = StreamProvider.family<List<PropertyModel>, String>((ref, userId) {
+  return ref.watch(propertyRepositoryProvider).streamSavedProperties(userId);
+});
+
+final isPropertySavedProvider = StreamProvider.family<bool, ({String userId, String propertyId})>((ref, arg) {
+  return ref.watch(propertyRepositoryProvider).isPropertySaved(arg.userId, arg.propertyId);
+});
+
 class PropertyRepository {
   final FirebaseFirestore _firestore;
   final FirebaseStorage _storage;
@@ -92,5 +100,57 @@ class PropertyRepository {
       return PropertyModel.fromMap(doc.data()!, doc.id);
     }
     return null;
+  }
+
+  Future<void> toggleSaveProperty(String userId, String propertyId) async {
+    final docId = '${userId}_$propertyId';
+    final doc = _firestore.collection('saved_properties').doc(docId);
+    final existing = await doc.get();
+    
+    if (existing.exists) {
+      await doc.delete();
+    } else {
+      await doc.set({
+        'userId': userId,
+        'propertyId': propertyId,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+    }
+  }
+
+  Stream<bool> isPropertySaved(String userId, String propertyId) {
+    final docId = '${userId}_$propertyId';
+    return _firestore.collection('saved_properties').doc(docId).snapshots().map((snapshot) => snapshot.exists);
+  }
+
+  Stream<List<PropertyModel>> streamSavedProperties(String userId) {
+    return _firestore
+        .collection('saved_properties')
+        .where('userId', isEqualTo: userId)
+        .snapshots()
+        .asyncMap((snapshot) async {
+      final propertyIds = snapshot.docs.map((doc) => doc['propertyId'] as String).toList();
+      if (propertyIds.isEmpty) return [];
+
+      // Fetch each property details
+      final propertyFutures = propertyIds.map((id) => getProperty(id));
+      final properties = await Future.wait(propertyFutures);
+      final result = properties.whereType<PropertyModel>().toList();
+      
+      // Sort in memory by matching the order of propertyIds (which we can't easily rely on without native order)
+      // Or just sort by title for now if we don't have a reliable timestamp in the property itself
+      // Actually, we can fetch the timestamp from the snapshot docs
+      final idToTimestamp = {
+        for (var doc in snapshot.docs) doc['propertyId'] as String: doc['timestamp'] as Timestamp?
+      };
+      
+      result.sort((a, b) {
+        final tsA = idToTimestamp[a.id] ?? Timestamp.now();
+        final tsB = idToTimestamp[b.id] ?? Timestamp.now();
+        return tsB.compareTo(tsA);
+      });
+      
+      return result;
+    });
   }
 }
