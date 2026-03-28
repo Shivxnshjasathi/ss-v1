@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "987957373561",
+    "project_id": "sampatti-bazar",
+    "storage_bucket": "sampatti-bazar.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:987957373561:android:ccdfca1d15ef943a3bc2a8",
+        "android_client_info": {
+          "package_name": "com.sampattibazar.sampatti_bazar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDxBbtJh5KO4cLgMTy652YU8cL-rRPbXB8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

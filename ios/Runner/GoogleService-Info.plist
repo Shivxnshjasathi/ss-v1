@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyB5th-8BpiNYvXj3wAfPxuB5eiNZ6ln2Fs</string>
+	<key>GCM_SENDER_ID</key>
+	<string>987957373561</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.sampattibazar.sampattiBazar</string>
+	<key>PROJECT_ID</key>
+	<string>sampatti-bazar</string>
+	<key>STORAGE_BUCKET</key>
+	<string>sampatti-bazar.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:987957373561:ios:cea57e69e3ca5a4c3bc2a8</string>
+</dict>
+</plist>
