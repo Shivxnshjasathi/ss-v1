@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/core/widgets/contact_bottom_sheet.dart';
+import 'package:sampatti_bazar/l10n/app_localizations.dart';
 
 class ServicesHubScreen extends StatelessWidget {
   const ServicesHubScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: context.scaffoldColor,
       appBar: AppBar(
@@ -16,7 +18,7 @@ class ServicesHubScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         centerTitle: false,
         title: Text(
-          'Services Hub',
+          l10n.servicesHub,
           style: Theme.of(context).textTheme.displaySmall?.copyWith(fontSize: 20),
         ),
         actions: [
@@ -35,12 +37,12 @@ class ServicesHubScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Financial\nEcosystem',
+              l10n.financialEcosystem,
               style: Theme.of(context).textTheme.displayMedium,
             ),
             const SizedBox(height: 8),
             Text(
-              'Secure, end-to-end property solutions\npowered by Sampatti.',
+              l10n.servicesSubtitle,
               style: TextStyle(color: context.secondaryTextColor, fontSize: 14),
             ),
             const SizedBox(height: 24),
@@ -52,23 +54,23 @@ class ServicesHubScreen extends StatelessWidget {
               crossAxisSpacing: 16,
               childAspectRatio: 1.2,
               children: [
-                 _buildServiceGridItem(context, 'Home Loans', Icons.account_balance, 'Instant Approval', '/services/loan', isHot: true),
-                 _buildServiceGridItem(context, 'Construction', Icons.architecture, 'Top Contractors', '/services/construction'),
-                 _buildServiceGridItem(context, 'Movers', Icons.local_shipping_outlined, 'Safe Relocation', '/services/movers'),
-                 _buildServiceGridItem(context, 'Legal Docs', Icons.gavel, 'Verified Lawyers', '/services/legal'),
-                 _buildServiceGridItem(context, 'Marketplace', Icons.shopping_bag_outlined, 'Materials & More', '/services/marketplace'),
-                 _buildServiceGridItem(context, 'Service Tracking', Icons.receipt_long_outlined, 'Track Orders', '/services/tracking'),
+                 _buildServiceGridItem(context, l10n.homeLoans, Icons.account_balance, l10n.instantApproval, '/services/loan', isHot: true, hotLabel: l10n.hot),
+                 _buildServiceGridItem(context, l10n.construction, Icons.architecture, l10n.topContractors, '/services/construction'),
+                 _buildServiceGridItem(context, l10n.movers, Icons.local_shipping_outlined, l10n.safeRelocation, '/services/movers'),
+                 _buildServiceGridItem(context, l10n.legalDocs, Icons.gavel, l10n.verifiedLawyers, '/services/legal'),
+                 _buildServiceGridItem(context, l10n.marketplace, Icons.shopping_bag_outlined, l10n.materialsAndMore, '/services/marketplace'),
+                 _buildServiceGridItem(context, l10n.serviceTracking, Icons.receipt_long_outlined, l10n.trackOrders, '/services/tracking'),
               ],
             ),
             const SizedBox(height: 32),
-            const Text(
-              'TOOLS & SUPPORT',
-              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1, color: Colors.blueGrey),
+            Text(
+              l10n.toolsAndSupport,
+              style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1, color: Colors.blueGrey),
             ),
             const SizedBox(height: 16),
-            _buildToolsSupportList(context),
+            _buildToolsSupportList(context, l10n),
             const SizedBox(height: 32),
-            _buildVerifiedBanner(context),
+            _buildVerifiedBanner(context, l10n),
             const SizedBox(height: 32),
           ],
         ),
@@ -76,7 +78,7 @@ class ServicesHubScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildServiceGridItem(BuildContext context, String title, IconData icon, String subtitle, String route, {bool isHot = false}) {
+  Widget _buildServiceGridItem(BuildContext context, String title, IconData icon, String subtitle, String route, {bool isHot = false, String? hotLabel}) {
     return GestureDetector(
       onTap: () => context.push(route),
       child: Container(
@@ -101,14 +103,14 @@ class ServicesHubScreen extends StatelessWidget {
                   ),
                   child: Icon(icon, color: context.primaryTextColor, size: 24),
                 ),
-                if (isHot)
+                if (isHot && hotLabel != null)
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.primary,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Text('Hot', style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor, fontSize: 10, fontWeight: FontWeight.bold)),
+                    child: Text(hotLabel, style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor, fontSize: 10, fontWeight: FontWeight.bold)),
                   ),
               ],
             ),
@@ -128,12 +130,12 @@ class ServicesHubScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildToolsSupportList(BuildContext context) {
+  Widget _buildToolsSupportList(BuildContext context, AppLocalizations l10n) {
     return Column(
       children: [
-        _buildListTile(context, 'EMI Calculator', 'Plan your finances', Icons.calculate_outlined, () {}),
+        _buildListTile(context, l10n.emiCalculator, l10n.planYourFinances, Icons.calculate_outlined, () {}),
         const SizedBox(height: 12),
-        _buildListTile(context, 'Live Support', 'Chat with experts', Icons.headset_mic_outlined, () => ContactBottomSheet.show(context)),
+        _buildListTile(context, l10n.liveSupport, l10n.chatWithExperts, Icons.headset_mic_outlined, () => ContactBottomSheet.show(context)),
       ],
     );
   }
@@ -162,7 +164,7 @@ class ServicesHubScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildVerifiedBanner(BuildContext context) {
+  Widget _buildVerifiedBanner(BuildContext context, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -176,11 +178,11 @@ class ServicesHubScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('VERIFIED', style: TextStyle(color: Color(0xFF00D1FF), fontWeight: FontWeight.bold, fontSize: 10, letterSpacing: 1)),
+                Text(l10n.verified, style: const TextStyle(color: Color(0xFF00D1FF), fontWeight: FontWeight.bold, fontSize: 10, letterSpacing: 1)),
                 const SizedBox(height: 4),
-                const Text('Gold Standard Protection', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
+                Text(l10n.goldStandardProtection, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
                 const SizedBox(height: 4),
-                Text('All service partners are strictly vetted.', style: TextStyle(color: context.secondaryTextColor, fontSize: 12)),
+                Text(l10n.strictlyVetted, style: TextStyle(color: context.secondaryTextColor, fontSize: 12)),
               ],
             ),
           ),
@@ -193,19 +195,19 @@ class ServicesHubScreen extends StatelessWidget {
 }
 
 class GlobalSearchDelegate extends SearchDelegate {
-  final List<Map<String, dynamic>> _features = [
-    {'name': 'Home Loans', 'route': '/services/loan', 'icon': Icons.account_balance, 'cat': 'Financial'},
-    {'name': 'Construction', 'route': '/services/construction', 'icon': Icons.architecture, 'cat': 'Services'},
-    {'name': 'Movers & Packers', 'route': '/services/movers', 'icon': Icons.local_shipping_outlined, 'cat': 'Services'},
-    {'name': 'Legal Documents', 'route': '/services/legal', 'icon': Icons.gavel, 'cat': 'Legal'},
-    {'name': 'Marketplace', 'route': '/services/marketplace', 'icon': Icons.shopping_bag_outlined, 'cat': 'Materials'},
-    {'name': 'Service Tracking', 'route': '/services/tracking', 'icon': Icons.receipt_long_outlined, 'cat': 'Activity'},
-    {'name': 'Buy Property', 'route': '/properties', 'icon': Icons.home, 'cat': 'Properties'},
-    {'name': 'Rent/Lease', 'route': '/properties', 'icon': Icons.vignette_outlined, 'cat': 'Properties'},
-    {'name': 'List Property', 'route': '/properties/add', 'icon': Icons.add_business_outlined, 'cat': 'Activity'},
-    {'name': 'Saved Properties', 'route': '/properties/saved', 'icon': Icons.favorite_border, 'cat': 'Activity'},
-    {'name': 'EMI Calculator', 'route': '/services/loan', 'icon': Icons.calculate_outlined, 'cat': 'Tools'},
-    {'name': 'Live Support', 'route': '/profile/support', 'icon': Icons.headset_mic_outlined, 'cat': 'Support'},
+  List<Map<String, dynamic>> _getFeatures(AppLocalizations l10n) => [
+    {'name': l10n.homeLoans, 'route': '/services/loan', 'icon': Icons.account_balance, 'cat': l10n.finance},
+    {'name': l10n.construction, 'route': '/services/construction', 'icon': Icons.architecture, 'cat': l10n.servicesLabel},
+    {'name': l10n.movers, 'route': '/services/movers', 'icon': Icons.local_shipping_outlined, 'cat': l10n.servicesLabel},
+    {'name': l10n.legalDocs, 'route': '/services/legal', 'icon': Icons.gavel, 'cat': l10n.legal},
+    {'name': l10n.marketplace, 'route': '/services/marketplace', 'icon': Icons.shopping_bag_outlined, 'cat': l10n.materials},
+    {'name': l10n.serviceTracking, 'route': '/services/tracking', 'icon': Icons.receipt_long_outlined, 'cat': l10n.activity},
+    {'name': l10n.buy, 'route': '/properties', 'icon': Icons.home, 'cat': l10n.propertiesLabel},
+    {'name': l10n.rent, 'route': '/properties', 'icon': Icons.vignette_outlined, 'cat': l10n.propertiesLabel},
+    {'name': l10n.list, 'route': '/properties/add', 'icon': Icons.add_home_work_outlined, 'cat': l10n.activity},
+    {'name': l10n.saved, 'route': '/properties/saved', 'icon': Icons.favorite_border, 'cat': l10n.activity},
+    {'name': l10n.emiCalculator, 'route': '/services/loan', 'icon': Icons.calculate_outlined, 'cat': l10n.tools},
+    {'name': l10n.liveSupport, 'route': '/profile/support', 'icon': Icons.headset_mic_outlined, 'cat': l10n.support},
   ];
 
   @override
@@ -228,7 +230,9 @@ class GlobalSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    final filtered = _features.where((f) => 
+    final l10n = AppLocalizations.of(context)!;
+    final features = _getFeatures(l10n);
+    final filtered = features.where((f) => 
       f['name'].toString().toLowerCase().contains(query.toLowerCase()) ||
       f['cat'].toString().toLowerCase().contains(query.toLowerCase())
     ).toList();

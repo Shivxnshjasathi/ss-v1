@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/services/domain/cart_service.dart';
+import 'package:sampatti_bazar/l10n/app_localizations.dart';
 
 class MarketplaceScreen extends StatefulWidget {
   const MarketplaceScreen({super.key});
@@ -87,13 +88,14 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
       unit: unit,
       image: image,
     ));
+    final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('$title added to cart!'),
+        content: Text(l10n.addedToCart(title)),
         backgroundColor: AppTheme.primaryBlue,
         duration: const Duration(seconds: 2),
         action: SnackBarAction(
-          label: 'VIEW CART',
+          label: l10n.viewCartLabel,
           textColor: Colors.white,
           onPressed: () => context.push('/services/marketplace/cart'),
         ),
@@ -103,6 +105,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final filtered = _filteredProducts;
 
     return Scaffold(
@@ -121,7 +124,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
           ),
           onPressed: () => context.pop(),
         ),
-        title: Text('Marketplace', style: GoogleFonts.inter(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 18)),
+        title: Text(l10n.marketplace, style: GoogleFonts.inter(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 18)),
         actions: [
           ListenableBuilder(
             listenable: cart,
@@ -175,12 +178,12 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                     child: Icon(Icons.filter_list, color: context.scaffoldColor, size: 16),
                   ),
                   const SizedBox(width: 12),
-                  _buildCategoryChip('All'),
-                  _buildCategoryChip('Cement'),
-                  _buildCategoryChip('Steel'),
-                  _buildCategoryChip('Bricks'),
-                  _buildCategoryChip('Paint'),
-                  _buildCategoryChip('Basics'),
+                  _buildCategoryChip('All', l10n),
+                  _buildCategoryChip('Cement', l10n),
+                  _buildCategoryChip('Steel', l10n),
+                  _buildCategoryChip('Bricks', l10n),
+                  _buildCategoryChip('Paint', l10n),
+                  _buildCategoryChip('Basics', l10n),
                 ],
               ),
             ),
@@ -201,9 +204,9 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('BULK ORDERS', style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12)),
+                        Text(l10n.bulkOrders, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12)),
                         const SizedBox(height: 4),
-                        const Text('Flat 15% off on construction steel', style: TextStyle(fontSize: 10, color: Colors.grey)),
+                        Text(l10n.bulkOrdersSubtitle, style: const TextStyle(fontSize: 10, color: Colors.grey)),
                       ],
                     ),
                     Container(
@@ -224,10 +227,10 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
             
             // Grid
             if (filtered.isEmpty)
-              const Padding(
-                padding: EdgeInsets.all(32.0),
+              Padding(
+                padding: const EdgeInsets.all(32.0),
                 child: Center(
-                  child: Text('No products found for this category.', style: TextStyle(color: Colors.grey)),
+                  child: Text(l10n.noProductsFound, style: const TextStyle(color: Colors.grey)),
                 ),
               )
             else
@@ -251,6 +254,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                     item['price'],
                     item['unit'],
                     item['image'],
+                    l10n,
                   );
                 },
               ),
@@ -261,7 +265,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
     );
   }
 
-  Widget _buildCategoryChip(String label) {
+  Widget _buildCategoryChip(String label, AppLocalizations l10n) {
     bool isSelected = _selectedCategory == label;
     return Padding(
       padding: const EdgeInsets.only(right: 12.0),
@@ -279,7 +283,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
           border: isSelected ? null : Border.all(color: context.borderColor),
           ),
           child: Text(
-            label,
+            _getLocalizedCategoryName(label, l10n),
             style: GoogleFonts.inter(
               fontWeight: FontWeight.w900,
               color: isSelected ? Colors.white : context.primaryTextColor,
@@ -292,7 +296,19 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
     );
   }
 
-  Widget _buildProductCard(String id, String category, String title, double price, String unit, String image) {
+  String _getLocalizedCategoryName(String category, AppLocalizations l10n) {
+    switch (category) {
+      case 'All': return l10n.all;
+      case 'Cement': return l10n.cement;
+      case 'Steel': return l10n.steel;
+      case 'Bricks': return l10n.bricks;
+      case 'Paint': return l10n.paint;
+      case 'Basics': return l10n.basics;
+      default: return category;
+    }
+  }
+
+  Widget _buildProductCard(String id, String category, String title, double price, String unit, String image, AppLocalizations l10n) {
     return Container(
       decoration: BoxDecoration(
         color: context.cardColor,
@@ -326,7 +342,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(category, style: GoogleFonts.inter(fontSize: 8, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)),
+                      Text(_getLocalizedCategoryName(category, l10n).toUpperCase(), style: GoogleFonts.inter(fontSize: 8, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)),
                       const SizedBox(height: 4),
                       Text(title, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12, height: 1.2, color: context.primaryTextColor), maxLines: 2, overflow: TextOverflow.ellipsis),
                     ],
@@ -351,7 +367,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                         backgroundColor: AppTheme.primaryBlue,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
-                      child: Text('Add to Cart', style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12, color: Colors.white)),
+                      child: Text(l10n.addToCart, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12, color: Colors.white)),
                     ),
                   ),
                 ],

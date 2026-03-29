@@ -9,6 +9,7 @@ import 'package:sampatti_bazar/features/properties/domain/property_model.dart';
 import 'package:sampatti_bazar/features/auth/data/auth_repository.dart';
 import 'package:uuid/uuid.dart';
 import 'package:sampatti_bazar/core/services/location_service.dart';
+import 'package:sampatti_bazar/l10n/app_localizations.dart';
 
 class AddPropertyScreen extends ConsumerStatefulWidget {
   const AddPropertyScreen({super.key});
@@ -59,7 +60,35 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
     'Fully Furnished',
   ];
 
-  Future<void> _fetchLocation() async {
+  String _getLocalizedListingType(AppLocalizations l10n, String type) {
+    switch (type) {
+      case 'Sell': return l10n.sell;
+      case 'Rent/Lease': return l10n.rentLease;
+      default: return type;
+    }
+  }
+
+  String _getLocalizedPropertyType(AppLocalizations l10n, String type) {
+    switch (type) {
+      case 'Apartment': return l10n.apartment;
+      case 'House/Villa': return l10n.houseVilla;
+      case 'Plot': return l10n.plot;
+      case 'PG': return l10n.pg;
+      case 'Commercial': return l10n.commercial;
+      default: return type;
+    }
+  }
+
+  String _getLocalizedFurnishing(AppLocalizations l10n, String status) {
+    switch (status) {
+      case 'Unfurnished': return l10n.unfurnished;
+      case 'Semi-Furnished': return l10n.semiFurnished;
+      case 'Fully Furnished': return l10n.fullyFurnished;
+      default: return status;
+    }
+  }
+
+  Future<void> _fetchLocation(AppLocalizations l10n) async {
     setState(() => _isFetchingLocation = true);
     try {
       final position = await LocationService.getCurrentPosition();
@@ -72,21 +101,21 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
           });
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Location updated successfully!')),
+              SnackBar(content: Text(l10n.locationUpdated)),
             );
           }
         }
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Could not fetch location. Please check permissions.')),
+            SnackBar(content: Text(l10n.couldNotFetchLocation)),
           );
         }
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error fetching location: $e')),
+          SnackBar(content: Text('Error: $e')),
         );
       }
     } finally {
@@ -118,7 +147,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
     super.dispose();
   }
 
-  void _nextStep() async {
+  void _nextStep(AppLocalizations l10n) async {
     if (_currentStep < 3) {
       if (_formKey.currentState?.validate() ?? false) {
         setState(() {
@@ -182,6 +211,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: context.scaffoldColor,
       appBar: AppBar(
@@ -192,7 +222,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
           onPressed: _previousStep,
         ),
         title: Text(
-          'List Your Property',
+          l10n.listPropertyTitle,
           style: TextStyle(
             color: context.primaryTextColor,
             fontSize: 18,
@@ -204,7 +234,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
             padding: const EdgeInsets.only(right: 16.0),
             child: Center(
               child: Text(
-                'Step $_currentStep of 3',
+                l10n.stepOf(_currentStep),
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.bold,
@@ -232,9 +262,9 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
                 child: ListView(
                   padding: const EdgeInsets.all(24.0),
                   children: [
-                    if (_currentStep == 1) _buildBasicInfoStep(),
-                    if (_currentStep == 2) _buildLocationAndDetailsStep(),
-                    if (_currentStep == 3) _buildMediaAndPricingStep(),
+                    if (_currentStep == 1) _buildBasicInfoStep(l10n),
+                    if (_currentStep == 2) _buildLocationAndDetailsStep(l10n),
+                    if (_currentStep == 3) _buildMediaAndPricingStep(l10n),
                   ],
                 ),
               ),
@@ -269,7 +299,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
                           ),
                         ),
                         child: Text(
-                          'Back',
+                          l10n.back,
                           style: TextStyle(
                             fontSize: 16,
                             color: Theme.of(context).colorScheme.primary,
@@ -282,7 +312,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
                   Expanded(
                     flex: 2,
                     child: ElevatedButton(
-                      onPressed: _isSubmitting ? null : _nextStep,
+                      onPressed: _isSubmitting ? null : () => _nextStep(l10n),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: Colors.white,
@@ -295,7 +325,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
                       child: _isSubmitting 
                         ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                         : Text(
-                            _currentStep < 3 ? 'Continue' : 'Post Listing',
+                            _currentStep < 3 ? l10n.continueButton : l10n.postListing,
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -312,30 +342,52 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
     );
   }
 
-  Widget _buildBasicInfoStep() {
+  Widget _buildBasicInfoStep(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Basic Information',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+        Text(
+          l10n.basicInfo,
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 8),
         Text(
-          'What kind of property are you listing?',
+          'What kind of property are you listing?', // Localize this later if needed
           style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
         ),
         const SizedBox(height: 32),
-        _buildLabel('Listing Type'),
+        _buildLabel(l10n.listingType),
         const SizedBox(height: 12),
-        _buildChoiceChips(
-          _listingTypes,
-          _listingType,
-          (val) => setState(() => _listingType = val),
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: _listingTypes.map((type) {
+            final isSelected = _listingType == type;
+            return ChoiceChip(
+              label: Text(_getLocalizedListingType(l10n, type)),
+              selected: isSelected,
+              onSelected: (_) => setState(() => _listingType = type),
+              labelStyle: TextStyle(
+                color: isSelected ? Colors.white : context.primaryTextColor,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+              backgroundColor: context.surfaceColor,
+              selectedColor: Theme.of(context).colorScheme.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: BorderSide(
+                  color: isSelected
+                      ? Theme.of(context).colorScheme.primary
+                      : Colors.grey.shade300,
+                ),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            );
+          }).toList(),
         ),
 
         const SizedBox(height: 24),
-        _buildLabel('Property Type'),
+        _buildLabel(l10n.propertyType),
         const SizedBox(height: 12),
         Wrap(
           spacing: 12,
@@ -343,7 +395,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
           children: _propertyTypes
               .map(
                 (type) => _buildSelectionCard(
-                  title: type,
+                  title: _getLocalizedPropertyType(l10n, type),
                   isSelected: _propertyType == type,
                   onTap: () => setState(() => _propertyType = type),
                   icon: _getIconForPropertyType(type),
@@ -355,47 +407,48 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
     );
   }
 
-  Widget _buildLocationAndDetailsStep() {
+  Widget _buildLocationAndDetailsStep(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Property Details',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+        Text(
+          l10n.propertyDetails,
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 8),
         Text(
-          'Tell us more about your property and its location.',
+          'Tell us more about your property and its location.', // Localize later
           style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
         ),
         const SizedBox(height: 24),
         OutlinedButton.icon(
-          onPressed: _isFetchingLocation ? null : _fetchLocation,
+          onPressed: _isFetchingLocation ? null : () => _fetchLocation(l10n),
           icon: _isFetchingLocation 
             ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
             : const Icon(Icons.my_location, size: 18),
-          label: Text(_isFetchingLocation ? 'Fetching Location...' : 'Use Current Location'),
+          label: Text(_isFetchingLocation ? l10n.fetchingLocation : l10n.useCurrentLocation),
           style: OutlinedButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         ),
         const SizedBox(height: 24),
-        _buildLabel('City'),
+        _buildLabel('City'), // Localize to "City" if needed
         const SizedBox(height: 8),
         _buildTextField(
+          l10n,
           'Enter city (e.g., Jabalpur)',
           Icons.location_city_outlined,
           controller: _cityController,
         ),
 
         const SizedBox(height: 16),
-        _buildLabel('Locality / Society'),
+        _buildLabel('Locality / Society'), // Localize later
         const SizedBox(height: 8),
-        _buildTextField('Enter locality', Icons.map_outlined, controller: _localityController),
+        _buildTextField(l10n, 'Enter locality', Icons.map_outlined, controller: _localityController),
 
         const SizedBox(height: 24),
-        _buildLabel('BHK Configuration'),
+        _buildLabel(l10n.bhkConfiguration),
         const SizedBox(height: 12),
         _buildChoiceChips(
           _bhkOptions,
@@ -404,12 +457,34 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
         ),
 
         const SizedBox(height: 24),
-        _buildLabel('Furnishing Status'),
+        _buildLabel(l10n.furnishingStatus),
         const SizedBox(height: 12),
-        _buildChoiceChips(
-          _furnishingOptions,
-          _furnishingStatus,
-          (val) => setState(() => _furnishingStatus = val),
+        Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: _furnishingOptions.map((option) {
+            final isSelected = _furnishingStatus == option;
+            return ChoiceChip(
+              label: Text(_getLocalizedFurnishing(l10n, option)),
+              selected: isSelected,
+              onSelected: (_) => setState(() => _furnishingStatus = option),
+              labelStyle: TextStyle(
+                color: isSelected ? Colors.white : context.primaryTextColor,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+              backgroundColor: context.surfaceColor,
+              selectedColor: Theme.of(context).colorScheme.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: BorderSide(
+                  color: isSelected
+                      ? Theme.of(context).colorScheme.primary
+                      : Colors.grey.shade300,
+                ),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            );
+          }).toList(),
         ),
 
         const SizedBox(height: 24),
@@ -419,9 +494,10 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildLabel('Built Up Area'),
+                  _buildLabel(l10n.builtUpArea),
                   const SizedBox(height: 8),
                   _buildTextField(
+                    l10n,
                     'sq.ft.',
                     Icons.square_foot,
                     keyboardType: TextInputType.number,
@@ -435,9 +511,10 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildLabel('Bathrooms'),
+                  _buildLabel(l10n.bath), // Using bath from ARB
                   const SizedBox(height: 8),
                   _buildTextField(
+                    l10n,
                     'e.g., 2',
                     Icons.bathtub_outlined,
                     keyboardType: TextInputType.number,
@@ -455,9 +532,10 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildLabel('Year Built'),
+                  _buildLabel(l10n.yearBuilt),
                   const SizedBox(height: 8),
                   _buildTextField(
+                    l10n,
                     'e.g. 2023',
                     Icons.calendar_today_outlined,
                     keyboardType: TextInputType.number,
@@ -471,9 +549,10 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildLabel('Lot Size'),
+                  _buildLabel(l10n.lotSize),
                   const SizedBox(height: 8),
                   _buildTextField(
+                    l10n,
                     'sq.ft.',
                     Icons.aspect_ratio_outlined,
                     keyboardType: TextInputType.number,
@@ -488,26 +567,27 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
     );
   }
 
-  Widget _buildMediaAndPricingStep() {
+  Widget _buildMediaAndPricingStep(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Pricing & Photos',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+        Text(
+          l10n.pricingPhotos,
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
         ),
         const SizedBox(height: 8),
         Text(
-          'Add a competitive price and high-quality photos.',
+          'Add a competitive price and high-quality photos.', // Localize later
           style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
         ),
         const SizedBox(height: 32),
 
         _buildLabel(
-          _listingType == 'Sell' ? 'Expected Price (₹)' : 'Monthly Rent (₹)',
+          _listingType == 'Sell' ? l10n.expectedPrice : l10n.monthlyRent,
         ),
         const SizedBox(height: 8),
         _buildTextField(
+          l10n,
           'Enter amount',
           Icons.currency_rupee,
           keyboardType: TextInputType.number,
@@ -516,23 +596,24 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
 
         const SizedBox(height: 16),
         if (_listingType == 'Rent/Lease') ...[
-          _buildLabel('Security Deposit (₹)'),
+          _buildLabel(l10n.securityDeposit),
           const SizedBox(height: 8),
-          _buildTextField('Enter deposit amount', Icons.security, controller: _depositController),
+          _buildTextField(l10n, 'Enter deposit amount', Icons.security, controller: _depositController),
           const SizedBox(height: 16),
         ],
 
-        _buildLabel('Property Description'),
+        _buildLabel(l10n.propertyDescription),
         const SizedBox(height: 8),
         _buildTextField(
-          'Write a few lines about your property...',
+          l10n,
+          'Write a few lines about your property...', // Localize later
           Icons.description_outlined,
           maxLines: 4,
           controller: _descriptionController,
         ),
 
         const SizedBox(height: 24),
-        _buildLabel('Upload Photos'),
+        _buildLabel(l10n.uploadPhotos),
         const SizedBox(height: 12),
         GestureDetector(
           onTap: _pickImages,
@@ -561,7 +642,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'Tap to upload property images',
+                        l10n.uploadPhotos,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).colorScheme.primary,
@@ -624,6 +705,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
   }
 
   Widget _buildTextField(
+    AppLocalizations l10n,
     String hint,
     IconData icon, {
     TextEditingController? controller,
@@ -664,7 +746,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
       ),
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return 'This field is required';
+          return l10n.fieldRequired;
         }
         return null;
       },
@@ -746,7 +828,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                 color: isSelected
                     ? Theme.of(context).colorScheme.primary
-                    : Colors.black87,
+                    : context.primaryTextColor,
               ),
             ),
           ],

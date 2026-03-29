@@ -5,6 +5,7 @@ import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/auth_repository.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/core/services/logger_service.dart';
+import 'package:sampatti_bazar/l10n/app_localizations.dart';
 
 class OtpScreen extends ConsumerStatefulWidget {
   final String phoneNumber;
@@ -59,6 +60,8 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: context.scaffoldColor,
       appBar: AppBar(
@@ -77,18 +80,18 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const FittedBox(
+                   FittedBox(
                     fit: BoxFit.scaleDown,
                     alignment: Alignment.centerLeft,
-                    child: Text('VERIFY YOUR', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1, height: 1.1)),
+                    child: Text(l10n.verifyYour, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1, height: 1.1)),
                   ),
-                  const FittedBox(
+                   FittedBox(
                     fit: BoxFit.scaleDown,
                     alignment: Alignment.centerLeft,
-                    child: Text('NUMBER', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1, color: Color(0xFF1E60FF), height: 1.1)),
+                    child: Text(l10n.number, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1, color: Color(0xFF1E60FF), height: 1.1)),
                   ),
                   const SizedBox(height: 16),
-                  Text('Enter the 6-digit code sent to\n+91 ${widget.phoneNumber}', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.primaryTextColor, height: 1.5)),
+                  Text('${l10n.otpEntryHint}\n+91 ${widget.phoneNumber}', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.primaryTextColor, height: 1.5)),
                   const SizedBox(height: 48),
                   
                   // Custom OTP Boxes
@@ -137,10 +140,10 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                   Center(
                     child: Text.rich(
                       TextSpan(
-                        text: 'Didn\'t receive code? ',
+                        text: l10n.didntReceiveCode,
                         style: TextStyle(fontSize: 12, color: context.primaryTextColor.withValues(alpha: 0.6), fontWeight: FontWeight.bold),
-                        children: const [
-                          TextSpan(text: 'Resend in 00:45', style: TextStyle(color: Color(0xFF1E60FF), fontWeight: FontWeight.bold)),
+                        children: [
+                          TextSpan(text: '${l10n.resendIn} 00:45', style: const TextStyle(color: Color(0xFF1E60FF), fontWeight: FontWeight.bold)),
                         ],
                       ),
                     ),

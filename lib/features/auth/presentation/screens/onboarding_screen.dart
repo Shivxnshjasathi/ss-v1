@@ -7,6 +7,7 @@ import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/auth/domain/user_model.dart';
 import 'package:sampatti_bazar/core/services/location_service.dart';
 import 'package:sampatti_bazar/core/services/logger_service.dart';
+import 'package:sampatti_bazar/l10n/app_localizations.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -20,17 +21,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  String _selectedRole = 'Consumer / Buyer';
+  String? _selectedRoleKey;
   bool _isLoading = false;
   bool _isFetchingLocation = false;
-
-  final List<String> _roles = [
-    'Consumer / Buyer', 
-    'Builder / Agent', 
-    'Construction Partner', 
-    'Legal Advisor', 
-    'Material Vendor'
-  ];
 
   @override
   void initState() {
@@ -85,14 +78,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
   }
 
-  void _routeBasedOnRole(String role) {
-    if (role == 'Builder / Agent') {
+  void _routeBasedOnRole(String roleKey) {
+    if (roleKey == 'builderAgent') {
       context.go('/provider/builder');
-    } else if (role == 'Construction Partner') {
+    } else if (roleKey == 'constructionPartner') {
       context.go('/provider/construction');
-    } else if (role == 'Legal Advisor') {
+    } else if (roleKey == 'legalAdvisor') {
       context.go('/provider/legal');
-    } else if (role == 'Material Vendor') {
+    } else if (roleKey == 'materialVendor') {
       context.go('/provider/marketplace');
     } else {
       context.go('/home');
@@ -101,15 +94,22 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Future<void> _onCompleteSetup() async {
     LoggerService.i('Tapped Complete Setup');
+    final l10n = AppLocalizations.of(context)!;
     if (_formKey.currentState!.validate()) {
       LoggerService.i('Form validation passed');
       setState(() { _isLoading = true; });
       try {
         final user = ref.read(authRepositoryProvider).currentUser;
-        LoggerService.i('Current user UID: ${user?.uid}');
         
         if (user != null) {
-          LoggerService.i('Attempting to save user profile');
+          final roleMap = {
+            'consumerBuyer': l10n.consumerBuyer,
+            'builderAgent': l10n.builderAgent,
+            'constructionPartner': l10n.constructionPartner,
+            'legalAdvisor': l10n.legalAdvisor,
+            'materialVendor': l10n.materialVendor,
+          };
+          
           final userModel = UserModel(
             uid: user.uid,
             phoneNumber: _phoneController.text.trim().isNotEmpty 
@@ -117,15 +117,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 : (user.phoneNumber ?? ''),
             name: _nameController.text.trim(),
             location: _locationController.text.trim(),
-            role: _selectedRole,
+            role: roleMap[_selectedRoleKey ?? 'consumerBuyer']!,
             createdAt: DateTime.now(),
           );
           await ref.read(userRepositoryProvider).saveUser(userModel);
-          LoggerService.i('Profile saved successfully!');
           await LoggerService.setUserId(user.uid);
-          if (mounted) _routeBasedOnRole(_selectedRole);
+          if (mounted) _routeBasedOnRole(_selectedRoleKey ?? 'consumerBuyer');
         } else {
-          LoggerService.e('Current user is NULL during onboarding');
           if (mounted) {
             showDialog(
               context: context,
@@ -152,7 +150,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             context: context,
             builder: (ctx) => AlertDialog(
               title: const Text('Error Saving Profile'),
-              content: Text('Wait! Firebase Error details:\n\n$e'),
+              content: Text('Firebase Error: $e'),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(),
@@ -163,24 +161,32 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           );
         }
       } finally {
-        debugPrint('🏁 [OnboardingScreen] Finally block - resetting loading state');
         if (mounted) {
           setState(() { _isLoading = false; });
         }
       }
-    } else {
-      debugPrint('⚠️ [OnboardingScreen] Form validation failed');
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    _selectedRoleKey ??= 'consumerBuyer';
+
+    final roles = [
+      {'key': 'consumerBuyer', 'label': l10n.consumerBuyer},
+      {'key': 'builderAgent', 'label': l10n.builderAgent},
+      {'key': 'constructionPartner', 'label': l10n.constructionPartner},
+      {'key': 'legalAdvisor', 'label': l10n.legalAdvisor},
+      {'key': 'materialVendor', 'label': l10n.materialVendor},
+    ];
+
     return Scaffold(
       backgroundColor: context.scaffoldColor,
       appBar: AppBar(
         backgroundColor: context.scaffoldColor,
         elevation: 0,
-        title: Text('Complete Your Profile', style: TextStyle(color: context.primaryTextColor)),
+        title: Text(l10n.completeProfile, style: TextStyle(color: context.primaryTextColor)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
@@ -189,12 +195,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Welcome to Sampatti Bazar!', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24, color: context.primaryTextColor)),
+              Text(l10n.welcomeToSampatti, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24, color: context.primaryTextColor)),
               const SizedBox(height: 8),
-              Text('Tell us a bit about yourself to personalize your experience.', style: TextStyle(color: context.secondaryTextColor, fontSize: 14)),
+              Text(l10n.onboardingSubtitle, style: TextStyle(color: context.secondaryTextColor, fontSize: 14)),
               const SizedBox(height: 32),
               
-              const Text('FULL NAME', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
+              Text(l10n.fullName, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _nameController,
@@ -206,11 +212,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   fillColor: context.cardColor,
                 ),
                 style: TextStyle(color: context.primaryTextColor),
-                validator: (value) => value == null || value.isEmpty ? 'Please enter your name' : null,
+                validator: (value) => value == null || value.isEmpty ? l10n.enterName : null,
               ),
               const SizedBox(height: 24),
 
-              const Text('PHONE NUMBER', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
+              Text(l10n.phoneNumber, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _phoneController,
@@ -223,11 +229,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   fillColor: context.cardColor,
                 ),
                 style: TextStyle(color: context.primaryTextColor),
-                validator: (value) => value == null || value.isEmpty ? 'Please enter your phone number' : null,
+                validator: (value) => value == null || value.isEmpty ? l10n.enterPhone : null,
               ),
               const SizedBox(height: 24),
               
-              const Text('CITY / LOCATION', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
+              Text(l10n.cityLocation, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
               const SizedBox(height: 8),
               Row(
                 children: [
@@ -242,7 +248,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         fillColor: context.cardColor,
                       ),
                       style: TextStyle(color: context.primaryTextColor),
-                      validator: (value) => value == null || value.isEmpty ? 'Please enter your city' : null,
+                      validator: (value) => value == null || value.isEmpty ? l10n.enterCity : null,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -257,10 +263,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               ),
               const SizedBox(height: 24),
 
-              const Text('YOUR ROLE', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
+              Text(l10n.yourRole, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
-                value: _selectedRole,
+                value: _selectedRoleKey,
                 dropdownColor: context.cardColor,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
@@ -268,9 +274,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   filled: true,
                   fillColor: context.cardColor,
                 ),
-                items: _roles.map((run) => DropdownMenuItem(value: run, child: Text(run, style: TextStyle(color: context.primaryTextColor)))).toList(),
+                items: roles.map((role) => DropdownMenuItem(value: role['key'], child: Text(role['label']!, style: TextStyle(color: context.primaryTextColor)))).toList(),
                 onChanged: (val) {
-                  if (val != null) setState(() { _selectedRole = val; });
+                  if (val != null) setState(() { _selectedRoleKey = val; });
                 },
               ),
               const SizedBox(height: 48),
@@ -286,7 +292,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   ),
                   child: _isLoading 
                       ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : const Text('Complete Setup', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: Colors.white)),
+                      : Text(l10n.completeSetup, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: Colors.white)),
                 ),
               ),
             ],

@@ -7,6 +7,7 @@ import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/properties/data/property_repository.dart';
 import 'package:sampatti_bazar/features/properties/domain/property_model.dart';
 import 'package:sampatti_bazar/core/services/logger_service.dart';
+import 'package:sampatti_bazar/l10n/app_localizations.dart';
 
 class SavedPropertiesScreen extends ConsumerWidget {
   const SavedPropertiesScreen({super.key});
@@ -15,13 +16,14 @@ class SavedPropertiesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     LoggerService.trackScreen('SavedPropertiesScreen');
     final userAsync = ref.watch(currentUserDataProvider);
+    final l10n = AppLocalizations.of(context)!;
     
     return userAsync.when(
       data: (user) {
         if (user == null) {
           return Scaffold(
-            appBar: AppBar(title: const Text('Saved Properties')),
-            body: const Center(child: Text('Please log in to see saved properties.')),
+            appBar: AppBar(title: Text(l10n.savedProperties)),
+            body: Center(child: Text(l10n.pleaseLoginToSeeSaved)),
           );
         }
 
@@ -33,7 +35,7 @@ class SavedPropertiesScreen extends ConsumerWidget {
             backgroundColor: context.scaffoldColor,
             elevation: 0,
             title: Text(
-              'Saved Properties',
+              l10n.savedProperties,
               style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 24),
             ),
           ),
@@ -46,7 +48,7 @@ class SavedPropertiesScreen extends ConsumerWidget {
                     children: [
                       Icon(Icons.favorite_border, size: 64, color: context.secondaryTextColor),
                       const SizedBox(height: 16),
-                      Text('You have no saved properties yet.', style: TextStyle(color: context.secondaryTextColor)),
+                      Text(l10n.noSavedYet, style: TextStyle(color: context.secondaryTextColor)),
                     ],
                   ),
                 );
@@ -69,8 +71,8 @@ class SavedPropertiesScreen extends ConsumerWidget {
           ),
         );
       },
-      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (e, st) => Scaffold(body: Center(child: Text('Error: $e'))),
+      loading: () => Scaffold(backgroundColor: context.scaffoldColor, body: const Center(child: CircularProgressIndicator())),
+      error: (e, st) => Scaffold(backgroundColor: context.scaffoldColor, body: Center(child: Text('Error: $e'))),
     );
   }
 

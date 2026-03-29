@@ -10,6 +10,8 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'firebase_options.dart';
+import 'package:sampatti_bazar/l10n/app_localizations.dart';
+import 'package:sampatti_bazar/core/providers/locale_provider.dart';
 
 void main() async {
   runZonedGuarded<Future<void>>(
@@ -57,8 +59,10 @@ class SampattiBazarApp extends ConsumerWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ref.watch(themeProvider),
+      locale: ref.watch(localeProvider),
       routerConfig: goRouter,
       localizationsDelegates: const [
+        AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,

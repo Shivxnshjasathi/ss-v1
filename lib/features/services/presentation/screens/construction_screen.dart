@@ -6,6 +6,7 @@ import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/services/data/service_request_repository.dart';
 import 'package:sampatti_bazar/features/services/domain/service_request_model.dart';
+import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
 
 class ConstructionScreen extends ConsumerStatefulWidget {
@@ -79,6 +80,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
   final List<String> _interiorScopes = [];
 
   Future<void> _submitForm() async {
+    final l10n = AppLocalizations.of(context)!;
     final userAsync = ref.read(currentUserDataProvider);
     final user = userAsync.value;
     
@@ -162,8 +164,8 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
       context.pop(); // Close loader
       
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Request Sent! A verified professional will contact you soon.'),
+        SnackBar(
+          content: Text(l10n.requestSentSuccess),
           backgroundColor: AppTheme.primaryBlue,
         ),
       );
@@ -172,13 +174,14 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
       if (!mounted) return;
       context.pop(); // Close loader
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        SnackBar(content: Text('${l10n.loginError}: $e'), backgroundColor: Colors.red),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: context.scaffoldColor,
       appBar: AppBar(
@@ -200,7 +203,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           onPressed: () => context.pop(),
         ),
         title: Text(
-          'Building & Design',
+          l10n.buildingAndDesign,
           style: TextStyle(
             fontWeight: FontWeight.w900,
             color: context.primaryTextColor,
@@ -239,7 +242,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Row(
                 children: _services
-                    .map((service) => _buildServiceChip(service))
+                    .map((service) => _buildServiceChip(service, l10n))
                     .toList(),
               ),
             ),
@@ -249,7 +252,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
             // Dynamic Form based on selected service
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: _buildDynamicBody(),
+              child: _buildDynamicBody(l10n),
             ),
           ],
         ),
@@ -279,9 +282,9 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
                 ),
                 elevation: 0,
               ),
-              child: const Text(
-                'REQUEST QUOTE & TIMELINE',
-                style: TextStyle(
+              child: Text(
+                l10n.requestQuote,
+                style: const TextStyle(
                   fontWeight: FontWeight.w900,
                   fontSize: 13,
                   color: Colors.white,
@@ -295,87 +298,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
     );
   }
 
-  Widget _buildCategoryToggle() {
-    bool isRes = _selectedCategory == 'Residential';
-    return Container(
-      decoration: BoxDecoration(
-        color: context.cardColor,
-        border: Border.all(color: context.borderColor),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: GestureDetector(
-              onTap: () => setState(() => _selectedCategory = 'Residential'),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 20,
-                  horizontal: 16,
-                ),
-                color: isRes ? Colors.black : Colors.white,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'RESIDENTIAL',
-                      style: TextStyle(
-                        color: isRes ? Colors.white : Colors.black,
-                        fontWeight: FontWeight.w900,
-                        fontSize: 12,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Homes & Villas',
-                      style: TextStyle(
-                        color: isRes ? Colors.grey[400] : Colors.grey,
-                        fontSize: 10,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: GestureDetector(
-              onTap: () => setState(() => _selectedCategory = 'Commercial'),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 20,
-                  horizontal: 16,
-                ),
-                color: !isRes ? Colors.black : Colors.white,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'COMMERCIAL',
-                      style: TextStyle(
-                        color: !isRes ? Colors.white : Colors.black,
-                        fontWeight: FontWeight.w900,
-                        fontSize: 12,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Office & Retail',
-                      style: TextStyle(
-                        color: !isRes ? Colors.grey[400] : Colors.grey,
-                        fontSize: 10,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildServiceChip(String label) {
+  Widget _buildServiceChip(String label, AppLocalizations l10n) {
     bool isSelected = _selectedService == label;
     return Padding(
       padding: const EdgeInsets.only(right: 12.0),
@@ -391,7 +314,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
             border: isSelected ? null : Border.all(color: context.borderColor),
           ),
           child: Text(
-            label.toUpperCase(),
+            _getLocalizedServiceName(label, l10n).toUpperCase(),
             style: TextStyle(
               fontWeight: FontWeight.w900,
               fontSize: 10,
@@ -404,43 +327,43 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
     );
   }
 
-  Widget _buildDynamicBody() {
+  Widget _buildDynamicBody(AppLocalizations l10n) {
     switch (_selectedService) {
       case 'Construction':
-        return _buildConstructionForm();
+        return _buildConstructionForm(l10n);
       case 'Architecture':
-        return _buildArchitectureForm();
+        return _buildArchitectureForm(l10n);
       case 'Interiors':
-        return _buildInteriorsForm();
+        return _buildInteriorsForm(l10n);
       case 'Consultation':
-        return _buildConsultationForm();
+        return _buildConsultationForm(l10n);
       case 'Borewell':
-        return _buildBorewellForm();
+        return _buildBorewellForm(l10n);
       default:
         return const SizedBox();
     }
   }
 
   // --- 1. Construction / Renovation ---
-  Widget _buildConstructionForm() {
+  Widget _buildConstructionForm(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildSectionHeader(
-          'Construction Details',
-          'Verified civil engineers only. No open contractor pool to ensure extreme quality control.',
+          l10n.constructionDetails,
+          l10n.civilEngineersQuality,
         ),
         const SizedBox(height: 24),
         _buildTextField(
-          'PLOT SIZE (SQ. FT.)',
+          l10n.plotSize,
           'e.g., 2400',
           TextInputType.number,
           controller: _plotSizeController,
         ),
         const SizedBox(height: 16),
         _buildTextField(
-          'EXACT LOCATION',
-          'City, Neighborhood or Coordinates',
+          l10n.exactLocation,
+          l10n.locationHint,
           TextInputType.text,
           controller: _locationController,
         ),
@@ -449,8 +372,8 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           children: [
             Expanded(
               child: _buildTextField(
-                'BUDGET (₹)',
-                'Estimated amount',
+                l10n.budgetLabel,
+                l10n.budgetHint,
                 TextInputType.number,
                 controller: _budgetController,
               ),
@@ -458,8 +381,8 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
             const SizedBox(width: 16),
             Expanded(
               child: _buildTextField(
-                'TIMELINE',
-                'e.g., 6 Months',
+                l10n.timelineLabel,
+                l10n.timelineHint,
                 TextInputType.text,
                 controller: _timelineController,
               ),
@@ -468,43 +391,43 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
         ),
         const SizedBox(height: 16),
         _buildTextField(
-          'TYPE OF CONSTRUCTION',
-          'House, Building, Duplex, etc.',
+          l10n.constructionType,
+          l10n.constructionTypeHint,
           TextInputType.text,
           controller: _typeController,
         ),
         const SizedBox(height: 32),
-        const Text(
-          'DOCUMENT UPLOAD',
-          style: TextStyle(
+        Text(
+          l10n.documentUpload,
+          style: const TextStyle(
             fontWeight: FontWeight.w900,
             fontSize: 11,
             letterSpacing: 0.5,
           ),
         ),
         const SizedBox(height: 12),
-        _buildUploadBox('Upload plot map and local approvals'),
+        _buildUploadBox(l10n.uploadPlotMap),
         const SizedBox(height: 32),
       ],
     );
   }
 
   // --- 2. Architecture Services ---
-  Widget _buildArchitectureForm() {
+  Widget _buildArchitectureForm(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildSectionHeader(
-          'Architectural Design',
-          'Map planning and structural design by licensed architects.',
+          l10n.architecturalDesign,
+          l10n.archSubtitle,
         ),
         const SizedBox(height: 24),
         Row(
           children: [
             Expanded(
               child: _buildTextField(
-                'PLOT DIMENSIONS',
-                'L x W (in ft)',
+                l10n.plotDimensions,
+                l10n.dimensionsHint,
                 TextInputType.text,
                 controller: _dimensionsController,
               ),
@@ -512,8 +435,8 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
             const SizedBox(width: 16),
             Expanded(
               child: _buildTextField(
-                'FACING',
-                'North, East, etc.',
+                l10n.facingLabel,
+                l10n.facingHint,
                 TextInputType.text,
                 controller: _facingController,
               ),
@@ -525,8 +448,8 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           children: [
             Expanded(
               child: _buildTextField(
-                'NO. OF FLOORS',
-                'e.g., G+2',
+                l10n.floorsCount,
+                l10n.floorsHint,
                 TextInputType.text,
                 controller: _floorsController,
               ),
@@ -534,8 +457,8 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
             const SizedBox(width: 16),
             Expanded(
               child: _buildTextField(
-                'ROOM REQUIREMENT',
-                'e.g., 4 BHK',
+                l10n.roomRequirement,
+                l10n.roomsHint,
                 TextInputType.text,
                 controller: _roomsController,
               ),
@@ -544,23 +467,23 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
         ),
         const SizedBox(height: 16),
         _buildTextField(
-          'PARKING CAPACITY',
-          'No. of Cars / Bikes',
+          l10n.parkingCapacity,
+          l10n.parkingHint,
           TextInputType.text,
           controller: _parkingController,
         ),
         const SizedBox(height: 16),
         _buildTextField(
-          'SPECIAL NEEDS (OPTIONAL)',
-          'Vastu compliance, Garden, Pool, etc.',
+          l10n.specialNeeds,
+          l10n.specialNeedsHint,
           TextInputType.text,
           controller: _specialNeedsController,
         ),
         const SizedBox(height: 32),
-        _buildSelectionBox('OUTPUT REQUIRED', 'Conceptual Plan (MVP)', [
-          'Conceptual Plan (MVP)',
-          'Structural Plan',
-          '3D Elevation (Phase 2)',
+        _buildSelectionBox(l10n.outputRequired, l10n.conceptualPlan, [
+          l10n.conceptualPlan,
+          l10n.structuralPlan,
+          l10n.threeDElevation,
         ]),
         const SizedBox(height: 32),
       ],
@@ -568,21 +491,21 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
   }
 
   // --- 3. Interior Designing ---
-  Widget _buildInteriorsForm() {
+  Widget _buildInteriorsForm(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildSectionHeader(
-          'Interior Designing',
-          'Transform spaces with our curated interior design partners.',
+          l10n.interiors,
+          l10n.interiorSubtitle,
         ),
         const SizedBox(height: 24),
         Row(
           children: [
             Expanded(
               child: _buildTextField(
-                'PROPERTY TYPE',
-                'Apartment, Villa',
+                l10n.propertyType,
+                l10n.propertyTypeHint,
                 TextInputType.text,
                 controller: _propTypeController,
               ),
@@ -590,8 +513,8 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
             const SizedBox(width: 16),
             Expanded(
               child: _buildTextField(
-                'BHK / ROOMS',
-                'e.g., 3 BHK',
+                l10n.bhkRooms,
+                l10n.roomsHint,
                 TextInputType.text,
                 controller: _roomsController,
               ),
@@ -603,8 +526,8 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           children: [
             Expanded(
               child: _buildTextField(
-                'CARPET AREA',
-                'In Sq. Ft.',
+                l10n.carpetArea,
+                l10n.sqFtHint,
                 TextInputType.number,
                 controller: _areaController,
               ),
@@ -612,8 +535,8 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
             const SizedBox(width: 16),
             Expanded(
               child: _buildTextField(
-                'BUDGET (₹)',
-                'Expected total',
+                l10n.budgetLabel,
+                l10n.budgetHint,
                 TextInputType.number,
                 controller: _budgetController,
               ),
@@ -621,59 +544,59 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           ],
         ),
         const SizedBox(height: 16),
-        _buildSelectionBox('STYLE PREFERENCE', 'Modern Minimalist', [
-          'Modern Minimalist',
-          'Traditional Indian',
-          'Contemporary',
-          'Industrial',
-          'Luxury',
+        _buildSelectionBox(l10n.stylePreference, l10n.modernMinimalist, [
+          l10n.modernMinimalist,
+          l10n.traditionalIndian,
+          l10n.contemporary,
+          l10n.industrial,
+          l10n.luxury,
         ]),
         const SizedBox(height: 32),
-        const Text(
-          'SCOPE SELECTION',
-          style: TextStyle(
+        Text(
+          l10n.scopeSelection,
+          style: const TextStyle(
             fontWeight: FontWeight.w900,
             fontSize: 11,
             letterSpacing: 0.5,
           ),
         ),
         const SizedBox(height: 12),
-        _buildCheckbox('Full Home Interior'),
-        _buildCheckbox('Modular Kitchen'),
-        _buildCheckbox('Wardrobes & Storage'),
-        _buildCheckbox('Room-Specific Renovation'),
+        _buildCheckbox(l10n.fullHomeInterior),
+        _buildCheckbox(l10n.modularKitchen),
+        _buildCheckbox(l10n.wardrobesStorage),
+        _buildCheckbox(l10n.roomRenovation),
         const SizedBox(height: 32),
       ],
     );
   }
 
   // --- 4. Construction Consultation ---
-  Widget _buildConsultationForm() {
+  Widget _buildConsultationForm(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildSectionHeader(
-          'Expert Consultation',
-          'Civil-engineer-led consultation to inspect or advise on building matters.',
+          l10n.expertConsultation,
+          l10n.consultSubtitle,
         ),
         const SizedBox(height: 24),
         _buildTextField(
-          'CONSULTATION TOPIC',
-          'Structural Audit, Material Quality, Seepage, etc.',
+          l10n.consultationTopic,
+          l10n.consultTopicHint,
           TextInputType.text,
           controller: _consultTopicController,
         ),
         const SizedBox(height: 16),
         _buildTextField(
-          'PROPERTY ADDRESS',
-          'Where is the property?',
+          l10n.propertyAddress,
+          l10n.propertyAddressHint,
           TextInputType.text,
           controller: _locationController,
         ),
         const SizedBox(height: 16),
         _buildTextField(
-          'DETAILED QUERY',
-          'Describe the issue or advice needed...',
+          l10n.detailedQuery,
+          l10n.queryHint,
           TextInputType.multiline,
           maxLines: 4,
           controller: _queryController,
@@ -698,18 +621,18 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text(
-                      'VERIFIED EXPERTS ONLY',
-                      style: TextStyle(
+                      l10n.verifiedExpertsOnly,
+                      style: const TextStyle(
                         fontWeight: FontWeight.w900,
                         fontSize: 11,
                       ),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
-                      'Your lead is routed smartly and securely.',
-                      style: TextStyle(color: Colors.black54, fontSize: 10),
+                      l10n.expertsSubtitle,
+                      style: const TextStyle(color: Colors.black54, fontSize: 10),
                     ),
                   ],
                 ),
@@ -723,18 +646,18 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
   }
 
   // --- 5. Boring / Borewell ---
-  Widget _buildBorewellForm() {
+  Widget _buildBorewellForm(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildSectionHeader(
-          'Boring & Borewell',
-          'Expert surveying and drilling tailored to geographical constraints.',
+          l10n.boringBorewell,
+          l10n.borewellSubtitle,
         ),
         const SizedBox(height: 24),
         _buildTextField(
-          'EXACT LOCATION / PLOT NO.',
-          'Enter landmark',
+          l10n.exactLocationBorewell,
+          l10n.landmarkHint,
           TextInputType.text,
           controller: _locationController,
         ),
@@ -743,8 +666,8 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           children: [
             Expanded(
               child: _buildTextField(
-                'TYPE OF SOIL (IF KNOWN)',
-                'e.g., Rocky, Red',
+                l10n.soilType,
+                l10n.soilTypeHint,
                 TextInputType.text,
                 controller: _soilTypeController,
               ),
@@ -752,8 +675,8 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
             const SizedBox(width: 16),
             Expanded(
               child: _buildTextField(
-                'EXPECTED DEPTH',
-                'In Feet',
+                l10n.expectedDepth,
+                l10n.depthHint,
                 TextInputType.number,
                 controller: _depthController,
               ),
@@ -761,10 +684,10 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           ],
         ),
         const SizedBox(height: 16),
-        _buildSelectionBox('PURPOSE', 'Residential Water Supply', [
-          'Residential Water Supply',
-          'Agriculture / Farming',
-          'Industrial Supply',
+        _buildSelectionBox(l10n.purposeLabel, l10n.residentialWater, [
+          l10n.residentialWater,
+          l10n.agricultureFarming,
+          l10n.industrialSupply,
         ]),
         const SizedBox(height: 32),
       ],
@@ -772,6 +695,17 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
   }
 
   // --- Shared Builders ---
+
+  String _getLocalizedServiceName(String service, AppLocalizations l10n) {
+    switch (service) {
+      case 'Construction': return l10n.construction;
+      case 'Architecture': return l10n.architecture;
+      case 'Interiors': return l10n.interiors;
+      case 'Consultation': return l10n.consultation;
+      case 'Borewell': return l10n.borewell;
+      default: return service;
+    }
+  }
 
   Widget _buildSectionHeader(String title, String subtitle) {
     return Column(
@@ -951,6 +885,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
   }
 
   Widget _buildUploadBox(String subtitle) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
@@ -974,9 +909,9 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Tap to upload files',
-            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14),
+          Text(
+            l10n.tapToUpload,
+            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14),
           ),
           const SizedBox(height: 6),
           Text(

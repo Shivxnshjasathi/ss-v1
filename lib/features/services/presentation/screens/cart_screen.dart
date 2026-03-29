@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/services/domain/cart_service.dart';
+import 'package:sampatti_bazar/l10n/app_localizations.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -22,6 +23,7 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: context.scaffoldColor,
       appBar: AppBar(
@@ -38,7 +40,7 @@ class _CartScreenState extends State<CartScreen> {
           ),
           onPressed: () => context.pop(),
         ),
-        title: Text('My Cart', style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 18)),
+        title: Text(l10n.myCart, style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 18)),
       ),
       body: ListenableBuilder(
         listenable: cart,
@@ -50,7 +52,7 @@ class _CartScreenState extends State<CartScreen> {
                 children: [
                   Icon(Icons.shopping_cart_outlined, size: 80, color: Colors.grey.shade300),
                   const SizedBox(height: 16),
-                  Text('Your cart is empty', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey.shade600)),
+                  Text(l10n.cartEmpty, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey.shade600)),
                 ],
               ),
             );
@@ -85,7 +87,7 @@ class _CartScreenState extends State<CartScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(item.category, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 0.5)),
+                              Text(_getLocalizedCategoryName(item.category, l10n).toUpperCase(), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 0.5)),
                               const SizedBox(height: 4),
                               Text(item.title, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
                               const SizedBox(height: 8),
@@ -143,7 +145,7 @@ class _CartScreenState extends State<CartScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Total Amount', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+                          Text(l10n.totalAmount, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
                           Text(_formatCurrency(cart.totalPrice), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 24, color: Color(0xFF1E60FF))),
                         ],
                       ),
@@ -159,7 +161,7 @@ class _CartScreenState extends State<CartScreen> {
                             backgroundColor: const Color(0xFF1E60FF),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           ),
-                          child: const Text('Proceed to Checkout', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: Colors.white)),
+                          child: Text(l10n.proceedToCheckout, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: Colors.white)),
                         ),
                       ),
                     ],
@@ -171,5 +173,17 @@ class _CartScreenState extends State<CartScreen> {
         },
       ),
     );
+  }
+
+  String _getLocalizedCategoryName(String category, AppLocalizations l10n) {
+    switch (category) {
+      case 'All': return l10n.all;
+      case 'Cement': return l10n.cement;
+      case 'Steel': return l10n.steel;
+      case 'Bricks': return l10n.bricks;
+      case 'Paint': return l10n.paint;
+      case 'Basics': return l10n.basics;
+      default: return category;
+    }
   }
 }

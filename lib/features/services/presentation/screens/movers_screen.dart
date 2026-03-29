@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
+import 'package:sampatti_bazar/l10n/app_localizations.dart';
 
 class MoversScreen extends StatefulWidget {
   const MoversScreen({super.key});
@@ -81,8 +82,9 @@ class _MoversScreenState extends State<MoversScreen> {
 
   void _confirmBooking() {
     if (_dropController.text.trim().isEmpty) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a drop location.'), backgroundColor: Colors.red),
+        SnackBar(content: Text(l10n.enterDropLocation), backgroundColor: Colors.red),
       );
       return;
     }
@@ -99,39 +101,51 @@ class _MoversScreenState extends State<MoversScreen> {
       
       showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.check_circle, color: Colors.green, size: 60),
-              const SizedBox(height: 16),
-              const Text('Movers Booked Successfully!', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18), textAlign: TextAlign.center),
-              const SizedBox(height: 8),
-              Text('Our team will arrive at ${_pickupController.text} on ${DateFormat('MMM d, yyyy').format(_selectedDate)} at ${_selectedTime.format(context)}.', textAlign: TextAlign.center, style: const TextStyle(color: Colors.grey, fontSize: 12)),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    context.go('/home');
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryBlue,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        builder: (context) {
+          final l10n = AppLocalizations.of(context)!;
+          return AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.check_circle, color: Colors.green, size: 60),
+                const SizedBox(height: 16),
+                Text(l10n.moversBookedSuccess, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18), textAlign: TextAlign.center),
+                const SizedBox(height: 8),
+                Text(
+                  l10n.moversArrivalMsg(
+                    _pickupController.text,
+                    DateFormat('MMM d, yyyy').format(_selectedDate),
+                    _selectedTime.format(context),
                   ),
-                  child: const Text('Back to Home', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.grey, fontSize: 12),
                 ),
-              ),
-            ],
-          ),
-        ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      context.go('/home');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primaryBlue,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    child: Text(l10n.backToHome, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       );
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: context.scaffoldColor,
       appBar: AppBar(
@@ -153,7 +167,7 @@ class _MoversScreenState extends State<MoversScreen> {
           ),
         ),
         title: Text(
-          'Packers & Movers',
+          l10n.packersAndMovers,
           style: GoogleFonts.inter(
             fontWeight: FontWeight.w900,
             color: context.primaryTextColor,
@@ -172,19 +186,19 @@ class _MoversScreenState extends State<MoversScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSectionLabel('TRANSIT ROUTE'),
+                  _buildSectionLabel(l10n.transitRoute),
                   const SizedBox(height: 16),
-                  _buildTransitRouteCard(),
+                  _buildTransitRouteCard(l10n),
                   
                   const SizedBox(height: 32),
                   
-                  _buildSectionLabel('PROPERTY SIZE'),
+                  _buildSectionLabel(l10n.propertySize),
                   const SizedBox(height: 16),
                   _buildPropertySizeRow(),
                   
                   const SizedBox(height: 32),
                   
-                  _buildSectionLabel('SCHEDULE PICKUP'),
+                  _buildSectionLabel(l10n.schedulePickup),
                   const SizedBox(height: 16),
                   _buildScheduleRow(context),
                   
@@ -193,13 +207,13 @@ class _MoversScreenState extends State<MoversScreen> {
                     children: [
                       Icon(Icons.info_outline, size: 12, color: Colors.grey[600]),
                       const SizedBox(width: 6),
-                      Text('Shifting time depends on distance and inventory volume.', style: TextStyle(color: Colors.grey[600], fontSize: 10, fontWeight: FontWeight.w600)),
+                      Text(l10n.shiftingTimeDisclaimer, style: TextStyle(color: Colors.grey[600], fontSize: 10, fontWeight: FontWeight.w600)),
                     ],
                   ),
                   
                   const SizedBox(height: 32),
                   
-                  _buildBookingSummaryCard(),
+                  _buildBookingSummaryCard(l10n),
                   
                   const SizedBox(height: 32),
                   
@@ -220,7 +234,7 @@ class _MoversScreenState extends State<MoversScreen> {
                       ),
                       label: Row(
                         children: [
-                          const Text(' Professional Packing Service', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 13)),
+                          Text(' ${l10n.professionalPacking}', style: const TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 13)),
                           const Spacer(),
                           Text('+₹999', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.grey.shade600, fontSize: 13)),
                         ],
@@ -240,7 +254,7 @@ class _MoversScreenState extends State<MoversScreen> {
                         elevation: 0,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
-                      child: const Text('Confirm & Book Movers', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: Colors.white)),
+                      child: Text(l10n.confirmBooking, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: Colors.white)),
                     ),
                   ),
                   const SizedBox(height: 40),
@@ -260,7 +274,7 @@ class _MoversScreenState extends State<MoversScreen> {
     );
   }
 
-  Widget _buildTransitRouteCard() {
+  Widget _buildTransitRouteCard(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -308,7 +322,7 @@ class _MoversScreenState extends State<MoversScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('PICKUP LOCATION', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)),
+                        Text(l10n.pickupLocation, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)),
                         const SizedBox(height: 2),
                         TextField(
                           controller: _pickupController,
@@ -338,13 +352,13 @@ class _MoversScreenState extends State<MoversScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('DROP LOCATION', style: TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)),
+                        Text(l10n.dropLocation, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)),
                         const SizedBox(height: 2),
                         TextField(
                           controller: _dropController,
                           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                           decoration: InputDecoration(
-                            hintText: 'Search destination...',
+                            hintText: l10n.searchDestination,
                             hintStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.grey.shade500),
                             isDense: true,
                             contentPadding: const EdgeInsets.symmetric(vertical: 4),
@@ -457,7 +471,7 @@ class _MoversScreenState extends State<MoversScreen> {
     );
   }
 
-  Widget _buildBookingSummaryCard() {
+  Widget _buildBookingSummaryCard(AppLocalizations l10n) {
     String formatCurrency(int amount) {
       String text = amount.toString();
       text = text.replaceAllMapped(RegExp(r'(\d)(?=(\d\d)+\d$)'), (Match m) => '${m[1]},');
@@ -479,7 +493,7 @@ class _MoversScreenState extends State<MoversScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Booking Summary', style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 14)),
+                Text(l10n.bookingSummary, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 14)),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
@@ -487,7 +501,7 @@ class _MoversScreenState extends State<MoversScreen> {
                     border: Border.all(color: AppTheme.cyanAccent.withValues(alpha: 0.2)),
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: Text('PREMIUM CARE', style: GoogleFonts.inter(color: AppTheme.cyanAccent, fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
+                  child: Text(l10n.premiumCare, style: GoogleFonts.inter(color: AppTheme.cyanAccent, fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
                 ),
               ],
             ),
@@ -499,15 +513,15 @@ class _MoversScreenState extends State<MoversScreen> {
               children: [
                 Row(
                   children: [
-                    Expanded(child: _buildSummaryItem('INVENTORY', _selectedSize)),
-                    Expanded(child: _buildSummaryItem('PACKING', _includePacking ? 'Included' : 'None')),
+                    Expanded(child: _buildSummaryItem(l10n.inventory.toUpperCase(), _selectedSize)),
+                    Expanded(child: _buildSummaryItem(l10n.packing.toUpperCase(), _includePacking ? l10n.included : l10n.none)),
                   ],
                 ),
                 const SizedBox(height: 24),
                 Row(
                   children: [
-                    Expanded(child: _buildSummaryItem('DISTANCE', 'Calculated at pickup')),
-                    Expanded(child: _buildSummaryItem('INSURANCE', 'Standard (+0)')),
+                    Expanded(child: _buildSummaryItem(l10n.distance.toUpperCase(), l10n.calculatedAtPickup)),
+                    Expanded(child: _buildSummaryItem(l10n.insurance.toUpperCase(), l10n.standardInsurance)),
                   ],
                 ),
               ],
@@ -524,10 +538,10 @@ class _MoversScreenState extends State<MoversScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
-                  children: const [
-                    Icon(Icons.verified_outlined, color: AppTheme.primaryBlue, size: 18),
-                    SizedBox(width: 8),
-                    Text('Est. Quote', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: Colors.grey)),
+                  children: [
+                    const Icon(Icons.verified_outlined, color: AppTheme.primaryBlue, size: 18),
+                    const SizedBox(width: 8),
+                    Text(l10n.estQuote, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: Colors.grey)),
                   ],
                 ),
                 Text(formatCurrency(totalQuote), style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 24, color: AppTheme.primaryBlue)),

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sampatti_bazar/core/providers/theme_provider.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
+import 'package:sampatti_bazar/l10n/app_localizations.dart';
+import 'package:sampatti_bazar/core/providers/locale_provider.dart';
 
 class AppSettingsScreen extends ConsumerWidget {
   const AppSettingsScreen({super.key});
@@ -10,11 +12,13 @@ class AppSettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final locale = ref.watch(localeProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: context.scaffoldColor,
       appBar: AppBar(
-        title: Text('App Settings', style: TextStyle(color: context.primaryTextColor, fontWeight: FontWeight.w900)),
+        title: Text(l10n.settings, style: TextStyle(color: context.primaryTextColor, fontWeight: FontWeight.w900)),
         backgroundColor: context.scaffoldColor,
         elevation: 0,
         leading: IconButton(
@@ -27,10 +31,10 @@ class AppSettingsScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSection(context, 'APPEARANCE', [
+            _buildSection(context, l10n.appearance, [
               _buildSettingTile(
                 context, 
-                'Dark Mode', 
+                l10n.darkMode, 
                 Icons.dark_mode_outlined, 
                 trailing: Switch.adaptive(
                   value: isDark,
@@ -42,14 +46,32 @@ class AppSettingsScreen extends ConsumerWidget {
               ),
             ]),
             const SizedBox(height: 32),
-            _buildSection(context, 'NOTIFICATIONS', [
-              _buildSettingTile(context, 'Push Notifications', Icons.notifications_none_outlined, trailing: _buildSwitch(true)),
-              _buildSettingTile(context, 'Email Updates', Icons.alternate_email_outlined, trailing: _buildSwitch(false)),
+            _buildSection(context, l10n.notifications, [
+              _buildSettingTile(context, l10n.pushNotifications, Icons.notifications_none_outlined, trailing: _buildSwitch(true)),
+              _buildSettingTile(context, l10n.emailUpdates, Icons.alternate_email_outlined, trailing: _buildSwitch(false)),
             ]),
             const SizedBox(height: 32),
-            _buildSection(context, 'GENERAL', [
-              _buildSettingTile(context, 'Language', Icons.language_outlined, trailing: Text('English', style: TextStyle(color: context.secondaryTextColor, fontSize: 13, fontWeight: FontWeight.bold))),
-              _buildSettingTile(context, 'Location Services', Icons.location_on_outlined, trailing: _buildSwitch(true)),
+            _buildSection(context, l10n.general, [
+              _buildSettingTile(
+                context, 
+                l10n.language, 
+                Icons.language_outlined, 
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      locale.languageCode == 'en' ? l10n.english : l10n.hindi, 
+                      style: TextStyle(color: context.secondaryTextColor, fontSize: 13, fontWeight: FontWeight.bold)
+                    ),
+                    const SizedBox(width: 8),
+                    Icon(Icons.swap_horiz, size: 16, color: context.secondaryTextColor),
+                  ],
+                ),
+                onTap: () {
+                  ref.read(localeProvider.notifier).toggleLocale();
+                },
+              ),
+              _buildSettingTile(context, l10n.locationServices, Icons.location_on_outlined, trailing: _buildSwitch(true)),
             ]),
           ],
         ),
@@ -75,12 +97,12 @@ class AppSettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSettingTile(BuildContext context, String title, IconData icon, {Widget? trailing}) {
+  Widget _buildSettingTile(BuildContext context, String title, IconData icon, {Widget? trailing, VoidCallback? onTap}) {
     return ListTile(
       leading: Icon(icon, color: AppTheme.primaryBlue, size: 20),
       title: Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: context.primaryTextColor)),
       trailing: trailing,
-      onTap: trailing == null ? () {} : null,
+      onTap: onTap,
     );
   }
 

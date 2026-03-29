@@ -5,9 +5,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/properties/data/property_repository.dart';
-
 import 'package:sampatti_bazar/core/services/location_provider.dart';
 import 'package:sampatti_bazar/core/services/logger_service.dart';
+import 'package:sampatti_bazar/l10n/app_localizations.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -17,6 +17,7 @@ class HomeScreen extends ConsumerWidget {
     final userAsync = ref.watch(currentUserDataProvider);
     final propertiesAsync = ref.watch(propertiesStreamProvider);
     final locationAsync = ref.watch(userLocationProvider);
+    final l10n = AppLocalizations.of(context)!;
     
     final fullName = userAsync.value?.name ?? 'User';
     final firstName = fullName.split(' ')[0];
@@ -36,7 +37,7 @@ class HomeScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Welcome back,',
+              l10n.welcome,
               style: TextStyle(
                 fontSize: 12,
                 color: Colors.grey[600],
@@ -106,7 +107,7 @@ class HomeScreen extends ConsumerWidget {
                 readOnly: true,
                 onTap: () => context.push('/properties'),
                 decoration: InputDecoration(
-                  hintText: 'Search for properties...',
+                  hintText: l10n.searchProperties,
                   hintStyle: TextStyle(color: Colors.grey[500]),
                   prefixIcon: const Icon(Icons.search, color: Colors.grey),
                   suffixIcon: const Icon(Icons.tune, color: Colors.grey),
@@ -133,19 +134,19 @@ class HomeScreen extends ConsumerWidget {
               child: _buildAdaptiveCategoryGrid(
                 context,
                 [
-                  _CategoryData('BUY', Icons.home_outlined, () {
+                  _CategoryData(l10n.buy, Icons.home_outlined, () {
                     LoggerService.i('Home: Buy tapped');
                     context.push('/properties');
                   }),
-                  _CategoryData('RENT', Icons.domain, () {
+                  _CategoryData(l10n.rent, Icons.domain, () {
                     LoggerService.i('Home: Rent tapped');
                     context.push('/properties');
                   }),
-                  _CategoryData('LIST', Icons.add_home_work_outlined, () {
+                  _CategoryData(l10n.list, Icons.add_home_work_outlined, () {
                     LoggerService.i('Home: List property tapped');
                     context.push('/add-property');
                   }),
-                  _CategoryData('SERVICES', Icons.work_outline, () {
+                  _CategoryData(l10n.services, Icons.work_outline, () {
                     LoggerService.i('Home: Services tapped');
                     context.push('/services');
                   }),
@@ -161,10 +162,10 @@ class HomeScreen extends ConsumerWidget {
               child: _buildAdaptiveCategoryGrid(
                 context,
                 [
-                  _CategoryData('LOAN', Icons.account_balance_outlined, () => context.push('/services/loan')),
-                  _CategoryData('CONSTRUCT', Icons.architecture_outlined, () => context.push('/services/construction')),
-                  _CategoryData('LEGAL', Icons.gavel_outlined, () => context.push('/services/legal')),
-                  _CategoryData('MOVERS', Icons.local_shipping_outlined, () => context.push('/services/movers')),
+                  _CategoryData(l10n.loan, Icons.account_balance_outlined, () => context.push('/services/loan')),
+                  _CategoryData(l10n.construct, Icons.architecture_outlined, () => context.push('/services/construction')),
+                  _CategoryData(l10n.legal, Icons.gavel_outlined, () => context.push('/services/legal')),
+                  _CategoryData(l10n.movers, Icons.local_shipping_outlined, () => context.push('/services/movers')),
                 ],
               ),
             ),
@@ -175,10 +176,10 @@ class HomeScreen extends ConsumerWidget {
             propertiesAsync.when(
               data: (properties) {
                 if (properties.isEmpty) {
-                  return const Center(
+                  return Center(
                     child: Padding(
-                      padding: EdgeInsets.all(32),
-                      child: Text('No properties listed yet.', style: TextStyle(color: Colors.grey)),
+                      padding: const EdgeInsets.all(32),
+                      child: Text(l10n.noPropertiesYet, style: const TextStyle(color: Colors.grey)),
                     ),
                   );
                 }
@@ -201,11 +202,7 @@ class HomeScreen extends ConsumerWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'FEATURED ZERO-',
-                                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, height: 1.1),
-                                ),
-                                Text(
-                                  'BROKERAGE',
+                                  l10n.featuredZeroBrokerage,
                                   style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, height: 1.1),
                                 ),
                               ],
@@ -217,7 +214,7 @@ class HomeScreen extends ConsumerWidget {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  'SEE ALL',
+                                  l10n.seeAll,
                                   style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w900, fontSize: 12),
                                 ),
                                 const SizedBox(width: 4),
@@ -251,7 +248,7 @@ class HomeScreen extends ConsumerWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Text(
-                        'NEWLY ADDED',
+                        l10n.newlyAdded,
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                     ),

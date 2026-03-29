@@ -13,6 +13,7 @@ import 'package:sampatti_bazar/features/services/data/booking_repository.dart';
 import 'package:sampatti_bazar/features/services/domain/booking_model.dart';
 import 'package:sampatti_bazar/features/properties/domain/property_model.dart';
 import 'package:sampatti_bazar/features/chat/data/chat_repository.dart';
+import 'package:sampatti_bazar/l10n/app_localizations.dart';
 
 class PropertyDetailScreen extends ConsumerWidget {
   final String propertyId;
@@ -22,12 +23,13 @@ class PropertyDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final propertiesAsync = ref.watch(propertiesStreamProvider);
+    final l10n = AppLocalizations.of(context)!;
     
     return propertiesAsync.when(
       data: (properties) {
         final propertyIdx = properties.indexWhere((p) => p.id == propertyId);
         if (propertyIdx == -1) {
-          return const Scaffold(body: Center(child: Text('Property not found')));
+          return Scaffold(body: Center(child: Text(l10n.propertyNotFound)));
         }
         final property = properties[propertyIdx];
         final ownerAsync = ref.watch(userProfileProvider(property.ownerId));
@@ -66,11 +68,11 @@ class PropertyDetailScreen extends ConsumerWidget {
                    isSavedAsync.value == true ? Icons.favorite : Icons.favorite_border, 
                    color: isSavedAsync.value == true ? Colors.red : Colors.white
                  ),
-                 onPressed: () async {
-                   if (currentUser == null) {
-                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please log in to save properties')));
-                     return;
-                   }
+                onPressed: () async {
+                  if (currentUser == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.pleaseLoginToSave)));
+                    return;
+                  }
                    await ref.read(propertyRepositoryProvider).toggleSaveProperty(currentUser.uid, propertyId);
                    LoggerService.trackEvent(
                      isSavedAsync.value == true ? 'property_unsaved' : 'property_saved',
@@ -88,11 +90,11 @@ class PropertyDetailScreen extends ConsumerWidget {
                const SizedBox(width: 8),
                IconButton(
                  icon: const Icon(Icons.share_outlined, color: Colors.white),
-                 onPressed: () {
-                   Share.share(
-                     'Check out this property on Sampatti Bazar: ${property.title} in ${property.city} for ₹${property.price.toInt()}.',
-                     subject: 'Property Shared: ${property.title}',
-                   );
+                  onPressed: () {
+                    Share.share(
+                      'Check out this property on Sampatti Bazar: ${property.title} in ${property.city} for ₹${property.price.toInt()}.', // Consider localizing this message too
+                      subject: 'Property Shared: ${property.title}',
+                    );
                    LoggerService.trackEvent('property_shared', parameters: {
                      'property_id': propertyId,
                      'property_title': property.title,
@@ -147,20 +149,20 @@ class PropertyDetailScreen extends ConsumerWidget {
                                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.85),
                                    borderRadius: BorderRadius.circular(8),
                                  ),
-                                 child: const Row(
-                                   children: [
-                                     Icon(Icons.star, color: Colors.white, size: 12),
-                                     SizedBox(width: 4),
-                                     Text(
-                                       '0 BROKERAGE',
-                                       style: TextStyle(
-                                         color: Colors.white,
-                                         fontSize: 10,
-                                         fontWeight: FontWeight.w900,
-                                         letterSpacing: 0.5,
-                                       ),
-                                     ),
-                                   ],
+                                 child: Row(
+                                    children: [
+                                      const Icon(Icons.star, color: Colors.white, size: 12),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        l10n.zeroBrokerageTag,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w900,
+                                          letterSpacing: 0.5,
+                                        ),
+                                      ),
+                                    ],
                                  ),
                                ),
                              if (property.isZeroBrokerage && property.isVerified)
@@ -177,9 +179,9 @@ class PropertyDetailScreen extends ConsumerWidget {
                                    children: [
                                      Icon(Icons.verified, color: Theme.of(context).colorScheme.primary, size: 12),
                                      const SizedBox(width: 4),
-                                     const Text(
-                                       'VERIFIED',
-                                       style: TextStyle(
+                                     Text(
+                                       l10n.verifiedTag,
+                                       style: const TextStyle(
                                          color: Colors.black87,
                                          fontSize: 10,
                                          fontWeight: FontWeight.w900,
@@ -243,7 +245,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('ASKING PRICE', style: TextStyle(color: context.secondaryTextColor, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1)),
+                              Text(l10n.askingPrice, style: TextStyle(color: context.secondaryTextColor, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1)),
                               const SizedBox(height: 4),
                               Text('₹${property.price.toInt()}', style: TextStyle(color: AppTheme.primaryBlue, fontSize: 26, fontWeight: FontWeight.w900)),
                             ],
@@ -254,13 +256,13 @@ class PropertyDetailScreen extends ConsumerWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Text('TOTAL AREA', style: TextStyle(color: context.secondaryTextColor, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1)),
+                            Text(l10n.totalArea, style: TextStyle(color: context.secondaryTextColor, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1)),
                             const SizedBox(height: 4),
                             RichText(
                               text: TextSpan(
                                 children: [
                                   TextSpan(text: property.areaSqFt.toInt().toString(), style: TextStyle(color: context.primaryTextColor, fontSize: 22, fontWeight: FontWeight.w900)),
-                                  TextSpan(text: ' SQ FT', style: TextStyle(color: context.secondaryTextColor, fontSize: 10, fontWeight: FontWeight.w900)),
+                                  TextSpan(text: ' ${l10n.sqft.toUpperCase()}', style: TextStyle(color: context.secondaryTextColor, fontSize: 10, fontWeight: FontWeight.w900)),
                                 ],
                               ),
                             ),
@@ -271,27 +273,27 @@ class PropertyDetailScreen extends ConsumerWidget {
                   ),
                    
                    const SizedBox(height: 32),
-                   Text('OVERVIEW', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1.5)),
+                   Text(l10n.overview, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1.5)),
                    const SizedBox(height: 16),
-                   _buildOverviewGrid(context, property),
+                   _buildOverviewGrid(context, property, l10n),
                    
                    const SizedBox(height: 32),
-                   Text('AMENITIES', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1.5)),
+                   Text(l10n.amenities, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1.5)),
                    const SizedBox(height: 16),
-                   _buildAmenities(context, property.amenities),
+                   _buildAmenities(context, property.amenities, l10n),
                    
                    const SizedBox(height: 32),
                    
-                   const Text(
-                     'Property Description',
-                     style: TextStyle(
+                   Text(
+                     l10n.propertyDescription,
+                     style: const TextStyle(
                        fontSize: 20,
                        fontWeight: FontWeight.bold,
                      ),
                    ),
                    const SizedBox(height: 16),
                      Text(
-                       property.description.isNotEmpty ? property.description : 'No description provided for this listing.',
+                       property.description.isNotEmpty ? property.description : l10n.noDescription,
                        style: TextStyle(
                          color: context.secondaryTextColor,
                          fontSize: 14,
@@ -301,7 +303,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                      ),
                    const SizedBox(height: 16),
                    Text(
-                     'Read Full Specification',
+                     l10n.readFullSpec,
                      style: TextStyle(
                        fontSize: 14,
                        color: Theme.of(context).colorScheme.primary,
@@ -310,7 +312,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                    ),
 
                    const SizedBox(height: 32),
-                   Text('LOCATION', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1.5)),
+                   Text(l10n.locationLabel, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1.5)),
                    const SizedBox(height: 16),
                    Container(
                      padding: const EdgeInsets.all(20),
@@ -365,7 +367,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                                }
                              },
                              icon: const Icon(Icons.directions_outlined, size: 20),
-                             label: const Text('GET DIRECTIONS', style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1)),
+                             label: Text(l10n.getDirections, style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1)),
                              style: OutlinedButton.styleFrom(
                                padding: const EdgeInsets.symmetric(vertical: 16),
                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -431,7 +433,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: context.primaryTextColor),
                                   ),
                                   Text(
-                                    owner?.role ?? 'Owner',
+                                    owner?.role ?? l10n.ownerLabel,
                                     style: TextStyle(fontSize: 12, color: context.secondaryTextColor, fontWeight: FontWeight.bold),
                                   ),
                                 ],
@@ -446,10 +448,10 @@ class PropertyDetailScreen extends ConsumerWidget {
                                  icon: Icon(Icons.chat_bubble, size: 20, color: Theme.of(context).colorScheme.primary),
                                   onPressed: () async {
                                     final currentUser = ref.read(currentUserDataProvider).value;
-                                    if (currentUser == null) {
-                                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please log in to chat with the owner')));
-                                      return;
-                                    }
+                                     if (currentUser == null) {
+                                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.pleaseLoginToChat)));
+                                       return;
+                                     }
                                     
                                     final chatId = await ref.read(chatRepositoryProvider).startOrGetChat(
                                       currentUser.uid, 
@@ -499,9 +501,9 @@ class PropertyDetailScreen extends ConsumerWidget {
 
                    const SizedBox(height: 32),
                    
-                   const Text(
-                     'Property Information',
-                     style: TextStyle(
+                   Text(
+                     l10n.propertyDetails,
+                     style: const TextStyle(
                        fontSize: 20,
                        fontWeight: FontWeight.bold,
                      ),
@@ -523,7 +525,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                                Icon(Icons.calendar_month_outlined, size: 24, color: Theme.of(context).colorScheme.primary),
                                const SizedBox(height: 12),
                                Text(
-                                 'BUILT IN',
+                                 l10n.builtIn,
                                  style: TextStyle(
                                    fontSize: 10,
                                    fontWeight: FontWeight.bold,
@@ -558,7 +560,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                                Icon(Icons.open_with_outlined, size: 24, color: Theme.of(context).colorScheme.primary),
                                const SizedBox(height: 12),
                                Text(
-                                 'LOT SIZE',
+                                 l10n.lotSize,
                                  style: TextStyle(
                                    fontSize: 10,
                                    fontWeight: FontWeight.bold,
@@ -569,7 +571,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                                const SizedBox(height: 4),
                                 Text(
                                   property.lotSizeSqFt != null 
-                                      ? '${property.lotSizeSqFt!.toInt().toString()} SF' 
+                                      ? '${property.lotSizeSqFt!.toInt().toString()} ${l10n.sqft.toUpperCase()}' 
                                       : 'N/A',
                                   style: const TextStyle(
                                     fontSize: 18,
@@ -606,7 +608,7 @@ class PropertyDetailScreen extends ConsumerWidget {
             width: double.infinity,
             height: 56,
             child: ElevatedButton(
-              onPressed: () => _scheduleTour(context, ref, property),
+              onPressed: () => _scheduleTour(context, ref, property, l10n),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 foregroundColor: Colors.white,
@@ -615,9 +617,9 @@ class PropertyDetailScreen extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              child: const Text(
-                'Book a Visit',
-                style: TextStyle(
+              child: Text(
+                l10n.bookVisit,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -633,7 +635,7 @@ class PropertyDetailScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _scheduleTour(BuildContext context, WidgetRef ref, dynamic property) async {
+  Future<void> _scheduleTour(BuildContext context, WidgetRef ref, dynamic property, AppLocalizations l10n) async {
     final date = await showDatePicker(
       context: context,
       initialDate: DateTime.now().add(const Duration(days: 1)),
@@ -656,7 +658,7 @@ class PropertyDetailScreen extends ConsumerWidget {
       final user = ref.read(currentUserDataProvider).value;
       if (user == null) {
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please log in to book a visit')));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.pleaseLoginToChat)));
         }
         return;
       }
@@ -686,22 +688,22 @@ class PropertyDetailScreen extends ConsumerWidget {
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: const Text('Visit Scheduled!'),
-            content: Text('Your visit for "${property.title}" has been requested for ${date.day}/${date.month} at ${time.format(context)}. You can track this in the Tracking Hub.'),
+            title: Text(l10n.visitScheduled),
+            content: Text(l10n.visitScheduledMsg(property.title, '${date.day}/${date.month}', time.format(context))),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Great!')),
+              TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.great)),
             ],
           ),
         );
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to schedule visit: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.failedToSchedule(e.toString()))));
       }
     }
   }
 
-  Widget _buildOverviewGrid(BuildContext context, PropertyModel property) {
+  Widget _buildOverviewGrid(BuildContext context, PropertyModel property, AppLocalizations l10n) {
     return GridView.count(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -710,12 +712,12 @@ class PropertyDetailScreen extends ConsumerWidget {
       mainAxisSpacing: 16,
       crossAxisSpacing: 16,
       children: [
-        _buildOverviewItem(context, Icons.king_bed_outlined, 'BEDROOMS', property.bedrooms.toString()),
-        _buildOverviewItem(context, Icons.bathtub_outlined, 'BATHROOMS', property.bathrooms.toString()),
-        _buildOverviewItem(context, Icons.square_foot_outlined, 'TOTAL AREA', '${property.areaSqFt.toInt()} SF'),
-        if (property.builtIn != null) _buildOverviewItem(context, Icons.calendar_today_outlined, 'BUILT YEAR', property.builtIn.toString()),
-        if (property.lotSizeSqFt != null) _buildOverviewItem(context, Icons.landscape_outlined, 'LOT SIZE', '${property.lotSizeSqFt!.toInt()} SF'),
-        _buildOverviewItem(context, Icons.apartment_outlined, 'TYPE', property.propertyType),
+        _buildOverviewItem(context, Icons.king_bed_outlined, l10n.bedroomsLabel, property.bedrooms.toString()),
+        _buildOverviewItem(context, Icons.bathtub_outlined, l10n.bathroomsTitle, property.bathrooms.toString()),
+        _buildOverviewItem(context, Icons.square_foot_outlined, l10n.totalArea, '${property.areaSqFt.toInt()} ${l10n.sqft.toUpperCase()}'),
+        if (property.builtIn != null) _buildOverviewItem(context, Icons.calendar_today_outlined, l10n.builtYearLabel, property.builtIn.toString()),
+        if (property.lotSizeSqFt != null) _buildOverviewItem(context, Icons.landscape_outlined, l10n.lotSize, '${property.lotSizeSqFt!.toInt()} ${l10n.sqft.toUpperCase()}'),
+        _buildOverviewItem(context, Icons.apartment_outlined, l10n.propertyType, property.propertyType),
       ],
     );
   }
@@ -748,8 +750,8 @@ class PropertyDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildAmenities(BuildContext context, List<String> amenities) {
-    if (amenities.isEmpty) return const Text('No amenities listed.');
+  Widget _buildAmenities(BuildContext context, List<String> amenities, AppLocalizations l10n) {
+    if (amenities.isEmpty) return Text(l10n.noAmenities);
     return Wrap(
       spacing: 12,
       runSpacing: 12,

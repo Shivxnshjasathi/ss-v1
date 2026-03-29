@@ -6,6 +6,7 @@ import 'package:sampatti_bazar/features/auth/data/auth_repository.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sampatti_bazar/core/services/logger_service.dart';
+import 'package:sampatti_bazar/l10n/app_localizations.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -71,6 +72,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   void _onEmailLogin() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
+
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter email and password')));
       return;
@@ -118,6 +120,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: context.scaffoldColor,
       body: SafeArea(
@@ -140,25 +144,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 32),
-                    const FittedBox(
+                    FittedBox(
                       fit: BoxFit.scaleDown,
                       alignment: Alignment.centerLeft,
-                      child: Text('WELCOME TO', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1, height: 1.1)),
+                      child: Text(l10n.welcomeTo, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1, height: 1.1)),
                     ),
-                    const FittedBox(
+                    FittedBox(
                       fit: BoxFit.scaleDown,
                       alignment: Alignment.centerLeft,
-                      child: Text('SAMPATTI\nBAZAR', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1, color: Color(0xFF1E60FF), height: 1.1)),
+                      child: Text(l10n.sampattiBazar, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1, color: Color(0xFF1E60FF), height: 1.1)),
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      _isEmailLogin ? 'Enter your email to continue' : 'Enter your phone number to get started', 
+                      _isEmailLogin ? l10n.emailLoginHint : l10n.phoneLoginHint, 
                       style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.primaryTextColor)
                     ),
                     const SizedBox(height: 32),
                     
                     if (!_isEmailLogin) ...[
-                      const Text('MOBILE NUMBER', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1.0)),
+                      Text(l10n.mobileNumber, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1.0)),
                       const SizedBox(height: 12),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -185,7 +189,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       Container(height: 2, color: context.primaryTextColor, margin: const EdgeInsets.only(top: 8)),
                     ] else ...[
-                      const Text('EMAIL ADDRESS', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1.0)),
+                      Text(l10n.emailAddress, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1.0)),
                       const SizedBox(height: 8),
                       TextField(
                         controller: _emailController,
@@ -200,7 +204,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      const Text('PASSWORD', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1.0)),
+                      Text(l10n.password, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1.0)),
                       const SizedBox(height: 8),
                       TextField(
                         controller: _passwordController,
@@ -229,7 +233,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                         child: _isLoading 
                             ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                            : Text(_isEmailLogin ? 'Continue' : 'Get OTP', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
+                            : Text(_isEmailLogin ? l10n.continueText : l10n.getOtp, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -241,7 +245,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           });
                         },
                         child: Text(
-                          _isEmailLogin ? 'Use Phone Number instead' : 'Continue with Email instead',
+                          _isEmailLogin ? l10n.usePhone : l10n.useEmail,
                           style: TextStyle(color: context.primaryTextColor, fontWeight: FontWeight.bold, decoration: TextDecoration.underline),
                         ),
                       ),
@@ -250,12 +254,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     Center(
                       child: Text.rich(
                         TextSpan(
-                          text: 'By continuing, you agree to our\n',
+                          text: '${l10n.agreementText}\n',
                           style: TextStyle(fontSize: 10, color: context.primaryTextColor.withValues(alpha: 0.7)),
                           children: [
-                            TextSpan(text: 'Terms of Service', style: TextStyle(color: context.primaryTextColor, decoration: TextDecoration.underline, fontWeight: FontWeight.bold)),
+                            TextSpan(text: l10n.termsOfService, style: TextStyle(color: context.primaryTextColor, decoration: TextDecoration.underline, fontWeight: FontWeight.bold)),
                             const TextSpan(text: ' & '),
-                            TextSpan(text: 'Privacy Policy', style: TextStyle(color: context.primaryTextColor, decoration: TextDecoration.underline, fontWeight: FontWeight.bold)),
+                            TextSpan(text: l10n.privacyPolicy, style: TextStyle(color: context.primaryTextColor, decoration: TextDecoration.underline, fontWeight: FontWeight.bold)),
                           ],
                         ),
                         textAlign: TextAlign.center,

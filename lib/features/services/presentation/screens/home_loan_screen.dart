@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
+import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'dart:math';
 
 class HomeLoanScreen extends StatefulWidget {
@@ -39,6 +40,7 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: context.scaffoldColor,
       appBar: AppBar(
@@ -55,7 +57,7 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
           ),
           onPressed: () => context.pop(),
         ),
-        title: Text('Finance', style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 18)),
+        title: Text(l10n.finance, style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 18)),
         actions: [
           IconButton(icon: Icon(Icons.notifications_none, color: context.iconColor), onPressed: () {}),
           IconButton(icon: Icon(Icons.person_outline, color: context.iconColor), onPressed: () {}),
@@ -66,16 +68,16 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('EMI Calculator', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24)),
+            Text(l10n.emiCalculator, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 24)),
             const SizedBox(height: 8),
             Text(
-              'Plan your property investment with our hyper-precise financial engine.',
+              l10n.homeLoanSubtitle,
               style: TextStyle(color: Colors.grey[700], fontSize: 12, height: 1.5),
             ),
             const SizedBox(height: 32),
             _buildSliderCard(
               icon: Icons.attach_money,
-              label: 'LOAN AMOUNT',
+              label: l10n.loanAmount,
               valueText: '${_formatCurrency(loanAmount)}',
               minLabel: '₹1,00,000',
               maxLabel: '₹1,00,00,000',
@@ -87,10 +89,10 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
             const SizedBox(height: 16),
             _buildSliderCard(
               icon: Icons.calendar_today,
-              label: 'TENURE',
-              valueText: '${tenure.toInt()} YEARS',
-              minLabel: '1 YR',
-              maxLabel: '30 YRS',
+              label: l10n.tenure,
+              valueText: l10n.yearsCount(tenure.toInt()),
+              minLabel: l10n.yrLabel,
+              maxLabel: l10n.yrsLabel,
               value: tenure,
               min: 1,
               max: 30,
@@ -99,7 +101,7 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
             const SizedBox(height: 16),
             _buildSliderCard(
               icon: Icons.percent,
-              label: 'INTEREST RATE',
+              label: l10n.interestRate,
               valueText: '${interestRate.toStringAsFixed(1)} %',
               minLabel: '5 %',
               maxLabel: '15 %',
@@ -109,7 +111,7 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
               onChanged: (val) => setState(() => interestRate = val),
             ),
             const SizedBox(height: 32),
-            _buildSummaryCard(),
+            _buildSummaryCard(l10n),
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
@@ -120,13 +122,13 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
                   backgroundColor: const Color(0xFF1E60FF),
                   shape: const RoundedRectangleBorder(),
                 ),
-                child: const Text('Check Eligibility', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
+                child: Text(l10n.checkEligibility, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
               ),
             ),
             const SizedBox(height: 24),
             Center(
               child: Text(
-                'SUBJECT TO TERMS AND CONDITIONS. POWERED BY SAMPATTI FINANCE.',
+                l10n.termsApply,
                 style: TextStyle(fontSize: 8, color: Colors.grey[500], fontWeight: FontWeight.bold, letterSpacing: 0.5),
                 textAlign: TextAlign.center,
               ),
@@ -196,7 +198,7 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
     );
   }
 
-  Widget _buildSummaryCard() {
+  Widget _buildSummaryCard(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -206,7 +208,7 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('ESTIMATED MONTHLY EMI', style: TextStyle(color: Color(0xFF1E60FF), fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+          Text(l10n.estimatedMonthlyEmi, style: const TextStyle(color: Color(0xFF1E60FF), fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
           const SizedBox(height: 8),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -220,7 +222,7 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
                   border: Border.all(color: const Color(0xFF1E60FF)),
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: const Text('LOW RATE', style: TextStyle(color: Color(0xFF1E60FF), fontSize: 8, fontWeight: FontWeight.bold)),
+                child: Text(l10n.lowRate, style: const TextStyle(color: Color(0xFF1E60FF), fontSize: 8, fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -231,7 +233,7 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('TOTAL INTEREST', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
+                    Text(l10n.totalInterest, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
                     const SizedBox(height: 4),
                     Text(_formatCurrency(_totalInterest), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
                   ],
@@ -241,7 +243,7 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('TOTAL PAYABLE', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
+                    Text(l10n.totalPayable, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
                     const SizedBox(height: 4),
                     Text(_formatCurrency(_totalPayable), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
                   ],
@@ -259,12 +261,12 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Icon(Icons.pie_chart_outline, size: 16, color: Color(0xFF1E60FF)),
-                SizedBox(width: 8),
-                Text('View Repayment Schedule', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-                Spacer(),
-                Icon(Icons.chevron_right, size: 16, color: Colors.grey),
+              children: [
+                const Icon(Icons.pie_chart_outline, size: 16, color: Color(0xFF1E60FF)),
+                const SizedBox(width: 8),
+                Text(l10n.viewRepaymentSchedule, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                const Spacer(),
+                const Icon(Icons.chevron_right, size: 16, color: Colors.grey),
               ],
             ),
           ),

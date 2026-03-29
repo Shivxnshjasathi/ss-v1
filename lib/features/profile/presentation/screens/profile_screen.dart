@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sampatti_bazar/core/providers/theme_provider.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
+import 'package:sampatti_bazar/l10n/app_localizations.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -11,6 +12,7 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -28,7 +30,7 @@ class ProfileScreen extends ConsumerWidget {
           ),
           onPressed: () => context.pop(),
         ),
-        title: Text('My Profile', style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 18)),
+        title: Text(l10n.myProfile, style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 18)),
         actions: [
           IconButton(
             icon: Icon(
@@ -94,9 +96,9 @@ class ProfileScreen extends ConsumerWidget {
                 color: const Color(0xFF0066FF).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: const Text(
-                'PREMIUM MEMBER',
-                style: TextStyle(color: Color(0xFF0066FF), fontWeight: FontWeight.w900, fontSize: 10, letterSpacing: 0.5),
+              child: Text(
+                l10n.premiumMember,
+                style: const TextStyle(color: Color(0xFF0066FF), fontWeight: FontWeight.w900, fontSize: 10, letterSpacing: 0.5),
               ),
             ),
             const SizedBox(height: 40),
@@ -107,25 +109,25 @@ class ProfileScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                   Text('ACCOUNT', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: context.secondaryTextColor, letterSpacing: 1)),
+                   Text(l10n.account, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: context.secondaryTextColor, letterSpacing: 1)),
                   const SizedBox(height: 16),
                   _buildMenuCard(
                     context,
                     items: [
-                      _buildMenuItem(context, 'Personal Information', Icons.person_outline, const Color(0xFF0066FF), () => context.push('/profile/edit')),
-                      _buildMenuItem(context, 'Saved Properties', Icons.favorite_border, Colors.pinkAccent, () => context.go('/saved')),
-                      _buildMenuItem(context, 'My Documents', Icons.description_outlined, Colors.orange, () => context.push('/profile/documents')),
+                      _buildMenuItem(context, l10n.personalInfo, Icons.person_outline, const Color(0xFF0066FF), () => context.push('/profile/edit')),
+                      _buildMenuItem(context, l10n.savedProperties, Icons.favorite_border, Colors.pinkAccent, () => context.go('/saved')),
+                      _buildMenuItem(context, l10n.myDocuments, Icons.description_outlined, Colors.orange, () => context.push('/profile/documents')),
                     ],
                   ),
                   const SizedBox(height: 32),
-                   Text('PREFERENCES', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: context.secondaryTextColor, letterSpacing: 1)),
+                   Text(l10n.preferences, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: context.secondaryTextColor, letterSpacing: 1)),
                   const SizedBox(height: 16),
                   _buildMenuCard(
                     context,
                     items: [
-                      _buildMenuItem(context, 'App Settings', Icons.settings_outlined, Colors.grey[800]!, () => context.push('/profile/settings')),
-                      _buildMenuItem(context, 'Help & Support', Icons.help_outline, Colors.teal, () => context.push('/profile/support')),
-                      _buildMenuItem(context, 'Terms & Privacy', Icons.privacy_tip_outlined, Colors.indigo, () {}),
+                      _buildMenuItem(context, l10n.appSettings, Icons.settings_outlined, Colors.grey[800]!, () => context.push('/profile/settings')),
+                      _buildMenuItem(context, l10n.helpSupport, Icons.help_outline, Colors.teal, () => context.push('/profile/support')),
+                      _buildMenuItem(context, l10n.termsPrivacy, Icons.privacy_tip_outlined, Colors.indigo, () {}),
                     ],
                   ),
                   const SizedBox(height: 32),
@@ -135,9 +137,9 @@ class ProfileScreen extends ConsumerWidget {
                     child: OutlinedButton.icon(
                       onPressed: () => context.go('/login'),
                       icon: const Icon(Icons.logout, color: Colors.redAccent, size: 20),
-                      label: const Text(
-                        'LOG OUT',
-                        style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w900, letterSpacing: 1),
+                      label: Text(
+                        l10n.logOut,
+                        style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w900, letterSpacing: 1),
                       ),
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(color: Colors.redAccent.withValues(alpha: 0.3)),

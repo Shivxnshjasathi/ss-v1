@@ -5,6 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/properties/data/property_repository.dart';
 import 'package:sampatti_bazar/features/properties/domain/property_model.dart';
+import 'package:sampatti_bazar/l10n/app_localizations.dart';
 
 class PropertyFeedScreen extends ConsumerStatefulWidget {
   const PropertyFeedScreen({super.key});
@@ -22,16 +23,38 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
   String _selectedBedrooms = 'Any';
   RangeValues _priceRange = const RangeValues(0, 100); // 0 to 100 on slider
   
-  // 1 unit on slider = 10 Lakhs
-  // 10 units = 1 Crore
-  // 100 units = 10 Crores
-
   final List<String> _propertyTypes = ['All', 'Apartment', 'Villa', 'Penthouse', 'Studio'];
   final List<String> _bedroomOptions = ['Any', '1+', '2+', '3+', '4+'];
+
+  String _getLocalizedCategory(AppLocalizations l10n, String category) {
+    switch (category) {
+      case 'All': return l10n.all;
+      case 'Sell': return l10n.sell;
+      case 'Rent/Lease': return l10n.rentLease;
+      default: return category;
+    }
+  }
+
+  String _getLocalizedPropertyType(AppLocalizations l10n, String type) {
+    switch (type) {
+      case 'All': return l10n.all;
+      case 'Apartment': return l10n.apartment;
+      case 'Villa': return l10n.villa;
+      case 'Penthouse': return l10n.penthouse;
+      case 'Studio': return l10n.studio;
+      case 'House/Villa': return l10n.houseVilla;
+      case 'Plot': return l10n.plot;
+      case 'PG': return l10n.pg;
+      case 'Commercial': return l10n.commercial;
+      default: return type;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final propertiesAsync = ref.watch(propertiesStreamProvider);
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: context.scaffoldColor,
       appBar: AppBar(
@@ -42,7 +65,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
           onPressed: () => context.pop(),
         ),
         title: Text(
-          'Properties', 
+          l10n.propertiesTitle, 
           style: TextStyle(fontWeight: FontWeight.bold, color: context.primaryTextColor, fontSize: 18)
         ),
         centerTitle: true,
@@ -70,7 +93,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                         Expanded(
                           child: TextField(
                             decoration: InputDecoration(
-                              hintText: 'Search by area or developer...',
+                              hintText: l10n.searchPropertiesHint,
                               hintStyle: TextStyle(color: context.secondaryTextColor.withValues(alpha: 0.5), fontSize: 14),
                               border: InputBorder.none,
                             ),
@@ -78,7 +101,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () => _showFilterSheet(context),
+                          onTap: () => _showFilterSheet(context, l10n),
                           child: Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
@@ -106,7 +129,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                 return Padding(
                   padding: const EdgeInsets.only(right: 12.0),
                   child: ChoiceChip(
-                    label: Text(category),
+                    label: Text(_getLocalizedCategory(l10n, category)),
                     selected: isSelected,
                     onSelected: (_) => setState(() => _selectedCategory = category),
                     labelStyle: TextStyle(
@@ -134,11 +157,11 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                 const Text('Featured Collections', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20)),
+                 Text(l10n.featuredCollections, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 20)),
                 TextButton(
                   onPressed: () {},
                   child: Text(
-                    'See All', 
+                    l10n.seeAll, 
                     style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w900, fontSize: 14)
                   ),
                 ),
@@ -175,14 +198,14 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                 }).toList();
 
                 if (filtered.isEmpty) {
-                   return Center(child: Text('No properties matches your filters.', style: TextStyle(color: context.secondaryTextColor)));
+                   return Center(child: Text(l10n.noPropertiesMatch, style: TextStyle(color: context.secondaryTextColor)));
                 }
 
                 return ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   itemCount: filtered.length,
                   itemBuilder: (context, index) {
-                    return _buildPropertyCard(context, filtered[index]);
+                    return _buildPropertyCard(context, filtered[index], l10n);
                   },
                 );
               },
@@ -203,7 +226,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
     }
   }
 
-  void _showFilterSheet(BuildContext context) {
+  void _showFilterSheet(BuildContext context, AppLocalizations l10n) {
     // Local state for the modal until "Apply" is pressed
     String tempType = _selectedPropertyType;
     String tempBedrooms = _selectedBedrooms;
@@ -228,7 +251,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Filter Properties', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: context.primaryTextColor)),
+                      Text(l10n.filterProperties, style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: context.primaryTextColor)),
                       IconButton(
                         icon: const Icon(Icons.close),
                         onPressed: () => Navigator.pop(context),
@@ -237,7 +260,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                   ),
                   const SizedBox(height: 32),
                   
-                  Text('PROPERTY TYPE', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1)),
+                  Text(l10n.propertyType, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1)),
                   const SizedBox(height: 12),
                   Wrap(
                     spacing: 12,
@@ -245,7 +268,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                     children: _propertyTypes.map((type) {
                       final isSelected = tempType == type;
                       return _buildModalChoiceChip(
-                        label: type,
+                        label: _getLocalizedPropertyType(l10n, type),
                         isSelected: isSelected,
                         onSelected: (val) {
                           if (val) setModalState(() => tempType = type);
@@ -255,7 +278,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                   ),
                   
                   const SizedBox(height: 40),
-                  Text('PRICE RANGE (₹)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1)),
+                  Text(l10n.priceRangeLabel, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1)),
                   const SizedBox(height: 12),
                   RangeSlider(
                     values: tempPriceRange,
@@ -278,7 +301,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                   ),
                   
                   const SizedBox(height: 40),
-                  Text('BEDROOMS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1)),
+                  Text(l10n.bedroomsLabel, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1)),
                   const SizedBox(height: 12),
                   Wrap(
                     spacing: 12,
@@ -316,9 +339,9 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
-                        'Apply Filters',
-                        style: TextStyle(
+                      child: Text(
+                        l10n.applyFilters,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -360,7 +383,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
     );
   }
 
-  Widget _buildPropertyCard(BuildContext context, PropertyModel property) {
+  Widget _buildPropertyCard(BuildContext context, PropertyModel property, AppLocalizations l10n) {
     return GestureDetector(
       onTap: () => context.push('/properties/detail/${property.id}'),
       child: Container(
@@ -418,13 +441,13 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                             color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.85),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Row(
+                          child: Row(
                             children: [
-                              Icon(Icons.star, color: Colors.white, size: 12),
-                              SizedBox(width: 4),
+                              const Icon(Icons.star, color: Colors.white, size: 12),
+                              const SizedBox(width: 4),
                               Text(
-                                '0 BROKERAGE',
-                                style: TextStyle(
+                                l10n.zeroBrokerageTag,
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 10,
                                   fontWeight: FontWeight.w900,
@@ -449,7 +472,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                               Icon(Icons.verified, color: Theme.of(context).colorScheme.primary, size: 12),
                               const SizedBox(width: 4),
                               Text(
-                                'VERIFIED',
+                                l10n.verifiedTag,
                                 style: TextStyle(
                                   color: context.primaryTextColor,
                                   fontSize: 10,
@@ -503,7 +526,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'ASKING PRICE',
+                              l10n.askingPrice,
                               style: TextStyle(color: context.secondaryTextColor, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)
                             ),
                             const SizedBox(height: 4),
@@ -514,11 +537,11 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                           ],
                         ),
                       ),
-                      _buildAmenity(Icons.king_bed_outlined, '${property.bedrooms} Bed'),
+                      _buildAmenity(Icons.king_bed_outlined, '${property.bedrooms} ${l10n.bed}'),
                       const SizedBox(width: 16),
-                      _buildAmenity(Icons.bathtub_outlined, '${property.bathrooms} Bath'),
+                      _buildAmenity(Icons.bathtub_outlined, '${property.bathrooms} ${l10n.bath}'),
                       const SizedBox(width: 16),
-                      _buildAmenity(Icons.square_foot_outlined, '${property.areaSqFt.toInt()} sqft'),
+                      _buildAmenity(Icons.square_foot_outlined, '${property.areaSqFt.toInt()} ${l10n.sqft}'),
                     ],
                   ),
                    const SizedBox(height: 20),
@@ -535,11 +558,11 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                            Text(
-                            'LISTED BY',
+                            l10n.listedBy,
                             style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 0.5),
                           ),
                           Text(
-                            property.ownerId.isNotEmpty ? 'Owner' : 'Unknown',
+                            property.ownerId.isNotEmpty ? 'Owner' : 'Unknown', // Owner/Unknown needs l10n?
                             style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.primaryTextColor),
                           ),
                         ],
@@ -557,7 +580,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                             borderRadius: BorderRadius.circular(8),
                           ),
                         ),
-                        child: const Text('View Details', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                        child: Text(l10n.viewDetails, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                       ),
                     ],
                   ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
+import 'package:sampatti_bazar/l10n/app_localizations.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -16,10 +17,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: context.scaffoldColor,
       appBar: AppBar(
-        title: Text('Personal Information', style: TextStyle(color: context.primaryTextColor, fontWeight: FontWeight.w900)),
+        title: Text(l10n.personalInfo, style: TextStyle(color: context.primaryTextColor, fontWeight: FontWeight.w900)),
         backgroundColor: context.scaffoldColor,
         elevation: 0,
         leading: IconButton(
@@ -60,11 +62,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
             ),
             const SizedBox(height: 40),
-            _buildTextField('FULL NAME', _nameController),
+            _buildTextField(l10n.fullName, _nameController),
             const SizedBox(height: 16),
-            _buildTextField('EMAIL ADDRESS', _emailController, keyboardType: TextInputType.emailAddress),
+            _buildTextField(l10n.emailAddress, _emailController, keyboardType: TextInputType.emailAddress),
             const SizedBox(height: 16),
-            _buildTextField('PHONE NUMBER', _phoneController, keyboardType: TextInputType.phone),
+            _buildTextField(l10n.phoneNumber, _phoneController, keyboardType: TextInputType.phone),
             const SizedBox(height: 40),
             SizedBox(
               width: double.infinity,
@@ -72,7 +74,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               child: ElevatedButton(
                 onPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Profile updated successfully!'), backgroundColor: Colors.green),
+                    SnackBar(content: Text(l10n.profileUpdated), backgroundColor: Colors.green),
                   );
                   context.pop();
                 },
@@ -81,7 +83,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                child: const Text('SAVE CHANGES', style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1)),
+                child: Text(l10n.saveChanges, style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1)),
               ),
             ),
           ],

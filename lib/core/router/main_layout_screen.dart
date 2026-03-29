@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
+import 'package:sampatti_bazar/l10n/app_localizations.dart';
 
 class MainLayoutScreen extends StatelessWidget {
   const MainLayoutScreen({super.key, required this.navigationShell});
@@ -9,6 +10,7 @@ class MainLayoutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: navigationShell,
       bottomNavigationBar: Container(
@@ -37,26 +39,26 @@ class MainLayoutScreen extends StatelessWidget {
           selectedFontSize: 12,
           unselectedFontSize: 12,
           elevation: 0,
-          items: const [
+          items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              activeIcon: Icon(Icons.home),
-              label: 'Home',
+              icon: const Icon(Icons.home_outlined),
+              activeIcon: const Icon(Icons.home),
+              label: l10n.homeLabel,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.grid_view_outlined),
-              activeIcon: Icon(Icons.grid_view),
-              label: 'Services',
+              icon: const Icon(Icons.grid_view_outlined),
+              activeIcon: const Icon(Icons.grid_view),
+              label: l10n.servicesLabel,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.favorite_border),
-              activeIcon: Icon(Icons.favorite),
-              label: 'Saved',
+              icon: const Icon(Icons.favorite_border),
+              activeIcon: const Icon(Icons.favorite),
+              label: l10n.savedLabel,
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.forum_outlined),
-              activeIcon: Icon(Icons.forum),
-              label: 'Messages',
+              icon: const Icon(Icons.forum_outlined),
+              activeIcon: const Icon(Icons.forum),
+              label: l10n.messagesLabel,
             ),
           ],
         ),

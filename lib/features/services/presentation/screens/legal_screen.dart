@@ -6,6 +6,7 @@ import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/services/data/service_request_repository.dart';
 import 'package:sampatti_bazar/features/services/domain/service_request_model.dart';
+import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
 
 class LegalScreen extends ConsumerStatefulWidget {
@@ -168,6 +169,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: context.scaffoldColor,
       appBar: AppBar(
@@ -190,7 +192,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
             }
           },
         ),
-        title: Text('Legal Hub', style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 18)),
+        title: Text(l10n.legalHub, style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 18)),
         centerTitle: true,
       ),
       body: Column(
@@ -201,14 +203,14 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
             child: Row(
-              children: _services.map((service) => _buildServiceChip(service)).toList(),
+              children: _services.map((service) => _buildServiceChip(service, l10n)).toList(),
             ),
           ),
           
           if (_selectedService == 'Rent Agreement')
             Padding(
               padding: const EdgeInsets.only(bottom: 24.0),
-              child: _buildStepper(),
+              child: _buildStepper(l10n),
             ),
 
           Expanded(
@@ -216,17 +218,17 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
-                child: _buildDynamicBody(),
+                child: _buildDynamicBody(l10n),
               ),
             ),
           ),
         ],
       ),
-      bottomNavigationBar: _buildDynamicBottomNav(),
+      bottomNavigationBar: _buildDynamicBottomNav(l10n),
     );
   }
 
-  Widget _buildServiceChip(String label) {
+  Widget _buildServiceChip(String label, AppLocalizations l10n) {
     bool isSelected = _selectedService == label;
     return Padding(
       padding: const EdgeInsets.only(right: 12.0),
@@ -246,7 +248,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
                 : [],
           ),
           child: Text(
-            label,
+            _getLocalizedServiceName(label, l10n),
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 13,
@@ -258,90 +260,107 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
     );
   }
 
-  Widget _buildDynamicBody() {
+  String _getLocalizedServiceName(String service, AppLocalizations l10n) {
+    switch (service) {
+      case 'Rent Agreement': return l10n.rentAgreement;
+      case 'Consult Lawyer': return l10n.consultLawyer;
+      case 'Property Verification': return l10n.propertyVerification;
+      default: return service;
+    }
+  }
+
+  Widget _buildDynamicBody(AppLocalizations l10n) {
     switch (_selectedService) {
-      case 'Rent Agreement': return _buildRentAgreementFlow();
-      case 'Consult Lawyer': return _buildConsultLawyer();
-      case 'Property Verification': return _buildPropertyVerification();
+      case 'Rent Agreement': return _buildRentAgreementFlow(l10n);
+      case 'Consult Lawyer': return _buildConsultLawyer(l10n);
+      case 'Property Verification': return _buildPropertyVerification(l10n);
       default: return const SizedBox();
     }
   }
 
-  Widget _buildDynamicBottomNav() {
+  Widget _buildDynamicBottomNav(AppLocalizations l10n) {
     if (_selectedService == 'Rent Agreement') {
-      return _buildRentAgreementNav();
+      return _buildRentAgreementNav(l10n);
     } else if (_selectedService == 'Consult Lawyer') {
-      return Container(
-        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-        decoration: BoxDecoration(
-          color: context.scaffoldColor,
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 20, offset: const Offset(0, -10))],
-        ),
-        child: SafeArea(
-          top: false,
-          child: SizedBox(
-            height: 54,
-            child: ElevatedButton(
-              onPressed: _submitLawyerConsult,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryBlue,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                elevation: 0,
-              ),
-              child: const Text('SUBMIT CONSULTATION REQUEST', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: Colors.white, letterSpacing: 0.5)),
-            ),
-          ),
-        ),
-      );
+      return _buildLawyerConsultNav(l10n);
     } else if (_selectedService == 'Property Verification') {
-      return Container(
-        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-        decoration: BoxDecoration(
-          color: context.scaffoldColor,
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 20, offset: const Offset(0, -10))],
-        ),
-        child: SafeArea(
-          top: false,
-          child: SizedBox(
-            height: 54,
-            child: ElevatedButton(
-              onPressed: _submitPropertyVerification,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryBlue,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                elevation: 0,
-              ),
-              child: const Text('REQUEST FULL VERIFICATION', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: Colors.white, letterSpacing: 0.5)),
-            ),
-          ),
-        ),
-      );
+      return _buildPropertyVerificationNav(l10n);
     }
     return const SizedBox.shrink(); 
   }
 
+  Widget _buildLawyerConsultNav(AppLocalizations l10n) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+      decoration: BoxDecoration(
+        color: context.scaffoldColor,
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 20, offset: const Offset(0, -10))],
+      ),
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: 54,
+          child: ElevatedButton(
+            onPressed: _submitLawyerConsult,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryBlue,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              elevation: 0,
+            ),
+            child: Text(l10n.submitConsultRequest, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: Colors.white, letterSpacing: 0.5)),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPropertyVerificationNav(AppLocalizations l10n) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+      decoration: BoxDecoration(
+        color: context.scaffoldColor,
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 20, offset: const Offset(0, -10))],
+      ),
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          height: 54,
+          child: ElevatedButton(
+            onPressed: _submitPropertyVerification,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryBlue,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              elevation: 0,
+            ),
+            child: Text(l10n.requestFullVerification, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: Colors.white, letterSpacing: 0.5)),
+          ),
+        ),
+      ),
+    );
+  }
+
   // --- 1. RENT AGREEMENT GENERATOR ---
-  Widget _buildRentAgreementFlow() {
+  Widget _buildRentAgreementFlow(AppLocalizations l10n) {
     return Column(
       key: const ValueKey('rent_agreement'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildCurrentStepContent(),
+        _buildCurrentStepContent(l10n),
       ],
     );
   }
 
-  Widget _buildStepper() {
+  Widget _buildStepper(AppLocalizations l10n) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildStepIndicator('REVIEW', 0),
+          _buildStepIndicator(l10n.review, 0),
           Expanded(child: _buildStepLine(0)),
-          _buildStepIndicator('VERIFY', 1),
+          _buildStepIndicator(l10n.verify, 1),
           Expanded(child: _buildStepLine(1)),
-          _buildStepIndicator('SIGN', 2),
+          _buildStepIndicator(l10n.sign, 2),
         ],
       ),
     );
@@ -380,34 +399,34 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
     );
   }
 
-  Widget _buildCurrentStepContent() {
+  Widget _buildCurrentStepContent(AppLocalizations l10n) {
     switch (_currentStep) {
-      case 0: return _buildFormStep();
-      case 1: return _buildVerificationStep();
-      case 2: return _buildSignStep();
+      case 0: return _buildFormStep(l10n);
+      case 1: return _buildVerificationStep(l10n);
+      case 2: return _buildSignStep(l10n);
       default: return const SizedBox();
     }
   }
 
-  Widget _buildFormStep() {
+  Widget _buildFormStep(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Draft Agreement', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24, letterSpacing: -0.5)),
+        Text(l10n.draftAgreement, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 24, letterSpacing: -0.5)),
         const SizedBox(height: 8),
-        Text('Fill in the specific terms of the rental lease before verification.', style: TextStyle(color: context.secondaryTextColor, fontSize: 13, height: 1.5)),
+        Text(l10n.fillAgreementTerms, style: TextStyle(color: context.secondaryTextColor, fontSize: 13, height: 1.5)),
         const SizedBox(height: 32),
-        _buildTextFieldWidget(_lessorController, 'LESSOR (LANDLORD) NAME', icon: Icons.person_outline),
+        _buildTextFieldWidget(_lessorController, l10n.lessorName, icon: Icons.person_outline),
         const SizedBox(height: 20),
-        _buildTextFieldWidget(_lesseeController, 'LESSEE (TENANT) NAME', icon: Icons.person_outline),
+        _buildTextFieldWidget(_lesseeController, l10n.lesseeName, icon: Icons.person_outline),
         const SizedBox(height: 20),
-        _buildTextFieldWidget(_addressController, 'PROPERTY ADDRESS', icon: Icons.location_on_outlined),
+        _buildTextFieldWidget(_addressController, l10n.propertyAddress, icon: Icons.location_on_outlined),
         const SizedBox(height: 20),
         Row(
           children: [
-            Expanded(child: _buildTextFieldWidget(_rentController, 'MONTHLY RENT (₹)', keyboardType: TextInputType.number, icon: Icons.currency_rupee)),
+            Expanded(child: _buildTextFieldWidget(_rentController, l10n.monthlyRent, keyboardType: TextInputType.number, icon: Icons.currency_rupee)),
             const SizedBox(width: 16),
-            Expanded(child: _buildTextFieldWidget(_depositController, 'DEPOSIT (₹)', keyboardType: TextInputType.number, icon: Icons.account_balance_wallet_outlined)),
+            Expanded(child: _buildTextFieldWidget(_depositController, l10n.depositLabel, keyboardType: TextInputType.number, icon: Icons.account_balance_wallet_outlined)),
           ],
         ),
         const SizedBox(height: 32),
@@ -415,28 +434,28 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
     );
   }
 
-  Widget _buildVerificationStep() {
+  Widget _buildVerificationStep(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('E-KYC Verification', style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 28, letterSpacing: -1.0)),
+        Text(l10n.ekycVerification, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 28, letterSpacing: -1.0)),
         const SizedBox(height: 8),
-        Text('Verify identities securely before stamping the document digitally.', style: TextStyle(color: context.secondaryTextColor, fontSize: 13, height: 1.5, fontWeight: FontWeight.w500)),
+        Text(l10n.verifyIdentitiesSubtitle, style: TextStyle(color: context.secondaryTextColor, fontSize: 13, height: 1.5, fontWeight: FontWeight.w500)),
         const SizedBox(height: 32),
-        _buildVerificationCard('Landlord KYC', _lessorController.text, true),
+        _buildVerificationCard(l10n.landlordKyc, _lessorController.text, true, l10n),
         const SizedBox(height: 16),
-        _buildVerificationCard('Tenant KYC', _lesseeController.text, false),
+        _buildVerificationCard(l10n.tenantKyc, _lesseeController.text, false, l10n),
       ],
     );
   }
 
-  Widget _buildSignStep() {
+  Widget _buildSignStep(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Rent Agreement', style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 28, letterSpacing: -1.0)),
+        Text(l10n.rentAgreement, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 28, letterSpacing: -1.0)),
         const SizedBox(height: 4),
-        Text('Residential Lease for Property ID: SR-89291-BLR', style: TextStyle(color: Colors.grey[600], fontSize: 12, fontWeight: FontWeight.w600)),
+        Text(l10n.leaseForProperty('SR-89291-BLR'), style: TextStyle(color: Colors.grey[600], fontSize: 12, fontWeight: FontWeight.w600)),
         const SizedBox(height: 24),
         Container(
           padding: const EdgeInsets.all(16),
@@ -446,9 +465,9 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
                Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: context.scaffoldColor, borderRadius: BorderRadius.circular(8)), child: const Icon(Icons.verified_user_outlined, color: AppTheme.cyanAccent, size: 20)),
                const SizedBox(width: 12),
                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                 Text('DIGITAL VERIFICATION', style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: -0.2)),
+                 Text(l10n.digitalVerification, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: -0.2)),
                  const SizedBox(height: 2),
-                 Text('E-STAMPED DOCUMENT • 2024 SERIES', style: TextStyle(fontSize: 9, color: context.secondaryTextColor, fontWeight: FontWeight.w800, letterSpacing: 0.5))
+                 Text(l10n.estampedSeries, style: TextStyle(fontSize: 9, color: context.secondaryTextColor, fontWeight: FontWeight.w800, letterSpacing: 0.5))
                ]),
             ],
           ),
@@ -456,15 +475,15 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
         const SizedBox(height: 32),
         Row(
           children: [
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Text('LESSOR (LANDLORD)', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)), const SizedBox(height: 8), Text(_lessorController.text, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: -0.3))])),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [const Text('LESSEE (TENANT)', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)), const SizedBox(height: 8), Text(_lesseeController.text, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: -0.3))])),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(l10n.lessorLabel, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)), const SizedBox(height: 8), Text(_lessorController.text, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: -0.3))])),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(l10n.lesseeLabel, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)), const SizedBox(height: 8), Text(_lesseeController.text, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: -0.3))])),
           ],
         ),
         const SizedBox(height: 32),
-        _buildClause('01', 'PREMISES & TERM', 'The Lessor hereby leases to the Lessee the residential apartment located at ${_addressController.text} for a period of 11 months starting June 1, 2024.'),
-        _buildClause('02', 'MONTHLY RENT', 'The Lessee shall pay a monthly rent of ₹${_rentController.text} on or before the 5th of every calendar month via bank transfer.'),
-        _buildClause('03', 'SECURITY DEPOSIT', 'An interest-free refundable security deposit of ₹${_depositController.text} has been paid. This shall be returned upon peaceful possession handover.'),
-        _buildClause('04', 'NOTICE PERIOD', 'Both parties agree to a mandatory 2-month notice period prior to early termination by either party.'),
+        _buildClause('01', l10n.premisesTerm, 'The Lessor hereby leases to the Lessee the residential apartment located at ${_addressController.text} for a period of 11 months starting June 1, 2024.'),
+        _buildClause('02', l10n.monthlyRentClause, 'The Lessee shall pay a monthly rent of ₹${_rentController.text} on or before the 5th of every calendar month via bank transfer.'),
+        _buildClause('03', l10n.securityDepositClause, 'An interest-free refundable security deposit of ₹${_depositController.text} has been paid. This shall be returned upon peaceful possession handover.'),
+        _buildClause('04', l10n.noticePeriod, 'Both parties agree to a mandatory 2-month notice period prior to early termination by either party.'),
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(color: context.cardColor, borderRadius: BorderRadius.circular(12), border: Border.all(color: context.borderColor)),
@@ -473,7 +492,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
             children: [
               const Icon(Icons.info_outline, size: 16, color: Colors.grey),
               const SizedBox(width: 8),
-              Expanded(child: Text('This document is digitally prepared by Sampatti Bazar Legal. By signing, you agree to the Terms of Service and digital e-stamp protocols.', style: TextStyle(fontSize: 10, color: context.secondaryTextColor, height: 1.5, fontWeight: FontWeight.w500))),
+              Expanded(child: Text(l10n.legalDisclaimer, style: TextStyle(fontSize: 10, color: context.secondaryTextColor, height: 1.5, fontWeight: FontWeight.w500))),
             ],
           ),
         ),
@@ -482,7 +501,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
           child: TextButton.icon(
             onPressed: () {},
             icon: const Icon(Icons.chevron_right, size: 16, color: AppTheme.primaryBlue),
-            label: Text('View Full Document Details', style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 13, color: AppTheme.primaryBlue)),
+            label: Text(l10n.viewDocumentDetails, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 13, color: AppTheme.primaryBlue)),
           ),
         ),
         const SizedBox(height: 32),
@@ -490,7 +509,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
     );
   }
 
-  Widget _buildRentAgreementNav() {
+  Widget _buildRentAgreementNav(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
       decoration: BoxDecoration(
@@ -509,7 +528,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
                   child: OutlinedButton.icon(
                     onPressed: () {},
                     icon: Icon(Icons.download, size: 18, color: context.primaryTextColor),
-                    label: Text('Download', style: TextStyle(color: context.primaryTextColor, fontSize: 13, fontWeight: FontWeight.w900)),
+                    label: Text(l10n.download, style: TextStyle(color: context.primaryTextColor, fontSize: 13, fontWeight: FontWeight.w900)),
                     style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), side: BorderSide(color: context.borderColor)),
                   ),
                 ),
@@ -525,7 +544,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
                     else _nextStep();
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryBlue, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), elevation: 0),
-                  child: Text(_currentStep == 0 ? 'Next: Verification' : (_currentStep == 1 ? 'Generate Agreement' : 'Sign Document'), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
+                  child: Text(_currentStep == 0 ? l10n.nextVerification : (_currentStep == 1 ? l10n.generateAgreement : l10n.signDocument), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
                 ),
               ),
             ),
@@ -536,14 +555,14 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
   }
 
   // --- 2. CONSULT LAWYER ---
-  Widget _buildConsultLawyer() {
+  Widget _buildConsultLawyer(AppLocalizations l10n) {
     return Column(
       key: const ValueKey('consult_lawyer'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Legal Counsel', style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 28, letterSpacing: -1.0)),
+        Text(l10n.legalCounsel, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 28, letterSpacing: -1.0)),
         const SizedBox(height: 8),
-        Text('Receive trusted guidance from locally verified real-estate attorneys.', style: TextStyle(color: context.secondaryTextColor, fontSize: 13, height: 1.5, fontWeight: FontWeight.w500)),
+        Text(l10n.legalCounselSubtitle, style: TextStyle(color: context.secondaryTextColor, fontSize: 13, height: 1.5, fontWeight: FontWeight.w500)),
         const SizedBox(height: 32),
         
         Container(
@@ -558,9 +577,9 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('DISCLAIMER', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11, color: Colors.red, letterSpacing: 0.5)),
+                    Text(l10n.disclaimer, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 11, color: Colors.red, letterSpacing: 0.5)),
                     const SizedBox(height: 4),
-                    Text('This form does not establish an attorney-client relationship. Information provided is not legal advice until a lawyer is officially retained.', style: TextStyle(fontSize: 10, color: context.primaryTextColor, height: 1.5, fontWeight: FontWeight.w500)),
+                    Text(l10n.attorneyDisclaimer, style: TextStyle(fontSize: 10, color: context.primaryTextColor, height: 1.5, fontWeight: FontWeight.w500)),
                   ],
                 ),
               ),
@@ -569,22 +588,22 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
         ),
         const SizedBox(height: 32),
 
-        _buildTextFieldWidget(_fullNameController, 'FULL NAME', icon: Icons.person_outline),
+        _buildTextFieldWidget(_fullNameController, l10n.fullName, icon: Icons.person_outline),
         const SizedBox(height: 16),
-        _buildTextFieldWidget(_phoneController, 'PHONE NUMBER', keyboardType: TextInputType.phone, icon: Icons.phone_outlined),
+        _buildTextFieldWidget(_phoneController, l10n.phoneNumber, keyboardType: TextInputType.phone, icon: Icons.phone_outlined),
         const SizedBox(height: 16),
-        _buildTextFieldWidget(_cityController, 'CITY / REGION', icon: Icons.location_city_outlined),
+        _buildTextFieldWidget(_cityController, l10n.cityRegion, icon: Icons.location_city_outlined),
         const SizedBox(height: 16),
-        _buildTextFieldWidget(_propIdController, 'PROPERTY ID (IF ANY)', icon: Icons.home_work_outlined),
+        _buildTextFieldWidget(_propIdController, l10n.propertyIdAny, icon: Icons.home_work_outlined),
         const SizedBox(height: 16),
-        _buildDropdownField('LEGAL REQUIREMENT', 'Buying Property', ['Buying Property', 'Legal Dispute', 'Document Verification', 'Other']),
+        _buildDropdownField(l10n.legalRequirement, 'Buying Property', [l10n.buyingProperty, l10n.legalDispute, l10n.propertyVerification, l10n.other]),
         const SizedBox(height: 32),
       ],
     );
   }
 
   // --- 3. PROPERTY VERIFICATION ---
-  Widget _buildPropertyVerification() {
+  Widget _buildPropertyVerification(AppLocalizations l10n) {
     return Column(
       key: const ValueKey('property_verification'),
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -592,7 +611,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Property Audit', style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 28, letterSpacing: -1.0)),
+            Text(l10n.propertyAudit, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 28, letterSpacing: -1.0)),
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(color: AppTheme.primaryBlue.withValues(alpha: 0.1), shape: BoxShape.circle),
@@ -601,7 +620,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
           ],
         ),
         const SizedBox(height: 8),
-        Text('We thoroughly verify ownership history, title encumbrances, and structural clearances to keep you safe from fraud.', style: TextStyle(color: context.secondaryTextColor, fontSize: 13, height: 1.5, fontWeight: FontWeight.w500)),
+        Text(l10n.propertyAuditSubtitle, style: TextStyle(color: context.secondaryTextColor, fontSize: 13, height: 1.5, fontWeight: FontWeight.w500)),
         const SizedBox(height: 32),
 
         Container(
@@ -611,17 +630,17 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
             children: [
                const Icon(Icons.shield, color: AppTheme.primaryBlue, size: 18),
                const SizedBox(width: 12),
-               Expanded(child: Text('Verification ensures all local municipal NOCs and past ownership trails are legitimate.', style: TextStyle(color: context.primaryTextColor, fontSize: 11, fontWeight: FontWeight.w600, height: 1.5))),
+               Expanded(child: Text(l10n.verificationEnsures, style: TextStyle(color: context.primaryTextColor, fontSize: 11, fontWeight: FontWeight.w600, height: 1.5))),
             ],
           ),
         ),
         const SizedBox(height: 32),
 
-        _buildTextFieldWidget(_propIdController, 'PROPERTY ID / RERA ID (OPTIONAL)', icon: Icons.home_work_outlined),
+        _buildTextFieldWidget(_propIdController, l10n.propertyIdOptional, icon: Icons.home_work_outlined),
         const SizedBox(height: 16),
-        _buildTextFieldWidget(_propLocationController, 'EXACT LOCALITY OR PROJECT NAME', icon: Icons.location_on_outlined),
+        _buildTextFieldWidget(_propLocationController, l10n.exactLocality, icon: Icons.location_on_outlined),
         const SizedBox(height: 16),
-        _buildDropdownField('TYPE OF ASSET', 'Apartment', ['Apartment', 'Villa / Row House', 'Commercial Office', 'Plot / Land']),
+        _buildDropdownField(l10n.typeOfAsset, 'Apartment', [l10n.apartment, l10n.villaRowHouse, l10n.commercialOffice, 'Plot / Land']),
         const SizedBox(height: 24),
         
         Container(
@@ -636,9 +655,9 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
             children: [
               Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: context.scaffoldColor, shape: BoxShape.circle, border: Border.all(color: context.borderColor)), child: const Icon(Icons.cloud_upload_outlined, color: AppTheme.primaryBlue)),
               const SizedBox(height: 16),
-              const Text('Attach Documents for Verification', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
+              Text(l10n.attachDocs, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
               const SizedBox(height: 6),
-              Text('Sale deeds, NOCs, or previous agreements.', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: context.secondaryTextColor, fontWeight: FontWeight.w500)),
+              Text(l10n.attachDocsSubtitle, textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: context.secondaryTextColor, fontWeight: FontWeight.w500)),
             ],
           ),
         ),
@@ -717,7 +736,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
     );
   }
 
-  Widget _buildVerificationCard(String role, String name, bool isVerified) {
+  Widget _buildVerificationCard(String role, String name, bool isVerified, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.05) : context.cardColor, border: Border.all(color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.1) : context.borderColor), borderRadius: BorderRadius.circular(16)),
@@ -727,7 +746,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
           const SizedBox(width: 16),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(role.toUpperCase(), style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey[400], letterSpacing: 0.5)), const SizedBox(height: 4), Text(name, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: context.primaryTextColor, letterSpacing: -0.3))])),
           if (isVerified) const Icon(Icons.check_circle, color: AppTheme.primaryBlue, size: 20)
-          else Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: context.scaffoldColor, borderRadius: BorderRadius.circular(8)), child: const Text('PENDING', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5))),
+          else Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: context.scaffoldColor, borderRadius: BorderRadius.circular(8)), child: Text(l10n.pending, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5))),
         ],
       ),
     );
