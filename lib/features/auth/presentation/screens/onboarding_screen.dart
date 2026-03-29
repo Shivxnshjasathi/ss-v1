@@ -20,11 +20,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  String _selectedRole = 'Buyer / Tenant';
+  String _selectedRole = 'Consumer / Buyer';
   bool _isLoading = false;
   bool _isFetchingLocation = false;
 
-  final List<String> _roles = ['Buyer / Tenant', 'Owner / Landlord', 'Real Estate Agent', 'Builder'];
+  final List<String> _roles = [
+    'Consumer / Buyer', 
+    'Builder / Agent', 
+    'Construction Partner', 
+    'Legal Advisor', 
+    'Material Vendor'
+  ];
 
   @override
   void initState() {
@@ -79,6 +85,20 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
   }
 
+  void _routeBasedOnRole(String role) {
+    if (role == 'Builder / Agent') {
+      context.go('/provider/builder');
+    } else if (role == 'Construction Partner') {
+      context.go('/provider/construction');
+    } else if (role == 'Legal Advisor') {
+      context.go('/provider/legal');
+    } else if (role == 'Material Vendor') {
+      context.go('/provider/marketplace');
+    } else {
+      context.go('/home');
+    }
+  }
+
   Future<void> _onCompleteSetup() async {
     LoggerService.i('Tapped Complete Setup');
     if (_formKey.currentState!.validate()) {
@@ -101,9 +121,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             createdAt: DateTime.now(),
           );
           await ref.read(userRepositoryProvider).saveUser(userModel);
-          LoggerService.i('Profile saved successfully! Setting user ID and navigating to /home');
+          LoggerService.i('Profile saved successfully!');
           await LoggerService.setUserId(user.uid);
-          if (mounted) context.go('/home');
+          if (mounted) _routeBasedOnRole(_selectedRole);
         } else {
           LoggerService.e('Current user is NULL during onboarding');
           if (mounted) {

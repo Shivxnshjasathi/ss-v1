@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sampatti_bazar/core/services/logger_service.dart';
 import '../domain/property_model.dart';
 
 final propertyRepositoryProvider = Provider<PropertyRepository>((ref) {
@@ -10,6 +11,10 @@ final propertyRepositoryProvider = Provider<PropertyRepository>((ref) {
 
 final propertiesStreamProvider = StreamProvider<List<PropertyModel>>((ref) {
   return ref.watch(propertyRepositoryProvider).streamProperties();
+});
+
+final propertyProvider = FutureProvider.family<PropertyModel?, String>((ref, id) {
+  return ref.watch(propertyRepositoryProvider).getProperty(id);
 });
 
 final savedPropertiesProvider = StreamProvider.family<List<PropertyModel>, String>((ref, userId) {
@@ -27,48 +32,62 @@ class PropertyRepository {
   PropertyRepository(this._firestore, this._storage);
 
   Future<List<String>> uploadImages(List<File> imageFiles, String propertyId) async {
+    LoggerService.i('Property: Uploading ${imageFiles.length} images for property $propertyId');
     List<String> downloadUrls = [];
-    for (int i = 0; i < imageFiles.length; i++) {
-      final ref = _storage.ref().child('properties/$propertyId/image_$i.jpg');
-      final uploadTask = await ref.putFile(imageFiles[i]);
-      final url = await uploadTask.ref.getDownloadURL();
-      downloadUrls.add(url);
+    try {
+      for (int i = 0; i < imageFiles.length; i++) {
+        final ref = _storage.ref().child('properties/$propertyId/image_$i.jpg');
+        final uploadTask = await ref.putFile(imageFiles[i]);
+        final url = await uploadTask.ref.getDownloadURL();
+        downloadUrls.add(url);
+      }
+      LoggerService.i('Property: Successfully uploaded ${downloadUrls.length} images');
+      return downloadUrls;
+    } catch (e, st) {
+      LoggerService.e('Property: Image upload failed', error: e, stack: st);
+      rethrow;
     }
-    return downloadUrls;
   }
 
   Future<void> addProperty(PropertyModel property, List<File> imageFiles) async {
-    List<String> imageUrls = [];
-    
-    // 1. Upload images if any
-    if (imageFiles.isNotEmpty) {
-      imageUrls = await uploadImages(imageFiles, property.id);
+    LoggerService.i('Property: Starting addProperty workflow for ${property.title}');
+    try {
+      List<String> imageUrls = [];
+      
+      // 1. Upload images if any
+      if (imageFiles.isNotEmpty) {
+        imageUrls = await uploadImages(imageFiles, property.id);
+      }
+
+      // 2. update property with images
+      final completeProperty = PropertyModel(
+        id: property.id,
+        ownerId: property.ownerId,
+        title: property.title,
+        description: property.description,
+        type: property.type,
+        propertyType: property.propertyType,
+        price: property.price,
+        location: property.location,
+        city: property.city,
+        bedrooms: property.bedrooms,
+        bathrooms: property.bathrooms,
+        areaSqFt: property.areaSqFt,
+        imageUrls: imageUrls,
+        createdAt: property.createdAt,
+        isVerified: property.isVerified,
+        isZeroBrokerage: property.isZeroBrokerage,
+        builtIn: property.builtIn,
+        lotSizeSqFt: property.lotSizeSqFt,
+      );
+
+      // 3. Save to Firestore
+      await _firestore.collection('properties').doc(property.id).set(completeProperty.toMap());
+      LoggerService.i('Property: Successfully saved property to Firestore. ID: ${property.id}');
+    } catch (e, st) {
+      LoggerService.e('Property: Failed to add property', error: e, stack: st);
+      rethrow;
     }
-
-    // 2. update property with images
-    final completeProperty = PropertyModel(
-      id: property.id,
-      ownerId: property.ownerId,
-      title: property.title,
-      description: property.description,
-      type: property.type,
-      propertyType: property.propertyType,
-      price: property.price,
-      location: property.location,
-      city: property.city,
-      bedrooms: property.bedrooms,
-      bathrooms: property.bathrooms,
-      areaSqFt: property.areaSqFt,
-      imageUrls: imageUrls,
-      createdAt: property.createdAt,
-      isVerified: property.isVerified,
-      isZeroBrokerage: property.isZeroBrokerage,
-      builtIn: property.builtIn,
-      lotSizeSqFt: property.lotSizeSqFt,
-    );
-
-    // 3. Save to Firestore
-    await _firestore.collection('properties').doc(property.id).set(completeProperty.toMap());
   }
 
   Stream<List<PropertyModel>> streamProperties({String? city, String? type}) {
@@ -95,11 +114,19 @@ class PropertyRepository {
   }
 
   Future<PropertyModel?> getProperty(String id) async {
-    final doc = await _firestore.collection('properties').doc(id).get();
-    if (doc.exists) {
-      return PropertyModel.fromMap(doc.data()!, doc.id);
+    LoggerService.i('Property: Fetching property $id');
+    try {
+      final doc = await _firestore.collection('properties').doc(id).get();
+      if (doc.exists) {
+        LoggerService.i('Property: Found property ${doc.id}');
+        return PropertyModel.fromMap(doc.data()!, doc.id);
+      }
+      LoggerService.w('Property: Property $id not found');
+      return null;
+    } catch (e, st) {
+      LoggerService.e('Property: Error fetching property $id', error: e, stack: st);
+      rethrow;
     }
-    return null;
   }
 
   Future<void> toggleSaveProperty(String userId, String propertyId) async {

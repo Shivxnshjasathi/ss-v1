@@ -112,9 +112,9 @@ class ProfileScreen extends ConsumerWidget {
                   _buildMenuCard(
                     context,
                     items: [
-                      _buildMenuItem(context, 'Personal Information', Icons.person_outline, const Color(0xFF0066FF), () {}),
-                      _buildMenuItem(context, 'Saved Properties', Icons.favorite_border, Colors.pinkAccent, () {}),
-                      _buildMenuItem(context, 'My Documents', Icons.description_outlined, Colors.orange, () {}),
+                      _buildMenuItem(context, 'Personal Information', Icons.person_outline, const Color(0xFF0066FF), () => context.push('/profile/edit')),
+                      _buildMenuItem(context, 'Saved Properties', Icons.favorite_border, Colors.pinkAccent, () => context.go('/saved')),
+                      _buildMenuItem(context, 'My Documents', Icons.description_outlined, Colors.orange, () => context.push('/profile/documents')),
                     ],
                   ),
                   const SizedBox(height: 32),
@@ -123,8 +123,8 @@ class ProfileScreen extends ConsumerWidget {
                   _buildMenuCard(
                     context,
                     items: [
-                      _buildMenuItem(context, 'App Settings', Icons.settings_outlined, Colors.grey[800]!, () {}),
-                      _buildMenuItem(context, 'Help & Support', Icons.help_outline, Colors.teal, () {}),
+                      _buildMenuItem(context, 'App Settings', Icons.settings_outlined, Colors.grey[800]!, () => context.push('/profile/settings')),
+                      _buildMenuItem(context, 'Help & Support', Icons.help_outline, Colors.teal, () => context.push('/profile/support')),
                       _buildMenuItem(context, 'Terms & Privacy', Icons.privacy_tip_outlined, Colors.indigo, () {}),
                     ],
                   ),

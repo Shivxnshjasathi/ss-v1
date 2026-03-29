@@ -12,6 +12,7 @@ import 'package:sampatti_bazar/core/services/logger_service.dart';
 import 'package:sampatti_bazar/features/services/data/booking_repository.dart';
 import 'package:sampatti_bazar/features/services/domain/booking_model.dart';
 import 'package:sampatti_bazar/features/properties/domain/property_model.dart';
+import 'package:sampatti_bazar/features/chat/data/chat_repository.dart';
 
 class PropertyDetailScreen extends ConsumerWidget {
   final String propertyId;
@@ -214,36 +215,60 @@ class PropertyDetailScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    property.title,
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: Theme.of(context).textTheme.bodyLarge?.color, letterSpacing: -0.5),
+                    property.title.split(' ').map((str) => str.isNotEmpty ? '${str[0].toUpperCase()}${str.substring(1).toLowerCase()}' : '').join(' '),
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: context.primaryTextColor, letterSpacing: -0.5),
                   ),
                   const SizedBox(height: 8),
                   Row(
-                  children: [
-                    Icon(Icons.location_on, color: Theme.of(context).colorScheme.primary, size: 18),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${property.location}, ${property.city}',
-                      style: TextStyle(color: context.secondaryTextColor, fontSize: 14, fontWeight: FontWeight.w500),
-                    ),
-                  ],
-                ),
-                  const SizedBox(height: 24),
-                  Row(
                     children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('ASKING PRICE', style: TextStyle(color: context.secondaryTextColor, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
-                            const SizedBox(height: 4),
-                            Text('₹${property.price.toInt()}', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 24, fontWeight: FontWeight.w900)),
-                        ],
+                      Icon(Icons.location_on, color: AppTheme.primaryBlue, size: 16),
+                      const SizedBox(width: 6),
+                      Text(
+                        '${property.location.toUpperCase()[0]}${property.location.substring(1).toLowerCase()}, ${property.city.toUpperCase()[0]}${property.city.substring(1).toLowerCase()}',
+                        style: TextStyle(color: context.secondaryTextColor, fontSize: 13, fontWeight: FontWeight.w600),
                       ),
+                    ],
+                  ),
+                  const SizedBox(height: 32),
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: context.isDarkMode ? Colors.grey[900]?.withValues(alpha: 0.5) : Colors.grey[50],
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: context.borderColor),
                     ),
-                    _buildSpecBox(property.areaSqFt.toInt().toString(), 'SQ FT', Icons.square_foot_outlined),
-                  ],
-                ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('ASKING PRICE', style: TextStyle(color: context.secondaryTextColor, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1)),
+                              const SizedBox(height: 4),
+                              Text('₹${property.price.toInt()}', style: TextStyle(color: AppTheme.primaryBlue, fontSize: 26, fontWeight: FontWeight.w900)),
+                            ],
+                          ),
+                        ),
+                        Container(width: 1, height: 40, color: context.borderColor),
+                        const SizedBox(width: 24),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text('TOTAL AREA', style: TextStyle(color: context.secondaryTextColor, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1)),
+                            const SizedBox(height: 4),
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(text: property.areaSqFt.toInt().toString(), style: TextStyle(color: context.primaryTextColor, fontSize: 22, fontWeight: FontWeight.w900)),
+                                  TextSpan(text: ' SQ FT', style: TextStyle(color: context.secondaryTextColor, fontSize: 10, fontWeight: FontWeight.w900)),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                    
                    const SizedBox(height: 32),
                    Text('OVERVIEW', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1.5)),
@@ -281,6 +306,75 @@ class PropertyDetailScreen extends ConsumerWidget {
                        fontSize: 14,
                        color: Theme.of(context).colorScheme.primary,
                        fontWeight: FontWeight.bold,
+                     ),
+                   ),
+
+                   const SizedBox(height: 32),
+                   Text('LOCATION', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1.5)),
+                   const SizedBox(height: 16),
+                   Container(
+                     padding: const EdgeInsets.all(20),
+                     decoration: BoxDecoration(
+                       color: context.cardColor,
+                       borderRadius: BorderRadius.circular(24),
+                       border: Border.all(color: context.borderColor),
+                     ),
+                     child: Column(
+                       crossAxisAlignment: CrossAxisAlignment.start,
+                       children: [
+                         Row(
+                           children: [
+                             Container(
+                               padding: const EdgeInsets.all(12),
+                               decoration: BoxDecoration(
+                                 color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                                 borderRadius: BorderRadius.circular(16),
+                               ),
+                               child: const Icon(Icons.location_on, color: AppTheme.primaryBlue, size: 24),
+                             ),
+                             const SizedBox(width: 16),
+                             Expanded(
+                               child: Column(
+                                 crossAxisAlignment: CrossAxisAlignment.start,
+                                 children: [
+                                   Text(
+                                     property.city.isNotEmpty ? (property.city[0].toUpperCase() + property.city.substring(1).toLowerCase()) : 'Location',
+                                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: context.primaryTextColor),
+                                   ),
+                                   const SizedBox(height: 2),
+                                   Text(
+                                     property.location,
+                                     style: TextStyle(fontSize: 13, color: context.secondaryTextColor, fontWeight: FontWeight.w500),
+                                     maxLines: 2,
+                                     overflow: TextOverflow.ellipsis,
+                                   ),
+                                 ],
+                               ),
+                             ),
+                           ],
+                         ),
+                         const SizedBox(height: 24),
+                         SizedBox(
+                           width: double.infinity,
+                           child: OutlinedButton.icon(
+                             onPressed: () async {
+                               final query = Uri.encodeComponent('${property.location}, ${property.city}');
+                               final url = Uri.parse('https://www.google.com/maps/search/?api=1&query=$query');
+                               if (await canLaunchUrl(url)) {
+                                 await launchUrl(url);
+                               }
+                             },
+                             icon: const Icon(Icons.directions_outlined, size: 20),
+                             label: const Text('GET DIRECTIONS', style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1)),
+                             style: OutlinedButton.styleFrom(
+                               padding: const EdgeInsets.symmetric(vertical: 16),
+                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                               side: BorderSide(color: context.borderColor),
+                               foregroundColor: AppTheme.primaryBlue,
+                             ),
+                           ),
+                         ),
+                       ],
                      ),
                    ),
 
@@ -343,26 +437,38 @@ class PropertyDetailScreen extends ConsumerWidget {
                                 ],
                               ),
                             ),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                                shape: BoxShape.circle,
-                              ),
-                              child: IconButton(
-                                icon: Icon(Icons.chat_bubble, size: 20, color: Theme.of(context).colorScheme.primary),
-                                 onPressed: () {
-                                   if (owner?.phoneNumber != null) {
-                                     launchUrl(Uri.parse('sms:${owner!.phoneNumber}'));
-                                     LoggerService.trackEvent('property_message_owner', parameters: {
-                                       'property_id': property.id,
-                                       'owner_id': property.ownerId,
-                                     });
-                                   }
-                                 },
-                                constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
-                                padding: EdgeInsets.zero,
-                              ),
-                            ),
+                             Container(
+                               decoration: BoxDecoration(
+                                 color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                                 shape: BoxShape.circle,
+                               ),
+                               child: IconButton(
+                                 icon: Icon(Icons.chat_bubble, size: 20, color: Theme.of(context).colorScheme.primary),
+                                  onPressed: () async {
+                                    final currentUser = ref.read(currentUserDataProvider).value;
+                                    if (currentUser == null) {
+                                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please log in to chat with the owner')));
+                                      return;
+                                    }
+                                    
+                                    final chatId = await ref.read(chatRepositoryProvider).startOrGetChat(
+                                      currentUser.uid, 
+                                      property.ownerId,
+                                      metadata: {'propertyId': property.id},
+                                    );
+                                    
+                                    if (context.mounted) {
+                                      context.push('/chats/$chatId');
+                                      LoggerService.trackEvent('property_chat_owner', parameters: {
+                                        'property_id': property.id,
+                                        'owner_id': property.ownerId,
+                                      });
+                                    }
+                                  },
+                                 constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+                                 padding: EdgeInsets.zero,
+                               ),
+                             ),
                             const SizedBox(width: 12),
                             Container(
                               decoration: BoxDecoration(
@@ -618,17 +724,24 @@ class PropertyDetailScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: context.cardColor,
-        borderRadius: BorderRadius.circular(16),
+        color: context.isDarkMode ? Colors.grey[900]?.withValues(alpha: 0.3) : Colors.white,
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: Theme.of(context).colorScheme.primary, size: 20),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: AppTheme.primaryBlue, size: 18),
+          ),
           const SizedBox(height: 12),
-          Text(label, style: TextStyle(fontSize: 10, color: Colors.grey[500], fontWeight: FontWeight.bold)),
-          const SizedBox(height: 4),
+          Text(label, style: TextStyle(fontSize: 9, color: context.secondaryTextColor, fontWeight: FontWeight.w800, letterSpacing: 0.5)),
+          const SizedBox(height: 2),
           Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: context.primaryTextColor)),
         ],
       ),
@@ -656,33 +769,6 @@ class PropertyDetailScreen extends ConsumerWidget {
           ),
         ),
       )).toList(),
-    );
-  }
-
-  Widget _buildSpecBox(String value, String label, IconData icon) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, color: Colors.grey.shade600, size: 24),
-        const SizedBox(height: 12),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w900,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 10,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey.shade500,
-            letterSpacing: 0.5,
-          ),
-        ),
-      ],
     );
   }
 }

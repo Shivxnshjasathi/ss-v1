@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/foundation.dart';
+import 'package:sampatti_bazar/core/services/logger_service.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   return AuthRepository(FirebaseAuth.instance);
@@ -26,19 +26,19 @@ class AuthRepository {
     required Function(PhoneAuthCredential credential) verificationCompleted,
     required Function(String verificationId) codeAutoRetrievalTimeout,
   }) async {
-    debugPrint('🔥 [AuthRepository] Started verifyPhoneNumber for $phoneNumber');
+    LoggerService.i('Auth: Started verifyPhoneNumber for $phoneNumber');
     await _auth.verifyPhoneNumber(
       phoneNumber: phoneNumber,
       verificationCompleted: (cred) {
-        debugPrint('🔥 [AuthRepository] Auto verification completed!');
+        LoggerService.i('Auth: Auto verification completed');
         verificationCompleted(cred);
       },
       verificationFailed: (e) {
-        debugPrint('🔥 [AuthRepository] Verification Failed: ${e.code}');
+        LoggerService.e('Auth: Verification Failed: ${e.code}', error: e);
         verificationFailed(e);
       },
       codeSent: (String verificationId, int? resendToken) {
-        debugPrint('🔥 [AuthRepository] Code Sent! ID: $verificationId');
+        LoggerService.i('Auth: Code Sent ID: $verificationId');
         codeSent(verificationId);
       },
       codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
@@ -50,47 +50,47 @@ class AuthRepository {
     required String verificationId,
     required String smsCode,
   }) async {
-    debugPrint('🔥 [AuthRepository] Verifying OTP...');
+    LoggerService.i('Auth: Verifying OTP...');
     try {
       PhoneAuthCredential credential = PhoneAuthProvider.credential(
         verificationId: verificationId,
         smsCode: smsCode,
       );
       final cred = await _auth.signInWithCredential(credential);
-      debugPrint('✅ [AuthRepository] OTP Verification Success. UID: ${cred.user?.uid}');
+      LoggerService.i('Auth: OTP Verification Success. UID: ${cred.user?.uid}');
       return cred;
     } catch (e, st) {
-      debugPrint('❌ [AuthRepository] OTP Verification Error: $e\n$st');
+      LoggerService.e('Auth: OTP Verification Error', error: e, stack: st);
       rethrow;
     }
   }
 
   Future<UserCredential> signInWithEmailAndPassword(String email, String password) async {
-    debugPrint('🔥 [AuthRepository] Signing in with Email: $email');
+    LoggerService.i('Auth: Signing in with Email: $email');
     try {
       final cred = await _auth.signInWithEmailAndPassword(email: email, password: password);
-      debugPrint('✅ [AuthRepository] Sign in success. UID: ${cred.user?.uid}');
+      LoggerService.i('Auth: Sign in success. UID: ${cred.user?.uid}');
       return cred;
     } catch (e, st) {
-      debugPrint('❌ [AuthRepository] Sign in error: $e\n$st');
+      LoggerService.e('Auth: Sign in error', error: e, stack: st);
       rethrow;
     }
   }
 
   Future<UserCredential> createUserWithEmailAndPassword(String email, String password) async {
-    debugPrint('🔥 [AuthRepository] Creating user with Email: $email');
+    LoggerService.i('Auth: Creating user with Email: $email');
     try {
       final cred = await _auth.createUserWithEmailAndPassword(email: email, password: password);
-      debugPrint('✅ [AuthRepository] Creation success. UID: ${cred.user?.uid}');
+      LoggerService.i('Auth: Creation success. UID: ${cred.user?.uid}');
       return cred;
     } catch (e, st) {
-      debugPrint('❌ [AuthRepository] Creation error: $e\n$st');
+      LoggerService.e('Auth: Creation error', error: e, stack: st);
       rethrow;
     }
   }
 
   Future<void> signOut() async {
-    debugPrint('🔥 [AuthRepository] Signing out');
+    LoggerService.w('Auth: Signing out');
     await _auth.signOut();
   }
 }

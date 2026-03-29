@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
+import 'package:sampatti_bazar/core/widgets/contact_bottom_sheet.dart';
 
 class ServicesHubScreen extends StatelessWidget {
   const ServicesHubScreen({super.key});
@@ -132,7 +133,7 @@ class ServicesHubScreen extends StatelessWidget {
       children: [
         _buildListTile(context, 'EMI Calculator', 'Plan your finances', Icons.calculate_outlined, () {}),
         const SizedBox(height: 12),
-        _buildListTile(context, 'Live Support', 'Chat with experts', Icons.headset_mic_outlined, () {}),
+        _buildListTile(context, 'Live Support', 'Chat with experts', Icons.headset_mic_outlined, () => ContactBottomSheet.show(context)),
       ],
     );
   }
@@ -204,7 +205,7 @@ class GlobalSearchDelegate extends SearchDelegate {
     {'name': 'List Property', 'route': '/properties/add', 'icon': Icons.add_business_outlined, 'cat': 'Activity'},
     {'name': 'Saved Properties', 'route': '/properties/saved', 'icon': Icons.favorite_border, 'cat': 'Activity'},
     {'name': 'EMI Calculator', 'route': '/services/loan', 'icon': Icons.calculate_outlined, 'cat': 'Tools'},
-    {'name': 'Live Support', 'route': '/profile', 'icon': Icons.headset_mic_outlined, 'cat': 'Support'},
+    {'name': 'Live Support', 'route': '/profile/support', 'icon': Icons.headset_mic_outlined, 'cat': 'Support'},
   ];
 
   @override

@@ -18,6 +18,20 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     _navigateToNext();
   }
 
+  void _routeBasedOnRole(String role) {
+    if (role == 'Builder / Agent') {
+      context.go('/provider/builder');
+    } else if (role == 'Construction Partner') {
+      context.go('/provider/construction');
+    } else if (role == 'Legal Advisor') {
+      context.go('/provider/legal');
+    } else if (role == 'Material Vendor') {
+      context.go('/provider/marketplace');
+    } else {
+      context.go('/home');
+    }
+  }
+
   Future<void> _navigateToNext() async {
     // Wait for minimum splash duration
     await Future.delayed(const Duration(seconds: 2));
@@ -33,7 +47,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             if (profile == null) {
               context.go('/onboarding');
             } else {
-              context.go('/home');
+              _routeBasedOnRole(profile.role ?? '');
             }
           }
         } catch (e) {

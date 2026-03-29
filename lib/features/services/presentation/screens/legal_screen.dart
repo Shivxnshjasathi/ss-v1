@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
+import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
+import 'package:sampatti_bazar/features/services/data/service_request_repository.dart';
+import 'package:sampatti_bazar/features/services/domain/service_request_model.dart';
+import 'package:uuid/uuid.dart';
 
-class LegalScreen extends StatefulWidget {
+class LegalScreen extends ConsumerStatefulWidget {
   const LegalScreen({super.key});
 
   @override
-  State<LegalScreen> createState() => _LegalScreenState();
+  ConsumerState<LegalScreen> createState() => _LegalScreenState();
 }
 
-class _LegalScreenState extends State<LegalScreen> {
+class _LegalScreenState extends ConsumerState<LegalScreen> {
   // Service Selection
   String _selectedService = 'Rent Agreement';
   final List<String> _services = [
@@ -30,6 +35,12 @@ class _LegalScreenState extends State<LegalScreen> {
   // Property Verification State
   final _propIdController = TextEditingController();
   final _propLocationController = TextEditingController();
+  
+  // Consult Lawyer State
+  final _fullNameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _cityController = TextEditingController();
+  final _legalReq = 'Buying Property';
 
   @override
   void dispose() {
@@ -40,6 +51,9 @@ class _LegalScreenState extends State<LegalScreen> {
     _depositController.dispose();
     _propIdController.dispose();
     _propLocationController.dispose();
+    _fullNameController.dispose();
+    _phoneController.dispose();
+    _cityController.dispose();
     super.dispose();
   }
 
@@ -57,34 +71,99 @@ class _LegalScreenState extends State<LegalScreen> {
     }
   }
 
-  void _submitLawyerConsult() {
+  Future<void> _submitLawyerConsult() async {
+    final userAsync = ref.read(currentUserDataProvider);
+    final user = userAsync.value;
+    
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please login first')));
+      return;
+    }
+
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => const Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue)),
     );
-    Future.delayed(const Duration(seconds: 2), () {
+
+    try {
+      final requestId = 'LEG-${const Uuid().v4().substring(0, 8).toUpperCase()}';
+      final request = ServiceRequestModel(
+        id: requestId,
+        userId: user.uid,
+        userName: user.name ?? _fullNameController.text,
+        userContact: user.phoneNumber.isNotEmpty ? user.phoneNumber : _phoneController.text,
+        category: 'Legal Consultation',
+        status: 'Pending',
+        details: {
+          'requirement': _legalReq,
+          'city': _cityController.text,
+          'propertyId': _propIdController.text,
+        },
+        location: _cityController.text,
+        createdAt: DateTime.now(),
+      );
+
+      await ref.read(serviceRequestRepositoryProvider).addRequest(request);
+
       if (!mounted) return;
       context.pop();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Consultation Request Sent. A verified lawyer will contact you shortly.'), backgroundColor: AppTheme.primaryBlue),
       );
-    });
+      context.pop();
+    } catch (e) {
+      if (!mounted) return;
+      context.pop();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+    }
   }
 
-  void _submitPropertyVerification() {
+  Future<void> _submitPropertyVerification() async {
+    final userAsync = ref.read(currentUserDataProvider);
+    final user = userAsync.value;
+    
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please login first')));
+      return;
+    }
+
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => const Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue)),
     );
-    Future.delayed(const Duration(seconds: 2), () {
+
+    try {
+      final requestId = 'VER-${const Uuid().v4().substring(0, 8).toUpperCase()}';
+      final request = ServiceRequestModel(
+        id: requestId,
+        userId: user.uid,
+        userName: user.name ?? 'User',
+        userContact: user.phoneNumber,
+        category: 'Property Verification',
+        status: 'Pending',
+        details: {
+          'propertyId': _propIdController.text,
+          'locality': _propLocationController.text,
+        },
+        location: _propLocationController.text,
+        createdAt: DateTime.now(),
+      );
+
+      await ref.read(serviceRequestRepositoryProvider).addRequest(request);
+
       if (!mounted) return;
       context.pop();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Verification Request Submitted. We will audit the legal standing and title history.'), backgroundColor: AppTheme.primaryBlue),
+        const SnackBar(content: Text('Verification Request Submitted. We will audit the legal standing.'), backgroundColor: AppTheme.primaryBlue),
       );
-    });
+      context.pop();
+    } catch (e) {
+      if (!mounted) return;
+      context.pop();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+    }
   }
 
   @override
@@ -490,13 +569,13 @@ class _LegalScreenState extends State<LegalScreen> {
         ),
         const SizedBox(height: 32),
 
-        _buildTextFieldWidget(TextEditingController(), 'FULL NAME', icon: Icons.person_outline),
+        _buildTextFieldWidget(_fullNameController, 'FULL NAME', icon: Icons.person_outline),
         const SizedBox(height: 16),
-        _buildTextFieldWidget(TextEditingController(), 'PHONE NUMBER', keyboardType: TextInputType.phone, icon: Icons.phone_outlined),
+        _buildTextFieldWidget(_phoneController, 'PHONE NUMBER', keyboardType: TextInputType.phone, icon: Icons.phone_outlined),
         const SizedBox(height: 16),
-        _buildTextFieldWidget(TextEditingController(), 'CITY / REGION', icon: Icons.location_city_outlined),
+        _buildTextFieldWidget(_cityController, 'CITY / REGION', icon: Icons.location_city_outlined),
         const SizedBox(height: 16),
-        _buildTextFieldWidget(TextEditingController(), 'PROPERTY ID (IF ANY)', icon: Icons.home_work_outlined),
+        _buildTextFieldWidget(_propIdController, 'PROPERTY ID (IF ANY)', icon: Icons.home_work_outlined),
         const SizedBox(height: 16),
         _buildDropdownField('LEGAL REQUIREMENT', 'Buying Property', ['Buying Property', 'Legal Dispute', 'Document Verification', 'Other']),
         const SizedBox(height: 32),

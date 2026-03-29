@@ -22,7 +22,17 @@ import 'package:sampatti_bazar/features/services/presentation/screens/movers_scr
 import 'package:sampatti_bazar/features/services/presentation/screens/services_hub_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/service_tracking_screen.dart';
 import 'package:sampatti_bazar/features/profile/presentation/screens/profile_screen.dart';
+import 'package:sampatti_bazar/features/profile/presentation/screens/edit_profile_screen.dart';
+import 'package:sampatti_bazar/features/profile/presentation/screens/documents_screen.dart';
+import 'package:sampatti_bazar/features/profile/presentation/screens/settings_screen.dart';
+import 'package:sampatti_bazar/features/profile/presentation/screens/support_screen.dart';
 import 'package:sampatti_bazar/features/auth/presentation/screens/notification_screen.dart';
+import 'package:sampatti_bazar/features/services/presentation/screens/providers/construction_dashboard_screen.dart';
+import 'package:sampatti_bazar/features/services/presentation/screens/providers/legal_dashboard_screen.dart';
+import 'package:sampatti_bazar/features/services/presentation/screens/providers/marketplace_vendor_screen.dart';
+import 'package:sampatti_bazar/features/services/presentation/screens/providers/builder_agent_dashboard_screen.dart';
+import 'package:sampatti_bazar/features/chat/presentation/screens/chat_list_screen.dart';
+import 'package:sampatti_bazar/features/chat/presentation/screens/chat_detail_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -92,11 +102,37 @@ final goRouter = GoRouter(
             ),
           ],
         ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/chats',
+              builder: (context, state) => const ChatListScreen(),
+            ),
+          ],
+        ),
       ],
     ),
     GoRoute(
       path: '/profile',
       builder: (context, state) => const ProfileScreen(),
+      routes: [
+        GoRoute(
+          path: 'edit',
+          builder: (context, state) => const EditProfileScreen(),
+        ),
+        GoRoute(
+          path: 'documents',
+          builder: (context, state) => const DocumentsScreen(),
+        ),
+        GoRoute(
+          path: 'settings',
+          builder: (context, state) => const AppSettingsScreen(),
+        ),
+        GoRoute(
+          path: 'support',
+          builder: (context, state) => const HelpSupportScreen(),
+        ),
+      ],
     ),
     GoRoute(
       path: '/properties',
@@ -148,6 +184,29 @@ final goRouter = GoRouter(
     GoRoute(
       path: '/notifications',
       builder: (context, state) => const NotificationScreen(),
+    ),
+    GoRoute(
+      path: '/provider/construction',
+      builder: (context, state) => const ConstructionDashboardScreen(),
+    ),
+    GoRoute(
+      path: '/provider/legal',
+      builder: (context, state) => const LegalDashboardScreen(),
+    ),
+    GoRoute(
+      path: '/provider/marketplace',
+      builder: (context, state) => const MarketplaceVendorScreen(),
+    ),
+    GoRoute(
+      path: '/provider/builder',
+      builder: (context, state) => const BuilderAgentDashboardScreen(),
+    ),
+    GoRoute(
+      path: '/chats/:id',
+      builder: (context, state) {
+        final id = state.pathParameters['id'] ?? '';
+        return ChatDetailScreen(chatId: id);
+      },
     ),
   ],
 );

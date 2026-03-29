@@ -197,9 +197,18 @@ class HomeScreen extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
-                            child: Text(
-                              'FEATURED ZERO-BROKERAGE',
-                              style: Theme.of(context).textTheme.titleLarge,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'FEATURED ZERO-',
+                                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, height: 1.1),
+                                ),
+                                Text(
+                                  'BROKERAGE',
+                                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, height: 1.1),
+                                ),
+                              ],
                             ),
                           ),
                           GestureDetector(

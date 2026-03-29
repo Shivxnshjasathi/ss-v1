@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
+import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
+import 'package:sampatti_bazar/features/services/data/service_request_repository.dart';
+import 'package:sampatti_bazar/features/services/domain/service_request_model.dart';
+import 'package:uuid/uuid.dart';
 
-class ConstructionScreen extends StatefulWidget {
+class ConstructionScreen extends ConsumerStatefulWidget {
   const ConstructionScreen({super.key});
 
   @override
-  State<ConstructionScreen> createState() => _ConstructionScreenState();
+  ConsumerState<ConstructionScreen> createState() => _ConstructionScreenState();
 }
 
-class _ConstructionScreenState extends State<ConstructionScreen> {
+class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
   String _selectedCategory = 'Residential'; // Residential or Commercial
   String _selectedService =
       'Construction'; // Construction, Architecture, Interiors, Consultation, Borewell
@@ -23,10 +28,67 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
     'Borewell',
   ];
 
+  // Controllers for all forms
+  final _plotSizeController = TextEditingController();
+  final _locationController = TextEditingController();
+  final _budgetController = TextEditingController();
+  final _timelineController = TextEditingController();
+  final _typeController = TextEditingController();
+  
+  final _dimensionsController = TextEditingController();
+  final _facingController = TextEditingController();
+  final _floorsController = TextEditingController();
+  final _roomsController = TextEditingController();
+  final _parkingController = TextEditingController();
+  final _specialNeedsController = TextEditingController();
+  
+  final _propTypeController = TextEditingController();
+  final _areaController = TextEditingController();
+  String _stylePreference = 'Modern Minimalist';
+  
+  final _consultTopicController = TextEditingController();
+  final _queryController = TextEditingController();
+  
+  final _soilTypeController = TextEditingController();
+  final _depthController = TextEditingController();
+  String _borewellPurpose = 'Residential Water Supply';
+
+  @override
+  void dispose() {
+    _plotSizeController.dispose();
+    _locationController.dispose();
+    _budgetController.dispose();
+    _timelineController.dispose();
+    _typeController.dispose();
+    _dimensionsController.dispose();
+    _facingController.dispose();
+    _floorsController.dispose();
+    _roomsController.dispose();
+    _parkingController.dispose();
+    _specialNeedsController.dispose();
+    _propTypeController.dispose();
+    _areaController.dispose();
+    _consultTopicController.dispose();
+    _queryController.dispose();
+    _soilTypeController.dispose();
+    _depthController.dispose();
+    super.dispose();
+  }
+
   // Specific state for interior scope
   final List<String> _interiorScopes = [];
 
-  void _submitForm() {
+  Future<void> _submitForm() async {
+    final userAsync = ref.read(currentUserDataProvider);
+    final user = userAsync.value;
+    
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please login to submit a request')),
+      );
+      return;
+    }
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -34,19 +96,85 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
         child: CircularProgressIndicator(color: AppTheme.primaryBlue),
       ),
     );
-    Future.delayed(const Duration(seconds: 2), () {
+
+    try {
+      final String requestId = 'SR-${const Uuid().v4().substring(0, 8).toUpperCase()}';
+      
+      Map<String, dynamic> details = {};
+      
+      if (_selectedService == 'Construction') {
+        details = {
+          'plotSize': _plotSizeController.text,
+          'location': _locationController.text,
+          'budget': _budgetController.text,
+          'timeline': _timelineController.text,
+          'constructionType': _typeController.text,
+          'category': _selectedCategory,
+        };
+      } else if (_selectedService == 'Architecture') {
+        details = {
+          'dimensions': _dimensionsController.text,
+          'facing': _facingController.text,
+          'floors': _floorsController.text,
+          'rooms': _roomsController.text,
+          'parking': _parkingController.text,
+          'specialNeeds': _specialNeedsController.text,
+        };
+      } else if (_selectedService == 'Interiors') {
+        details = {
+          'propertyType': _propTypeController.text,
+          'rooms': _roomsController.text, // Shared or use another
+          'area': _areaController.text,
+          'budget': _budgetController.text,
+          'style': _stylePreference,
+          'scopes': _interiorScopes,
+        };
+      } else if (_selectedService == 'Consultation') {
+        details = {
+          'topic': _consultTopicController.text,
+          'address': _locationController.text,
+          'query': _queryController.text,
+        };
+      } else if (_selectedService == 'Borewell') {
+        details = {
+          'landmark': _locationController.text,
+          'soilType': _soilTypeController.text,
+          'depth': _depthController.text,
+          'purpose': _borewellPurpose,
+        };
+      }
+
+      final request = ServiceRequestModel(
+        id: requestId,
+        userId: user.uid,
+        userName: user.name ?? 'User',
+        userContact: user.phoneNumber,
+        category: _selectedService,
+        status: 'Pending',
+        details: details,
+        location: _locationController.text,
+        createdAt: DateTime.now(),
+      );
+
+      await ref.read(serviceRequestRepositoryProvider).addRequest(request);
+
       if (!mounted) return;
-      context.pop();
+      context.pop(); // Close loader
+      
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-            'Request Sent! A verified engineer/architect will contact you with a quote.',
-          ),
+          content: Text('Request Sent! A verified professional will contact you soon.'),
           backgroundColor: AppTheme.primaryBlue,
         ),
       );
-      context.pop();
-    });
+      context.pop(); // Go back
+    } catch (e) {
+      if (!mounted) return;
+      context.pop(); // Close loader
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+      );
+    }
   }
 
   @override
@@ -307,12 +435,14 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
           'PLOT SIZE (SQ. FT.)',
           'e.g., 2400',
           TextInputType.number,
+          controller: _plotSizeController,
         ),
         const SizedBox(height: 16),
         _buildTextField(
           'EXACT LOCATION',
           'City, Neighborhood or Coordinates',
           TextInputType.text,
+          controller: _locationController,
         ),
         const SizedBox(height: 16),
         Row(
@@ -322,6 +452,7 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
                 'BUDGET (₹)',
                 'Estimated amount',
                 TextInputType.number,
+                controller: _budgetController,
               ),
             ),
             const SizedBox(width: 16),
@@ -330,6 +461,7 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
                 'TIMELINE',
                 'e.g., 6 Months',
                 TextInputType.text,
+                controller: _timelineController,
               ),
             ),
           ],
@@ -339,6 +471,7 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
           'TYPE OF CONSTRUCTION',
           'House, Building, Duplex, etc.',
           TextInputType.text,
+          controller: _typeController,
         ),
         const SizedBox(height: 32),
         const Text(
@@ -373,6 +506,7 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
                 'PLOT DIMENSIONS',
                 'L x W (in ft)',
                 TextInputType.text,
+                controller: _dimensionsController,
               ),
             ),
             const SizedBox(width: 16),
@@ -381,6 +515,7 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
                 'FACING',
                 'North, East, etc.',
                 TextInputType.text,
+                controller: _facingController,
               ),
             ),
           ],
@@ -393,6 +528,7 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
                 'NO. OF FLOORS',
                 'e.g., G+2',
                 TextInputType.text,
+                controller: _floorsController,
               ),
             ),
             const SizedBox(width: 16),
@@ -401,6 +537,7 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
                 'ROOM REQUIREMENT',
                 'e.g., 4 BHK',
                 TextInputType.text,
+                controller: _roomsController,
               ),
             ),
           ],
@@ -410,12 +547,14 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
           'PARKING CAPACITY',
           'No. of Cars / Bikes',
           TextInputType.text,
+          controller: _parkingController,
         ),
         const SizedBox(height: 16),
         _buildTextField(
           'SPECIAL NEEDS (OPTIONAL)',
           'Vastu compliance, Garden, Pool, etc.',
           TextInputType.text,
+          controller: _specialNeedsController,
         ),
         const SizedBox(height: 32),
         _buildSelectionBox('OUTPUT REQUIRED', 'Conceptual Plan (MVP)', [
@@ -445,6 +584,7 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
                 'PROPERTY TYPE',
                 'Apartment, Villa',
                 TextInputType.text,
+                controller: _propTypeController,
               ),
             ),
             const SizedBox(width: 16),
@@ -453,6 +593,7 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
                 'BHK / ROOMS',
                 'e.g., 3 BHK',
                 TextInputType.text,
+                controller: _roomsController,
               ),
             ),
           ],
@@ -465,6 +606,7 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
                 'CARPET AREA',
                 'In Sq. Ft.',
                 TextInputType.number,
+                controller: _areaController,
               ),
             ),
             const SizedBox(width: 16),
@@ -473,6 +615,7 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
                 'BUDGET (₹)',
                 'Expected total',
                 TextInputType.number,
+                controller: _budgetController,
               ),
             ),
           ],
@@ -518,12 +661,14 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
           'CONSULTATION TOPIC',
           'Structural Audit, Material Quality, Seepage, etc.',
           TextInputType.text,
+          controller: _consultTopicController,
         ),
         const SizedBox(height: 16),
         _buildTextField(
           'PROPERTY ADDRESS',
           'Where is the property?',
           TextInputType.text,
+          controller: _locationController,
         ),
         const SizedBox(height: 16),
         _buildTextField(
@@ -531,6 +676,7 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
           'Describe the issue or advice needed...',
           TextInputType.multiline,
           maxLines: 4,
+          controller: _queryController,
         ),
         const SizedBox(height: 32),
         Container(
@@ -590,6 +736,7 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
           'EXACT LOCATION / PLOT NO.',
           'Enter landmark',
           TextInputType.text,
+          controller: _locationController,
         ),
         const SizedBox(height: 16),
         Row(
@@ -599,6 +746,7 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
                 'TYPE OF SOIL (IF KNOWN)',
                 'e.g., Rocky, Red',
                 TextInputType.text,
+                controller: _soilTypeController,
               ),
             ),
             const SizedBox(width: 16),
@@ -607,6 +755,7 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
                 'EXPECTED DEPTH',
                 'In Feet',
                 TextInputType.number,
+                controller: _depthController,
               ),
             ),
           ],
@@ -655,6 +804,7 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
     String hintText,
     TextInputType type, {
     int maxLines = 1,
+    TextEditingController? controller,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -675,6 +825,7 @@ class _ConstructionScreenState extends State<ConstructionScreen> {
             borderRadius: BorderRadius.circular(12),
           ),
           child: TextField(
+            controller: controller,
             maxLines: maxLines,
             keyboardType: type,
             style: TextStyle(

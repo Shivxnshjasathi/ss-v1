@@ -2,36 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 
-class ChatbotScreen extends StatefulWidget {
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sampatti_bazar/features/chatbot/data/chatbot_repository.dart';
+
+class ChatbotScreen extends ConsumerStatefulWidget {
   const ChatbotScreen({super.key});
 
   @override
-  State<ChatbotScreen> createState() => _ChatbotScreenState();
+  ConsumerState<ChatbotScreen> createState() => _ChatbotScreenState();
 }
 
-class _ChatbotScreenState extends State<ChatbotScreen> {
+class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
   final _messageController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   final List<Map<String, dynamic>> _messages = [
     {
       'role': 'ai',
       'text': 'Welcome to Sampatti Bazar!\nI\'m your digital assistant.\nHow can I help you\nstreamline your real estate\njourney today?',
       'time': '09:00 AM',
     },
-    {
-      'role': 'user',
-      'text': 'I\'m looking to calculate my home\nloan EMI for a new apartment in\nMumbai.',
-      'time': '09:02 AM',
-    },
-    {
-      'role': 'ai',
-      'text': 'Great choice! Our Loans\nmodule can calculate that in\nseconds. Would you also like\nto check your eligibility for our\nspecial electric-blue interest\nrates?',
-      'time': '09:03 AM',
-    },
   ];
 
   bool _isTyping = false;
 
-  void _sendMessage() {
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
+  Future<void> _sendMessage() async {
     final text = _messageController.text.trim();
     if (text.isEmpty) return;
 
@@ -44,19 +50,32 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       _messageController.clear();
       _isTyping = true;
     });
+    _scrollToBottom();
 
-    // Mock AI Response
-    Future.delayed(const Duration(seconds: 2), () {
+    try {
+      final response = await ref.read(chatbotRepositoryProvider).getResponse(text);
+      if (!mounted) return;
+      
+      setState(() {
+        _isTyping = false;
+        _messages.add({
+          'role': 'ai',
+          'text': response,
+          'time': _getCurrentTime(),
+        });
+      });
+      _scrollToBottom();
+    } catch (e) {
       if (!mounted) return;
       setState(() {
         _isTyping = false;
         _messages.add({
           'role': 'ai',
-          'text': "I'm ready to assist with that. Could you provide a bit more detail?",
+          'text': "I'm sorry, I'm having bit of trouble connecting to our Sampatti systems. Please try again.",
           'time': _getCurrentTime(),
         });
       });
-    });
+    }
   }
 
   String _getCurrentTime() {
@@ -93,6 +112,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         children: [
           Expanded(
             child: ListView.builder(
+              controller: _scrollController,
               padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               itemCount: _messages.length + (_isTyping ? 1 : 0),
               itemBuilder: (context, index) {
@@ -129,7 +149,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
-        'TODAY, OCT 24',
+        'TODAY',
         style: TextStyle(fontSize: 8, fontWeight: FontWeight.w900, color: context.primaryTextColor, letterSpacing: 0.5),
       ),
     );
@@ -205,7 +225,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
           const Icon(Icons.more_horiz, color: Colors.grey, size: 24),
           const SizedBox(width: 8),
           const Text(
-            'ASSISTANT IS THINKING....',
+            'SAMPATTI BOT IS THINKING....',
             style: TextStyle(fontSize: 8, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 1),
           ),
         ],
@@ -251,20 +271,26 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   }
 
   Widget _buildActionChip(IconData icon, String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: context.cardColor,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: context.borderColor),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 14, color: AppTheme.primaryBlue),
-          const SizedBox(width: 8),
-          Text(label, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11, color: context.primaryTextColor)),
-        ],
+    return GestureDetector(
+      onTap: () {
+        _messageController.text = label;
+        _sendMessage();
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          color: context.cardColor,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: context.borderColor),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: AppTheme.primaryBlue),
+            const SizedBox(width: 8),
+            Text(label, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11, color: context.primaryTextColor)),
+          ],
+        ),
       ),
     );
   }
@@ -314,7 +340,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
             ),
             const SizedBox(height: 16),
             const Text(
-              'Powered by Sampatti Intelligence - Secure Encryption',
+              'Gemini Powered Intelligence • Secure Encryption',
               style: TextStyle(fontSize: 8, fontWeight: FontWeight.w600, color: Colors.grey),
             ),
           ],

@@ -53,6 +53,11 @@ class MainLayoutScreen extends StatelessWidget {
               activeIcon: Icon(Icons.favorite),
               label: 'Saved',
             ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.forum_outlined),
+              activeIcon: Icon(Icons.forum),
+              label: 'Messages',
+            ),
           ],
         ),
       ),
