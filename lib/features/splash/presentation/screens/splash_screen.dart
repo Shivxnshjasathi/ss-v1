@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
+import 'package:sampatti_bazar/core/utils/routing_utils.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -18,23 +19,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     _navigateToNext();
   }
 
-  void _routeBasedOnRole(String role) {
-    if (role == 'Builder / Agent') {
-      context.go('/provider/builder');
-    } else if (role == 'Construction Partner') {
-      context.go('/provider/construction');
-    } else if (role == 'Legal Advisor') {
-      context.go('/provider/legal');
-    } else if (role == 'Material Vendor') {
-      context.go('/provider/marketplace');
-    } else {
-      context.go('/home');
-    }
-  }
-
   Future<void> _navigateToNext() async {
-    // Wait for minimum splash duration
-    await Future.delayed(const Duration(seconds: 2));
+    // Try to get cached user for instant redirect
+    final cachedUser = await ref.read(userRepositoryProvider).getCachedUser();
+    
+    if (mounted && cachedUser != null) {
+      debugPrint('⚡ [SplashScreen] Found cached user: ${cachedUser.uid}, Redirecting immediately.');
+      RoutingUtils.navigateByRole(context, cachedUser.role);
+      return;
+    }
+
+    // Wait for minimum splash duration if no cache (first time or force fetch)
+    await Future.delayed(const Duration(seconds: 1)); // Reduced from 2s to 1s for better UX
     
     if (mounted) {
       final user = FirebaseAuth.instance.currentUser;
@@ -47,7 +43,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             if (profile == null) {
               context.go('/onboarding');
             } else {
-              _routeBasedOnRole(profile.role ?? '');
+              RoutingUtils.navigateByRole(context, profile.role);
             }
           }
         } catch (e) {

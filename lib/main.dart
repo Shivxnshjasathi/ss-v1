@@ -12,6 +12,7 @@ import 'package:flutter/foundation.dart';
 import 'firebase_options.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:sampatti_bazar/core/providers/locale_provider.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 void main() async {
   runZonedGuarded<Future<void>>(
@@ -54,8 +55,14 @@ class SampattiBazarApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return MaterialApp.router(
-      title: 'Sampatti Bazar',
+    // Initialize Responsive utility
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return OrientationBuilder(
+          builder: (context, orientation) {
+            Responsive().init(context);
+            return MaterialApp.router(
+              title: 'Sampatti Bazar',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ref.watch(themeProvider),
@@ -72,6 +79,10 @@ class SampattiBazarApp extends ConsumerWidget {
         Locale('hi', ''), // Hindi
       ],
       debugShowCheckedModeBanner: false,
+            );
+          },
+        );
+      },
     );
   }
 }

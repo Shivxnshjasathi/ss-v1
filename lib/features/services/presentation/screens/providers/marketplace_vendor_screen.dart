@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
+import 'package:sampatti_bazar/features/auth/data/auth_repository.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/services/data/marketplace_repository.dart';
 import 'package:sampatti_bazar/features/services/domain/marketplace_item_model.dart';
@@ -174,7 +175,14 @@ class _MarketplaceVendorScreenState extends ConsumerState<MarketplaceVendorScree
         backgroundColor: context.scaffoldColor,
         elevation: 0,
         actions: [
-          IconButton(icon: Icon(Icons.logout, color: context.iconColor), onPressed: () => context.go('/login')),
+          IconButton(
+            icon: Icon(Icons.logout, color: context.iconColor), 
+            onPressed: () async {
+              await ref.read(authRepositoryProvider).signOut();
+              await ref.read(userRepositoryProvider).clearCache();
+              if (context.mounted) context.go('/login');
+            }
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(

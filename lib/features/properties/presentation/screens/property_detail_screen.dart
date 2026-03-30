@@ -534,13 +534,16 @@ class PropertyDetailScreen extends ConsumerWidget {
                                  ),
                                ),
                                const SizedBox(height: 4),
-                                Text(
-                                  property.builtIn?.toString() ?? 'N/A',
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w900,
-                                  ),
-                                ),
+                                 FittedBox(
+                                   fit: BoxFit.scaleDown,
+                                   child: Text(
+                                     property.builtIn?.toString() ?? 'N/A',
+                                     style: const TextStyle(
+                                       fontSize: 18,
+                                       fontWeight: FontWeight.w900,
+                                     ),
+                                   ),
+                                 ),
                              ],
                            ),
                          ),
@@ -569,15 +572,18 @@ class PropertyDetailScreen extends ConsumerWidget {
                                  ),
                                ),
                                const SizedBox(height: 4),
-                                Text(
-                                  property.lotSizeSqFt != null 
-                                      ? '${property.lotSizeSqFt!.toInt().toString()} ${l10n.sqft.toUpperCase()}' 
-                                      : 'N/A',
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w900,
-                                  ),
-                                ),
+                                 FittedBox(
+                                   fit: BoxFit.scaleDown,
+                                   child: Text(
+                                     property.lotSizeSqFt != null 
+                                         ? '${property.lotSizeSqFt!.toInt().toString()} ${l10n.sqft.toUpperCase()}' 
+                                         : 'N/A',
+                                     style: const TextStyle(
+                                       fontSize: 18,
+                                       fontWeight: FontWeight.w900,
+                                     ),
+                                   ),
+                                 ),
                              ],
                            ),
                          ),
@@ -708,7 +714,7 @@ class PropertyDetailScreen extends ConsumerWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       crossAxisCount: 2,
-      childAspectRatio: 1.6,
+      childAspectRatio: 1.3,
       mainAxisSpacing: 16,
       crossAxisSpacing: 16,
       children: [
@@ -724,13 +730,14 @@ class PropertyDetailScreen extends ConsumerWidget {
 
   Widget _buildOverviewItem(BuildContext context, IconData icon, String label, String value) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: context.isDarkMode ? Colors.grey[900]?.withValues(alpha: 0.3) : Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
@@ -742,9 +749,15 @@ class PropertyDetailScreen extends ConsumerWidget {
             child: Icon(icon, color: AppTheme.primaryBlue, size: 18),
           ),
           const SizedBox(height: 12),
-          Text(label, style: TextStyle(fontSize: 9, color: context.secondaryTextColor, fontWeight: FontWeight.w800, letterSpacing: 0.5)),
-          const SizedBox(height: 2),
-          Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: context.primaryTextColor)),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(label, textAlign: TextAlign.center, style: TextStyle(fontSize: 10, color: context.secondaryTextColor, fontWeight: FontWeight.w800, letterSpacing: 0.5)),
+          ),
+          const SizedBox(height: 4),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(value, textAlign: TextAlign.center, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: context.primaryTextColor)),
+          ),
         ],
       ),
     );

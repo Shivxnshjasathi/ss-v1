@@ -7,6 +7,8 @@ import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/services/data/booking_repository.dart';
 import 'package:sampatti_bazar/features/services/domain/booking_model.dart';
+import 'package:sampatti_bazar/features/services/domain/service_request_model.dart';
+import 'package:sampatti_bazar/features/services/data/service_request_repository.dart';
 
 class ServiceTrackingScreen extends ConsumerWidget {
   const ServiceTrackingScreen({super.key});
@@ -22,7 +24,7 @@ class ServiceTrackingScreen extends ConsumerWidget {
     final myVisitorsAsync = ref.watch(ownerBookingsProvider(user.uid));
 
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         backgroundColor: context.scaffoldColor,
         appBar: AppBar(
@@ -49,6 +51,7 @@ class ServiceTrackingScreen extends ConsumerWidget {
             tabs: const [
               Tab(text: 'MY BOOKINGS'),
               Tab(text: 'MY VISITORS'),
+              Tab(text: 'MY SERVICES'),
             ],
           ),
         ),
@@ -56,6 +59,7 @@ class ServiceTrackingScreen extends ConsumerWidget {
           children: [
             _buildBookingList(context, ref, myBookingsAsync, isOwner: false),
             _buildBookingList(context, ref, myVisitorsAsync, isOwner: true),
+            _buildServiceRequestList(context, ref, user.uid),
           ],
         ),
       ),
@@ -231,8 +235,200 @@ class ServiceTrackingScreen extends ConsumerWidget {
     );
   }
 
+  Widget _buildServiceRequestList(BuildContext context, WidgetRef ref, String userId) {
+    final servicesAsync = ref.watch(userServiceRequestsProvider(userId));
+
+    return servicesAsync.when(
+      data: (requests) {
+        if (requests.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.miscellaneous_services_outlined, size: 64, color: Colors.grey[300]),
+                const SizedBox(height: 16),
+                Text(
+                  'No service requests raised yet',
+                  style: TextStyle(color: Colors.grey[500], fontWeight: FontWeight.w500),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.only(top: 16),
+          itemCount: requests.length,
+          itemBuilder: (context, index) {
+            final request = requests[index];
+            return _buildServiceRequestCard(context, ref, request);
+          },
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, st) => Center(child: Text('Error: $e')),
+    );
+  }
+
+  Widget _buildServiceRequestCard(BuildContext context, WidgetRef ref, ServiceRequestModel request) {
+    final statusColor = _getServiceStatusColor(request.status);
+    final dateStr = DateFormat('MMM d, yyyy').format(request.createdAt);
+    
+    IconData categoryIcon;
+    switch (request.category.toLowerCase()) {
+      case 'legal': categoryIcon = Icons.gavel; break;
+      case 'construction': categoryIcon = Icons.architecture; break;
+      case 'sitevisit': categoryIcon = Icons.location_on; break;
+      default: categoryIcon = Icons.miscellaneous_services;
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(left: 24, right: 24, bottom: 20),
+      decoration: BoxDecoration(
+        color: context.cardColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: context.borderColor),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(categoryIcon, color: AppTheme.primaryBlue, size: 24),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        request.category.toUpperCase(),
+                        style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: AppTheme.primaryBlue, letterSpacing: 1),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        request.details['propertyAddress'] ?? request.details['requirement'] ?? 'Service Request',
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: context.primaryTextColor),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: statusColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    request.status.toUpperCase(),
+                    style: TextStyle(color: statusColor, fontSize: 10, fontWeight: FontWeight.w900),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.calendar_today_outlined, size: 14, color: Colors.grey[500]),
+                    const SizedBox(width: 6),
+                    Text(dateStr, style: TextStyle(color: Colors.grey[600], fontSize: 12, fontWeight: FontWeight.bold)),
+                  ],
+                ),
+                if (request.location != null)
+                  Row(
+                    children: [
+                      Icon(Icons.location_on_outlined, size: 14, color: Colors.grey[500]),
+                      const SizedBox(width: 4),
+                      Text(request.location!, style: TextStyle(color: Colors.grey[600], fontSize: 12, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+              ],
+            ),
+          ),
+          // Status Progress Bar
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildStatusStep('Raised', true),
+                    _buildStatusStep('Accepted', ['accepted', 'in progress', 'completed'].contains(request.status.toLowerCase())),
+                    _buildStatusStep('Active', ['in progress', 'completed'].contains(request.status.toLowerCase())),
+                    _buildStatusStep('Done', request.status.toLowerCase() == 'completed'),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: LinearProgressIndicator(
+                    value: _getStatusProgress(request.status),
+                    backgroundColor: Colors.grey[200],
+                    valueColor: AlwaysStoppedAnimation<Color>(statusColor),
+                    minHeight: 4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatusStep(String label, bool isReached) {
+    return Text(
+      label,
+      style: TextStyle(
+        fontSize: 10,
+        fontWeight: FontWeight.w900,
+        color: isReached ? AppTheme.primaryBlue : Colors.grey[400],
+      ),
+    );
+  }
+
+  double _getStatusProgress(String status) {
+    switch (status.toLowerCase()) {
+      case 'pending': return 0.25;
+      case 'accepted': return 0.5;
+      case 'in progress': return 0.75;
+      case 'completed': return 1.0;
+      default: return 0.1;
+    }
+  }
+
+  Color _getServiceStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'accepted': return Colors.blue;
+      case 'in progress': return AppTheme.primaryBlue;
+      case 'completed': return Colors.green;
+      case 'cancelled': return Colors.red;
+      default: return Colors.orange;
+    }
+  }
+
   Color _getStatusColor(String status) {
-    switch (status) {
+    switch (status.toLowerCase()) {
       case 'confirmed': return Colors.green;
       case 'cancelled': return Colors.red;
       case 'completed': return Colors.blue;

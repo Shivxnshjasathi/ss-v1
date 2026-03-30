@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/auth_repository.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
+import 'package:sampatti_bazar/core/utils/routing_utils.dart';
 import 'package:sampatti_bazar/core/services/logger_service.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 
@@ -42,8 +43,8 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
             LoggerService.i('No profile found. Routing to /onboarding');
             context.go('/onboarding');
           } else {
-            LoggerService.i('Profile found. Routing to /home');
-            context.go('/home');
+            LoggerService.i('Profile found. Navigating based on role');
+            RoutingUtils.navigateByRole(context, userDoc.role);
           }
         }
       } else {

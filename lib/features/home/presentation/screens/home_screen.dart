@@ -8,6 +8,7 @@ import 'package:sampatti_bazar/features/properties/data/property_repository.dart
 import 'package:sampatti_bazar/core/services/location_provider.dart';
 import 'package:sampatti_bazar/core/services/logger_service.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -39,7 +40,7 @@ class HomeScreen extends ConsumerWidget {
             Text(
               l10n.welcome,
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 12.sp,
                 color: Colors.grey[600],
                 fontWeight: FontWeight.w500,
               ),
@@ -49,7 +50,7 @@ class HomeScreen extends ConsumerWidget {
                 Text(
                   '$firstName!',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: 18.sp,
                     fontWeight: FontWeight.w900,
                     color: context.primaryTextColor,
                   ),
@@ -60,7 +61,7 @@ class HomeScreen extends ConsumerWidget {
                 Text(
                   currentLocation,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 12.sp,
                     color: Colors.grey[600],
                     fontWeight: FontWeight.bold,
                   ),
@@ -108,20 +109,20 @@ class HomeScreen extends ConsumerWidget {
                 onTap: () => context.push('/properties'),
                 decoration: InputDecoration(
                   hintText: l10n.searchProperties,
-                  hintStyle: TextStyle(color: Colors.grey[500]),
-                  prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                  suffixIcon: const Icon(Icons.tune, color: Colors.grey),
+                  hintStyle: TextStyle(color: Colors.grey[500], fontSize: 13.sp),
+                  prefixIcon: Icon(Icons.search, color: Colors.grey, size: 20.sp),
+                  suffixIcon: Icon(Icons.tune, color: Colors.grey, size: 20.sp),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.sp),
                     borderSide: BorderSide(color: context.borderColor),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.sp),
                     borderSide: BorderSide(color: context.borderColor),
                   ),
                   filled: true,
                   fillColor: context.surfaceColor,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                  contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 16.w),
                 ),
               ),
             ),
@@ -225,9 +226,9 @@ class HomeScreen extends ConsumerWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16.h),
                     SizedBox(
-                      height: 320,
+                      height: 320.h,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -319,14 +320,14 @@ class HomeScreen extends ConsumerWidget {
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: context.borderColor, width: 1.0),
             ),
-            child: Icon(icon, color: context.iconColor, size: width.clamp(20.0, 28.0)),
+            child: Icon(icon, color: context.iconColor, size: width.clamp(20.0, 28.0).sp),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.h),
           SizedBox(
             width: width,
             child: Text(
               title,
-              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+              style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, letterSpacing: 0.5),
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -340,7 +341,7 @@ class HomeScreen extends ConsumerWidget {
     return GestureDetector(
       onTap: () => context.push('/properties/detail/$propertyId'),
       child: Container(
-        width: 240,
+        width: 240.w,
         decoration: BoxDecoration(
           color: context.cardColor,
           borderRadius: BorderRadius.circular(16),

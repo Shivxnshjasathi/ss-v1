@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/auth_repository.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
+import 'package:sampatti_bazar/core/utils/routing_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sampatti_bazar/core/services/logger_service.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
@@ -41,7 +42,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           verificationCompleted: (credential) async {
             LoggerService.i('Auto-verification completed for: +91$phone');
             await FirebaseAuth.instance.signInWithCredential(credential);
-            if (mounted) context.go('/home');
+            if (mounted) {
+              final userRepo = ref.read(userRepositoryProvider);
+              final profile = await userRepo.getUser(FirebaseAuth.instance.currentUser!.uid);
+              if (mounted) {
+                if (profile == null) {
+                  context.go('/onboarding');
+                } else {
+                  RoutingUtils.navigateByRole(context, profile.role);
+                }
+              }
+            }
           },
           verificationFailed: (e) {
             LoggerService.e('Phone verification failed', error: e, stack: StackTrace.current);
@@ -106,7 +117,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         if (profile == null) {
           context.go('/onboarding');
         } else {
-          context.go('/home');
+          RoutingUtils.navigateByRole(context, profile.role);
         }
       }
     } catch (e) {

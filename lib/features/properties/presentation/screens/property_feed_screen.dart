@@ -6,6 +6,7 @@ import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/properties/data/property_repository.dart';
 import 'package:sampatti_bazar/features/properties/domain/property_model.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class PropertyFeedScreen extends ConsumerStatefulWidget {
   const PropertyFeedScreen({super.key});
@@ -25,6 +26,13 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
   
   final List<String> _propertyTypes = ['All', 'Apartment', 'Villa', 'Penthouse', 'Studio'];
   final List<String> _bedroomOptions = ['Any', '1+', '2+', '3+', '4+'];
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   String _getLocalizedCategory(AppLocalizations l10n, String category) {
     switch (category) {
@@ -66,7 +74,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
         ),
         title: Text(
           l10n.propertiesTitle, 
-          style: TextStyle(fontWeight: FontWeight.bold, color: context.primaryTextColor, fontSize: 18)
+          style: TextStyle(fontWeight: FontWeight.bold, color: context.primaryTextColor, fontSize: 18.sp)
         ),
         centerTitle: true,
       ),
@@ -74,13 +82,13 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
         children: [
           // Search Bar
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
             child: Row(
               children: [
                 Expanded(
                   child: Container(
-                    height: 56,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    height: 56.h,
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
                     decoration: BoxDecoration(
                       color: context.surfaceColor,
                       border: Border.all(color: context.borderColor),
@@ -92,23 +100,25 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: TextField(
+                            controller: _searchController,
+                            onChanged: (_) => setState(() {}),
                             decoration: InputDecoration(
                               hintText: l10n.searchPropertiesHint,
-                              hintStyle: TextStyle(color: context.secondaryTextColor.withValues(alpha: 0.5), fontSize: 14),
+                              hintStyle: TextStyle(color: context.secondaryTextColor.withValues(alpha: 0.5), fontSize: 14.sp),
                               border: InputBorder.none,
                             ),
-                            style: TextStyle(color: context.primaryTextColor),
+                            style: TextStyle(color: context.primaryTextColor, fontSize: 14.sp),
                           ),
                         ),
                         GestureDetector(
                           onTap: () => _showFilterSheet(context, l10n),
                           child: Container(
-                            padding: const EdgeInsets.all(8),
+                            padding: EdgeInsets.all(8.sp),
                             decoration: BoxDecoration(
                               color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(8.sp),
                             ),
-                            child: Icon(Icons.tune, color: Theme.of(context).colorScheme.primary, size: 18),
+                            child: Icon(Icons.tune, color: Theme.of(context).colorScheme.primary, size: 18.sp),
                           ),
                         ),
                       ],
@@ -139,12 +149,12 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                     backgroundColor: context.cardColor,
                     selectedColor: Theme.of(context).colorScheme.primary,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(20.sp),
                       side: BorderSide(
                         color: isSelected ? Theme.of(context).colorScheme.primary : context.borderColor,
                       ),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
                   ),
                 );
               }).toList(),
@@ -157,12 +167,12 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                 Text(l10n.featuredCollections, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 20)),
+                 Text(l10n.featuredCollections, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20.sp)),
                 TextButton(
                   onPressed: () {},
                   child: Text(
                     l10n.seeAll, 
-                    style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w900, fontSize: 14)
+                    style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w900, fontSize: 14.sp)
                   ),
                 ),
               ],
@@ -194,15 +204,43 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                   if (p.price < minPrice) return false;
                   if (_priceRange.end < 100 && p.price > maxPrice) return false;
 
+                  // Search Query Filter
+                  if (_searchController.text.isNotEmpty) {
+                    final query = _searchController.text.toLowerCase();
+                    final matchesTitle = p.title.toLowerCase().contains(query);
+                    final matchesLocation = p.location.toLowerCase().contains(query);
+                    final matchesCity = p.city.toLowerCase().contains(query);
+                    if (!matchesTitle && !matchesLocation && !matchesCity) return false;
+                  }
+
                   return true;
                 }).toList();
 
                 if (filtered.isEmpty) {
-                   return Center(child: Text(l10n.noPropertiesMatch, style: TextStyle(color: context.secondaryTextColor)));
+                   return Center(child: Text(l10n.noPropertiesMatch, style: TextStyle(color: context.secondaryTextColor, fontSize: 14.sp)));
                 }
 
-                return ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                if (context.isMobile) {
+                  return ListView.builder(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                    itemCount: filtered.length,
+                    itemBuilder: (context, index) {
+                      return _buildPropertyCard(context, filtered[index], l10n);
+                    },
+                  );
+                }
+
+                final crossAxisCount = context.isTablet ? 2 : 3;
+                final itemHeight = 420.h;
+                
+                return GridView.builder(
+                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: crossAxisCount,
+                    crossAxisSpacing: 16.w,
+                    mainAxisSpacing: 24.h,
+                    mainAxisExtent: itemHeight,
+                  ),
                   itemCount: filtered.length,
                   itemBuilder: (context, index) {
                     return _buildPropertyCard(context, filtered[index], l10n);
@@ -387,7 +425,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
     return GestureDetector(
       onTap: () => context.push('/properties/detail/${property.id}'),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 24),
+        margin: EdgeInsets.only(bottom: context.isMobile ? 24 : 0),
         decoration: BoxDecoration(
           color: context.cardColor,
           borderRadius: BorderRadius.circular(16),

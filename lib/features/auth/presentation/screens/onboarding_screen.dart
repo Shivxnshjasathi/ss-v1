@@ -5,6 +5,7 @@ import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/auth_repository.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/auth/domain/user_model.dart';
+import 'package:sampatti_bazar/core/utils/routing_utils.dart';
 import 'package:sampatti_bazar/core/services/location_service.dart';
 import 'package:sampatti_bazar/core/services/logger_service.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
@@ -78,19 +79,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
   }
 
-  void _routeBasedOnRole(String roleKey) {
-    if (roleKey == 'builderAgent') {
-      context.go('/provider/builder');
-    } else if (roleKey == 'constructionPartner') {
-      context.go('/provider/construction');
-    } else if (roleKey == 'legalAdvisor') {
-      context.go('/provider/legal');
-    } else if (roleKey == 'materialVendor') {
-      context.go('/provider/marketplace');
-    } else {
-      context.go('/home');
-    }
-  }
 
   Future<void> _onCompleteSetup() async {
     LoggerService.i('Tapped Complete Setup');
@@ -122,7 +110,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           );
           await ref.read(userRepositoryProvider).saveUser(userModel);
           await LoggerService.setUserId(user.uid);
-          if (mounted) _routeBasedOnRole(_selectedRoleKey ?? 'consumerBuyer');
+          if (mounted) RoutingUtils.navigateByRole(context, userModel.role);
         } else {
           if (mounted) {
             showDialog(

@@ -34,6 +34,11 @@ final cityVisitorRequestsStreamProvider = StreamProvider.family<List<ServiceRequ
   return ref.watch(serviceRequestRepositoryProvider).streamSiteVisitsByCity(city);
 });
 
+final userServiceRequestsProvider = StreamProvider.family<List<ServiceRequestModel>, String>((ref, userId) {
+  LoggerService.i('ServiceStream: Listening to user service requests for $userId');
+  return ref.watch(serviceRequestRepositoryProvider).streamUserRequests(userId);
+});
+
 class ServiceRequestRepository {
   final FirebaseFirestore _firestore;
 
@@ -118,5 +123,19 @@ class ServiceRequestRepository {
       LoggerService.e('Service: Failed to update status for $requestId', error: e, stack: st);
       rethrow;
     }
+  }
+
+  Stream<List<ServiceRequestModel>> streamUserRequests(String userId) {
+    return _firestore
+        .collection('service_requests')
+        .where('userId', isEqualTo: userId)
+        .snapshots()
+        .map((snapshot) {
+          final docs = snapshot.docs
+              .map((doc) => ServiceRequestModel.fromMap(doc.data(), doc.id))
+              .toList();
+          docs.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          return docs;
+        });
   }
 }
