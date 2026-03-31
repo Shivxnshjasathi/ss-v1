@@ -629,7 +629,7 @@ abstract class AppLocalizations {
   /// No description provided for @featuredZeroBrokerage.
   ///
   /// In en, this message translates to:
-  /// **'FEATURED ZERO-BROKERAGE'**
+  /// **'FEATURED\nZERO-BROKERAGE'**
   String get featuredZeroBrokerage;
 
   /// No description provided for @newlyAdded.
@@ -2659,6 +2659,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A Loan Expert will contact you shortly.'**
   String get applicationSubmittedDesc;
+
+  /// No description provided for @packersMoversRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Packers & Movers Partner'**
+  String get packersMoversRole;
+
+  /// No description provided for @moversDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Movers Dashboard'**
+  String get moversDashboard;
+
+  /// No description provided for @approxDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'APPROX. DISTANCE (KM)'**
+  String get approxDistance;
+
+  /// No description provided for @providerQuote.
+  ///
+  /// In en, this message translates to:
+  /// **'Provider Quote'**
+  String get providerQuote;
 }
 
 class _AppLocalizationsDelegate

@@ -1341,4 +1341,16 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get applicationSubmittedDesc =>
       'एक लोन विशेषज्ञ जल्द ही आपसे संपर्क करेगा।';
+
+  @override
+  String get packersMoversRole => 'पैकर्स एंड मूवर्स पार्टनर';
+
+  @override
+  String get moversDashboard => 'मूवर्स डैशबोर्ड';
+
+  @override
+  String get approxDistance => 'अनुमानित दूरी (KM)';
+
+  @override
+  String get providerQuote => 'प्रदाता उद्धरण';
 }

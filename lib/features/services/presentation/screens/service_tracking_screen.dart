@@ -279,6 +279,7 @@ class ServiceTrackingScreen extends ConsumerWidget {
       case 'legal': categoryIcon = Icons.gavel; break;
       case 'construction': categoryIcon = Icons.architecture; break;
       case 'sitevisit': categoryIcon = Icons.location_on; break;
+      case 'movers': categoryIcon = Icons.local_shipping; break;
       default: categoryIcon = Icons.miscellaneous_services;
     }
 
@@ -318,7 +319,9 @@ class ServiceTrackingScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        request.details['propertyAddress'] ?? request.details['requirement'] ?? 'Service Request',
+                        request.category.toLowerCase() == 'movers' 
+                            ? '${request.details['pickupLocation']} ➔ ${request.details['dropLocation']}'
+                            : (request.details['propertyAddress'] ?? request.details['requirement'] ?? 'Service Request'),
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: context.primaryTextColor),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -352,7 +355,7 @@ class ServiceTrackingScreen extends ConsumerWidget {
                     Text(dateStr, style: TextStyle(color: Colors.grey[600], fontSize: 12, fontWeight: FontWeight.bold)),
                   ],
                 ),
-                if (request.location != null)
+                if (request.location != null && request.category.toLowerCase() != 'movers')
                   Row(
                     children: [
                       Icon(Icons.location_on_outlined, size: 14, color: Colors.grey[500]),
@@ -363,6 +366,32 @@ class ServiceTrackingScreen extends ConsumerWidget {
               ],
             ),
           ),
+          if (request.category.toLowerCase() == 'movers')
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: request.details['finalQuote'] != null 
+                         ? Colors.green.withValues(alpha: 0.1) 
+                         : Colors.grey.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                     Row(
+                       children: [
+                         Icon(request.details['finalQuote'] != null ? Icons.verified : Icons.calculate, size: 16, color: request.details['finalQuote'] != null ? Colors.green[700] : Colors.grey[600]),
+                         const SizedBox(width: 6),
+                         Text(request.details['finalQuote'] != null ? 'Official Provider Quote' : 'Estimated Price', style: TextStyle(fontSize: 12, color: request.details['finalQuote'] != null ? Colors.green[700] : Colors.grey[600], fontWeight: FontWeight.bold)),
+                       ],
+                     ),
+                     Text('₹${request.details['finalQuote'] ?? request.details['estimatedQuote']}', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: request.details['finalQuote'] != null ? Colors.green[700] : Colors.grey[800])),
+                  ],
+                ),
+              ),
+            ),
           // Status Progress Bar
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),

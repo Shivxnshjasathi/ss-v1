@@ -8,6 +8,7 @@ import 'package:sampatti_bazar/features/services/data/service_request_repository
 import 'package:sampatti_bazar/features/services/domain/service_request_model.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
+import 'package:share_plus/share_plus.dart';
 
 class LegalScreen extends ConsumerStatefulWidget {
   const LegalScreen({super.key});
@@ -27,11 +28,14 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
 
   // Rent Agreement State
   int _currentStep = 0;
-  final _lessorController = TextEditingController(text: 'Ramesh Kumar Iyer');
-  final _lesseeController = TextEditingController(text: 'Aditi Sharma');
-  final _addressController = TextEditingController(text: 'Flat 402, Skyline Heights, Indiranagar, Bangalore');
-  final _rentController = TextEditingController(text: '32000');
-  final _depositController = TextEditingController(text: '150000');
+  final _lessorController = TextEditingController();
+  final _lesseeController = TextEditingController();
+  final _addressController = TextEditingController();
+  final _rentController = TextEditingController();
+  final _depositController = TextEditingController();
+  
+  bool _isLandlordVerified = false;
+  String? _generatedAgreementId;
 
   // Property Verification State
   final _propIdController = TextEditingController();
@@ -59,6 +63,16 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
   }
 
   void _nextStep() {
+    if (_currentStep == 0) {
+      if (_lessorController.text.trim().isEmpty || 
+          _lesseeController.text.trim().isEmpty || 
+          _addressController.text.trim().isEmpty ||
+          _rentController.text.trim().isEmpty ||
+          _depositController.text.trim().isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please fill all mandatory fields to proceed.'), backgroundColor: Colors.red));
+        return;
+      }
+    }
     if (_currentStep < 2) {
       setState(() => _currentStep++);
     }
@@ -69,6 +83,160 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
       setState(() => _currentStep--);
     } else {
       context.pop();
+    }
+  }
+
+  void _showEkycBottomSheet() {
+    final aadhaarController = TextEditingController();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Theme.of(ctx).scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('E-KYC Verification', style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 24)),
+              const SizedBox(height: 8),
+              const Text('Enter your 12-digit Aadhaar to simulate verification.', style: TextStyle(color: Colors.grey)),
+              const SizedBox(height: 24),
+              TextField(
+                controller: aadhaarController,
+                keyboardType: TextInputType.number,
+                maxLength: 12,
+                decoration: InputDecoration(
+                  labelText: 'Aadhaar Number',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  prefixIcon: const Icon(Icons.fingerprint),
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (aadhaarController.text.length == 12) {
+                      setState(() {
+                        _isLandlordVerified = true;
+                      });
+                      Navigator.pop(ctx);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('E-KYC Successful'), backgroundColor: Colors.green),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Enter a valid 12-digit Aadhaar number'), backgroundColor: Colors.red),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryBlue,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('Verify Identity', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _generateAgreement() async {
+    final user = ref.read(currentUserDataProvider).value;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please login first')));
+      return;
+    }
+    if (!_isLandlordVerified) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please complete E-KYC first'), backgroundColor: Colors.red));
+      return;
+    }
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue)),
+    );
+
+    try {
+      final requestId = 'AGR-${const Uuid().v4().substring(0, 8).toUpperCase()}';
+      final request = ServiceRequestModel(
+        id: requestId,
+        userId: user.uid,
+        userName: user.name ?? _lessorController.text,
+        userContact: user.phoneNumber,
+        category: 'RentAgreement',
+        status: 'Drafted',
+        details: {
+          'lessorName': _lessorController.text,
+          'lesseeName': _lesseeController.text,
+          'propertyAddress': _addressController.text,
+          'rent': _rentController.text,
+          'deposit': _depositController.text,
+          'isLessorVerified': _isLandlordVerified,
+        },
+        location: _addressController.text.split(',').last.trim(),
+        createdAt: DateTime.now(),
+      );
+
+      await ref.read(serviceRequestRepositoryProvider).addRequest(request);
+
+      if (!mounted) return;
+      setState(() {
+        _generatedAgreementId = requestId;
+        _currentStep++;
+      });
+      context.pop(); // dismiss loading
+    } catch (e) {
+      if (!mounted) return;
+      context.pop();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+    }
+  }
+
+  Future<void> _signAgreementNatively() async {
+    if (_generatedAgreementId == null) return;
+    final user = ref.read(currentUserDataProvider).value;
+    if (user == null) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue)),
+    );
+
+    try {
+      final request = await ref.read(serviceRequestRepositoryProvider).getRequestById(_generatedAgreementId!);
+      if (request != null) {
+        final newDetails = Map<String, dynamic>.from(request.details);
+        newDetails['lessorSignature'] = {
+          'uid': user.uid,
+          'name': user.name,
+          'timestamp': DateTime.now().toIso8601String(),
+          'kycMethod': 'Aadhaar',
+        };
+        await ref.read(serviceRequestRepositoryProvider).updateRequestDetails(_generatedAgreementId!, newDetails);
+        await ref.read(serviceRequestRepositoryProvider).updateRequestStatus(_generatedAgreementId!, 'Awaiting Tenant Signature');
+      }
+      
+      if (!mounted) return;
+      context.pop();
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Successfully digitally signed!'), backgroundColor: Colors.green));
+    } catch (e) {
+      if (!mounted) return;
+      context.pop();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
     }
   }
 
@@ -442,7 +610,9 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
         const SizedBox(height: 8),
         Text(l10n.verifyIdentitiesSubtitle, style: TextStyle(color: context.secondaryTextColor, fontSize: 13, height: 1.5, fontWeight: FontWeight.w500)),
         const SizedBox(height: 32),
-        _buildVerificationCard(l10n.landlordKyc, _lessorController.text, true, l10n),
+        _buildVerificationCard(l10n.landlordKyc, _lessorController.text, _isLandlordVerified, l10n, onTap: () {
+          if (!_isLandlordVerified) _showEkycBottomSheet();
+        }),
         const SizedBox(height: 16),
         _buildVerificationCard(l10n.tenantKyc, _lesseeController.text, false, l10n),
       ],
@@ -455,7 +625,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
       children: [
         Text(l10n.rentAgreement, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 28, letterSpacing: -1.0)),
         const SizedBox(height: 4),
-        Text(l10n.leaseForProperty('SR-89291-BLR'), style: TextStyle(color: Colors.grey[600], fontSize: 12, fontWeight: FontWeight.w600)),
+        Text(l10n.leaseForProperty(_generatedAgreementId ?? 'AGR-DRAFT'), style: TextStyle(color: Colors.grey[600], fontSize: 12, fontWeight: FontWeight.w600)),
         const SizedBox(height: 24),
         Container(
           padding: const EdgeInsets.all(16),
@@ -526,9 +696,14 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
                 child: SizedBox(
                   height: 54,
                   child: OutlinedButton.icon(
-                    onPressed: () {},
-                    icon: Icon(Icons.download, size: 18, color: context.primaryTextColor),
-                    label: Text(l10n.download, style: TextStyle(color: context.primaryTextColor, fontSize: 13, fontWeight: FontWeight.w900)),
+                    onPressed: () {
+                      if (_generatedAgreementId != null) {
+                        final link = 'https://sampatti.app/services/legal/sign/$_generatedAgreementId';
+                        Share.share('Please sign our Rent Agreement via this secure link: $link');
+                      }
+                    },
+                    icon: Icon(Icons.ios_share, size: 18, color: context.primaryTextColor),
+                    label: Text('Share Link', style: TextStyle(color: context.primaryTextColor, fontSize: 13, fontWeight: FontWeight.w900)),
                     style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), side: BorderSide(color: context.borderColor)),
                   ),
                 ),
@@ -540,11 +715,12 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
                 height: 54,
                 child: ElevatedButton(
                   onPressed: () {
-                    if (_currentStep == 2) context.pop();
-                    else _nextStep();
+                    if (_currentStep == 0) _nextStep();
+                    else if (_currentStep == 1) _generateAgreement();
+                    else if (_currentStep == 2) _signAgreementNatively();
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryBlue, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), elevation: 0),
-                  child: Text(_currentStep == 0 ? l10n.nextVerification : (_currentStep == 1 ? l10n.generateAgreement : l10n.signDocument), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
+                  child: Text(_currentStep == 0 ? l10n.nextVerification : (_currentStep == 1 ? l10n.generateAgreement : 'Self-Sign Natively'), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
                 ),
               ),
             ),
@@ -736,18 +912,22 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
     );
   }
 
-  Widget _buildVerificationCard(String role, String name, bool isVerified, AppLocalizations l10n) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.05) : context.cardColor, border: Border.all(color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.1) : context.borderColor), borderRadius: BorderRadius.circular(16)),
-      child: Row(
-        children: [
-          Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.1) : context.scaffoldColor, borderRadius: BorderRadius.circular(12)), child: Icon(isVerified ? Icons.verified : Icons.account_circle_outlined, color: isVerified ? AppTheme.primaryBlue : Colors.grey.shade400, size: 24)),
-          const SizedBox(width: 16),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(role.toUpperCase(), style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey[400], letterSpacing: 0.5)), const SizedBox(height: 4), Text(name, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: context.primaryTextColor, letterSpacing: -0.3))])),
-          if (isVerified) const Icon(Icons.check_circle, color: AppTheme.primaryBlue, size: 20)
-          else Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: context.scaffoldColor, borderRadius: BorderRadius.circular(8)), child: Text(l10n.pending, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5))),
-        ],
+  Widget _buildVerificationCard(String role, String name, bool isVerified, AppLocalizations l10n, {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.05) : context.cardColor, border: Border.all(color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.1) : context.borderColor), borderRadius: BorderRadius.circular(16)),
+        child: Row(
+          children: [
+            Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.1) : context.scaffoldColor, borderRadius: BorderRadius.circular(12)), child: Icon(isVerified ? Icons.verified : Icons.account_circle_outlined, color: isVerified ? AppTheme.primaryBlue : Colors.grey.shade400, size: 24)),
+            const SizedBox(width: 16),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(role.toUpperCase(), style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey[400], letterSpacing: 0.5)), const SizedBox(height: 4), Text(name, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: context.primaryTextColor, letterSpacing: -0.3))])),
+            if (isVerified) const Icon(Icons.check_circle, color: AppTheme.primaryBlue, size: 20)
+            else if (onTap != null) Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: AppTheme.primaryBlue, borderRadius: BorderRadius.circular(8)), child: const Text('Verify', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: 0.5)))
+            else Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: context.scaffoldColor, borderRadius: BorderRadius.circular(8)), child: Text(l10n.pending, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5))),
+          ],
+        ),
       ),
     );
   }

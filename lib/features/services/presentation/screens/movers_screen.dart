@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
+import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
+import 'package:sampatti_bazar/features/services/domain/service_request_model.dart';
+import 'package:sampatti_bazar/features/services/data/service_request_repository.dart';
 
-class MoversScreen extends StatefulWidget {
+class MoversScreen extends ConsumerStatefulWidget {
   const MoversScreen({super.key});
 
   @override
-  State<MoversScreen> createState() => _MoversScreenState();
+  ConsumerState<MoversScreen> createState() => _MoversScreenState();
 }
 
-class _MoversScreenState extends State<MoversScreen> {
+class _MoversScreenState extends ConsumerState<MoversScreen> {
   final TextEditingController _pickupController = TextEditingController(text: 'Prestige Falcon City, Bangalore');
   final TextEditingController _dropController = TextEditingController();
   
@@ -21,6 +26,7 @@ class _MoversScreenState extends State<MoversScreen> {
   TimeOfDay _selectedTime = const TimeOfDay(hour: 10, minute: 0);
   
   bool _includePacking = false;
+  double _distanceKm = 10.0;
   
   int _calculateBasePrice() {
     switch (_selectedSize) {
@@ -34,8 +40,11 @@ class _MoversScreenState extends State<MoversScreen> {
 
   int _calculateTotalQuote() {
     int base = _calculateBasePrice();
-    if (_includePacking) base += 999;
-    return base;
+    // 50 INR per km
+    int distanceCost = (_distanceKm * 50).round();
+    int total = base + distanceCost;
+    if (_includePacking) total += 999;
+    return total;
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -80,11 +89,19 @@ class _MoversScreenState extends State<MoversScreen> {
     }
   }
 
-  void _confirmBooking() {
+  void _confirmBooking() async {
     if (_dropController.text.trim().isEmpty) {
       final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.enterDropLocation), backgroundColor: Colors.red),
+      );
+      return;
+    }
+
+    final user = ref.read(currentUserDataProvider).value;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please login to continue'), backgroundColor: Colors.red),
       );
       return;
     }
@@ -95,14 +112,38 @@ class _MoversScreenState extends State<MoversScreen> {
       builder: (context) => const Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue)),
     );
 
-    Future.delayed(const Duration(seconds: 2), () {
+    try {
+      final String requestId = 'MOV-${const Uuid().v4().substring(0, 8).toUpperCase()}';
+      final request = ServiceRequestModel(
+        id: requestId,
+        userId: user.uid,
+        userName: user.name ?? 'User',
+        userContact: user.phoneNumber,
+        category: 'Movers',
+        status: 'Pending',
+        createdAt: DateTime.now(),
+        location: _pickupController.text.split(',').last.trim(), // simple city extraction
+        details: {
+          'pickupLocation': _pickupController.text,
+          'dropLocation': _dropController.text,
+          'propertySize': _selectedSize,
+          'includePacking': _includePacking,
+          'pickupDate': _selectedDate.toIso8601String(),
+          'pickupTime': '${_selectedTime.hour}:${_selectedTime.minute}',
+          'distance': _distanceKm.round(),
+          'estimatedQuote': _calculateTotalQuote(),
+        },
+      );
+
+      await ref.read(serviceRequestRepositoryProvider).addRequest(request);
+
       if (!mounted) return;
       context.pop(); // dismiss loading
-      
+
+      final l10n = AppLocalizations.of(context)!;
       showDialog(
         context: context,
         builder: (context) {
-          final l10n = AppLocalizations.of(context)!;
           return AlertDialog(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             content: Column(
@@ -126,13 +167,13 @@ class _MoversScreenState extends State<MoversScreen> {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      context.go('/home');
+                      context.go('/services/tracking'); // Redirect to tracking map
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.primaryBlue,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: Text(l10n.backToHome, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    child: const Text('Track Booking', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],
@@ -140,7 +181,12 @@ class _MoversScreenState extends State<MoversScreen> {
           );
         },
       );
-    });
+    } catch (e) {
+      if (mounted) {
+        context.pop();
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+    }
   }
 
   @override
@@ -196,6 +242,30 @@ class _MoversScreenState extends State<MoversScreen> {
                   const SizedBox(height: 16),
                   _buildPropertySizeRow(),
                   
+                  const SizedBox(height: 32),
+
+                  _buildSectionLabel(l10n.approxDistance),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Text('${_distanceKm.round()} km', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
+                      Expanded(
+                        child: Slider(
+                          value: _distanceKm,
+                          min: 1,
+                          max: 500,
+                          divisions: 499,
+                          activeColor: AppTheme.primaryBlue,
+                          onChanged: (val) {
+                            setState(() {
+                              _distanceKm = val;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+
                   const SizedBox(height: 32),
                   
                   _buildSectionLabel(l10n.schedulePickup),
@@ -520,7 +590,7 @@ class _MoversScreenState extends State<MoversScreen> {
                 const SizedBox(height: 24),
                 Row(
                   children: [
-                    Expanded(child: _buildSummaryItem(l10n.distance.toUpperCase(), l10n.calculatedAtPickup)),
+                    Expanded(child: _buildSummaryItem(l10n.distance.toUpperCase(), '${_distanceKm.round()} km')),
                     Expanded(child: _buildSummaryItem(l10n.insurance.toUpperCase(), l10n.standardInsurance)),
                   ],
                 ),

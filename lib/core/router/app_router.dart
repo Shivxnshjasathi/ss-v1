@@ -15,6 +15,7 @@ import 'package:sampatti_bazar/features/properties/presentation/screens/saved_pr
 import 'package:sampatti_bazar/features/services/presentation/screens/construction_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/home_loan_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/legal_screen.dart';
+import 'package:sampatti_bazar/features/services/presentation/screens/rent_agreement_sign_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/marketplace_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/cart_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/checkout_screen.dart';
@@ -32,6 +33,7 @@ import 'package:sampatti_bazar/features/services/presentation/screens/providers/
 import 'package:sampatti_bazar/features/services/presentation/screens/providers/marketplace_vendor_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/providers/builder_agent_dashboard_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/providers/finance_dashboard_screen.dart';
+import 'package:sampatti_bazar/features/services/presentation/screens/providers/movers_dashboard_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/emi_calculator_screen.dart';
 import 'package:sampatti_bazar/features/chat/presentation/screens/chat_list_screen.dart';
 import 'package:sampatti_bazar/features/chat/presentation/screens/chat_detail_screen.dart';
@@ -182,6 +184,15 @@ final goRouter = GoRouter(
     GoRoute(
       path: '/services/legal',
       builder: (context, state) => const LegalScreen(),
+      routes: [
+        GoRoute(
+          path: 'sign/:id',
+          builder: (context, state) {
+            final id = state.pathParameters['id'] ?? '';
+            return RentAgreementSignScreen(agreementId: id);
+          },
+        ),
+      ]
     ),
     GoRoute(
       path: '/services/tracking',
@@ -210,6 +221,10 @@ final goRouter = GoRouter(
     GoRoute(
       path: '/provider/finance',
       builder: (context, state) => const FinanceDashboardScreen(),
+    ),
+    GoRoute(
+      path: '/provider/movers',
+      builder: (context, state) => const MoversDashboardScreen(),
     ),
     GoRoute(
       path: '/chats/:id',

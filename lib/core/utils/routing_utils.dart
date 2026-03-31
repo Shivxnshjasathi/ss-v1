@@ -23,6 +23,9 @@ class RoutingUtils {
       case 'loanexpert':
       case 'loanExpert':
         return '/provider/finance';
+      case 'packersmovers':
+      case 'packersMovers':
+        return '/provider/movers';
       default:
         return '/home';
     }

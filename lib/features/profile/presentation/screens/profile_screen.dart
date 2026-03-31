@@ -15,6 +15,7 @@ class ProfileScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
+    final userAsync = ref.watch(currentUserDataProvider);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -71,10 +72,16 @@ class ProfileScreen extends ConsumerWidget {
                       shape: BoxShape.circle,
                       border: Border.all(color: context.borderColor, width: 4),
                     ),
-                    child: const CircleAvatar(
+                    child: CircleAvatar(
                       radius: 54,
-                      backgroundImage: NetworkImage(
-                        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
+                      backgroundColor: context.isDarkMode ? Colors.grey[800] : Colors.grey[200],
+                      child: Text(
+                        (userAsync.value?.name ?? 'U').substring(0, 1).toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.w900,
+                          color: context.isDarkMode ? Colors.white70 : Colors.black54,
+                        ),
                       ),
                     ),
                   ),
@@ -97,9 +104,8 @@ class ProfileScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
             Text(
-              'Shivansh Jasathi',
+              userAsync.value?.name ?? 'User',
               style: TextStyle(
                 fontWeight: FontWeight.w900,
                 fontSize: 24,
@@ -109,7 +115,7 @@ class ProfileScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              '+91 98765 43210 • info@sampatti.com',
+              userAsync.value?.phoneNumber ?? '+91 XXXXX XXXXX',
               style: TextStyle(
                 color: context.secondaryTextColor,
                 fontSize: 12,
@@ -124,7 +130,7 @@ class ProfileScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                l10n.premiumMember,
+                userAsync.value?.role?.toUpperCase() ?? l10n.premiumMember,
                 style: const TextStyle(
                   color: Color(0xFF0066FF),
                   fontWeight: FontWeight.w900,

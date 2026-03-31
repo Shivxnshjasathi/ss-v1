@@ -169,6 +169,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       {'key': 'legalAdvisor', 'label': l10n.legalAdvisor},
       {'key': 'materialVendor', 'label': l10n.materialVendor},
       {'key': 'loanExpert', 'label': l10n.loanExpert},
+      {'key': 'packersMovers', 'label': l10n.packersMoversRole},
     ];
 
     return Scaffold(

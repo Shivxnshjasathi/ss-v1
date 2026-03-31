@@ -275,7 +275,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noPropertiesYet => 'No properties listed yet.';
 
   @override
-  String get featuredZeroBrokerage => 'FEATURED ZERO-BROKERAGE';
+  String get featuredZeroBrokerage => 'FEATURED\nZERO-BROKERAGE';
 
   @override
   String get newlyAdded => 'NEWLY ADDED';
@@ -1336,4 +1336,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get applicationSubmittedDesc =>
       'A Loan Expert will contact you shortly.';
+
+  @override
+  String get packersMoversRole => 'Packers & Movers Partner';
+
+  @override
+  String get moversDashboard => 'Movers Dashboard';
+
+  @override
+  String get approxDistance => 'APPROX. DISTANCE (KM)';
+
+  @override
+  String get providerQuote => 'Provider Quote';
 }

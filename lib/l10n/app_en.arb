@@ -92,7 +92,7 @@
   "strictlyVetted": "All service partners are strictly vetted.",
   "hot": "Hot",
   "noPropertiesYet": "No properties listed yet.",
-  "featuredZeroBrokerage": "FEATURED ZERO-BROKERAGE",
+  "featuredZeroBrokerage": "FEATURED\nZERO-BROKERAGE",
   "newlyAdded": "NEWLY ADDED",
   "savedProperties": "Saved Properties",
   "pleaseLoginToSeeSaved": "Please log in to see saved properties.",
@@ -492,5 +492,9 @@
   "loanLeads": "Loan Leads",
   "noLeadsYet": "No leads available yet.",
   "applicationSubmitted": "Application Submitted!",
-  "applicationSubmittedDesc": "A Loan Expert will contact you shortly."
+  "applicationSubmittedDesc": "A Loan Expert will contact you shortly.",
+  "packersMoversRole": "Packers & Movers Partner",
+  "moversDashboard": "Movers Dashboard",
+  "approxDistance": "APPROX. DISTANCE (KM)",
+  "providerQuote": "Provider Quote"
 }
