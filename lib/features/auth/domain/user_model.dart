@@ -1,6 +1,7 @@
 class UserModel {
   final String uid;
   final String phoneNumber;
+  final String email;
   final String? name;
   final String? location;
   final String? role;
@@ -9,6 +10,7 @@ class UserModel {
   UserModel({
     required this.uid,
     required this.phoneNumber,
+    required this.email,
     this.name,
     this.location,
     this.role,
@@ -19,6 +21,7 @@ class UserModel {
     return {
       'uid': uid,
       'phoneNumber': phoneNumber,
+      'email': email,
       'name': name,
       'location': location,
       'role': role,
@@ -30,6 +33,7 @@ class UserModel {
     return UserModel(
       uid: map['uid'] ?? '',
       phoneNumber: map['phoneNumber'] ?? '',
+      email: map['email'] ?? '',
       name: map['name'],
       location: map['location'],
       role: map['role'],
@@ -42,6 +46,7 @@ class UserModel {
   UserModel copyWith({
     String? uid,
     String? phoneNumber,
+    String? email,
     String? name,
     String? location,
     String? role,
@@ -50,6 +55,7 @@ class UserModel {
     return UserModel(
       uid: uid ?? this.uid,
       phoneNumber: phoneNumber ?? this.phoneNumber,
+      email: email ?? this.email,
       name: name ?? this.name,
       location: location ?? this.location,
       role: role ?? this.role,

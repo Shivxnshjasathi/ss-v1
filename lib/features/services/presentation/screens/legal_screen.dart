@@ -588,7 +588,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
         const SizedBox(height: 20),
         _buildTextFieldWidget(_lesseeController, l10n.lesseeName, icon: Icons.person_outline),
         const SizedBox(height: 20),
-        _buildTextFieldWidget(_addressController, l10n.propertyAddress, icon: Icons.location_on_outlined),
+        _buildTextFieldWidget(_addressController, l10n.propertyAddress, icon: Icons.location_on_outlined, maxLines: 3),
         const SizedBox(height: 20),
         Row(
           children: [
@@ -844,7 +844,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
 
   // --- Core Shared Builders ---
 
-  Widget _buildTextFieldWidget(TextEditingController controller, String labelText, {TextInputType keyboardType = TextInputType.text, IconData? icon}) {
+  Widget _buildTextFieldWidget(TextEditingController controller, String labelText, {TextInputType keyboardType = TextInputType.text, IconData? icon, int maxLines = 1}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -866,6 +866,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
           child: TextField(
             controller: controller,
             keyboardType: keyboardType,
+            maxLines: maxLines,
             style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: context.primaryTextColor),
             decoration: InputDecoration(
               prefixIcon: icon != null ? Icon(icon, color: Colors.grey.shade400, size: 20) : null,
@@ -922,7 +923,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
           children: [
             Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.1) : context.scaffoldColor, borderRadius: BorderRadius.circular(12)), child: Icon(isVerified ? Icons.verified : Icons.account_circle_outlined, color: isVerified ? AppTheme.primaryBlue : Colors.grey.shade400, size: 24)),
             const SizedBox(width: 16),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(role.toUpperCase(), style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey[400], letterSpacing: 0.5)), const SizedBox(height: 4), Text(name, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: context.primaryTextColor, letterSpacing: -0.3))])),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(role.toUpperCase(), style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey[400], letterSpacing: 0.5)), const SizedBox(height: 4), Text(name, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: context.primaryTextColor, letterSpacing: -0.3), maxLines: 1, overflow: TextOverflow.ellipsis)])),
             if (isVerified) const Icon(Icons.check_circle, color: AppTheme.primaryBlue, size: 20)
             else if (onTap != null) Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: AppTheme.primaryBlue, borderRadius: BorderRadius.circular(8)), child: const Text('Verify', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: 0.5)))
             else Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: context.scaffoldColor, borderRadius: BorderRadius.circular(8)), child: Text(l10n.pending, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5))),

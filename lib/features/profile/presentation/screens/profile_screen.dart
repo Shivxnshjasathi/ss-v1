@@ -106,6 +106,8 @@ class ProfileScreen extends ConsumerWidget {
             ),
             Text(
               userAsync.value?.name ?? 'User',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontWeight: FontWeight.w900,
                 fontSize: 24,
@@ -115,7 +117,9 @@ class ProfileScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              userAsync.value?.phoneNumber ?? '+91 XXXXX XXXXX',
+              '${userAsync.value?.phoneNumber ?? '+91 XXXXX XXXXX'} • ${userAsync.value?.email ?? 'No email'}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: context.secondaryTextColor,
                 fontSize: 12,

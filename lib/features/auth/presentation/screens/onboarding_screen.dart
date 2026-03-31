@@ -22,6 +22,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   String? _selectedRoleKey;
   bool _isLoading = false;
   bool _isFetchingLocation = false;
@@ -34,6 +35,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       if (user?.phoneNumber != null && user!.phoneNumber!.isNotEmpty) {
         _phoneController.text = user.phoneNumber!;
       }
+      if (user?.email != null && user!.email!.isNotEmpty) {
+        _emailController.text = user.email!;
+      }
     });
   }
 
@@ -42,6 +46,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     _nameController.dispose();
     _locationController.dispose();
     _phoneController.dispose();
+    _emailController.dispose();
     super.dispose();
   }
 
@@ -104,6 +109,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             phoneNumber: _phoneController.text.trim().isNotEmpty 
                 ? _phoneController.text.trim() 
                 : (user.phoneNumber ?? ''),
+            email: _emailController.text.trim().isNotEmpty
+                ? _emailController.text.trim()
+                : (user.email ?? ''),
             name: _nameController.text.trim(),
             location: _locationController.text.trim(),
             role: roleMap[_selectedRoleKey ?? 'consumerBuyer']!,
@@ -220,7 +228,24 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   fillColor: context.cardColor,
                 ),
                 style: TextStyle(color: context.primaryTextColor),
-                validator: (value) => value == null || value.isEmpty ? l10n.enterPhone : null,
+              validator: (value) => value == null || value.isEmpty ? l10n.enterPhone : null,
+              ),
+              const SizedBox(height: 24),
+              
+              Text(l10n.emailAddress, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(
+                  hintText: 'e.g. rahul@example.com',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
+                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
+                  filled: true,
+                  fillColor: context.cardColor,
+                ),
+                style: TextStyle(color: context.primaryTextColor),
+                validator: (value) => (value == null || value.isEmpty || !value.contains('@')) ? 'Please enter a valid email' : null,
               ),
               const SizedBox(height: 24),
               

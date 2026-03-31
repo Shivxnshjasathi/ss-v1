@@ -275,7 +275,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noPropertiesYet => 'No properties listed yet.';
 
   @override
-  String get featuredZeroBrokerage => 'FEATURED\nZERO-BROKERAGE';
+  String get featuredZeroBrokerage => 'FEATURED\nZERO-BROKERAGE PROPERTY';
 
   @override
   String get newlyAdded => 'NEWLY ADDED';

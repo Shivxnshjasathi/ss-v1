@@ -629,7 +629,7 @@ abstract class AppLocalizations {
   /// No description provided for @featuredZeroBrokerage.
   ///
   /// In en, this message translates to:
-  /// **'FEATURED\nZERO-BROKERAGE'**
+  /// **'FEATURED\nZERO-BROKERAGE PROPERTY'**
   String get featuredZeroBrokerage;
 
   /// No description provided for @newlyAdded.

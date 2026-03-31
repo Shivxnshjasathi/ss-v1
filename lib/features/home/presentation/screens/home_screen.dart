@@ -204,6 +204,8 @@ class HomeScreen extends ConsumerWidget {
                               children: [
                                 Text(
                                   l10n.featuredZeroBrokerage,
+                                  maxLines: 2,
+                                  softWrap: true,
                                   style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, height: 1.1),
                                 ),
                               ],
@@ -476,6 +478,7 @@ class HomeScreen extends ConsumerWidget {
                           title,
                           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                           maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       Container(

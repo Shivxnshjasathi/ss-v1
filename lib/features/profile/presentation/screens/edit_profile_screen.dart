@@ -1,19 +1,71 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
+import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 
-class EditProfileScreen extends StatefulWidget {
+class EditProfileScreen extends ConsumerStatefulWidget {
   const EditProfileScreen({super.key});
 
   @override
-  State<EditProfileScreen> createState() => _EditProfileScreenState();
+  ConsumerState<EditProfileScreen> createState() => _EditProfileScreenState();
 }
 
-class _EditProfileScreenState extends State<EditProfileScreen> {
-  final _nameController = TextEditingController(text: 'Shivansh Jasathi');
-  final _emailController = TextEditingController(text: 'info@sampatti.com');
-  final _phoneController = TextEditingController(text: '+91 98765 43210');
+class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
+  late TextEditingController _nameController;
+  late TextEditingController _emailController;
+  late TextEditingController _phoneController;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final user = ref.read(currentUserDataProvider).value;
+    _nameController = TextEditingController(text: user?.name ?? '');
+    _emailController = TextEditingController(text: user?.email ?? '');
+    _phoneController = TextEditingController(text: user?.phoneNumber ?? '');
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveProfile() async {
+    final user = ref.read(currentUserDataProvider).value;
+    if (user == null) return;
+
+    setState(() => _isLoading = true);
+    try {
+      final updatedUser = user.copyWith(
+        name: _nameController.text.trim(),
+        email: _emailController.text.trim(),
+        phoneNumber: _phoneController.text.trim(),
+      );
+
+      await ref.read(userRepositoryProvider).saveUser(updatedUser);
+      
+      if (mounted) {
+        ref.invalidate(currentUserDataProvider);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.profileUpdated), backgroundColor: Colors.green),
+        );
+        context.pop();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +93,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       shape: BoxShape.circle,
                       border: Border.all(color: context.borderColor, width: 4),
                     ),
-                    child: const CircleAvatar(
+                    child: CircleAvatar(
                       radius: 54,
-                      backgroundImage: NetworkImage('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80'),
+                      backgroundColor: context.isDarkMode ? Colors.grey[800] : Colors.grey[200],
+                      child: Text(
+                        (_nameController.text.isNotEmpty ? _nameController.text : 'U').substring(0, 1).toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.w900,
+                          color: context.isDarkMode ? Colors.white70 : Colors.black54,
+                        ),
+                      ),
                     ),
                   ),
                   Positioned(
@@ -72,18 +132,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               width: double.infinity,
               height: 56,
               child: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l10n.profileUpdated), backgroundColor: Colors.green),
-                  );
-                  context.pop();
-                },
+                onPressed: _isLoading ? null : _saveProfile,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primaryBlue,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                child: Text(l10n.saveChanges, style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1)),
+                child: _isLoading 
+                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                  : Text(l10n.saveChanges, style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1)),
               ),
             ),
           ],
