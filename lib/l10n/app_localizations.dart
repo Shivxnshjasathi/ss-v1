@@ -2569,6 +2569,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Gemini Powered Intelligence • Secure Encryption'**
   String get botPoweredBy;
+
+  /// No description provided for @loanExpert.
+  ///
+  /// In en, this message translates to:
+  /// **'Loan / EMI Expert'**
+  String get loanExpert;
+
+  /// No description provided for @loanEligibilityForm.
+  ///
+  /// In en, this message translates to:
+  /// **'Loan Eligibility Form'**
+  String get loanEligibilityForm;
+
+  /// No description provided for @employmentType.
+  ///
+  /// In en, this message translates to:
+  /// **'EMPLOYMENT TYPE'**
+  String get employmentType;
+
+  /// No description provided for @salaried.
+  ///
+  /// In en, this message translates to:
+  /// **'Salaried'**
+  String get salaried;
+
+  /// No description provided for @selfEmployed.
+  ///
+  /// In en, this message translates to:
+  /// **'Self-Employed'**
+  String get selfEmployed;
+
+  /// No description provided for @annualIncome.
+  ///
+  /// In en, this message translates to:
+  /// **'ANNUAL INCOME (₹)'**
+  String get annualIncome;
+
+  /// No description provided for @cibilScore.
+  ///
+  /// In en, this message translates to:
+  /// **'CIBIL / CREDIT SCORE'**
+  String get cibilScore;
+
+  /// No description provided for @monthlyEmi.
+  ///
+  /// In en, this message translates to:
+  /// **'EXISTING MONTHLY EMIs (₹)'**
+  String get monthlyEmi;
+
+  /// No description provided for @propertyValue.
+  ///
+  /// In en, this message translates to:
+  /// **'PROPERTY VALUE (OPTIONAL)'**
+  String get propertyValue;
+
+  /// No description provided for @submitApplication.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Application'**
+  String get submitApplication;
+
+  /// No description provided for @loanExpertDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Loan Expert Dashboard'**
+  String get loanExpertDashboard;
+
+  /// No description provided for @loanLeads.
+  ///
+  /// In en, this message translates to:
+  /// **'Loan Leads'**
+  String get loanLeads;
+
+  /// No description provided for @noLeadsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No leads available yet.'**
+  String get noLeadsYet;
+
+  /// No description provided for @applicationSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Application Submitted!'**
+  String get applicationSubmitted;
+
+  /// No description provided for @applicationSubmittedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'A Loan Expert will contact you shortly.'**
+  String get applicationSubmittedDesc;
 }
 
 class _AppLocalizationsDelegate

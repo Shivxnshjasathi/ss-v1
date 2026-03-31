@@ -19,6 +19,10 @@ class RoutingUtils {
       case 'material vendor':
       case 'materialVendor':
         return '/provider/marketplace';
+      case 'loan / emi expert':
+      case 'loanexpert':
+      case 'loanExpert':
+        return '/provider/finance';
       default:
         return '/home';
     }

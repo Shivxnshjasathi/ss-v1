@@ -477,5 +477,20 @@
   "trackMover": "Track Mover",
   "scheduleVisit": "Schedule Visit",
   "askMeAnything": "Ask me anything...",
-  "botPoweredBy": "Gemini Powered Intelligence • Secure Encryption"
+  "botPoweredBy": "Gemini Powered Intelligence • Secure Encryption",
+  "loanExpert": "Loan / EMI Expert",
+  "loanEligibilityForm": "Loan Eligibility Form",
+  "employmentType": "EMPLOYMENT TYPE",
+  "salaried": "Salaried",
+  "selfEmployed": "Self-Employed",
+  "annualIncome": "ANNUAL INCOME (₹)",
+  "cibilScore": "CIBIL / CREDIT SCORE",
+  "monthlyEmi": "EXISTING MONTHLY EMIs (₹)",
+  "propertyValue": "PROPERTY VALUE (OPTIONAL)",
+  "submitApplication": "Submit Application",
+  "loanExpertDashboard": "Loan Expert Dashboard",
+  "loanLeads": "Loan Leads",
+  "noLeadsYet": "No leads available yet.",
+  "applicationSubmitted": "Application Submitted!",
+  "applicationSubmittedDesc": "A Loan Expert will contact you shortly."
 }

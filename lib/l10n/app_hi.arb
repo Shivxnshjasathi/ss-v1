@@ -419,5 +419,20 @@
   "trackMover": "ट्रैक मूवर",
   "scheduleVisit": "यात्रा निर्धारित करें",
   "askMeAnything": "मुझसे कुछ भी पूछें...",
-  "botPoweredBy": "जेमिनी पावर्ड इंटेलिजेंस • सुरक्षित एन्क्रिप्शन"
+  "botPoweredBy": "जेमिनी पावर्ड इंटेलिजेंस • सुरक्षित एन्क्रिप्शन",
+  "loanExpert": "लोन / ईएमआई विशेषज्ञ",
+  "loanEligibilityForm": "लोन पात्रता फॉर्म",
+  "employmentType": "रोजगार का प्रकार",
+  "salaried": "वेतनभोगी",
+  "selfEmployed": "स्व-नियोजित",
+  "annualIncome": "वार्षिक आय (₹)",
+  "cibilScore": "सिबिल / क्रेडिट स्कोर",
+  "monthlyEmi": "मौजूदा मासिक ईएमआई (₹)",
+  "propertyValue": "संपत्ति का मूल्य (वैकल्पिक)",
+  "submitApplication": "आवेदन जमा करें",
+  "loanExpertDashboard": "लोन विशेषज्ञ डैशबोर्ड",
+  "loanLeads": "लोन लीड्स",
+  "noLeadsYet": "अभी तक कोई लीड उपलब्ध नहीं है।",
+  "applicationSubmitted": "आवेदन जमा किया गया!",
+  "applicationSubmittedDesc": "एक लोन विशेषज्ञ जल्द ही आपसे संपर्क करेगा।"
 }

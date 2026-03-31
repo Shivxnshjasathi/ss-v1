@@ -1290,4 +1290,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get botPoweredBy => 'Gemini Powered Intelligence • Secure Encryption';
+
+  @override
+  String get loanExpert => 'Loan / EMI Expert';
+
+  @override
+  String get loanEligibilityForm => 'Loan Eligibility Form';
+
+  @override
+  String get employmentType => 'EMPLOYMENT TYPE';
+
+  @override
+  String get salaried => 'Salaried';
+
+  @override
+  String get selfEmployed => 'Self-Employed';
+
+  @override
+  String get annualIncome => 'ANNUAL INCOME (₹)';
+
+  @override
+  String get cibilScore => 'CIBIL / CREDIT SCORE';
+
+  @override
+  String get monthlyEmi => 'EXISTING MONTHLY EMIs (₹)';
+
+  @override
+  String get propertyValue => 'PROPERTY VALUE (OPTIONAL)';
+
+  @override
+  String get submitApplication => 'Submit Application';
+
+  @override
+  String get loanExpertDashboard => 'Loan Expert Dashboard';
+
+  @override
+  String get loanLeads => 'Loan Leads';
+
+  @override
+  String get noLeadsYet => 'No leads available yet.';
+
+  @override
+  String get applicationSubmitted => 'Application Submitted!';
+
+  @override
+  String get applicationSubmittedDesc =>
+      'A Loan Expert will contact you shortly.';
 }

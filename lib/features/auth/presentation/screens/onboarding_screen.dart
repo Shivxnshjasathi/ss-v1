@@ -96,6 +96,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             'constructionPartner': l10n.constructionPartner,
             'legalAdvisor': l10n.legalAdvisor,
             'materialVendor': l10n.materialVendor,
+            'loanExpert': l10n.loanExpert,
           };
           
           final userModel = UserModel(
@@ -167,6 +168,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       {'key': 'constructionPartner', 'label': l10n.constructionPartner},
       {'key': 'legalAdvisor', 'label': l10n.legalAdvisor},
       {'key': 'materialVendor', 'label': l10n.materialVendor},
+      {'key': 'loanExpert', 'label': l10n.loanExpert},
     ];
 
     return Scaffold(

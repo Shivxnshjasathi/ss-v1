@@ -31,6 +31,8 @@ import 'package:sampatti_bazar/features/services/presentation/screens/providers/
 import 'package:sampatti_bazar/features/services/presentation/screens/providers/legal_dashboard_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/providers/marketplace_vendor_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/providers/builder_agent_dashboard_screen.dart';
+import 'package:sampatti_bazar/features/services/presentation/screens/providers/finance_dashboard_screen.dart';
+import 'package:sampatti_bazar/features/services/presentation/screens/emi_calculator_screen.dart';
 import 'package:sampatti_bazar/features/chat/presentation/screens/chat_list_screen.dart';
 import 'package:sampatti_bazar/features/chat/presentation/screens/chat_detail_screen.dart';
 
@@ -152,6 +154,10 @@ final goRouter = GoRouter(
       builder: (context, state) => const HomeLoanScreen(),
     ),
     GoRoute(
+      path: '/services/emi-calculator',
+      builder: (context, state) => const EmiCalculatorScreen(),
+    ),
+    GoRoute(
       path: '/services/movers',
       builder: (context, state) => const MoversScreen(),
     ),
@@ -200,6 +206,10 @@ final goRouter = GoRouter(
     GoRoute(
       path: '/provider/builder',
       builder: (context, state) => const BuilderAgentDashboardScreen(),
+    ),
+    GoRoute(
+      path: '/provider/finance',
+      builder: (context, state) => const FinanceDashboardScreen(),
     ),
     GoRoute(
       path: '/chats/:id',

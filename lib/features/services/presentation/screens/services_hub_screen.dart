@@ -133,7 +133,7 @@ class ServicesHubScreen extends StatelessWidget {
   Widget _buildToolsSupportList(BuildContext context, AppLocalizations l10n) {
     return Column(
       children: [
-        _buildListTile(context, l10n.emiCalculator, l10n.planYourFinances, Icons.calculate_outlined, () {}),
+        _buildListTile(context, l10n.emiCalculator, l10n.planYourFinances, Icons.calculate_outlined, () => context.push('/services/emi-calculator')),
         const SizedBox(height: 12),
         _buildListTile(context, l10n.liveSupport, l10n.chatWithExperts, Icons.headset_mic_outlined, () => ContactBottomSheet.show(context)),
       ],
@@ -206,7 +206,7 @@ class GlobalSearchDelegate extends SearchDelegate {
     {'name': l10n.rent, 'route': '/properties', 'icon': Icons.vignette_outlined, 'cat': l10n.propertiesLabel},
     {'name': l10n.list, 'route': '/properties/add', 'icon': Icons.add_home_work_outlined, 'cat': l10n.activity},
     {'name': l10n.saved, 'route': '/properties/saved', 'icon': Icons.favorite_border, 'cat': l10n.activity},
-    {'name': l10n.emiCalculator, 'route': '/services/loan', 'icon': Icons.calculate_outlined, 'cat': l10n.tools},
+    {'name': l10n.emiCalculator, 'route': '/services/emi-calculator', 'icon': Icons.calculate_outlined, 'cat': l10n.tools},
     {'name': l10n.liveSupport, 'route': '/profile/support', 'icon': Icons.headset_mic_outlined, 'cat': l10n.support},
   ];
 

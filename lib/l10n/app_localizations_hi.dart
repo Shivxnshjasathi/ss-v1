@@ -1295,4 +1295,50 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get botPoweredBy => 'जेमिनी पावर्ड इंटेलिजेंस • सुरक्षित एन्क्रिप्शन';
+
+  @override
+  String get loanExpert => 'लोन / ईएमआई विशेषज्ञ';
+
+  @override
+  String get loanEligibilityForm => 'लोन पात्रता फॉर्म';
+
+  @override
+  String get employmentType => 'रोजगार का प्रकार';
+
+  @override
+  String get salaried => 'वेतनभोगी';
+
+  @override
+  String get selfEmployed => 'स्व-नियोजित';
+
+  @override
+  String get annualIncome => 'वार्षिक आय (₹)';
+
+  @override
+  String get cibilScore => 'सिबिल / क्रेडिट स्कोर';
+
+  @override
+  String get monthlyEmi => 'मौजूदा मासिक ईएमआई (₹)';
+
+  @override
+  String get propertyValue => 'संपत्ति का मूल्य (वैकल्पिक)';
+
+  @override
+  String get submitApplication => 'आवेदन जमा करें';
+
+  @override
+  String get loanExpertDashboard => 'लोन विशेषज्ञ डैशबोर्ड';
+
+  @override
+  String get loanLeads => 'लोन लीड्स';
+
+  @override
+  String get noLeadsYet => 'अभी तक कोई लीड उपलब्ध नहीं है।';
+
+  @override
+  String get applicationSubmitted => 'आवेदन जमा किया गया!';
+
+  @override
+  String get applicationSubmittedDesc =>
+      'एक लोन विशेषज्ञ जल्द ही आपसे संपर्क करेगा।';
 }
