@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/core/widgets/contact_bottom_sheet.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 
 class ServicesHubScreen extends StatelessWidget {
@@ -19,7 +20,7 @@ class ServicesHubScreen extends StatelessWidget {
         centerTitle: false,
         title: Text(
           l10n.servicesHub,
-          style: Theme.of(context).textTheme.displaySmall?.copyWith(fontSize: 20),
+          style: Theme.of(context).textTheme.displaySmall?.copyWith(fontSize: 20.sp),
         ),
         actions: [
           IconButton(
@@ -43,9 +44,9 @@ class ServicesHubScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               l10n.servicesSubtitle,
-              style: TextStyle(color: context.secondaryTextColor, fontSize: 14),
+              style: TextStyle(color: context.secondaryTextColor, fontSize: 14.sp),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24.h),
             GridView.count(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -62,14 +63,14 @@ class ServicesHubScreen extends StatelessWidget {
                  _buildServiceGridItem(context, l10n.serviceTracking, Icons.receipt_long_outlined, l10n.trackOrders, '/services/tracking'),
               ],
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 32.h),
             Text(
               l10n.toolsAndSupport,
-              style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1, color: Colors.blueGrey),
+              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12.sp, letterSpacing: 1, color: context.secondaryTextColor),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             _buildToolsSupportList(context, l10n),
-            const SizedBox(height: 32),
+            SizedBox(height: 32.h),
             _buildVerifiedBanner(context, l10n),
             const SizedBox(height: 32),
           ],
@@ -82,10 +83,10 @@ class ServicesHubScreen extends StatelessWidget {
     return GestureDetector(
       onTap: () => context.push(route),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16.sp),
         decoration: BoxDecoration(
           color: context.cardColor,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.sp),
           border: Border.all(color: context.borderColor),
         ),
         child: Column(
@@ -96,33 +97,33 @@ class ServicesHubScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: EdgeInsets.all(8.sp),
                   decoration: BoxDecoration(
                     color: context.surfaceColor,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.sp),
                   ),
-                  child: Icon(icon, color: context.primaryTextColor, size: 24),
+                  child: Icon(icon, color: context.primaryTextColor, size: 24.sp),
                 ),
                 if (isHot && hotLabel != null)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.primary,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(12.sp),
                     ),
-                    child: Text(hotLabel, style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor, fontSize: 10, fontWeight: FontWeight.bold)),
+                    child: Text(hotLabel, style: TextStyle(color: Theme.of(context).scaffoldBackgroundColor, fontSize: 10.sp, fontWeight: FontWeight.bold)),
                   ),
               ],
             ),
             const Spacer(),
             Text(
               title,
-              style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14),
+              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4.h),
             Text(
               subtitle,
-              style: TextStyle(color: context.secondaryTextColor, fontSize: 10),
+              style: TextStyle(color: context.secondaryTextColor, fontSize: 10.sp),
             ),
           ],
         ),
@@ -134,7 +135,7 @@ class ServicesHubScreen extends StatelessWidget {
     return Column(
       children: [
         _buildListTile(context, l10n.emiCalculator, l10n.planYourFinances, Icons.calculate_outlined, () => context.push('/services/emi-calculator')),
-        const SizedBox(height: 12),
+        SizedBox(height: 12.h),
         _buildListTile(context, l10n.liveSupport, l10n.chatWithExperts, Icons.headset_mic_outlined, () => ContactBottomSheet.show(context)),
       ],
     );
@@ -144,32 +145,32 @@ class ServicesHubScreen extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: context.cardColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.sp),
         border: Border.all(color: context.borderColor),
       ),
       child: ListTile(
         onTap: onTap,
         leading: Container(
-          padding: const EdgeInsets.all(8),
+          padding: EdgeInsets.all(8.sp),
           decoration: BoxDecoration(
             color: context.surfaceColor,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(8.sp),
           ),
-          child: Icon(icon, color: context.primaryTextColor),
+          child: Icon(icon, color: context.primaryTextColor, size: 24.sp),
         ),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
-        subtitle: Text(subtitle, style: TextStyle(color: context.secondaryTextColor, fontSize: 12)),
-        trailing: Icon(Icons.chevron_right, color: context.secondaryTextColor),
+        title: Text(title, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp)),
+        subtitle: Text(subtitle, style: TextStyle(color: context.secondaryTextColor, fontSize: 12.sp)),
+        trailing: Icon(Icons.chevron_right, color: context.secondaryTextColor, size: 24.sp),
       ),
     );
   }
 
   Widget _buildVerifiedBanner(BuildContext context, AppLocalizations l10n) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24.sp),
       decoration: BoxDecoration(
         color: context.cardColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.sp),
         border: Border.all(color: context.borderColor),
       ),
       child: Row(
@@ -178,16 +179,16 @@ class ServicesHubScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(l10n.verified, style: const TextStyle(color: Color(0xFF00D1FF), fontWeight: FontWeight.bold, fontSize: 10, letterSpacing: 1)),
-                const SizedBox(height: 4),
-                Text(l10n.goldStandardProtection, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
-                const SizedBox(height: 4),
-                Text(l10n.strictlyVetted, style: TextStyle(color: context.secondaryTextColor, fontSize: 12)),
+                Text(l10n.verified, style: TextStyle(color: AppTheme.cyanAccent, fontWeight: FontWeight.bold, fontSize: 10.sp, letterSpacing: 1)),
+                SizedBox(height: 4.h),
+                Text(l10n.goldStandardProtection, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp)),
+                SizedBox(height: 4.h),
+                Text(l10n.strictlyVetted, style: TextStyle(color: context.secondaryTextColor, fontSize: 12.sp)),
               ],
             ),
           ),
-          const SizedBox(width: 16),
-          const Icon(Icons.bolt, color: Color(0xFF00D1FF), size: 48),
+          SizedBox(width: 16.w),
+          Icon(Icons.bolt, color: AppTheme.cyanAccent, size: 48.sp),
         ],
       ),
     );
@@ -213,7 +214,7 @@ class GlobalSearchDelegate extends SearchDelegate {
   @override
   List<Widget>? buildActions(BuildContext context) {
     return [
-      IconButton(icon: const Icon(Icons.clear, color: Colors.grey), onPressed: () => query = ''),
+      IconButton(icon: Icon(Icons.clear, color: context.secondaryTextColor), onPressed: () => query = ''),
     ];
   }
 
@@ -267,9 +268,9 @@ class GlobalSearchDelegate extends SearchDelegate {
         elevation: 0,
         iconTheme: IconThemeData(color: context.iconColor),
       ),
-      inputDecorationTheme: const InputDecorationTheme(
+      inputDecorationTheme: InputDecorationTheme(
         border: InputBorder.none,
-        hintStyle: TextStyle(color: Colors.grey),
+        hintStyle: TextStyle(color: context.secondaryTextColor.withValues(alpha: 0.5)),
       ),
     );
   }

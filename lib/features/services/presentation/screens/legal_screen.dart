@@ -3,9 +3,9 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:signature/signature.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/services/data/service_request_repository.dart';
 import 'package:sampatti_bazar/features/services/domain/service_request_model.dart';
@@ -107,24 +107,24 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('E-KYC Verification', style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 24)),
-              const SizedBox(height: 8),
-              const Text('Enter your 12-digit Aadhaar to simulate verification.', style: TextStyle(color: Colors.grey)),
-              const SizedBox(height: 24),
+              Text('E-KYC Verification', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24.sp)),
+              SizedBox(height: 8.h),
+              Text('Enter your 12-digit Aadhaar to simulate verification.', style: TextStyle(color: context.secondaryTextColor, fontSize: 13.sp)),
+              SizedBox(height: 24.h),
               TextField(
                 controller: aadhaarController,
                 keyboardType: TextInputType.number,
                 maxLength: 12,
                 decoration: InputDecoration(
                   labelText: 'Aadhaar Number',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.sp)),
                   prefixIcon: const Icon(Icons.fingerprint),
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
               SizedBox(
                 width: double.infinity,
-                height: 50,
+                height: 50.h,
                 child: ElevatedButton(
                   onPressed: () {
                     if (aadhaarController.text.length == 12) {
@@ -143,9 +143,9 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryBlue,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.sp)),
                   ),
-                  child: const Text('Verify Identity', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  child: Text('Verify Identity', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14.sp)),
                 ),
               ),
             ],
@@ -219,46 +219,51 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        title: const Text('Draw Your Signature', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 300,
-              height: 150,
-              decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade300)),
-              child: Signature(
-                controller: signatureController,
-                backgroundColor: Colors.grey.shade100,
+        title: Text('Draw Your Signature', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18.sp)),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 300.w,
+                height: 150.h,
+                decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade300)),
+                child: Signature(
+                  controller: signatureController,
+                  backgroundColor: Colors.grey.shade100,
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  onPressed: () => signatureController.clear(),
-                  child: const Text('Clear', style: TextStyle(color: Colors.red)),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    if (signatureController.isNotEmpty) {
-                      final Uint8List? data = await signatureController.toPngBytes();
-                      if (data != null) {
-                        final String base64Signature = base64Encode(data);
-                        Navigator.pop(ctx);
-                        _signAgreementNatively(base64Signature);
+              SizedBox(height: 8.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () => signatureController.clear(),
+                    child: Text('Clear', style: TextStyle(color: Colors.red, fontSize: 13.sp)),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (signatureController.isNotEmpty) {
+                        final Uint8List? data = await signatureController.toPngBytes();
+                        if (data != null) {
+                          final String base64Signature = base64Encode(data);
+                          Navigator.pop(ctx);
+                          _signAgreementNatively(base64Signature);
+                        }
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please draw your signature')));
                       }
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please draw your signature')));
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryBlue),
-                  child: const Text('Confirm', style: TextStyle(color: Colors.white)),
-                ),
-              ],
-            )
-          ],
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primaryBlue,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.sp)),
+                    ),
+                    child: Text('Confirm', style: TextStyle(color: Colors.white, fontSize: 13.sp)),
+                  ),
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -472,11 +477,11 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected ? AppTheme.primaryBlue : context.cardColor,
+            color: isSelected ? context.colorScheme.primary : context.cardColor,
             borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: isSelected ? AppTheme.primaryBlue : context.borderColor),
+            border: Border.all(color: isSelected ? context.colorScheme.primary : context.borderColor),
             boxShadow: isSelected 
-                ? [BoxShadow(color: AppTheme.primaryBlue.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 3))] 
+                ? [BoxShadow(color: context.colorScheme.primary.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 3))] 
                 : [],
           ),
           child: Text(
@@ -601,24 +606,24 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
   Widget _buildStepIndicator(String title, int stepIndex) {
     bool isCompleted = _currentStep > stepIndex;
     bool isActive = _currentStep == stepIndex;
-    Color bgColor = isCompleted ? AppTheme.primaryBlue : (isActive ? AppTheme.primaryBlue : context.cardColor);
-    Color textColor = (isCompleted || isActive) ? Colors.white : Colors.grey.shade400;
+    Color bgColor = isCompleted ? context.colorScheme.primary : (isActive ? context.colorScheme.primary : context.cardColor);
+    Color textColor = (isCompleted || isActive) ? Colors.white : context.secondaryTextColor.withValues(alpha: 0.5);
     Border? border = (!isCompleted && !isActive) ? Border.all(color: context.borderColor, width: 2) : null;
 
     return Column(
       children: [
         Container(
-          width: 32,
-          height: 32,
+          width: 32.w,
+          height: 32.w,
           decoration: BoxDecoration(color: bgColor, border: border, shape: BoxShape.circle),
           child: Center(
             child: isCompleted
-                ? const Icon(Icons.check, color: Colors.white, size: 16)
-                : Text('${stepIndex + 1}', style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 13)),
+                ? Icon(Icons.check, color: Colors.white, size: 16.sp)
+                : Text('${stepIndex + 1}', style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 13.sp)),
           ),
         ),
-        const SizedBox(height: 8),
-        Text(title, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: isCompleted ? AppTheme.primaryBlue : (isActive ? AppTheme.primaryBlue : Colors.grey), letterSpacing: 0.5)),
+        SizedBox(height: 8.h),
+        Text(title, style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, color: isCompleted ? AppTheme.primaryBlue : (isActive ? AppTheme.primaryBlue : Colors.grey), letterSpacing: 0.5)),
       ],
     );
   }
@@ -627,7 +632,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
     return Container(
       height: 2,
       margin: const EdgeInsets.only(top: 15, left: 8, right: 8),
-      color: _currentStep > stepIndex ? AppTheme.primaryBlue : Colors.grey.shade200,
+      color: _currentStep > stepIndex ? context.colorScheme.primary : context.borderColor,
     );
   }
 
@@ -644,24 +649,24 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.draftAgreement, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 24, letterSpacing: -0.5)),
-        const SizedBox(height: 8),
-        Text(l10n.fillAgreementTerms, style: TextStyle(color: context.secondaryTextColor, fontSize: 13, height: 1.5)),
-        const SizedBox(height: 32),
+        Text(l10n.draftAgreement, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24.sp, letterSpacing: -0.5)),
+        SizedBox(height: 8.h),
+        Text(l10n.fillAgreementTerms, style: TextStyle(color: context.secondaryTextColor, fontSize: 13.sp, height: 1.5)),
+        SizedBox(height: 32.h),
         _buildTextFieldWidget(_lessorController, l10n.lessorName, icon: Icons.person_outline),
-        const SizedBox(height: 20),
+        SizedBox(height: 20.h),
         _buildTextFieldWidget(_lesseeController, l10n.lesseeName, icon: Icons.person_outline),
-        const SizedBox(height: 20),
+        SizedBox(height: 20.h),
         _buildTextFieldWidget(_addressController, l10n.propertyAddress, icon: Icons.location_on_outlined, maxLines: 3),
-        const SizedBox(height: 20),
+        SizedBox(height: 20.h),
         Row(
           children: [
             Expanded(child: _buildTextFieldWidget(_rentController, l10n.monthlyRent, keyboardType: TextInputType.number, icon: Icons.currency_rupee)),
-            const SizedBox(width: 16),
+            SizedBox(width: 16.w),
             Expanded(child: _buildTextFieldWidget(_depositController, l10n.depositLabel, keyboardType: TextInputType.number, icon: Icons.account_balance_wallet_outlined)),
           ],
         ),
-        const SizedBox(height: 32),
+        SizedBox(height: 32.h),
       ],
     );
   }
@@ -670,14 +675,14 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.ekycVerification, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 28, letterSpacing: -1.0)),
-        const SizedBox(height: 8),
-        Text(l10n.verifyIdentitiesSubtitle, style: TextStyle(color: context.secondaryTextColor, fontSize: 13, height: 1.5, fontWeight: FontWeight.w500)),
-        const SizedBox(height: 32),
+        Text(l10n.ekycVerification, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 28.sp, letterSpacing: -1.0)),
+        SizedBox(height: 8.h),
+        Text(l10n.verifyIdentitiesSubtitle, style: TextStyle(color: context.secondaryTextColor, fontSize: 13.sp, height: 1.5, fontWeight: FontWeight.w500)),
+        SizedBox(height: 32.h),
         _buildVerificationCard(l10n.landlordKyc, _lessorController.text, _isLandlordVerified, l10n, onTap: () {
           if (!_isLandlordVerified) _showEkycBottomSheet();
         }),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         _buildVerificationCard(l10n.tenantKyc, _lesseeController.text, false, l10n),
       ],
     );
@@ -687,21 +692,21 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.rentAgreement, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 28, letterSpacing: -1.0)),
-        const SizedBox(height: 4),
-        Text(l10n.leaseForProperty(_generatedAgreementId ?? 'AGR-DRAFT'), style: TextStyle(color: Colors.grey[600], fontSize: 12, fontWeight: FontWeight.w600)),
-        const SizedBox(height: 24),
+        Text(l10n.rentAgreement, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 28.sp, letterSpacing: -1.0)),
+        SizedBox(height: 4.h),
+        Text(l10n.leaseForProperty(_generatedAgreementId ?? 'AGR-DRAFT'), style: TextStyle(color: context.secondaryTextColor, fontSize: 12.sp, fontWeight: FontWeight.w600)),
+        SizedBox(height: 24.h),
         Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(color: AppTheme.cyanAccent.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(12), border: Border.all(color: AppTheme.cyanAccent.withValues(alpha: 0.1))),
+          padding: EdgeInsets.all(16.sp),
+          decoration: BoxDecoration(color: AppTheme.cyanAccent.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(12.sp), border: Border.all(color: AppTheme.cyanAccent.withValues(alpha: 0.1))),
           child: Row(
             children: [
-               Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: context.scaffoldColor, borderRadius: BorderRadius.circular(8)), child: const Icon(Icons.verified_user_outlined, color: AppTheme.cyanAccent, size: 20)),
-               const SizedBox(width: 12),
+               Container(padding: EdgeInsets.all(8.sp), decoration: BoxDecoration(color: context.scaffoldColor, borderRadius: BorderRadius.circular(8.sp)), child: Icon(Icons.verified_user_outlined, color: AppTheme.cyanAccent, size: 20.sp)),
+               SizedBox(width: 12.w),
                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                 Text(l10n.digitalVerification, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: -0.2)),
-                 const SizedBox(height: 2),
-                 Text(l10n.estampedSeries, style: TextStyle(fontSize: 9, color: context.secondaryTextColor, fontWeight: FontWeight.w800, letterSpacing: 0.5))
+                 Text(l10n.digitalVerification, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12.sp, letterSpacing: -0.2)),
+                 SizedBox(height: 2.h),
+                 Text(l10n.estampedSeries, style: TextStyle(fontSize: 9.sp, color: context.secondaryTextColor, fontWeight: FontWeight.w800, letterSpacing: 0.5))
                ]),
             ],
           ),
@@ -710,12 +715,12 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
         Row(
           children: [
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(l10n.lessorLabel, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)), 
+              Text(l10n.lessorLabel, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: context.secondaryTextColor, letterSpacing: 0.5)), 
               const SizedBox(height: 8), 
               Text(_lessorController.text, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: -0.3))
             ])),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(l10n.lesseeLabel, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)), 
+              Text(l10n.lesseeLabel, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: context.secondaryTextColor, letterSpacing: 0.5)), 
               const SizedBox(height: 8), 
               Text(_lesseeController.text, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: -0.3))
             ])),
@@ -742,18 +747,18 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
         Center(
           child: TextButton.icon(
             onPressed: () {},
-            icon: const Icon(Icons.chevron_right, size: 16, color: AppTheme.primaryBlue),
-            label: Text(l10n.viewDocumentDetails, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 13, color: AppTheme.primaryBlue)),
+            icon: Icon(Icons.chevron_right, size: 16.sp, color: AppTheme.primaryBlue),
+            label: Text(l10n.viewDocumentDetails, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13.sp, color: AppTheme.primaryBlue)),
           ),
         ),
-        const SizedBox(height: 32),
+        SizedBox(height: 32.h),
       ],
     );
   }
 
   Widget _buildRentAgreementNav(AppLocalizations l10n) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+      padding: EdgeInsets.fromLTRB(24.w, 16.h, 24.w, 32.h),
       decoration: BoxDecoration(
         color: context.scaffoldColor, 
         boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 20, offset: const Offset(0, -10))],
@@ -766,7 +771,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
               Expanded(
                 flex: 1,
                 child: SizedBox(
-                  height: 54,
+                  height: 54.h,
                   child: OutlinedButton.icon(
                     onPressed: () {
                       if (_generatedAgreementId != null) {
@@ -774,25 +779,25 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
                         Share.share('Please sign our Rent Agreement via this secure link: $link');
                       }
                     },
-                    icon: Icon(Icons.ios_share, size: 18, color: context.primaryTextColor),
-                    label: Text('Share Link', style: TextStyle(color: context.primaryTextColor, fontSize: 13, fontWeight: FontWeight.w900)),
-                    style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), side: BorderSide(color: context.borderColor)),
+                    icon: Icon(Icons.ios_share, size: 18.sp, color: context.primaryTextColor),
+                    label: Text('Share Link', style: TextStyle(color: context.primaryTextColor, fontSize: 13.sp, fontWeight: FontWeight.w900)),
+                    style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.sp)), side: BorderSide(color: context.borderColor)),
                   ),
                 ),
               ),
-            if (_currentStep == 2) const SizedBox(width: 16),
+            if (_currentStep == 2) SizedBox(width: 16.w),
             Expanded(
               flex: 2,
               child: SizedBox(
-                height: 54,
+                height: 54.h,
                 child: ElevatedButton(
                   onPressed: () {
                     if (_currentStep == 0) _nextStep();
                     else if (_currentStep == 1) _generateAgreement();
                     else if (_currentStep == 2) _showSignatureDialog();
                   },
-                  style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryBlue, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), elevation: 0),
-                  child: Text(_currentStep == 0 ? l10n.nextVerification : (_currentStep == 1 ? l10n.generateAgreement : 'Self-Sign Natively'), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
+                  style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryBlue, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.sp)), elevation: 0),
+                  child: Text(_currentStep == 0 ? l10n.nextVerification : (_currentStep == 1 ? l10n.generateAgreement : 'Self-Sign Natively'), style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
                 ),
               ),
             ),
@@ -808,9 +813,9 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
       key: const ValueKey('consult_lawyer'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.legalCounsel, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 28, letterSpacing: -1.0)),
-        const SizedBox(height: 8),
-        Text(l10n.legalCounselSubtitle, style: TextStyle(color: context.secondaryTextColor, fontSize: 13, height: 1.5, fontWeight: FontWeight.w500)),
+        Text(l10n.legalCounsel, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 28.sp, letterSpacing: -1.0)),
+        SizedBox(height: 8.h),
+        Text(l10n.legalCounselSubtitle, style: TextStyle(color: context.secondaryTextColor, fontSize: 13.sp, height: 1.5, fontWeight: FontWeight.w500)),
         const SizedBox(height: 32),
         
         Container(
@@ -837,15 +842,15 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
         const SizedBox(height: 32),
 
         _buildTextFieldWidget(_fullNameController, l10n.fullName, icon: Icons.person_outline),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         _buildTextFieldWidget(_phoneController, l10n.phoneNumber, keyboardType: TextInputType.phone, icon: Icons.phone_outlined),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         _buildTextFieldWidget(_cityController, l10n.cityRegion, icon: Icons.location_city_outlined),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         _buildTextFieldWidget(_propIdController, l10n.propertyIdAny, icon: Icons.home_work_outlined),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         _buildDropdownField(l10n.legalRequirement, 'Buying Property', [l10n.buyingProperty, l10n.legalDispute, l10n.propertyVerification, l10n.other]),
-        const SizedBox(height: 32),
+        SizedBox(height: 32.h),
       ],
     );
   }
@@ -859,16 +864,16 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(l10n.propertyAudit, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 28, letterSpacing: -1.0)),
+            Text(l10n.propertyAudit, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 28.sp, letterSpacing: -1.0)),
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: EdgeInsets.all(8.sp),
               decoration: BoxDecoration(color: AppTheme.primaryBlue.withValues(alpha: 0.1), shape: BoxShape.circle),
-              child: const Icon(Icons.verified_user_outlined, color: AppTheme.primaryBlue, size: 20),
+              child: Icon(Icons.verified_user_outlined, color: AppTheme.primaryBlue, size: 20.sp),
             )
           ],
         ),
-        const SizedBox(height: 8),
-        Text(l10n.propertyAuditSubtitle, style: TextStyle(color: context.secondaryTextColor, fontSize: 13, height: 1.5, fontWeight: FontWeight.w500)),
+        SizedBox(height: 8.h),
+        Text(l10n.propertyAuditSubtitle, style: TextStyle(color: context.secondaryTextColor, fontSize: 13.sp, height: 1.5, fontWeight: FontWeight.w500)),
         const SizedBox(height: 32),
 
         Container(
@@ -885,31 +890,31 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
         const SizedBox(height: 32),
 
         _buildTextFieldWidget(_propIdController, l10n.propertyIdOptional, icon: Icons.home_work_outlined),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         _buildTextFieldWidget(_propLocationController, l10n.exactLocality, icon: Icons.location_on_outlined),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         _buildDropdownField(l10n.typeOfAsset, 'Apartment', [l10n.apartment, l10n.villaRowHouse, l10n.commercialOffice, 'Plot / Land']),
-        const SizedBox(height: 24),
+        SizedBox(height: 24.h),
         
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+          padding: EdgeInsets.symmetric(vertical: 24.h, horizontal: 16.w),
           decoration: BoxDecoration(
              color: context.cardColor,
              border: Border.all(color: context.borderColor),
-             borderRadius: BorderRadius.circular(12),
+             borderRadius: BorderRadius.circular(12.sp),
           ),
           child: Column(
             children: [
-              Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: context.scaffoldColor, shape: BoxShape.circle, border: Border.all(color: context.borderColor)), child: const Icon(Icons.cloud_upload_outlined, color: AppTheme.primaryBlue)),
-              const SizedBox(height: 16),
-              Text(l10n.attachDocs, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
-              const SizedBox(height: 6),
-              Text(l10n.attachDocsSubtitle, textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: context.secondaryTextColor, fontWeight: FontWeight.w500)),
+              Container(padding: EdgeInsets.all(12.sp), decoration: BoxDecoration(color: context.scaffoldColor, shape: BoxShape.circle, border: Border.all(color: context.borderColor)), child: Icon(Icons.cloud_upload_outlined, color: AppTheme.primaryBlue, size: 24.sp)),
+              SizedBox(height: 16.h),
+              Text(l10n.attachDocs, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp)),
+              SizedBox(height: 6.h),
+              Text(l10n.attachDocsSubtitle, textAlign: TextAlign.center, style: TextStyle(fontSize: 11.sp, color: context.secondaryTextColor, fontWeight: FontWeight.w500)),
             ],
           ),
         ),
-        const SizedBox(height: 32),
+        SizedBox(height: 32.h),
       ],
     );
   }
@@ -920,12 +925,12 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(labelText, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: context.secondaryTextColor, letterSpacing: 0.5)),
-        const SizedBox(height: 8),
+        Text(labelText, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11.sp, color: context.secondaryTextColor, letterSpacing: 0.5)),
+        SizedBox(height: 8.h),
         Container(
           decoration: BoxDecoration(
             color: context.cardColor,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(12.sp),
             border: Border.all(color: context.borderColor),
             boxShadow: [
               BoxShadow(
@@ -939,12 +944,12 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
             controller: controller,
             keyboardType: keyboardType,
             maxLines: maxLines,
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: context.primaryTextColor),
+            style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600, color: context.primaryTextColor),
             decoration: InputDecoration(
-              prefixIcon: icon != null ? Icon(icon, color: Colors.grey.shade400, size: 20) : null,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppTheme.primaryBlue, width: 1.5)),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              prefixIcon: icon != null ? Icon(icon, color: Colors.grey.shade400, size: 20.sp) : null,
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.sp), borderSide: BorderSide.none),
+              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12.sp), borderSide: const BorderSide(color: AppTheme.primaryBlue, width: 1.5)),
+              contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
               isDense: true,
             ),
           ),
@@ -957,13 +962,13 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: context.secondaryTextColor, letterSpacing: 0.5)),
-        const SizedBox(height: 8),
+        Text(label, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11.sp, color: context.secondaryTextColor, letterSpacing: 0.5)),
+        SizedBox(height: 8.h),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
           decoration: BoxDecoration(
             color: context.cardColor,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(12.sp),
             border: Border.all(color: context.borderColor),
             boxShadow: [
               BoxShadow(
@@ -976,8 +981,8 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(value, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: context.primaryTextColor)),
-              const Icon(Icons.arrow_drop_down, color: Colors.grey),
+              Text(value, style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600, color: context.primaryTextColor)),
+              Icon(Icons.arrow_drop_down, color: Colors.grey, size: 24.sp),
             ],
           ),
         ),
@@ -989,16 +994,16 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.05) : context.cardColor, border: Border.all(color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.1) : context.borderColor), borderRadius: BorderRadius.circular(16)),
+        padding: EdgeInsets.all(20.sp),
+        decoration: BoxDecoration(color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.05) : context.cardColor, border: Border.all(color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.1) : context.borderColor), borderRadius: BorderRadius.circular(16.sp)),
         child: Row(
           children: [
-            Container(padding: const EdgeInsets.all(12), decoration: BoxDecoration(color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.1) : context.scaffoldColor, borderRadius: BorderRadius.circular(12)), child: Icon(isVerified ? Icons.verified : Icons.account_circle_outlined, color: isVerified ? AppTheme.primaryBlue : Colors.grey.shade400, size: 24)),
-            const SizedBox(width: 16),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(role.toUpperCase(), style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey[400], letterSpacing: 0.5)), const SizedBox(height: 4), Text(name, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: context.primaryTextColor, letterSpacing: -0.3), maxLines: 1, overflow: TextOverflow.ellipsis)])),
-            if (isVerified) const Icon(Icons.check_circle, color: AppTheme.primaryBlue, size: 20)
-            else if (onTap != null) Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: AppTheme.primaryBlue, borderRadius: BorderRadius.circular(8)), child: const Text('Verify', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: 0.5)))
-            else Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), decoration: BoxDecoration(color: context.scaffoldColor, borderRadius: BorderRadius.circular(8)), child: Text(l10n.pending, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5))),
+            Container(padding: EdgeInsets.all(12.sp), decoration: BoxDecoration(color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.1) : context.scaffoldColor, borderRadius: BorderRadius.circular(12.sp)), child: Icon(isVerified ? Icons.verified : Icons.account_circle_outlined, color: isVerified ? AppTheme.primaryBlue : Colors.grey.shade400, size: 24.sp)),
+            SizedBox(width: 16.w),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(role.toUpperCase(), style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w900, color: Colors.grey[400], letterSpacing: 0.5)), SizedBox(height: 4.h), Text(name, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp, color: context.primaryTextColor, letterSpacing: -0.3), maxLines: 1, overflow: TextOverflow.ellipsis)])),
+            if (isVerified) Icon(Icons.check_circle, color: AppTheme.primaryBlue, size: 20.sp)
+            else if (onTap != null) Container(padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h), decoration: BoxDecoration(color: AppTheme.primaryBlue, borderRadius: BorderRadius.circular(8.sp)), child: Text('Verify', style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: 0.5)))
+            else Container(padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h), decoration: BoxDecoration(color: context.scaffoldColor, borderRadius: BorderRadius.circular(8.sp)), child: Text(l10n.pending, style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5))),
           ],
         ),
       ),
@@ -1007,13 +1012,13 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
 
   Widget _buildClause(String number, String title, String body) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 24.0),
+      padding: EdgeInsets.only(bottom: 24.0.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(number, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey)),
-          const SizedBox(width: 16),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: context.primaryTextColor, letterSpacing: -0.2)), const SizedBox(height: 6), Text(body, style: TextStyle(color: context.secondaryTextColor, fontSize: 12, height: 1.5, fontWeight: FontWeight.w500)), const SizedBox(height: 16), Divider(height: 1, color: context.borderColor)])),
+          Text(number, style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w900, color: Colors.grey)),
+          SizedBox(width: 16.w),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13.sp, color: context.primaryTextColor, letterSpacing: -0.2)), SizedBox(height: 6.h), Text(body, style: TextStyle(color: context.secondaryTextColor, fontSize: 12.sp, height: 1.5, fontWeight: FontWeight.w500)), SizedBox(height: 16.h), Divider(height: 1.h, color: context.borderColor)])),
         ],
       ),
     );

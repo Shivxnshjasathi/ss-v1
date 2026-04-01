@@ -132,12 +132,12 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
           // Categories
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
             child: Row(
               children: _categories.map((category) {
                 final isSelected = _selectedCategory == category;
                 return Padding(
-                  padding: const EdgeInsets.only(right: 12.0),
+                  padding: EdgeInsets.only(right: 12.0.w),
                   child: ChoiceChip(
                     label: Text(_getLocalizedCategory(l10n, category)),
                     selected: isSelected,
@@ -163,7 +163,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
           
           // Header
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            padding: EdgeInsets.symmetric(horizontal: 16.0.w, vertical: 8.0.h),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -225,7 +225,10 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                     padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                     itemCount: filtered.length,
                     itemBuilder: (context, index) {
-                      return _buildPropertyCard(context, filtered[index], l10n);
+                      return Padding(
+                        padding: EdgeInsets.only(bottom: 24.h),
+                        child: _buildPropertyCard(context, filtered[index], l10n),
+                      );
                     },
                   );
                 }
@@ -248,7 +251,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, stack) => Center(child: Text('Error: $err')),
+              error: (err, stack) => Center(child: Text('Error: $err', style: const TextStyle(color: Colors.red))),
             ),
           ),
         ],
@@ -379,9 +382,9 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                       ),
                       child: Text(
                         l10n.applyFilters,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
                     ),
@@ -425,16 +428,16 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
     return GestureDetector(
       onTap: () => context.push('/properties/detail/${property.id}'),
       child: Container(
-        margin: EdgeInsets.only(bottom: context.isMobile ? 24 : 0),
+        margin: EdgeInsets.only(bottom: context.isMobile ? 12.h : 0),
         decoration: BoxDecoration(
           color: context.cardColor,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.sp),
           border: Border.all(color: context.borderColor),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+              color: context.isDarkMode ? Colors.black.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.04),
+              blurRadius: 10.sp,
+              offset: Offset(0, 4.h),
             )
           ],
         ),
@@ -447,10 +450,11 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
               children: [
                 CachedNetworkImage(
                   imageUrl: property.imageUrls.isNotEmpty ? property.imageUrls.first : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
-                  height: 240,
+                  height: 240.h,
                   width: double.infinity,
                   fit: BoxFit.cover,
-                  memCacheHeight: 400, // Performance: Limit memory cache size
+                  memCacheHeight: 400.h.toInt(), // Performance: Limit memory cache size
+                  memCacheWidth: 600.w.toInt(), // Responsive cache width
                   placeholder: (context, url) => Container(color: context.cardColor),
                 ),
                 // Gradient Overlay for text readability
@@ -474,20 +478,20 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                     children: [
                       if (property.isZeroBrokerage)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
                           decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.85),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(8.sp),
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.star, color: Colors.white, size: 12),
-                              const SizedBox(width: 4),
+                              Icon(Icons.star, color: Colors.white, size: 12.sp),
+                              SizedBox(width: 4.w),
                               Text(
                                 l10n.zeroBrokerageTag,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 10,
+                                  fontSize: 10.sp,
                                   fontWeight: FontWeight.w900,
                                   letterSpacing: 0.5,
                                 ),
@@ -499,21 +503,21 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                         const SizedBox(width: 8),
                       if (property.isVerified)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
                           decoration: BoxDecoration(
                             color: context.scaffoldColor.withValues(alpha: 0.95),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(8.sp),
                             border: Border.all(color: context.borderColor),
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.verified, color: Theme.of(context).colorScheme.primary, size: 12),
-                              const SizedBox(width: 4),
+                              Icon(Icons.verified, color: Theme.of(context).colorScheme.primary, size: 12.sp),
+                              SizedBox(width: 4.w),
                               Text(
                                 l10n.verifiedTag,
                                 style: TextStyle(
                                   color: context.primaryTextColor,
-                                  fontSize: 10,
+                                  fontSize: 10.sp,
                                   fontWeight: FontWeight.w900,
                                   letterSpacing: 0.5,
                                 ),
@@ -526,23 +530,23 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                 ),
                 // Title and Location
                 Positioned(
-                  bottom: 16,
-                  left: 16,
+                  bottom: 16.h,
+                  left: 16.w,
                   child: Column(
                      crossAxisAlignment: CrossAxisAlignment.start,
                      children: [
                        Text(
                          property.title,
-                         style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+                         style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20.sp),
                        ),
-                       const SizedBox(height: 4),
+                       SizedBox(height: 4.h),
                        Row(
                          children: [
-                           const Icon(Icons.location_on, color: Colors.white70, size: 16),
-                           const SizedBox(width: 4),
+                           Icon(Icons.location_on, color: Colors.white70, size: 16.sp),
+                           SizedBox(width: 4.w),
                            Text(
                              property.city,
-                             style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500),
+                             style: TextStyle(color: Colors.white, fontSize: 13.sp, fontWeight: FontWeight.w500),
                            ),
                          ],
                        ),
@@ -565,20 +569,20 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                           children: [
                             Text(
                               l10n.askingPrice,
-                              style: TextStyle(color: context.secondaryTextColor, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)
+                              style: TextStyle(color: context.secondaryTextColor, fontSize: 10.sp, fontWeight: FontWeight.bold, letterSpacing: 1)
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: 4.h),
                             Text(
                               '₹${property.price.toInt()}',
-                              style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 22, fontWeight: FontWeight.w900)
+                              style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 22.sp, fontWeight: FontWeight.w900)
                             ),
                           ],
                         ),
                       ),
                       _buildAmenity(Icons.king_bed_outlined, '${property.bedrooms} ${l10n.bed}'),
-                      const SizedBox(width: 16),
+                      SizedBox(width: 16.w),
                       _buildAmenity(Icons.bathtub_outlined, '${property.bathrooms} ${l10n.bath}'),
-                      const SizedBox(width: 16),
+                      SizedBox(width: 16.w),
                       _buildAmenity(Icons.square_foot_outlined, '${property.areaSqFt.toInt()} ${l10n.sqft}'),
                     ],
                   ),
@@ -587,9 +591,12 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                   const SizedBox(height: 16),
                   Row(
                     children: [
-                      const CircleAvatar(
+                      CircleAvatar(
                         radius: 16,
-                        backgroundImage: CachedNetworkImageProvider('https://i.pravatar.cc/150?u=marcus'),
+                        backgroundImage: ResizeImage(
+                          const CachedNetworkImageProvider('https://i.pravatar.cc/150?u=marcus'),
+                          width: 100.w.toInt(),
+                        ),
                       ),
                       const SizedBox(width: 12),
                       Column(

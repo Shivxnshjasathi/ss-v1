@@ -14,6 +14,7 @@ import 'package:sampatti_bazar/features/services/domain/booking_model.dart';
 import 'package:sampatti_bazar/features/properties/domain/property_model.dart';
 import 'package:sampatti_bazar/features/chat/data/chat_repository.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class PropertyDetailScreen extends ConsumerWidget {
   final String propertyId;
@@ -43,21 +44,21 @@ class PropertyDetailScreen extends ConsumerWidget {
           body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 350.0,
+            expandedHeight: 350.0.h,
             floating: false,
             pinned: true,
             elevation: 0,
             backgroundColor: Colors.transparent,
             leading: Padding(
-              padding: const EdgeInsets.only(left: 8.0),
+              padding: EdgeInsets.only(left: 8.0.w),
               child: IconButton(
                 icon: Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: EdgeInsets.all(8.sp),
                   decoration: BoxDecoration(
                     color: Colors.black.withValues(alpha: 0.3),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
+                  child: Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18.sp),
                 ),
                 onPressed: () => context.pop(),
               ),
@@ -84,7 +85,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                  },
                  style: IconButton.styleFrom(
                    backgroundColor: Colors.black.withValues(alpha: 0.3),
-                   minimumSize: const Size(40, 40),
+                   minimumSize: Size(40.w, 40.w),
                  ),
                ),
                const SizedBox(width: 8),
@@ -116,7 +117,8 @@ class PropertyDetailScreen extends ConsumerWidget {
                         ? property.imageUrls.first 
                         : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
                      fit: BoxFit.cover,
-                     memCacheHeight: 600,
+                     memCacheHeight: 800,
+                     memCacheWidth: 800,
                    ),
                    Container(
                      decoration: BoxDecoration(
@@ -134,9 +136,9 @@ class PropertyDetailScreen extends ConsumerWidget {
                      ),
                    ),
                    Positioned(
-                     bottom: 24,
-                     left: 20,
-                     right: 20,
+                     bottom: 24.h,
+                     left: 20.w,
+                     right: 20.w,
                      child: Column(
                        crossAxisAlignment: CrossAxisAlignment.start,
                        children: [
@@ -169,21 +171,21 @@ class PropertyDetailScreen extends ConsumerWidget {
                                const SizedBox(width: 8),
                              if (property.isVerified)
                                Container(
-                                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                 padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
                                  decoration: BoxDecoration(
                                    color: Colors.white.withValues(alpha: 0.95),
-                                   borderRadius: BorderRadius.circular(8),
+                                   borderRadius: BorderRadius.circular(8.sp),
                                    border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
                                  ),
                                  child: Row(
                                    children: [
-                                     Icon(Icons.verified, color: Theme.of(context).colorScheme.primary, size: 12),
-                                     const SizedBox(width: 4),
+                                                                           Icon(Icons.verified, color: context.colorScheme.primary, size: 12.sp),
+                                     SizedBox(width: 4.w),
                                      Text(
                                        l10n.verifiedTag,
-                                       style: const TextStyle(
+                                       style: TextStyle(
                                          color: Colors.black87,
-                                         fontSize: 10,
+                                         fontSize: 10.sp,
                                          fontWeight: FontWeight.w900,
                                          letterSpacing: 0.5,
                                        ),
@@ -193,12 +195,12 @@ class PropertyDetailScreen extends ConsumerWidget {
                                ),
                            ],
                          ),
-                         const SizedBox(height: 12),
+                         SizedBox(height: 12.h),
                          Text(
                            property.title,
-                           style: const TextStyle(
+                           style: TextStyle(
                              color: Colors.white,
-                             fontSize: 28,
+                             fontSize: 28.sp,
                              fontWeight: FontWeight.w900,
                              letterSpacing: -0.5,
                            ),
@@ -212,7 +214,7 @@ class PropertyDetailScreen extends ConsumerWidget {
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: EdgeInsets.all(24.0.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -231,12 +233,12 @@ class PropertyDetailScreen extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32.h),
                   Container(
-                    padding: const EdgeInsets.all(20),
+                    padding: EdgeInsets.all(20.sp),
                     decoration: BoxDecoration(
-                      color: context.isDarkMode ? Colors.grey[900]?.withValues(alpha: 0.5) : Colors.grey[50],
-                      borderRadius: BorderRadius.circular(24),
+                      color: context.isDarkMode ? Colors.white.withValues(alpha: 0.05) : Colors.grey[50],
+                      borderRadius: BorderRadius.circular(24.sp),
                       border: Border.all(color: context.borderColor),
                     ),
                     child: Row(
@@ -245,9 +247,9 @@ class PropertyDetailScreen extends ConsumerWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(l10n.askingPrice, style: TextStyle(color: context.secondaryTextColor, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1)),
-                              const SizedBox(height: 4),
-                              Text('₹${property.price.toInt()}', style: TextStyle(color: AppTheme.primaryBlue, fontSize: 26, fontWeight: FontWeight.w900)),
+                              Text(l10n.askingPrice, style: TextStyle(color: context.secondaryTextColor, fontSize: 10.sp, fontWeight: FontWeight.w800, letterSpacing: 1)),
+                              SizedBox(height: 4.h),
+                              Text('₹${property.price.toInt()}', style: TextStyle(color: AppTheme.primaryBlue, fontSize: 26.sp, fontWeight: FontWeight.w900)),
                             ],
                           ),
                         ),
@@ -256,13 +258,13 @@ class PropertyDetailScreen extends ConsumerWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Text(l10n.totalArea, style: TextStyle(color: context.secondaryTextColor, fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 1)),
-                            const SizedBox(height: 4),
+                            Text(l10n.totalArea, style: TextStyle(color: context.secondaryTextColor, fontSize: 10.sp, fontWeight: FontWeight.w800, letterSpacing: 1)),
+                            SizedBox(height: 4.h),
                             RichText(
                               text: TextSpan(
                                 children: [
-                                  TextSpan(text: property.areaSqFt.toInt().toString(), style: TextStyle(color: context.primaryTextColor, fontSize: 22, fontWeight: FontWeight.w900)),
-                                  TextSpan(text: ' ${l10n.sqft.toUpperCase()}', style: TextStyle(color: context.secondaryTextColor, fontSize: 10, fontWeight: FontWeight.w900)),
+                                  TextSpan(text: property.areaSqFt.toInt().toString(), style: TextStyle(color: context.primaryTextColor, fontSize: 22.sp, fontWeight: FontWeight.w900)),
+                                  TextSpan(text: ' ${l10n.sqft.toUpperCase()}', style: TextStyle(color: context.secondaryTextColor, fontSize: 10.sp, fontWeight: FontWeight.w900)),
                                 ],
                               ),
                             ),
@@ -273,12 +275,12 @@ class PropertyDetailScreen extends ConsumerWidget {
                   ),
                    
                    const SizedBox(height: 32),
-                   Text(l10n.overview, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1.5)),
+                   Text(l10n.overview, style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1.5)),
                    const SizedBox(height: 16),
                    _buildOverviewGrid(context, property, l10n),
                    
                    const SizedBox(height: 32),
-                   Text(l10n.amenities, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1.5)),
+                   Text(l10n.amenities, style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1.5)),
                    const SizedBox(height: 16),
                    _buildAmenities(context, property.amenities, l10n),
                    
@@ -286,8 +288,8 @@ class PropertyDetailScreen extends ConsumerWidget {
                    
                    Text(
                      l10n.propertyDescription,
-                     style: const TextStyle(
-                       fontSize: 20,
+                     style: TextStyle(
+                       fontSize: 20.sp,
                        fontWeight: FontWeight.bold,
                      ),
                    ),
@@ -296,7 +298,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                        property.description.isNotEmpty ? property.description : l10n.noDescription,
                        style: TextStyle(
                          color: context.secondaryTextColor,
-                         fontSize: 14,
+                         fontSize: 14.sp,
                          height: 1.6,
                          fontWeight: FontWeight.w400,
                        ),
@@ -305,20 +307,20 @@ class PropertyDetailScreen extends ConsumerWidget {
                    Text(
                      l10n.readFullSpec,
                      style: TextStyle(
-                       fontSize: 14,
+                       fontSize: 14.sp,
                        color: Theme.of(context).colorScheme.primary,
                        fontWeight: FontWeight.bold,
                      ),
                    ),
 
-                   const SizedBox(height: 32),
-                   Text(l10n.locationLabel, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1.5)),
-                   const SizedBox(height: 16),
+                   SizedBox(height: 32.h),
+                   Text(l10n.locationLabel, style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1.5)),
+                   SizedBox(height: 16.h),
                    Container(
-                     padding: const EdgeInsets.all(20),
+                     padding: EdgeInsets.all(20.sp),
                      decoration: BoxDecoration(
                        color: context.cardColor,
-                       borderRadius: BorderRadius.circular(24),
+                       borderRadius: BorderRadius.circular(24.sp),
                        border: Border.all(color: context.borderColor),
                      ),
                      child: Column(
@@ -366,11 +368,11 @@ class PropertyDetailScreen extends ConsumerWidget {
                                  await launchUrl(url);
                                }
                              },
-                             icon: const Icon(Icons.directions_outlined, size: 20),
-                             label: Text(l10n.getDirections, style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1)),
+                             icon: Icon(Icons.directions_outlined, size: 20.sp),
+                             label: Text(l10n.getDirections, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13.sp, letterSpacing: 1)),
                              style: OutlinedButton.styleFrom(
-                               padding: const EdgeInsets.symmetric(vertical: 16),
-                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                               padding: EdgeInsets.symmetric(vertical: 16.h),
+                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.sp)),
                                side: BorderSide(color: context.borderColor),
                                foregroundColor: AppTheme.primaryBlue,
                              ),
@@ -380,18 +382,18 @@ class PropertyDetailScreen extends ConsumerWidget {
                      ),
                    ),
 
-                   const SizedBox(height: 32),
+                   SizedBox(height: 32.h),
                    
                    Container(
-                     padding: const EdgeInsets.all(16),
+                     padding: EdgeInsets.all(16.sp),
                      decoration: BoxDecoration(
                        color: context.cardColor,
-                       borderRadius: BorderRadius.circular(12),
+                       borderRadius: BorderRadius.circular(12.sp),
                        boxShadow: [
                          BoxShadow(
                            color: Colors.black.withValues(alpha: 0.04),
-                           blurRadius: 10,
-                           offset: const Offset(0, 4),
+                           blurRadius: 10.sp,
+                           offset: Offset(0, 4.h),
                          )
                        ],
                        border: Border.all(color: context.borderColor),
@@ -402,22 +404,22 @@ class PropertyDetailScreen extends ConsumerWidget {
                             Stack(
                               children: [
                                 CircleAvatar(
-                                  radius: 26,
+                                  radius: 26.sp,
                                   backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                                   backgroundImage: (owner?.phoneNumber != null && owner!.phoneNumber.isNotEmpty)
                                       ? NetworkImage('https://ui-avatars.com/api/?name=${Uri.encodeComponent(owner.name ?? 'User')}&background=random&size=128')
                                       : const NetworkImage('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80'),
                                 ),
                                 Positioned(
-                                  bottom: 2,
-                                  right: 2,
+                                  bottom: 2.h,
+                                  right: 2.w,
                                   child: Container(
-                                    width: 12,
-                                    height: 12,
+                                    width: 12.w,
+                                    height: 12.w,
                                     decoration: BoxDecoration(
                                       color: Colors.greenAccent[400],
                                       shape: BoxShape.circle,
-                                      border: Border.all(color: Colors.white, width: 2),
+                                      border: Border.all(color: Colors.white, width: 2.sp),
                                     ),
                                   ),
                                 ),
@@ -437,16 +439,16 @@ class PropertyDetailScreen extends ConsumerWidget {
                                     style: TextStyle(fontSize: 12, color: context.secondaryTextColor, fontWeight: FontWeight.bold),
                                   ),
                                   if (owner != null && (owner.trustScore ?? 0) > 0) ...[
-                                    const SizedBox(height: 4),
+                                    SizedBox(height: 4.h),
                                     Row(
                                       children: [
-                                        const Icon(Icons.star, color: Colors.amber, size: 14),
-                                        const SizedBox(width: 4),
-                                        Text('${owner.trustScore!.toStringAsFixed(1)} (${owner.ratingCount ?? 0})', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: context.primaryTextColor)),
-                                        const SizedBox(width: 8),
-                                        const Text('•', style: TextStyle(color: Colors.grey, fontSize: 10)),
-                                        const SizedBox(width: 8),
-                                        Text('${owner.totalDeals ?? 0} clear deals', style: TextStyle(fontSize: 10, color: Colors.green, fontWeight: FontWeight.w800)),
+                                        Icon(Icons.star, color: Colors.amber, size: 14.sp),
+                                        SizedBox(width: 4.w),
+                                        Text('${owner.trustScore!.toStringAsFixed(1)} (${owner.ratingCount ?? 0})', style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.bold, color: context.primaryTextColor)),
+                                        SizedBox(width: 8.w),
+                                        Text('•', style: TextStyle(color: Colors.grey, fontSize: 10.sp)),
+                                        SizedBox(width: 8.w),
+                                        Text('${owner.totalDeals ?? 0} clear deals', style: TextStyle(fontSize: 10.sp, color: Colors.green, fontWeight: FontWeight.w800)),
                                       ],
                                     ),
                                   ],
@@ -459,7 +461,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                                  shape: BoxShape.circle,
                                ),
                                child: IconButton(
-                                 icon: Icon(Icons.chat_bubble, size: 20, color: Theme.of(context).colorScheme.primary),
+                                 icon: Icon(Icons.chat_bubble, size: 20.sp, color: Theme.of(context).colorScheme.primary),
                                   onPressed: () async {
                                     final currentUser = ref.read(currentUserDataProvider).value;
                                      if (currentUser == null) {
@@ -481,7 +483,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                                       });
                                     }
                                   },
-                                 constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+                                 constraints: BoxConstraints(minWidth: 40.w, minHeight: 40.w),
                                  padding: EdgeInsets.zero,
                                ),
                              ),
@@ -492,7 +494,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                                 shape: BoxShape.circle,
                               ),
                               child: IconButton(
-                                icon: Icon(Icons.phone, size: 20, color: Theme.of(context).colorScheme.primary),
+                                icon: Icon(Icons.phone, size: 20.sp, color: Theme.of(context).colorScheme.primary),
                                  onPressed: () {
                                    if (owner?.phoneNumber != null) {
                                      launchUrl(Uri.parse('tel:${owner!.phoneNumber}'));
@@ -502,7 +504,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                                      });
                                    }
                                  },
-                                constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+                                constraints: BoxConstraints(minWidth: 40.w, minHeight: 40.w),
                                 padding: EdgeInsets.zero,
                               ),
                             ),
@@ -513,9 +515,9 @@ class PropertyDetailScreen extends ConsumerWidget {
                                 shape: BoxShape.circle,
                               ),
                               child: IconButton(
-                                icon: const Icon(Icons.star_rate_rounded, size: 20, color: Colors.amber),
+                                icon: Icon(Icons.star_rate_rounded, size: 20.sp, color: Colors.amber),
                                 onPressed: () => _showRatingDialog(context, ref, owner),
-                                constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+                                constraints: BoxConstraints(minWidth: 40.w, minHeight: 40.w),
                                 padding: EdgeInsets.zero,
                               ),
                             ),
@@ -526,21 +528,21 @@ class PropertyDetailScreen extends ConsumerWidget {
                       ),
                    ),
 
-                   const SizedBox(height: 32),
+                   SizedBox(height: 32.h),
                    
                    Text(
                      l10n.propertyDetails,
-                     style: const TextStyle(
-                       fontSize: 20,
+                     style: TextStyle(
+                       fontSize: 20.sp,
                        fontWeight: FontWeight.bold,
                      ),
                    ),
-                   const SizedBox(height: 16),
+                   SizedBox(height: 16.h),
                    Row(
                      children: [
                        Expanded(
                          child: Container(
-                           padding: const EdgeInsets.all(16),
+                           padding: EdgeInsets.all(16.sp),
                            decoration: BoxDecoration(
                              color: context.cardColor,
                              borderRadius: BorderRadius.circular(12),
@@ -549,24 +551,24 @@ class PropertyDetailScreen extends ConsumerWidget {
                            child: Column(
                              crossAxisAlignment: CrossAxisAlignment.start,
                              children: [
-                               Icon(Icons.calendar_month_outlined, size: 24, color: Theme.of(context).colorScheme.primary),
-                               const SizedBox(height: 12),
+                               Icon(Icons.calendar_month_outlined, size: 24.sp, color: Theme.of(context).colorScheme.primary),
+                               SizedBox(height: 12.h),
                                Text(
                                  l10n.builtIn,
                                  style: TextStyle(
-                                   fontSize: 10,
+                                   fontSize: 10.sp,
                                    fontWeight: FontWeight.bold,
-                                   color: Colors.grey.shade600,
+                                                                       color: context.secondaryTextColor,
                                    letterSpacing: 0.5,
                                  ),
                                ),
-                               const SizedBox(height: 4),
+                               SizedBox(height: 4.h),
                                  FittedBox(
                                    fit: BoxFit.scaleDown,
                                    child: Text(
                                      property.builtIn?.toString() ?? 'N/A',
-                                     style: const TextStyle(
-                                       fontSize: 18,
+                                     style: TextStyle(
+                                       fontSize: 18.sp,
                                        fontWeight: FontWeight.w900,
                                      ),
                                    ),
@@ -580,21 +582,21 @@ class PropertyDetailScreen extends ConsumerWidget {
                          child: Container(
                            padding: const EdgeInsets.all(16),
                            decoration: BoxDecoration(
-                             color: Colors.grey.shade50,
+                                                           color: context.isDarkMode ? Colors.white.withValues(alpha: 0.05) : Colors.grey.shade50,
                              borderRadius: BorderRadius.circular(12),
-                             border: Border.all(color: Colors.grey.shade200),
+                                                           border: Border.all(color: context.borderColor),
                            ),
                            child: Column(
                              crossAxisAlignment: CrossAxisAlignment.start,
                              children: [
-                               Icon(Icons.open_with_outlined, size: 24, color: Theme.of(context).colorScheme.primary),
-                               const SizedBox(height: 12),
+                               Icon(Icons.open_with_outlined, size: 24.sp, color: Theme.of(context).colorScheme.primary),
+                               SizedBox(height: 12.h),
                                Text(
                                  l10n.lotSize,
                                  style: TextStyle(
-                                   fontSize: 10,
+                                   fontSize: 10.sp,
                                    fontWeight: FontWeight.bold,
-                                   color: Colors.grey.shade600,
+                                                                       color: context.secondaryTextColor,
                                    letterSpacing: 0.5,
                                  ),
                                ),
@@ -605,8 +607,8 @@ class PropertyDetailScreen extends ConsumerWidget {
                                      property.lotSizeSqFt != null 
                                          ? '${property.lotSizeSqFt!.toInt().toString()} ${l10n.sqft.toUpperCase()}' 
                                          : 'N/A',
-                                     style: const TextStyle(
-                                       fontSize: 18,
+                                     style: TextStyle(
+                                       fontSize: 18.sp,
                                        fontWeight: FontWeight.w900,
                                      ),
                                    ),
@@ -635,11 +637,11 @@ class PropertyDetailScreen extends ConsumerWidget {
             )
           ],
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
         child: SafeArea(
           child: SizedBox(
             width: double.infinity,
-            height: 56,
+            height: 56.h,
             child: ElevatedButton(
               onPressed: () => _scheduleTour(context, ref, property, l10n),
               style: ElevatedButton.styleFrom(
@@ -647,13 +649,13 @@ class PropertyDetailScreen extends ConsumerWidget {
                 foregroundColor: Colors.white,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.sp),
                 ),
               ),
               child: Text(
                 l10n.bookVisit,
-                style: const TextStyle(
-                  fontSize: 16,
+                style: TextStyle(
+                  fontSize: 16.sp,
                   fontWeight: FontWeight.bold,
                 ),
               ),

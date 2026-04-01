@@ -41,7 +41,7 @@ class HomeScreen extends ConsumerWidget {
               l10n.welcome,
               style: TextStyle(
                 fontSize: 12.sp,
-                color: Colors.grey[600],
+                color: context.secondaryTextColor,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -62,7 +62,7 @@ class HomeScreen extends ConsumerWidget {
                   currentLocation,
                   style: TextStyle(
                     fontSize: 12.sp,
-                    color: Colors.grey[600],
+                    color: context.secondaryTextColor,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -72,19 +72,19 @@ class HomeScreen extends ConsumerWidget {
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 16.0),
+            padding: EdgeInsets.only(right: 16.w),
             child: GestureDetector(
               onTap: () => context.push('/profile'),
               child: Stack(
                 alignment: Alignment.bottomRight,
                 children: [
-                  const CircleAvatar(
-                    backgroundImage: CachedNetworkImageProvider('https://i.pravatar.cc/150?u=a042581f4e29026704d'),
-                    radius: 20,
+                  CircleAvatar(
+                    backgroundImage: const CachedNetworkImageProvider('https://i.pravatar.cc/150?u=a042581f4e29026704d'),
+                    radius: 20.sp,
                   ),
                   Container(
-                    width: 12,
-                    height: 12,
+                    width: 12.w,
+                    height: 12.w,
                     decoration: BoxDecoration(
                       color: Colors.green,
                       shape: BoxShape.circle,
@@ -103,7 +103,7 @@ class HomeScreen extends ConsumerWidget {
           children: [
             // Search Bar
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
               child: TextField(
                 readOnly: true,
                 onTap: () => context.push('/properties'),
@@ -127,11 +127,11 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: 24.h),
 
             // Categories Grid
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
               child: _buildAdaptiveCategoryGrid(
                 context,
                 [
@@ -155,11 +155,11 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
 
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
 
             // Quick Access Services Grid
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
               child: _buildAdaptiveCategoryGrid(
                 context,
                 [
@@ -171,7 +171,7 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
 
-            const SizedBox(height: 32),
+            SizedBox(height: 32.h),
 
             // Dynamic Properties Section
             propertiesAsync.when(
@@ -193,7 +193,7 @@ class HomeScreen extends ConsumerWidget {
                   children: [
                     // Featured Zero-Brokerage Section
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -206,7 +206,13 @@ class HomeScreen extends ConsumerWidget {
                                   l10n.featuredZeroBrokerage,
                                   maxLines: 2,
                                   softWrap: true,
-                                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, height: 1.1),
+                                  style: context.textTheme.headlineSmall?.copyWith(
+                                    fontWeight: FontWeight.w900,
+                                    height: 1.1,
+                                    fontSize: 18.sp,
+                                    color: context.primaryTextColor,
+                                    letterSpacing: -0.5,
+                                  ),
                                 ),
                               ],
                             ),
@@ -218,10 +224,10 @@ class HomeScreen extends ConsumerWidget {
                               children: [
                                 Text(
                                   l10n.seeAll,
-                                  style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w900, fontSize: 12),
+                                  style: TextStyle(color: context.colorScheme.primary, fontWeight: FontWeight.w900, fontSize: 12.sp, letterSpacing: 0.5),
                                 ),
-                                const SizedBox(width: 4),
-                                Icon(Icons.arrow_forward, size: 16, color: Theme.of(context).colorScheme.primary),
+                                SizedBox(width: 4.w),
+                                Icon(Icons.arrow_forward, size: 16.sp, color: context.colorScheme.primary),
                               ],
                             ),
                           ),
@@ -233,12 +239,12 @@ class HomeScreen extends ConsumerWidget {
                       height: 320.h,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        padding: EdgeInsets.symmetric(horizontal: 16.w),
                         itemCount: featured.length,
                         itemBuilder: (context, index) {
                           final prop = featured[index];
                           return Padding(
-                            padding: const EdgeInsets.only(right: 16.0),
+                            padding: EdgeInsets.only(right: 16.w),
                             child: _buildFeaturedCard(context, prop.title, '₹${prop.price.toInt()}', prop.city, prop.imageUrls.isNotEmpty ? prop.imageUrls.first : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80', prop.id),
                           );
                         },
@@ -249,19 +255,19 @@ class HomeScreen extends ConsumerWidget {
 
                     // Newly Added Section
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
                       child: Text(
                         l10n.newlyAdded,
-                        style: Theme.of(context).textTheme.titleLarge,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 20.sp),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16.h),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
                       child: Column(
                         children: properties.take(5).map((prop) {
                           return Padding(
-                            padding: const EdgeInsets.only(bottom: 12.0),
+                            padding: EdgeInsets.only(bottom: 12.h),
                             child: _buildNewlyAddedItem(
                               context: context,
                               title: prop.title,
@@ -371,63 +377,63 @@ class HomeScreen extends ConsumerWidget {
             ),
             // Zero Brokerage Badge
             Positioned(
-              top: 16,
-              left: 16,
+              top: 16.h,
+              left: 16.w,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                 decoration: BoxDecoration(
                   color: const Color(0xFF1E60FF),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(20.sp),
                 ),
-                child: const Text(
+                child: Text(
                   'Zero Brokerage',
-                  style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
             // Info Section
             Positioned(
-              bottom: 16,
-              left: 16,
-              right: 16,
+              bottom: 16.h,
+              left: 16.w,
+              right: 16.w,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.location_on, color: Colors.white70, size: 14),
-                      const SizedBox(width: 4),
+                      Icon(Icons.location_on, color: Colors.white.withValues(alpha: 0.7), size: 14.sp),
+                      SizedBox(width: 4.w),
                       Expanded(
                         child: Text(
                           location,
-                          style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4.h),
                   Text(
                     title,
-                    style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w900),
+                    style: TextStyle(color: Colors.white, fontSize: 18.sp, fontWeight: FontWeight.w900),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4.h),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.baseline,
                     textBaseline: TextBaseline.alphabetic,
                     children: [
                       Text(
                         price,
-                        style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900),
+                        style: TextStyle(color: Colors.white, fontSize: 20.sp, fontWeight: FontWeight.w900),
                       ),
-                      const SizedBox(width: 4),
-                      const Text(
+                      SizedBox(width: 4.w),
+                      Text(
                         '/ month',
-                        style: TextStyle(color: Colors.white70, fontSize: 12),
+                        style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 12.sp),
                       ),
                     ],
                   ),
@@ -444,27 +450,27 @@ class HomeScreen extends ConsumerWidget {
     return GestureDetector(
       onTap: () => context.push('/properties/detail/$propertyId'),
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: EdgeInsets.all(12.sp),
         decoration: BoxDecoration(
           color: context.cardColor,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.sp),
           border: Border.all(color: context.borderColor),
         ),
         child: Row(
           children: [
             // Image
             Container(
-              width: 80,
-              height: 80,
+              width: 80.w,
+              height: 80.w,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(12.sp),
                 image: DecorationImage(
                   image: CachedNetworkImageProvider(image),
                   fit: BoxFit.cover,
                 ),
               ),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16.w),
             // Details
             Expanded(
               child: Column(
@@ -476,37 +482,37 @@ class HomeScreen extends ConsumerWidget {
                       Expanded(
                         child: Text(
                           title,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                         decoration: BoxDecoration(
                           border: Border.all(color: context.borderColor),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.sp),
                         ),
                         child: Text(
                           type,
-                          style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: context.isDarkMode ? Colors.white54 : Colors.black54),
+                          style: TextStyle(fontSize: 8.sp, fontWeight: FontWeight.bold, color: context.secondaryTextColor),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   Text(
                     price,
-                    style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+                    style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4.h),
                   Row(
                     children: [
-                      const Icon(Icons.flash_on, color: Color(0xFF1E60FF), size: 12),
-                      const SizedBox(width: 4),
-                      const Text(
+                      Icon(Icons.flash_on, color: const Color(0xFF1E60FF), size: 12.sp),
+                      SizedBox(width: 4.w),
+                      Text(
                         'DIRECT OWNER',
-                        style: TextStyle(color: Color(0xFF1E60FF), fontSize: 10, fontWeight: FontWeight.w900),
+                        style: TextStyle(color: const Color(0xFF1E60FF), fontSize: 10.sp, fontWeight: FontWeight.w900),
                       ),
                     ],
                   ),
