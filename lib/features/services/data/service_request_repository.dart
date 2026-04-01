@@ -49,6 +49,11 @@ final userServiceRequestsProvider = StreamProvider.family<List<ServiceRequestMod
   return ref.watch(serviceRequestRepositoryProvider).streamUserRequests(userId);
 });
 
+final userAllServicesProvider = StreamProvider.family<List<ServiceRequestModel>, ({String userId, String? email})>((ref, arg) {
+  LoggerService.i('ServiceStream: Listening to all services for user ${arg.userId} / ${arg.email}');
+  return ref.watch(serviceRequestRepositoryProvider).streamUserAndTenantRequests(arg.userId, arg.email);
+});
+
 class ServiceRequestRepository {
   final FirebaseFirestore _firestore;
 
@@ -177,5 +182,28 @@ class ServiceRequestRepository {
           docs.sort((a, b) => b.createdAt.compareTo(a.createdAt));
           return docs;
         });
+  }
+
+  Stream<List<ServiceRequestModel>> streamUserAndTenantRequests(String userId, String? email) {
+    Query query = _firestore.collection('service_requests');
+    
+    if (email != null && email.isNotEmpty) {
+      query = query.where(
+        Filter.or(
+          Filter('userId', isEqualTo: userId),
+          Filter('tenantEmail', isEqualTo: email),
+        ),
+      );
+    } else {
+      query = query.where('userId', isEqualTo: userId);
+    }
+
+    return query.snapshots().map((snapshot) {
+      final docs = snapshot.docs
+          .map((doc) => ServiceRequestModel.fromMap(doc.data() as Map<String, dynamic>, doc.id))
+          .toList();
+      docs.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return docs;
+    });
   }
 }

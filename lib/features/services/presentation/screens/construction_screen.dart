@@ -52,7 +52,9 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
   
   final _soilTypeController = TextEditingController();
   final _depthController = TextEditingController();
+  
   String _borewellPurpose = 'Residential Water Supply';
+  String _outputRequired = 'Conceptual Plan';
 
   @override
   void dispose() {
@@ -480,11 +482,11 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           controller: _specialNeedsController,
         ),
         const SizedBox(height: 32),
-        _buildSelectionBox(l10n.outputRequired, l10n.conceptualPlan, [
+        _buildSelectionBox(l10n.outputRequired, _outputRequired, [
           l10n.conceptualPlan,
           l10n.structuralPlan,
           l10n.threeDElevation,
-        ]),
+        ], (val) => setState(() => _outputRequired = val)),
         const SizedBox(height: 32),
       ],
     );
@@ -544,13 +546,13 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           ],
         ),
         const SizedBox(height: 16),
-        _buildSelectionBox(l10n.stylePreference, l10n.modernMinimalist, [
+        _buildSelectionBox(l10n.stylePreference, _stylePreference, [
           l10n.modernMinimalist,
           l10n.traditionalIndian,
           l10n.contemporary,
           l10n.industrial,
           l10n.luxury,
-        ]),
+        ], (val) => setState(() => _stylePreference = val)),
         const SizedBox(height: 32),
         Text(
           l10n.scopeSelection,
@@ -605,10 +607,10 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: const Color(0xFFF4FAFD),
+            color: AppTheme.primaryBlue.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: AppTheme.cyanAccent.withValues(alpha: 0.1),
+              color: AppTheme.primaryBlue.withValues(alpha: 0.1),
             ),
           ),
           child: Row(
@@ -632,7 +634,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
                     const SizedBox(height: 4),
                     Text(
                       l10n.expertsSubtitle,
-                      style: const TextStyle(color: Colors.black54, fontSize: 10),
+                      style: TextStyle(color: context.secondaryTextColor, fontSize: 10),
                     ),
                   ],
                 ),
@@ -684,11 +686,11 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           ],
         ),
         const SizedBox(height: 16),
-        _buildSelectionBox(l10n.purposeLabel, l10n.residentialWater, [
+        _buildSelectionBox(l10n.purposeLabel, _borewellPurpose, [
           l10n.residentialWater,
           l10n.agricultureFarming,
           l10n.industrialSupply,
-        ]),
+        ], (val) => setState(() => _borewellPurpose = val)),
         const SizedBox(height: 32),
       ],
     );
@@ -799,7 +801,8 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
   Widget _buildSelectionBox(
     String label,
     String value,
-    List<String> dummyOptions,
+    List<String> options,
+    Function(String) onChanged,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -814,28 +817,83 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          decoration: BoxDecoration(
-            color: context.surfaceColor,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: context.primaryTextColor,
+        GestureDetector(
+          onTap: () => _showSelectionMenu(label, options, value, onChanged),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            decoration: BoxDecoration(
+              color: context.surfaceColor,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: context.borderColor),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: context.primaryTextColor,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              ),
-              const Icon(Icons.arrow_drop_down, color: Colors.grey),
-            ],
+                Icon(Icons.arrow_drop_down, color: context.iconColor),
+              ],
+            ),
           ),
         ),
       ],
+    );
+  }
+
+  void _showSelectionMenu(String title, List<String> options, String currentValue, Function(String) onChanged) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Theme.of(ctx).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
+            const SizedBox(height: 16),
+            Flexible(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: options.length,
+                itemBuilder: (context, index) {
+                  final option = options[index];
+                  bool isSelected = option == currentValue;
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(
+                      option,
+                      style: TextStyle(
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        color: isSelected ? AppTheme.primaryBlue : context.primaryTextColor,
+                      ),
+                    ),
+                    trailing: isSelected ? const Icon(Icons.check_circle, color: AppTheme.primaryBlue) : null,
+                    onTap: () {
+                      onChanged(option);
+                      Navigator.pop(ctx);
+                    },
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
     );
   }
 
@@ -890,8 +948,8 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFFF5F5F5),
-        border: Border.all(color: Colors.grey.shade300),
+        color: context.cardColor,
+        border: Border.all(color: context.borderColor),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -899,9 +957,8 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppTheme.primaryBlue.withValues(alpha: 0.1),
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.grey.shade200),
             ),
             child: const Icon(
               Icons.cloud_upload_outlined,
@@ -911,15 +968,15 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           const SizedBox(height: 16),
           Text(
             l10n.tapToUpload,
-            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14),
+            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: context.primaryTextColor),
           ),
           const SizedBox(height: 6),
           Text(
             subtitle,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11,
-              color: Colors.grey,
+              color: context.secondaryTextColor,
               fontWeight: FontWeight.w500,
             ),
           ),

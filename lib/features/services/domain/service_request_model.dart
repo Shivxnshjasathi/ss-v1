@@ -11,6 +11,8 @@ class ServiceRequestModel {
   final DateTime createdAt;
   final String? location; // Optional city for filtering (e.g. for Builder Agents)
   final String? targetProviderId; // Optional if targeting a specific agent/provider
+  final String? tenantEmail; // NEW: To link the request to the tenant's email
+  final String? tenantId; // NEW: To link to the tenant's UID if they already exist
 
   ServiceRequestModel({
     required this.id,
@@ -23,6 +25,8 @@ class ServiceRequestModel {
     required this.createdAt,
     this.location,
     this.targetProviderId,
+    this.tenantEmail,
+    this.tenantId,
   });
 
   Map<String, dynamic> toMap() {
@@ -37,6 +41,8 @@ class ServiceRequestModel {
       'createdAt': Timestamp.fromDate(createdAt),
       'location': location,
       'targetProviderId': targetProviderId,
+      'tenantEmail': tenantEmail,
+      'tenantId': tenantId,
     };
   }
 
@@ -54,11 +60,15 @@ class ServiceRequestModel {
           : DateTime.now(),
       location: map['location'],
       targetProviderId: map['targetProviderId'],
+      tenantEmail: map['tenantEmail'],
+      tenantId: map['tenantId'],
     );
   }
 
   ServiceRequestModel copyWith({
     String? status,
+    String? tenantId,
+    String? tenantEmail,
   }) {
     return ServiceRequestModel(
       id: id,
@@ -71,6 +81,8 @@ class ServiceRequestModel {
       createdAt: createdAt,
       location: location,
       targetProviderId: targetProviderId,
+      tenantEmail: tenantEmail ?? this.tenantEmail,
+      tenantId: tenantId ?? this.tenantId,
     );
   }
 }

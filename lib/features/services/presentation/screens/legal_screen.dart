@@ -33,6 +33,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
   int _currentStep = 0;
   final _lessorController = TextEditingController();
   final _lesseeController = TextEditingController();
+  final _lesseeEmailController = TextEditingController();
   final _addressController = TextEditingController();
   final _rentController = TextEditingController();
   final _depositController = TextEditingController();
@@ -48,12 +49,15 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
   final _fullNameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _cityController = TextEditingController();
-  final _legalReq = 'Buying Property';
+  
+  String _legalReq = 'Buying Property';
+  String _assetType = 'Apartment';
 
   @override
   void dispose() {
     _lessorController.dispose();
     _lesseeController.dispose();
+    _lesseeEmailController.dispose();
     _addressController.dispose();
     _rentController.dispose();
     _depositController.dispose();
@@ -69,6 +73,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
     if (_currentStep == 0) {
       if (_lessorController.text.trim().isEmpty || 
           _lesseeController.text.trim().isEmpty || 
+          _lesseeEmailController.text.trim().isEmpty ||
           _addressController.text.trim().isEmpty ||
           _rentController.text.trim().isEmpty ||
           _depositController.text.trim().isEmpty) {
@@ -173,6 +178,9 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
     );
 
     try {
+      final tenantEmail = _lesseeEmailController.text.trim();
+      final tenantUser = await ref.read(userRepositoryProvider).getUserByEmail(tenantEmail);
+      
       final requestId = 'AGR-${const Uuid().v4().substring(0, 8).toUpperCase()}';
       final request = ServiceRequestModel(
         id: requestId,
@@ -181,9 +189,12 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
         userContact: user.phoneNumber,
         category: 'RentAgreement',
         status: 'Drafted',
+        tenantEmail: tenantEmail,
+        tenantId: tenantUser?.uid,
         details: {
           'lessorName': _lessorController.text,
           'lesseeName': _lesseeController.text,
+          'lesseeEmail': tenantEmail,
           'propertyAddress': _addressController.text,
           'rent': _rentController.text,
           'deposit': _depositController.text,
@@ -384,6 +395,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
         details: {
           'propertyId': _propIdController.text,
           'locality': _propLocationController.text,
+          'assetType': _assetType,
         },
         location: _propLocationController.text,
         createdAt: DateTime.now(),
@@ -657,6 +669,8 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
         SizedBox(height: 20.h),
         _buildTextFieldWidget(_lesseeController, l10n.lesseeName, icon: Icons.person_outline),
         SizedBox(height: 20.h),
+        _buildTextFieldWidget(_lesseeEmailController, 'Tenant Email Address', icon: Icons.email_outlined, keyboardType: TextInputType.emailAddress),
+        SizedBox(height: 20.h),
         _buildTextFieldWidget(_addressController, l10n.propertyAddress, icon: Icons.location_on_outlined, maxLines: 3),
         SizedBox(height: 20.h),
         Row(
@@ -683,7 +697,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
           if (!_isLandlordVerified) _showEkycBottomSheet();
         }),
         SizedBox(height: 16.h),
-        _buildVerificationCard(l10n.tenantKyc, _lesseeController.text, false, l10n),
+        _buildVerificationCard('${l10n.tenantKyc}\n(${_lesseeEmailController.text})', _lesseeController.text, false, l10n),
       ],
     );
   }
@@ -849,7 +863,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
         SizedBox(height: 16.h),
         _buildTextFieldWidget(_propIdController, l10n.propertyIdAny, icon: Icons.home_work_outlined),
         SizedBox(height: 16.h),
-        _buildDropdownField(l10n.legalRequirement, 'Buying Property', [l10n.buyingProperty, l10n.legalDispute, l10n.propertyVerification, l10n.other]),
+        _buildDropdownField(l10n.legalRequirement, _legalReq, [l10n.buyingProperty, l10n.legalDispute, l10n.propertyVerification, l10n.other], (val) => setState(() => _legalReq = val)),
         SizedBox(height: 32.h),
       ],
     );
@@ -893,7 +907,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
         SizedBox(height: 16.h),
         _buildTextFieldWidget(_propLocationController, l10n.exactLocality, icon: Icons.location_on_outlined),
         SizedBox(height: 16.h),
-        _buildDropdownField(l10n.typeOfAsset, 'Apartment', [l10n.apartment, l10n.villaRowHouse, l10n.commercialOffice, 'Plot / Land']),
+        _buildDropdownField(l10n.typeOfAsset, _assetType, [l10n.apartment, l10n.villaRowHouse, l10n.commercialOffice, 'Plot / Land'], (val) => setState(() => _assetType = val)),
         SizedBox(height: 24.h),
         
         Container(
@@ -958,35 +972,86 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
     );
   }
 
-  Widget _buildDropdownField(String label, String value, List<String> options) {
+  Widget _buildDropdownField(String label, String value, List<String> options, Function(String) onChanged) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11.sp, color: context.secondaryTextColor, letterSpacing: 0.5)),
         SizedBox(height: 8.h),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-          decoration: BoxDecoration(
-            color: context.cardColor,
-            borderRadius: BorderRadius.circular(12.sp),
-            border: Border.all(color: context.borderColor),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.02),
-                blurRadius: 4,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(value, style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600, color: context.primaryTextColor)),
-              Icon(Icons.arrow_drop_down, color: Colors.grey, size: 24.sp),
-            ],
+        GestureDetector(
+          onTap: () => _showSelectionMenu(label, options, value, onChanged),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+            decoration: BoxDecoration(
+              color: context.cardColor,
+              borderRadius: BorderRadius.circular(12.sp),
+              border: Border.all(color: context.borderColor),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.02),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(child: Text(value, style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600, color: context.primaryTextColor), overflow: TextOverflow.ellipsis)),
+                Icon(Icons.arrow_drop_down, color: Colors.grey, size: 24.sp),
+              ],
+            ),
           ),
         ),
       ],
+    );
+  }
+
+  void _showSelectionMenu(String title, List<String> options, String currentValue, Function(String) onChanged) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Theme.of(ctx).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
+            const SizedBox(height: 16),
+            Flexible(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: options.length,
+                itemBuilder: (context, index) {
+                  final option = options[index];
+                  bool isSelected = option == currentValue;
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(
+                      option,
+                      style: TextStyle(
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        color: isSelected ? AppTheme.primaryBlue : context.primaryTextColor,
+                      ),
+                    ),
+                    trailing: isSelected ? const Icon(Icons.check_circle, color: AppTheme.primaryBlue) : null,
+                    onTap: () {
+                      onChanged(option);
+                      Navigator.pop(ctx);
+                    },
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
     );
   }
 

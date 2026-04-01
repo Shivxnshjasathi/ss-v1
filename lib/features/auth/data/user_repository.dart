@@ -140,4 +140,26 @@ class UserRepository {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_userCacheKey);
   }
+
+  Future<UserModel?> getUserByEmail(String email) async {
+    debugPrint('🔍 [UserRepository] Searching for user by email: $email');
+    try {
+      final query = await _firestore
+          .collection('users')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
+
+      if (query.docs.isNotEmpty) {
+        final user = UserModel.fromMap(query.docs.first.data());
+        debugPrint('✅ [UserRepository] User found with email: $email');
+        return user;
+      }
+      debugPrint('⚠️ [UserRepository] No user found with email: $email');
+      return null;
+    } catch (e, st) {
+      debugPrint('❌ [UserRepository] Error searching for user by email: $e\n$st');
+      return null;
+    }
+  }
 }

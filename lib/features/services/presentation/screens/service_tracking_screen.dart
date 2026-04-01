@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
+import 'package:sampatti_bazar/features/auth/domain/user_model.dart';
 import 'package:sampatti_bazar/features/services/data/booking_repository.dart';
 import 'package:sampatti_bazar/features/services/domain/booking_model.dart';
 import 'package:sampatti_bazar/features/services/domain/service_request_model.dart';
@@ -59,7 +60,7 @@ class ServiceTrackingScreen extends ConsumerWidget {
           children: [
             _buildBookingList(context, ref, myBookingsAsync, isOwner: false),
             _buildBookingList(context, ref, myVisitorsAsync, isOwner: true),
-            _buildServiceRequestList(context, ref, user.uid),
+            _buildServiceRequestList(context, ref, user),
           ],
         ),
       ),
@@ -235,8 +236,8 @@ class ServiceTrackingScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildServiceRequestList(BuildContext context, WidgetRef ref, String userId) {
-    final servicesAsync = ref.watch(userServiceRequestsProvider(userId));
+  Widget _buildServiceRequestList(BuildContext context, WidgetRef ref, UserModel user) {
+    final servicesAsync = ref.watch(userAllServicesProvider((userId: user.uid, email: user.email)));
 
     return servicesAsync.when(
       data: (requests) {
@@ -261,7 +262,7 @@ class ServiceTrackingScreen extends ConsumerWidget {
           itemCount: requests.length,
           itemBuilder: (context, index) {
             final request = requests[index];
-            return _buildServiceRequestCard(context, ref, request);
+            return _buildServiceRequestCard(context, ref, request, user.uid);
           },
         );
       },
@@ -270,13 +271,16 @@ class ServiceTrackingScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildServiceRequestCard(BuildContext context, WidgetRef ref, ServiceRequestModel request) {
+  Widget _buildServiceRequestCard(BuildContext context, WidgetRef ref, ServiceRequestModel request, String currentUserId) {
     final statusColor = _getServiceStatusColor(request.status);
     final dateStr = DateFormat('MMM d, yyyy').format(request.createdAt);
+    final isTenant = request.tenantId == currentUserId || request.tenantEmail == ref.read(currentUserDataProvider).value?.email;
+    final isLessor = request.userId == currentUserId;
     
     IconData categoryIcon;
     switch (request.category.toLowerCase()) {
-      case 'legal': categoryIcon = Icons.gavel; break;
+      case 'legal': 
+      case 'rentagreement': categoryIcon = Icons.gavel; break;
       case 'construction': categoryIcon = Icons.architecture; break;
       case 'sitevisit': categoryIcon = Icons.location_on; break;
       case 'movers': categoryIcon = Icons.local_shipping; break;
@@ -313,11 +317,24 @@ class ServiceTrackingScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        request.category.toUpperCase(),
-                        style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: AppTheme.primaryBlue, letterSpacing: 1),
-                      ),
-                      const SizedBox(height: 4),
+                        Text(
+                          request.category.toUpperCase(),
+                          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: AppTheme.primaryBlue, letterSpacing: 1),
+                        ),
+                        if (request.category.toLowerCase() == 'rentagreement')
+                          Container(
+                            margin: const EdgeInsets.only(top: 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: isTenant ? Colors.purple.withValues(alpha: 0.1) : (isLessor ? Colors.orange.withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.1)),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              isTenant ? 'TENANT ROLE' : (isLessor ? 'LANDLORD ROLE' : 'PARTICIPANT'),
+                              style: TextStyle(color: isTenant ? Colors.purple : (isLessor ? Colors.orange : Colors.grey), fontSize: 8, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        const SizedBox(height: 4),
                       Text(
                         request.category.toLowerCase() == 'movers' 
                             ? '${request.details['pickupLocation']} ➔ ${request.details['dropLocation']}'
