@@ -1,7 +1,10 @@
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:signature/signature.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/services/data/service_request_repository.dart';
@@ -205,7 +208,63 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
     }
   }
 
-  Future<void> _signAgreementNatively() async {
+  void _showSignatureDialog() {
+    final SignatureController signatureController = SignatureController(
+      penStrokeWidth: 3,
+      penColor: Colors.black,
+      exportBackgroundColor: Colors.white,
+    );
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Draw Your Signature', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 300,
+              height: 150,
+              decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade300)),
+              child: Signature(
+                controller: signatureController,
+                backgroundColor: Colors.grey.shade100,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: () => signatureController.clear(),
+                  child: const Text('Clear', style: TextStyle(color: Colors.red)),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (signatureController.isNotEmpty) {
+                      final Uint8List? data = await signatureController.toPngBytes();
+                      if (data != null) {
+                        final String base64Signature = base64Encode(data);
+                        Navigator.pop(ctx);
+                        _signAgreementNatively(base64Signature);
+                      }
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please draw your signature')));
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryBlue),
+                  child: const Text('Confirm', style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _signAgreementNatively(String base64Signature) async {
     if (_generatedAgreementId == null) return;
     final user = ref.read(currentUserDataProvider).value;
     if (user == null) return;
@@ -226,12 +285,17 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
           'timestamp': DateTime.now().toIso8601String(),
           'kycMethod': 'Aadhaar',
         };
+        newDetails['lessorSignatureImage'] = base64Signature;
         await ref.read(serviceRequestRepositoryProvider).updateRequestDetails(_generatedAgreementId!, newDetails);
         await ref.read(serviceRequestRepositoryProvider).updateRequestStatus(_generatedAgreementId!, 'Awaiting Tenant Signature');
       }
       
       if (!mounted) return;
       context.pop();
+      setState(() {
+        // Just triggering a rebuild so the signature might visually appear if we implemented live sync,
+        // but since we don't watch the stream directly in this tab currently, we rely on state.
+      });
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Successfully digitally signed!'), backgroundColor: Colors.green));
     } catch (e) {
       if (!mounted) return;
@@ -645,8 +709,16 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
         const SizedBox(height: 32),
         Row(
           children: [
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(l10n.lessorLabel, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)), const SizedBox(height: 8), Text(_lessorController.text, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: -0.3))])),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(l10n.lesseeLabel, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)), const SizedBox(height: 8), Text(_lesseeController.text, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: -0.3))])),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(l10n.lessorLabel, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)), 
+              const SizedBox(height: 8), 
+              Text(_lessorController.text, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: -0.3))
+            ])),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(l10n.lesseeLabel, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)), 
+              const SizedBox(height: 8), 
+              Text(_lesseeController.text, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: -0.3))
+            ])),
           ],
         ),
         const SizedBox(height: 32),
@@ -717,7 +789,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
                   onPressed: () {
                     if (_currentStep == 0) _nextStep();
                     else if (_currentStep == 1) _generateAgreement();
-                    else if (_currentStep == 2) _signAgreementNatively();
+                    else if (_currentStep == 2) _showSignatureDialog();
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryBlue, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), elevation: 0),
                   child: Text(_currentStep == 0 ? l10n.nextVerification : (_currentStep == 1 ? l10n.generateAgreement : 'Self-Sign Natively'), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 0.5)),

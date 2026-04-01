@@ -83,6 +83,59 @@ class UserRepository {
     return null;
   }
 
+  Future<void> updatePreApprovalStatus(String uid, bool isPreApproved, double amount, int cibil) async {
+    debugPrint('🏦 [UserRepository] Updating pre-approval for UID: $uid');
+    try {
+      await _firestore.collection('users').doc(uid).update({
+        'isPreApproved': isPreApproved,
+        'preApprovalAmount': amount,
+        'cibilScore': cibil,
+      });
+
+      // Clear local cache to force refresh
+      await clearCache();
+      debugPrint('✅ [UserRepository] Pre-approval updated successfully');
+    } catch (e, st) {
+      debugPrint('❌ [UserRepository] Error updating pre-approval: $e\n$st');
+      rethrow;
+    }
+  }
+
+  Future<void> updateUserRating(String uid, double newRating) async {
+    debugPrint('⭐ [UserRepository] Updating rating for UID: $uid');
+    try {
+      final docRef = _firestore.collection('users').doc(uid);
+      
+      await _firestore.runTransaction((transaction) async {
+        final snapshot = await transaction.get(docRef);
+        if (!snapshot.exists) throw Exception("User doesn't exist");
+        
+        final currentCount = (snapshot.data()?['ratingCount'] as int?) ?? 0;
+        final currentScore = (snapshot.data()?['trustScore'] as num?)?.toDouble() ?? 0.0;
+        final currentDeals = (snapshot.data()?['totalDeals'] as int?) ?? 0;
+
+        final newCount = currentCount + 1;
+        final newScore = ((currentScore * currentCount) + newRating) / newCount;
+        
+        // Let's increment deals slightly per rating functionally to simulate activity
+        final newDeals = currentDeals == 0 ? 1 : currentDeals;
+
+        transaction.update(docRef, {
+          'ratingCount': newCount,
+          'trustScore': newScore,
+          'totalDeals': newDeals,
+        });
+      });
+
+      // Clear local cache
+      await clearCache();
+      debugPrint('✅ [UserRepository] Rating updated successfully');
+    } catch (e, st) {
+      debugPrint('❌ [UserRepository] Error updating rating: $e\n$st');
+      rethrow;
+    }
+  }
+
   Future<void> clearCache() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_userCacheKey);

@@ -6,6 +6,16 @@ class UserModel {
   final String? location;
   final String? role;
   final DateTime createdAt;
+  
+  // Rating/Trust Score fields
+  final double? trustScore;
+  final int? totalDeals;
+  final int? ratingCount;
+
+  // Mortgage Pre-Approval fields
+  final bool? isPreApproved;
+  final double? preApprovalAmount;
+  final int? cibilScore;
 
   UserModel({
     required this.uid,
@@ -15,6 +25,12 @@ class UserModel {
     this.location,
     this.role,
     required this.createdAt,
+    this.trustScore,
+    this.totalDeals,
+    this.ratingCount,
+    this.isPreApproved,
+    this.preApprovalAmount,
+    this.cibilScore,
   });
 
   Map<String, dynamic> toMap() {
@@ -26,6 +42,12 @@ class UserModel {
       'location': location,
       'role': role,
       'createdAt': createdAt.toIso8601String(),
+      'trustScore': trustScore,
+      'totalDeals': totalDeals,
+      'ratingCount': ratingCount,
+      'isPreApproved': isPreApproved,
+      'preApprovalAmount': preApprovalAmount,
+      'cibilScore': cibilScore,
     };
   }
 
@@ -40,6 +62,12 @@ class UserModel {
       createdAt: map['createdAt'] != null 
           ? DateTime.parse(map['createdAt']) 
           : DateTime.now(),
+      trustScore: (map['trustScore'] as num?)?.toDouble(),
+      totalDeals: map['totalDeals'] as int?,
+      ratingCount: map['ratingCount'] as int?,
+      isPreApproved: map['isPreApproved'] as bool?,
+      preApprovalAmount: (map['preApprovalAmount'] as num?)?.toDouble(),
+      cibilScore: map['cibilScore'] as int?,
     );
   }
 
@@ -51,6 +79,12 @@ class UserModel {
     String? location,
     String? role,
     DateTime? createdAt,
+    double? trustScore,
+    int? totalDeals,
+    int? ratingCount,
+    bool? isPreApproved,
+    double? preApprovalAmount,
+    int? cibilScore,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
@@ -60,6 +94,12 @@ class UserModel {
       location: location ?? this.location,
       role: role ?? this.role,
       createdAt: createdAt ?? this.createdAt,
+      trustScore: trustScore ?? this.trustScore,
+      totalDeals: totalDeals ?? this.totalDeals,
+      ratingCount: ratingCount ?? this.ratingCount,
+      isPreApproved: isPreApproved ?? this.isPreApproved,
+      preApprovalAmount: preApprovalAmount ?? this.preApprovalAmount,
+      cibilScore: cibilScore ?? this.cibilScore,
     );
   }
 }

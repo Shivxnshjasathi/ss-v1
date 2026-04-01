@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
+import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 
-class HomeLoanScreen extends StatefulWidget {
+class HomeLoanScreen extends ConsumerStatefulWidget {
   const HomeLoanScreen({super.key});
 
   @override
-  State<HomeLoanScreen> createState() => _HomeLoanScreenState();
+  ConsumerState<HomeLoanScreen> createState() => _HomeLoanScreenState();
 }
 
-class _HomeLoanScreenState extends State<HomeLoanScreen> {
+class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
   final _formKey = GlobalKey<FormState>();
   String _employmentType = 'Salaried';
   final _incomeController = TextEditingController();
@@ -41,46 +43,73 @@ class _HomeLoanScreenState extends State<HomeLoanScreen> {
     super.dispose();
   }
 
-  void _submitApplication() {
+  Future<void> _submitApplication() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
-      // Simulate API call
-      Future.delayed(const Duration(seconds: 2), () {
+      
+      try {
+        final parsedCibil = int.tryParse(_cibilController.text) ?? 0;
+        final parsedIncome = double.tryParse(_incomeController.text.replaceAll(',', '')) ?? 0.0;
+        
+        // Simulating Bank Underwriting Algorithm
+        // 60x Monthly Income for standard eligibility if CIBIL > 700
+        bool isApproved = parsedCibil >= 700 && parsedIncome > 0;
+        double preApprovalAmount = isApproved ? (parsedIncome / 12) * 60 : 0.0;
+        
+        final user = ref.read(currentUserDataProvider).value;
+        if (user != null) {
+          await ref.read(userRepositoryProvider).updatePreApprovalStatus(
+            user.uid,
+            isApproved,
+            preApprovalAmount,
+            parsedCibil,
+          );
+        }
+        
         if (!mounted) return;
         setState(() => _isLoading = false);
 
-        final l10n = AppLocalizations.of(context)!;
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
             backgroundColor: context.surfaceColor,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             title: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.check_circle, color: Colors.green, size: 60),
+                Icon(isApproved ? Icons.verified : Icons.info, color: isApproved ? Colors.green : Colors.orange, size: 60),
                 const SizedBox(height: 16),
-                Text(l10n.applicationSubmitted,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: context.primaryTextColor)),
+                Text(
+                  isApproved ? 'Pre-Approved!' : 'Application Reviewed',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: context.primaryTextColor, fontWeight: FontWeight.bold),
+                ),
               ],
             ),
-            content: Text(l10n.applicationSubmittedDesc,
-                textAlign: TextAlign.center,
-                style: TextStyle(color: context.secondaryTextColor)),
+            content: Text(
+              isApproved 
+                ? 'Congratulations! Based on your profile, you are pre-approved for an estimated loan up to ₹${preApprovalAmount.toInt()}.\nThe badge has been added to your profile.'
+                : 'Your profile has been captured, but your CIBIL score is currently too low for instant pre-approval. A human agent will contact you shortly.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: context.secondaryTextColor),
+            ),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(ctx).pop();
+                  if (isApproved) context.pop(); // Go back on success
                 },
-                child: const Text('OK',
-                    style: TextStyle(color: AppTheme.primaryBlue)),
+                child: const Text('OK', style: TextStyle(color: AppTheme.primaryBlue)),
               )
             ],
           ),
         );
-      });
+      } catch (e) {
+        if (mounted) {
+          setState(() => _isLoading = false);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+        }
+      }
     }
   }
 

@@ -59,6 +59,7 @@ dependencies:
   share_plus: ^10.1.4
   timeago: ^3.7.1
   google_generative_ai: ^0.4.5
+  signature: ^6.3.0
 
 dev_dependencies:
   flutter_test:

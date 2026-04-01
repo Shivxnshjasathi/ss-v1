@@ -436,6 +436,20 @@ class PropertyDetailScreen extends ConsumerWidget {
                                     owner?.role ?? l10n.ownerLabel,
                                     style: TextStyle(fontSize: 12, color: context.secondaryTextColor, fontWeight: FontWeight.bold),
                                   ),
+                                  if (owner != null && (owner.trustScore ?? 0) > 0) ...[
+                                    const SizedBox(height: 4),
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.star, color: Colors.amber, size: 14),
+                                        const SizedBox(width: 4),
+                                        Text('${owner.trustScore!.toStringAsFixed(1)} (${owner.ratingCount ?? 0})', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: context.primaryTextColor)),
+                                        const SizedBox(width: 8),
+                                        const Text('•', style: TextStyle(color: Colors.grey, fontSize: 10)),
+                                        const SizedBox(width: 8),
+                                        Text('${owner.totalDeals ?? 0} clear deals', style: TextStyle(fontSize: 10, color: Colors.green, fontWeight: FontWeight.w800)),
+                                      ],
+                                    ),
+                                  ],
                                 ],
                               ),
                             ),
@@ -488,6 +502,19 @@ class PropertyDetailScreen extends ConsumerWidget {
                                      });
                                    }
                                  },
+                                constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+                                padding: EdgeInsets.zero,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.amber.withValues(alpha: 0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: IconButton(
+                                icon: const Icon(Icons.star_rate_rounded, size: 20, color: Colors.amber),
+                                onPressed: () => _showRatingDialog(context, ref, owner),
                                 constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
                                 padding: EdgeInsets.zero,
                               ),
@@ -707,6 +734,60 @@ class PropertyDetailScreen extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.failedToSchedule(e.toString()))));
       }
     }
+  }
+
+  void _showRatingDialog(BuildContext context, WidgetRef ref, dynamic owner) {
+    if (owner == null) return;
+    double rating = 5.0;
+    
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Rate ${owner.name ?? 'Agent'}', style: const TextStyle(fontWeight: FontWeight.w900)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('How was your experience with this property lister?'),
+            const SizedBox(height: 16),
+            StatefulBuilder(builder: (context, setState) {
+              return Column(
+                children: [
+                  Text(rating.toStringAsFixed(1), style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.amber)),
+                  Slider(
+                    value: rating,
+                    min: 1,
+                    max: 5,
+                    divisions: 4,
+                    activeColor: Colors.amber,
+                    onChanged: (val) => setState(() => rating = val),
+                  ),
+                ],
+              );
+            }),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(ctx);
+              try {
+                await ref.read(userRepositoryProvider).updateUserRating(owner.uid, rating);
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Trust score submitted successfully', style: TextStyle(color: Colors.white)), backgroundColor: Colors.green));
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+                }
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryBlue),
+            child: const Text('Submit', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900)),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildOverviewGrid(BuildContext context, PropertyModel property, AppLocalizations l10n) {

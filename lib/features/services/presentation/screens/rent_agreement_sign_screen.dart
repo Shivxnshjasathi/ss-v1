@@ -1,7 +1,10 @@
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:signature/signature.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/services/data/service_request_repository.dart';
@@ -87,7 +90,63 @@ class _RentAgreementSignScreenState extends ConsumerState<RentAgreementSignScree
     );
   }
 
-  Future<void> _signDocument(ServiceRequestModel doc) async {
+  void _showSignatureDialog(ServiceRequestModel doc) {
+    final SignatureController signatureController = SignatureController(
+      penStrokeWidth: 3,
+      penColor: Colors.black,
+      exportBackgroundColor: Colors.white,
+    );
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Draw Your Signature', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 300,
+              height: 150,
+              decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade300)),
+              child: Signature(
+                controller: signatureController,
+                backgroundColor: Colors.grey.shade100,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: () => signatureController.clear(),
+                  child: const Text('Clear', style: TextStyle(color: Colors.red)),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (signatureController.isNotEmpty) {
+                      final Uint8List? data = await signatureController.toPngBytes();
+                      if (data != null) {
+                        final String base64Signature = base64Encode(data);
+                        Navigator.pop(ctx);
+                        _signDocument(doc, base64Signature);
+                      }
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please draw your signature')));
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryBlue),
+                  child: const Text('Confirm', style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _signDocument(ServiceRequestModel doc, String base64Signature) async {
     final user = ref.read(currentUserDataProvider).value;
     if (user == null) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please login to sign')));
@@ -113,6 +172,7 @@ class _RentAgreementSignScreenState extends ConsumerState<RentAgreementSignScree
         'timestamp': DateTime.now().toIso8601String(),
         'kycMethod': 'Aadhaar',
       };
+      newDetails['lesseeSignatureImage'] = base64Signature;
 
       await ref.read(serviceRequestRepositoryProvider).updateRequestDetails(doc.id, newDetails);
       // If both signed, mark as Completed
@@ -232,8 +292,24 @@ class _RentAgreementSignScreenState extends ConsumerState<RentAgreementSignScree
                 const SizedBox(height: 32),
                 Row(
                   children: [
-                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(l10n.lessorLabel, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)), const SizedBox(height: 8), Text(details['lessorName'] ?? 'Unknown', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: -0.3))])),
-                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(l10n.lesseeLabel, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)), const SizedBox(height: 8), Text(details['lesseeName'] ?? 'Unknown', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: -0.3))])),
+                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text(l10n.lessorLabel, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)), 
+                      const SizedBox(height: 8), 
+                      Text(details['lessorName'] ?? 'Unknown', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: -0.3)),
+                      if (details['lessorSignatureImage'] != null) ...[
+                        const SizedBox(height: 8),
+                        Image.memory(base64Decode(details['lessorSignatureImage']), height: 50, color: Colors.blue.shade900),
+                      ]
+                    ])),
+                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text(l10n.lesseeLabel, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)), 
+                      const SizedBox(height: 8), 
+                      Text(details['lesseeName'] ?? 'Unknown', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: -0.3)),
+                      if (details['lesseeSignatureImage'] != null) ...[
+                        const SizedBox(height: 8),
+                        Image.memory(base64Decode(details['lesseeSignatureImage']), height: 50, color: Colors.blue.shade900),
+                      ]
+                    ])),
                   ],
                 ),
                 const SizedBox(height: 32),
@@ -288,7 +364,7 @@ class _RentAgreementSignScreenState extends ConsumerState<RentAgreementSignScree
                     width: double.infinity,
                     height: 54,
                     child: ElevatedButton.icon(
-                      onPressed: _isLoading ? null : () => _signDocument(doc),
+                      onPressed: _isLoading ? null : () => _showSignatureDialog(doc),
                       icon: _isLoading ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : const Icon(Icons.fingerprint, color: Colors.white),
                       label: Text(_isKycVerified ? 'Accept & Digitally Sign' : 'Complete E-KYC to Sign', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Colors.white)),
                       style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryBlue, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
