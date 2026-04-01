@@ -112,13 +112,16 @@ class PropertyDetailScreen extends ConsumerWidget {
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                   CachedNetworkImage(
-                     imageUrl: property.imageUrls.isNotEmpty 
-                        ? property.imageUrls.first 
-                        : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-                     fit: BoxFit.cover,
-                     memCacheHeight: 800,
-                     memCacheWidth: 800,
+                   Hero(
+                     tag: 'property_image_${property.id}',
+                     child: CachedNetworkImage(
+                       imageUrl: property.imageUrls.isNotEmpty 
+                          ? property.imageUrls.first 
+                          : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+                       fit: BoxFit.cover,
+                       memCacheHeight: 800,
+                       memCacheWidth: 800,
+                     ),
                    ),
                    Container(
                      decoration: BoxDecoration(
@@ -391,7 +394,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                        borderRadius: BorderRadius.circular(12.sp),
                        boxShadow: [
                          BoxShadow(
-                           color: Colors.black.withValues(alpha: 0.04),
+                            color: Colors.black.withValues(alpha: 0.03),
                            blurRadius: 10.sp,
                            offset: Offset(0, 4.h),
                          )

@@ -7,6 +7,7 @@ import 'package:sampatti_bazar/features/properties/data/property_repository.dart
 import 'package:sampatti_bazar/features/properties/domain/property_model.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
+import 'package:sampatti_bazar/core/widgets/skeleton_loaders.dart';
 
 class PropertyFeedScreen extends ConsumerStatefulWidget {
   const PropertyFeedScreen({super.key});
@@ -90,13 +91,20 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                     height: 56.h,
                     padding: EdgeInsets.symmetric(horizontal: 16.w),
                     decoration: BoxDecoration(
-                      color: context.surfaceColor,
-                      border: Border.all(color: context.borderColor),
-                      borderRadius: BorderRadius.circular(12),
+                      color: context.cardColor,
+                      border: Border.all(color: context.borderColor, width: 1.5),
+                      borderRadius: BorderRadius.circular(16.sp),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.03),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        )
+                      ],
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.search, color: context.secondaryTextColor),
+                        Icon(Icons.search, color: context.iconColor),
                         const SizedBox(width: 12),
                         Expanded(
                           child: TextField(
@@ -104,7 +112,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                             onChanged: (_) => setState(() {}),
                             decoration: InputDecoration(
                               hintText: l10n.searchPropertiesHint,
-                              hintStyle: TextStyle(color: context.secondaryTextColor.withValues(alpha: 0.5), fontSize: 14.sp),
+                              hintStyle: TextStyle(color: context.secondaryTextColor.withValues(alpha: 0.5), fontSize: 13.sp),
                               border: InputBorder.none,
                             ),
                             style: TextStyle(color: context.primaryTextColor, fontSize: 14.sp),
@@ -116,7 +124,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                             padding: EdgeInsets.all(8.sp),
                             decoration: BoxDecoration(
                               color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(8.sp),
+                              borderRadius: BorderRadius.circular(12.sp),
                             ),
                             child: Icon(Icons.tune, color: Theme.of(context).colorScheme.primary, size: 18.sp),
                           ),
@@ -250,7 +258,14 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                   },
                 );
               },
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => ListView.builder(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                itemCount: 3,
+                itemBuilder: (context, index) => Padding(
+                  padding: EdgeInsets.only(bottom: 24.h),
+                  child: const PropertyCardSkeleton(),
+                ),
+              ),
               error: (err, stack) => Center(child: Text('Error: $err', style: const TextStyle(color: Colors.red))),
             ),
           ),
@@ -431,13 +446,13 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
         margin: EdgeInsets.only(bottom: context.isMobile ? 12.h : 0),
         decoration: BoxDecoration(
           color: context.cardColor,
-          borderRadius: BorderRadius.circular(16.sp),
-          border: Border.all(color: context.borderColor),
+          borderRadius: BorderRadius.circular(24.sp), // More rounded iOS style
+          border: Border.all(color: context.borderColor, width: 1.5),
           boxShadow: [
             BoxShadow(
-              color: context.isDarkMode ? Colors.black.withValues(alpha: 0.2) : Colors.black.withValues(alpha: 0.04),
-              blurRadius: 10.sp,
-              offset: Offset(0, 4.h),
+              color: Colors.black.withValues(alpha: 0.08), // Softer, pro shadow
+              blurRadius: 15,
+              offset: const Offset(0, 8),
             )
           ],
         ),
@@ -448,14 +463,17 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
             // Image Section
             Stack(
               children: [
-                CachedNetworkImage(
-                  imageUrl: property.imageUrls.isNotEmpty ? property.imageUrls.first : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
-                  height: 240.h,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  memCacheHeight: 400.h.toInt(), // Performance: Limit memory cache size
-                  memCacheWidth: 600.w.toInt(), // Responsive cache width
-                  placeholder: (context, url) => Container(color: context.cardColor),
+                Hero(
+                  tag: 'property_image_${property.id}',
+                  child: CachedNetworkImage(
+                    imageUrl: property.imageUrls.isNotEmpty ? property.imageUrls.first : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
+                    height: 240.h,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    memCacheHeight: 400.h.toInt(), // Performance: Limit memory cache size
+                    memCacheWidth: 600.w.toInt(), // Responsive cache width
+                    placeholder: (context, url) => Container(color: context.cardColor),
+                  ),
                 ),
                 // Gradient Overlay for text readability
                 Positioned.fill(

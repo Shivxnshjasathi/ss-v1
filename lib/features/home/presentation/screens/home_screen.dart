@@ -9,6 +9,7 @@ import 'package:sampatti_bazar/core/services/location_provider.dart';
 import 'package:sampatti_bazar/core/services/logger_service.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
+import 'package:sampatti_bazar/core/widgets/skeleton_loaders.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -265,7 +266,7 @@ class HomeScreen extends ConsumerWidget {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
                       child: Column(
-                        children: properties.take(5).map((prop) {
+                        children: properties.take(5).toList().map((prop) {
                           return Padding(
                             padding: EdgeInsets.only(bottom: 12.h),
                             child: _buildNewlyAddedItem(
@@ -283,7 +284,15 @@ class HomeScreen extends ConsumerWidget {
                   ],
                 );
               },
-              loading: () => const Center(child: Padding(padding: EdgeInsets.all(32), child: CircularProgressIndicator())),
+              loading: () => SizedBox(
+                height: 320.h,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  itemCount: 3,
+                  itemBuilder: (context, index) => const PropertyCardSkeleton(),
+                ),
+              ),
               error: (err, stack) => Center(child: Padding(padding: const EdgeInsets.all(32), child: Text('Error: $err'))),
             ),
             const SizedBox(height: 100), // padding for FAB
@@ -316,6 +325,7 @@ class HomeScreen extends ConsumerWidget {
 
   Widget _buildCategoryItem(BuildContext context, String title, IconData icon, VoidCallback onTap, double width) {
     return GestureDetector(
+      onTapDown: (_) {}, // For visual feedback if needed
       onTap: onTap,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -325,8 +335,15 @@ class HomeScreen extends ConsumerWidget {
             height: width.clamp(50.0, 70.0),
             decoration: BoxDecoration(
               color: context.cardColor,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: context.borderColor, width: 1.0),
+              borderRadius: BorderRadius.circular(20.sp), // More rounded iOS style
+              border: Border.all(color: context.borderColor, width: 1.5),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                )
+              ],
             ),
             child: Icon(icon, color: context.iconColor, size: width.clamp(20.0, 28.0).sp),
           ),
@@ -335,7 +352,7 @@ class HomeScreen extends ConsumerWidget {
             width: width,
             child: Text(
               title,
-              style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+              style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, letterSpacing: 0.5, color: context.primaryTextColor),
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -349,14 +366,21 @@ class HomeScreen extends ConsumerWidget {
     return GestureDetector(
       onTap: () => context.push('/properties/detail/$propertyId'),
       child: Container(
-        width: 240.w,
+        width: 260.w, // Slightly wider for better visual impact
         decoration: BoxDecoration(
           color: context.cardColor,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(24.sp), // Smoother rounded corners
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.08), // Softer shadow
+              blurRadius: 15,
+              offset: const Offset(0, 8),
+            )
+          ],
           image: DecorationImage(
             image: ResizeImage(
               CachedNetworkImageProvider(imageUrl),
-              width: 500,
+              width: 800,
             ),
             fit: BoxFit.cover,
           ),
@@ -453,17 +477,24 @@ class HomeScreen extends ConsumerWidget {
         padding: EdgeInsets.all(12.sp),
         decoration: BoxDecoration(
           color: context.cardColor,
-          borderRadius: BorderRadius.circular(16.sp),
-          border: Border.all(color: context.borderColor),
+          borderRadius: BorderRadius.circular(20.sp), // Consistent iOS style
+          border: Border.all(color: context.borderColor, width: 1.2),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            )
+          ],
         ),
         child: Row(
           children: [
-            // Image
+            // Image with smoother corners
             Container(
-              width: 80.w,
-              height: 80.w,
+              width: 90.w, // Slightly larger
+              height: 90.w,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12.sp),
+                borderRadius: BorderRadius.circular(16.sp),
                 image: DecorationImage(
                   image: CachedNetworkImageProvider(image),
                   fit: BoxFit.cover,
@@ -482,7 +513,7 @@ class HomeScreen extends ConsumerWidget {
                       Expanded(
                         child: Text(
                           title,
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
+                          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp, color: context.primaryTextColor, letterSpacing: -0.2),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -490,12 +521,12 @@ class HomeScreen extends ConsumerWidget {
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                         decoration: BoxDecoration(
-                          border: Border.all(color: context.borderColor),
-                          borderRadius: BorderRadius.circular(12.sp),
+                          color: context.colorScheme.primary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8.sp),
                         ),
                         child: Text(
-                          type,
-                          style: TextStyle(fontSize: 8.sp, fontWeight: FontWeight.bold, color: context.secondaryTextColor),
+                          type.toUpperCase(),
+                          style: TextStyle(fontSize: 8.sp, fontWeight: FontWeight.w900, color: context.colorScheme.primary, letterSpacing: 0.5),
                         ),
                       ),
                     ],
@@ -503,16 +534,20 @@ class HomeScreen extends ConsumerWidget {
                   SizedBox(height: 8.h),
                   Text(
                     price,
-                    style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp),
+                    style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18.sp, color: context.primaryTextColor, letterSpacing: -0.5),
                   ),
-                  SizedBox(height: 4.h),
+                  SizedBox(height: 6.h),
                   Row(
                     children: [
-                      Icon(Icons.flash_on, color: const Color(0xFF1E60FF), size: 12.sp),
-                      SizedBox(width: 4.w),
+                      Container(
+                        padding: EdgeInsets.all(4.sp),
+                        decoration: const BoxDecoration(color: Color(0xFF1E60FF), shape: BoxShape.circle),
+                        child: Icon(Icons.flash_on, color: Colors.white, size: 8.sp),
+                      ),
+                      SizedBox(width: 6.w),
                       Text(
                         'DIRECT OWNER',
-                        style: TextStyle(color: const Color(0xFF1E60FF), fontSize: 10.sp, fontWeight: FontWeight.w900),
+                        style: TextStyle(color: const Color(0xFF1E60FF), fontSize: 9.sp, fontWeight: FontWeight.w900, letterSpacing: 0.5),
                       ),
                     ],
                   ),
