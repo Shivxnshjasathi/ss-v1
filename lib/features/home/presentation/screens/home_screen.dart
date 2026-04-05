@@ -148,9 +148,9 @@ class HomeScreen extends ConsumerWidget {
                     LoggerService.i('Home: List property tapped');
                     context.push('/add-property');
                   }),
-                  _CategoryData(l10n.services, Icons.work_outline, () {
-                    LoggerService.i('Home: Services tapped');
-                    context.push('/services');
+                  _CategoryData(l10n.marketplace, Icons.shopping_bag_outlined, () {
+                    LoggerService.i('Home: Marketplace tapped');
+                    context.push('/services/marketplace');
                   }),
                 ],
               ),

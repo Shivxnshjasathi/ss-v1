@@ -668,6 +668,75 @@ class AppLocalizationsHi extends AppLocalizations {
   String get basics => 'बुनियादी बातें';
 
   @override
+  String get masonryStructure => 'चिनाई';
+
+  @override
+  String get sandAggregates => 'रेत';
+
+  @override
+  String get openingsWoodwork => 'लकड़ी';
+
+  @override
+  String get finishingAesthetics => 'फिनिशिंग';
+
+  @override
+  String get utilitiesInstallations => 'उपयोगिताएँ';
+
+  @override
+  String get sand => 'रेत';
+
+  @override
+  String get gitti => 'गिट्टी';
+
+  @override
+  String get murrum => 'मुरम';
+
+  @override
+  String get dust => 'डस्ट';
+
+  @override
+  String get tmtRebar => 'टीएमटी सरिया';
+
+  @override
+  String get iron => 'लोहा';
+
+  @override
+  String get frames => 'चौखट';
+
+  @override
+  String get windows => 'खिड़की';
+
+  @override
+  String get grills => 'ग्रिल';
+
+  @override
+  String get tilesStone => 'टाइल्स और पत्थर';
+
+  @override
+  String get ceiling => 'सीलिंग';
+
+  @override
+  String get plumbing => 'प्लंबिंग';
+
+  @override
+  String get sanitary => 'सेनेटरी';
+
+  @override
+  String get electrical => 'इलेक्ट्रिकल';
+
+  @override
+  String get kitchenEssentials => 'किचन का सामान';
+
+  @override
+  String get solarPanels => 'सोलर पैनल';
+
+  @override
+  String get epoxy => 'इपोक्सी';
+
+  @override
+  String get wallpapers => 'वॉलपेपर्स';
+
+  @override
   String get bulkOrders => 'थोक ऑर्डर';
 
   @override
@@ -1353,4 +1422,19 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get providerQuote => 'प्रदाता उद्धरण';
+
+  @override
+  String get sortBy => 'क्रमबद्ध करें';
+
+  @override
+  String get priceLowToHigh => 'कीमत: कम से अधिक';
+
+  @override
+  String get priceHighToLow => 'कीमत: अधिक से कम';
+
+  @override
+  String get brands => 'ब्रांड';
+
+  @override
+  String get clearAll => 'सब साफ करें';
 }

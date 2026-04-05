@@ -18,25 +18,25 @@ void main() async {
   runZonedGuarded<Future<void>>(
     () async {
       WidgetsFlutterBinding.ensureInitialized();
-      
+
       // Initialize Firebase
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
-      
+
       debugPrint('Firebase initialized successfully: ${Firebase.app().name}');
 
       // Initialize Crashlytics
       FlutterError.onError = (errorDetails) {
         FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
       };
-      
+
       // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
       PlatformDispatcher.instance.onError = (error, stack) {
         FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
         return true;
       };
-      
+
       // Ensure analytics is enabled
       await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
 
@@ -63,22 +63,22 @@ class SampattiBazarApp extends ConsumerWidget {
             Responsive().init(context);
             return MaterialApp.router(
               title: 'Sampatti Bazar',
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ref.watch(themeProvider),
-      locale: ref.watch(localeProvider),
-      routerConfig: goRouter,
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [
-        Locale('en', ''), // English
-        Locale('hi', ''), // Hindi
-      ],
-      debugShowCheckedModeBanner: false,
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: ref.watch(themeProvider),
+              locale: ref.watch(localeProvider),
+              routerConfig: goRouter,
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [
+                Locale('en', ''), // English
+                Locale('hi', ''), // Hindi
+              ],
+              debugShowCheckedModeBanner: false,
             );
           },
         );

@@ -1388,6 +1388,144 @@ abstract class AppLocalizations {
   /// **'Basics'**
   String get basics;
 
+  /// No description provided for @masonryStructure.
+  ///
+  /// In en, this message translates to:
+  /// **'Masonry'**
+  String get masonryStructure;
+
+  /// No description provided for @sandAggregates.
+  ///
+  /// In en, this message translates to:
+  /// **'Sand'**
+  String get sandAggregates;
+
+  /// No description provided for @openingsWoodwork.
+  ///
+  /// In en, this message translates to:
+  /// **'Woodwork'**
+  String get openingsWoodwork;
+
+  /// No description provided for @finishingAesthetics.
+  ///
+  /// In en, this message translates to:
+  /// **'Finishing'**
+  String get finishingAesthetics;
+
+  /// No description provided for @utilitiesInstallations.
+  ///
+  /// In en, this message translates to:
+  /// **'Utilities'**
+  String get utilitiesInstallations;
+
+  /// No description provided for @sand.
+  ///
+  /// In en, this message translates to:
+  /// **'Sand'**
+  String get sand;
+
+  /// No description provided for @gitti.
+  ///
+  /// In en, this message translates to:
+  /// **'Gitti'**
+  String get gitti;
+
+  /// No description provided for @murrum.
+  ///
+  /// In en, this message translates to:
+  /// **'Murrum'**
+  String get murrum;
+
+  /// No description provided for @dust.
+  ///
+  /// In en, this message translates to:
+  /// **'Dust'**
+  String get dust;
+
+  /// No description provided for @tmtRebar.
+  ///
+  /// In en, this message translates to:
+  /// **'TMT Rebar'**
+  String get tmtRebar;
+
+  /// No description provided for @iron.
+  ///
+  /// In en, this message translates to:
+  /// **'Iron'**
+  String get iron;
+
+  /// No description provided for @frames.
+  ///
+  /// In en, this message translates to:
+  /// **'Frames (Choukhaat)'**
+  String get frames;
+
+  /// No description provided for @windows.
+  ///
+  /// In en, this message translates to:
+  /// **'Windows (Khidki)'**
+  String get windows;
+
+  /// No description provided for @grills.
+  ///
+  /// In en, this message translates to:
+  /// **'Grills'**
+  String get grills;
+
+  /// No description provided for @tilesStone.
+  ///
+  /// In en, this message translates to:
+  /// **'Tiles & Stone'**
+  String get tilesStone;
+
+  /// No description provided for @ceiling.
+  ///
+  /// In en, this message translates to:
+  /// **'Ceiling'**
+  String get ceiling;
+
+  /// No description provided for @plumbing.
+  ///
+  /// In en, this message translates to:
+  /// **'Plumbing'**
+  String get plumbing;
+
+  /// No description provided for @sanitary.
+  ///
+  /// In en, this message translates to:
+  /// **'Sanitary'**
+  String get sanitary;
+
+  /// No description provided for @electrical.
+  ///
+  /// In en, this message translates to:
+  /// **'Electrical'**
+  String get electrical;
+
+  /// No description provided for @kitchenEssentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Kitchen Essentials'**
+  String get kitchenEssentials;
+
+  /// No description provided for @solarPanels.
+  ///
+  /// In en, this message translates to:
+  /// **'Solar Panels'**
+  String get solarPanels;
+
+  /// No description provided for @epoxy.
+  ///
+  /// In en, this message translates to:
+  /// **'Epoxy'**
+  String get epoxy;
+
+  /// No description provided for @wallpapers.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallpapers'**
+  String get wallpapers;
+
   /// No description provided for @bulkOrders.
   ///
   /// In en, this message translates to:
@@ -2683,6 +2821,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Provider Quote'**
   String get providerQuote;
+
+  /// No description provided for @sortBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort By'**
+  String get sortBy;
+
+  /// No description provided for @priceLowToHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: Low to High'**
+  String get priceLowToHigh;
+
+  /// No description provided for @priceHighToLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: High to Low'**
+  String get priceHighToLow;
+
+  /// No description provided for @brands.
+  ///
+  /// In en, this message translates to:
+  /// **'Brands'**
+  String get brands;
+
+  /// No description provided for @clearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear All'**
+  String get clearAll;
 }
 
 class _AppLocalizationsDelegate

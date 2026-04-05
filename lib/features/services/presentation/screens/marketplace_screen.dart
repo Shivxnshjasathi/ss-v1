@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/services/domain/cart_service.dart';
+import 'package:sampatti_bazar/features/services/domain/marketplace_data.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 
 class MarketplaceScreen extends StatefulWidget {
@@ -15,62 +16,55 @@ class MarketplaceScreen extends StatefulWidget {
 
 class _MarketplaceScreenState extends State<MarketplaceScreen> {
   final CartService cart = CartService();
-  String _selectedCategory = 'All';
+  String _selectedCategoryId = 'all';
+  String _selectedSubcategory = 'All';
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+  
+  // Advanced Filter State
+  String _sortBy = 'Default';
+  RangeValues _priceRange = const RangeValues(0, 100000);
+  final List<String> _selectedBrands = [];
 
-  final List<Map<String, dynamic>> _allProducts = [
-    {
-      'id': '1',
-      'category': 'Cement',
-      'title': 'Ultra-Tough Portland Cement',
-      'price': 480.0,
-      'unit': 'Bag',
-      'image': 'https://images.unsplash.com/photo-1590494056253-ab4fc64fbe3d?w=400&q=80',
-    },
-    {
-      'id': '2',
-      'category': 'Steel',
-      'title': 'TMT Steel Ribbed Rods (12mm)',
-      'price': 62500.0,
-      'unit': 'Ton',
-      'image': 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400&q=80',
-    },
-    {
-      'id': '3',
-      'category': 'Bricks',
-      'title': 'Premium Red Clay Bricks',
-      'price': 12.0,
-      'unit': 'Piece',
-      'image': 'https://images.unsplash.com/photo-1517409419131-ab85ef67d8cd?w=400&q=80',
-    },
-    {
-      'id': '4',
-      'category': 'Paint',
-      'title': 'Weather-Shield Exterior Paint',
-      'price': 3200.0,
-      'unit': '20L',
-      'image': 'https://images.unsplash.com/photo-1563806967664-cd2deac68d0e?w=400&q=80',
-    },
-    {
-      'id': '5',
-      'category': 'Bricks',
-      'title': 'Reinforced Concrete Blocks',
-      'price': 45.0,
-      'unit': 'Piece',
-      'image': 'https://images.unsplash.com/photo-1515255452399-55e149c47cbe?w=400&q=80',
-    },
-    {
-      'id': '6',
-      'category': 'Basics',
-      'title': 'Fine Grade River Sand',
-      'price': 4500.0,
-      'unit': 'Truck',
-      'image': 'https://images.unsplash.com/photo-1565134638781-f2f281e8eaf6?w=400&q=80',
-    },
-  ];
+  List<MarketplaceProduct> get _filteredProducts {
+    // Universal Search: if search is active, look across all products
+    // Otherwise, respect the category selection
+    var products = _searchQuery.isNotEmpty 
+      ? MarketplaceData.products 
+      : (_selectedCategoryId == 'all' 
+          ? MarketplaceData.products 
+          : MarketplaceData.products.where((p) => p.categoryId == _selectedCategoryId).toList());
 
-  List<Map<String, dynamic>> get _filteredProducts {
-    if (_selectedCategory == 'All') return _allProducts;
-    return _allProducts.where((p) => p['category'] == _selectedCategory).toList();
+    // Apply Subcategory filter only if search is NOT active or if we are in a specific category
+    if (_searchQuery.isEmpty && _selectedSubcategory != 'All' && _selectedCategoryId != 'all') {
+      products = products.where((p) => p.subcategory == _selectedSubcategory).toList();
+    }
+    
+    // Apply Universal Search Query
+    if (_searchQuery.isNotEmpty) {
+      products = products.where((p) => 
+        p.name.toLowerCase().contains(_searchQuery.toLowerCase()) || 
+        (p.brand?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false) ||
+        p.subcategory.toLowerCase().contains(_searchQuery.toLowerCase())
+      ).toList();
+    }
+
+    // Apply Price Filter
+    products = products.where((p) => p.price >= _priceRange.start && p.price <= _priceRange.end).toList();
+
+    // Apply Brand Filter
+    if (_selectedBrands.isNotEmpty) {
+      products = products.where((p) => _selectedBrands.contains(p.brand)).toList();
+    }
+
+    // Apply Sorting
+    if (_sortBy == 'Price: Low to High') {
+      products.sort((a, b) => a.price.compareTo(b.price));
+    } else if (_sortBy == 'Price: High to Low') {
+      products.sort((a, b) => b.price.compareTo(a.price));
+    }
+    
+    return products;
   }
 
   String _formatCurrency(double amount) {
@@ -79,19 +73,19 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
     return '₹$text';
   }
 
-  void _addToCart(String id, String category, String title, double price, String unit, String image) {
+  void _addToCart(MarketplaceProduct product) {
     cart.addItem(CartItem(
-      id: id,
-      category: category,
-      title: title,
-      price: price,
-      unit: unit,
-      image: image,
+      id: product.id,
+      category: product.categoryId,
+      title: product.name,
+      price: product.price,
+      unit: product.unit,
+      image: product.image,
     ));
     final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(l10n.addedToCart(title)),
+        content: Text(l10n.addedToCart(product.name)),
         backgroundColor: AppTheme.primaryBlue,
         duration: const Duration(seconds: 2),
         action: SnackBarAction(
@@ -110,229 +104,351 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
 
     return Scaffold(
       backgroundColor: context.scaffoldColor,
-      appBar: AppBar(
-        backgroundColor: context.scaffoldColor,
-        elevation: 0,
-        leading: IconButton(
-          icon: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: AppTheme.cyanAccent.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
+      body: CustomScrollView(
+        slivers: [
+          _buildSliverAppBar(l10n),
+          SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSearchBar(l10n),
+                _buildCategorySection(l10n),
+                if (_selectedCategoryId != 'all' && _searchQuery.isEmpty) _buildSubcategorySection(l10n),
+                _buildProductHeader(l10n, filtered.length),
+              ],
             ),
-            child: Icon(Icons.arrow_back_ios_new, color: context.iconColor, size: 16),
           ),
-          onPressed: () => context.pop(),
-        ),
-        title: Text(l10n.marketplace, style: GoogleFonts.inter(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 18)),
-        actions: [
-          ListenableBuilder(
-            listenable: cart,
-            builder: (context, _) {
-              return Stack(
-                alignment: Alignment.center,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.shopping_cart_outlined, color: context.iconColor),
-                    onPressed: () => context.push('/services/marketplace/cart'),
-                  ),
-                  if (cart.itemCount > 0)
-                    Positioned(
-                      right: 6,
-                      top: 6,
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: const BoxDecoration(
-                          color: Colors.red,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Text(
-                          '${cart.itemCount}',
-                          style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                ],
-              );
-            },
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Filter Categories
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: context.primaryTextColor,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(Icons.filter_list, color: context.scaffoldColor, size: 16),
-                  ),
-                  const SizedBox(width: 12),
-                  _buildCategoryChip('All', l10n),
-                  _buildCategoryChip('Cement', l10n),
-                  _buildCategoryChip('Steel', l10n),
-                  _buildCategoryChip('Bricks', l10n),
-                  _buildCategoryChip('Paint', l10n),
-                  _buildCategoryChip('Basics', l10n),
-                ],
-              ),
-            ),
-            
-            // Bulk Orders Banner
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: context.cardColor,
-                  border: Border.all(color: context.borderColor),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          if (filtered.isEmpty)
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(l10n.bulkOrders, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12)),
-                        const SizedBox(height: 4),
-                        Text(l10n.bulkOrdersSubtitle, style: const TextStyle(fontSize: 10, color: Colors.grey)),
-                      ],
-                    ),
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: context.surfaceColor,
-                        border: Border.all(color: context.borderColor),
-                        borderRadius: BorderRadius.circular(4),
+                    Icon(Icons.search_off, size: 64, color: Colors.grey.withValues(alpha: 0.3)),
+                    const SizedBox(height: 16),
+                    Text(l10n.noProductsFound, style: const TextStyle(color: Colors.grey)),
+                    if (_searchQuery.isNotEmpty)
+                      TextButton(
+                        onPressed: () => setState(() {
+                          _searchController.clear();
+                          _searchQuery = '';
+                        }),
+                        child: const Text("Clear Search", style: TextStyle(color: AppTheme.primaryBlue)),
                       ),
-                      child: Icon(Icons.arrow_forward, size: 16, color: context.iconColor),
-                    ),
                   ],
                 ),
               ),
-            ),
-            
-            const SizedBox(height: 24),
-            
-            // Grid
-            if (filtered.isEmpty)
-              Padding(
-                padding: const EdgeInsets.all(32.0),
-                child: Center(
-                  child: Text(l10n.noProductsFound, style: const TextStyle(color: Colors.grey)),
-                ),
-              )
-            else
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: filtered.length,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+            )
+          else
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverGrid(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   mainAxisSpacing: 16,
                   crossAxisSpacing: 16,
-                  childAspectRatio: 0.65,
+                  childAspectRatio: 0.62,
                 ),
-                itemBuilder: (context, index) {
-                  final item = filtered[index];
-                  return _buildProductCard(
-                    item['id'],
-                    item['category'].toString().toUpperCase(),
-                    item['title'],
-                    item['price'],
-                    item['unit'],
-                    item['image'],
-                    l10n,
-                  );
-                },
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final product = filtered[index];
+                    return _buildProductCard(product, l10n);
+                  },
+                  childCount: filtered.length,
+                ),
               ),
-            const SizedBox(height: 32),
+            ),
+          const SliverToBoxAdapter(child: SizedBox(height: 32)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSliverAppBar(AppLocalizations l10n) {
+    return SliverAppBar(
+      pinned: true,
+      expandedHeight: 100,
+      backgroundColor: context.scaffoldColor,
+      elevation: 0,
+      leading: IconButton(
+        icon: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: AppTheme.cyanAccent.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(Icons.arrow_back_ios_new, color: context.iconColor, size: 16),
+        ),
+        onPressed: () => context.pop(),
+      ),
+      flexibleSpace: FlexibleSpaceBar(
+        titlePadding: const EdgeInsets.only(left: 56, bottom: 16),
+        title: Text(l10n.marketplace, style: GoogleFonts.inter(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 18)),
+      ),
+      actions: [
+        ListenableBuilder(
+          listenable: cart,
+          builder: (context, _) {
+            return Stack(
+              alignment: Alignment.center,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.shopping_bag_outlined, color: context.iconColor),
+                  onPressed: () => context.push('/services/marketplace/cart'),
+                ),
+                if (cart.itemCount > 0)
+                  Positioned(
+                    right: 6,
+                    top: 6,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        '${cart.itemCount}',
+                        style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
+        ),
+        const SizedBox(width: 8),
+      ],
+    );
+  }
+
+  Widget _buildSearchBar(AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: context.cardColor,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildCategoryChip(String label, AppLocalizations l10n) {
-    bool isSelected = _selectedCategory == label;
-    return Padding(
-      padding: const EdgeInsets.only(right: 12.0),
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            _selectedCategory = label;
-          });
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          decoration: BoxDecoration(
-          color: isSelected ? AppTheme.primaryBlue : context.cardColor,
-          borderRadius: BorderRadius.circular(30),
-          border: isSelected ? null : Border.all(color: context.borderColor),
-          ),
-          child: Text(
-            _getLocalizedCategoryName(label, l10n),
-            style: GoogleFonts.inter(
-              fontWeight: FontWeight.w900,
-              color: isSelected ? Colors.white : context.primaryTextColor,
-              fontSize: 12,
-              letterSpacing: 0.5,
-            ),
+        child: TextField(
+          controller: _searchController,
+          onChanged: (val) => setState(() => _searchQuery = val),
+          decoration: InputDecoration(
+            hintText: "Search materials, brands...",
+            hintStyle: GoogleFonts.inter(color: Colors.grey, fontSize: 14),
+            prefixIcon: const Icon(Icons.search, color: AppTheme.primaryBlue),
+            suffixIcon: _searchQuery.isNotEmpty 
+              ? IconButton(
+                  icon: const Icon(Icons.clear, size: 18),
+                  onPressed: () => setState(() {
+                    _searchController.clear();
+                    _searchQuery = '';
+                  }),
+                )
+              : null,
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(vertical: 16),
           ),
         ),
       ),
     );
   }
 
-  String _getLocalizedCategoryName(String category, AppLocalizations l10n) {
-    switch (category) {
-      case 'All': return l10n.all;
-      case 'Cement': return l10n.cement;
-      case 'Steel': return l10n.steel;
-      case 'Bricks': return l10n.bricks;
-      case 'Paint': return l10n.paint;
-      case 'Basics': return l10n.basics;
-      default: return category;
-    }
+  Widget _buildCategorySection(AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Text("Browse Categories", style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 14, letterSpacing: 0.5)),
+        ),
+        SizedBox(
+          height: 100,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            itemCount: MarketplaceData.categories.length + 1,
+            itemBuilder: (context, index) {
+              bool isAll = index == 0;
+              MarketplaceCategory? cat = isAll ? null : MarketplaceData.categories[index - 1];
+              String id = isAll ? 'all' : cat!.id;
+              String name = isAll ? l10n.all : _getLocalizedCategory(id, l10n);
+              IconData icon = isAll ? Icons.grid_view_rounded : cat!.icon;
+              bool isSelected = _selectedCategoryId == id;
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: GestureDetector(
+                  onTap: () => setState(() {
+                    _selectedCategoryId = id;
+                    _selectedSubcategory = 'All';
+                  }),
+                  child: Column(
+                    children: [
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: isSelected ? AppTheme.primaryBlue : context.cardColor,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: isSelected ? [BoxShadow(color: AppTheme.primaryBlue.withValues(alpha: 0.3), blurRadius: 10, offset: const Offset(0, 4))] : [],
+                          border: Border.all(color: isSelected ? Colors.transparent : context.borderColor),
+                        ),
+                        child: Icon(icon, color: isSelected ? Colors.white : context.iconColor, size: 24),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(name, style: GoogleFonts.inter(fontSize: 10, fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500, color: isSelected ? AppTheme.primaryBlue : context.primaryTextColor)),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
   }
 
-  Widget _buildProductCard(String id, String category, String title, double price, String unit, String image, AppLocalizations l10n) {
+  Widget _buildSubcategorySection(AppLocalizations l10n) {
+    final cat = MarketplaceData.categories.firstWhere((c) => c.id == _selectedCategoryId);
+    final subs = ['All', ...cat.subcategories];
+
+    return Container(
+      margin: const EdgeInsets.only(top: 8),
+      height: 40,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        itemCount: subs.length,
+        itemBuilder: (context, index) {
+          final sub = subs[index];
+          bool isSelected = _selectedSubcategory == sub;
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: ChoiceChip(
+              label: Text(_getLocalizedSubcategory(sub, l10n), style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.bold)),
+              selected: isSelected,
+              onSelected: (val) => setState(() => _selectedSubcategory = sub),
+              selectedColor: AppTheme.primaryBlue,
+              labelStyle: TextStyle(color: isSelected ? Colors.white : context.primaryTextColor),
+              backgroundColor: context.cardColor,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              side: BorderSide(color: isSelected ? Colors.transparent : context.borderColor),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildProductHeader(AppLocalizations l10n, int count) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text("Showing $count products", style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.grey)),
+          GestureDetector(
+            onTap: () => _showFilterSheet(l10n),
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: context.surfaceColor,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: context.borderColor),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.tune_rounded, size: 16, color: context.iconColor),
+                  const SizedBox(width: 4),
+                  Text("Filter", style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.bold, color: context.iconColor)),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showFilterSheet(AppLocalizations l10n) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _FilterBottomSheet(
+        sortBy: _sortBy,
+        priceRange: _priceRange,
+        selectedBrands: _selectedBrands,
+        allBrands: MarketplaceData.products.map((p) => p.brand).whereType<String>().toSet().toList(),
+        onApply: (sort, range, brands) {
+          setState(() {
+            _sortBy = sort;
+            _priceRange = range;
+            _selectedBrands.clear();
+            _selectedBrands.addAll(brands);
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _buildProductCard(MarketplaceProduct product, AppLocalizations l10n) {
     return Container(
       decoration: BoxDecoration(
         color: context.cardColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: context.borderColor),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            flex: 4,
-            child: Container(
-              decoration: BoxDecoration(
-                color: context.surfaceColor,
-                borderRadius: const BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
-                image: DecorationImage(
-                  image: CachedNetworkImageProvider(image),
-                  fit: BoxFit.cover,
+            flex: 10,
+            child: Stack(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: context.surfaceColor,
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                    image: DecorationImage(
+                      image: CachedNetworkImageProvider(product.image),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
-              ),
+                if (product.brand != null)
+                  Positioned(
+                    top: 8,
+                    left: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.6),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(product.brand!, style: const TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+              ],
             ),
           ),
           Expanded(
-            flex: 5,
+            flex: 11,
             child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: Column(
@@ -342,30 +458,29 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(_getLocalizedCategoryName(category, l10n).toUpperCase(), style: GoogleFonts.inter(fontSize: 8, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)),
+                      Text(product.subcategory.toUpperCase(), style: GoogleFonts.inter(fontSize: 8, fontWeight: FontWeight.w900, color: AppTheme.primaryBlue, letterSpacing: 0.5)),
                       const SizedBox(height: 4),
-                      Text(title, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12, height: 1.2, color: context.primaryTextColor), maxLines: 2, overflow: TextOverflow.ellipsis),
+                      Text(product.name, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 13, height: 1.2, color: context.primaryTextColor), maxLines: 2, overflow: TextOverflow.ellipsis),
                     ],
                   ),
-                  const SizedBox(height: 8),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.baseline,
                     textBaseline: TextBaseline.alphabetic,
                     children: [
-                      Text(_formatCurrency(price), style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 16, color: context.primaryTextColor)),
+                      Text(_formatCurrency(product.price), style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 16, color: context.primaryTextColor)),
                       const SizedBox(width: 4),
-                      Flexible(child: Text('/ $unit', style: TextStyle(fontSize: 10, color: context.secondaryTextColor), overflow: TextOverflow.ellipsis)),
+                      Flexible(child: Text('/ ${product.unit}', style: TextStyle(fontSize: 10, color: context.secondaryTextColor), overflow: TextOverflow.ellipsis)),
                     ],
                   ),
-                  const Spacer(),
                   SizedBox(
                     width: double.infinity,
-                    height: 36,
+                    height: 38,
                     child: ElevatedButton(
-                      onPressed: () => _addToCart(id, category, title, price, unit, image),
+                      onPressed: () => _addToCart(product),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.primaryBlue,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        elevation: 0,
                       ),
                       child: Text(l10n.addToCart, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12, color: Colors.white)),
                     ),
@@ -375,6 +490,217 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  String _getLocalizedCategory(String id, AppLocalizations l10n) {
+    switch (id) {
+      case 'masonry': return l10n.masonryStructure;
+      case 'steel': return l10n.steel;
+      case 'openings': return l10n.openingsWoodwork;
+      case 'finishing': return l10n.finishingAesthetics;
+      case 'utilities': return l10n.utilitiesInstallations;
+      default: return id;
+    }
+  }
+
+  String _getLocalizedSubcategory(String sub, AppLocalizations l10n) {
+    switch (sub) {
+      case 'All': return l10n.all;
+      case 'Bricks': return l10n.bricks;
+      case 'Cement': return l10n.cement;
+      case 'Sand': return l10n.sand;
+      case 'Gitti': return l10n.gitti;
+      case 'Murrum': return l10n.murrum;
+      case 'Dust': return l10n.dust;
+      case 'TMT Rebar': return l10n.tmtRebar;
+      case 'Iron': return l10n.iron;
+      case 'Frames (Choukhaat)': return l10n.frames;
+      case 'Windows (Khidki)': return l10n.windows;
+      case 'Grills': return l10n.grills;
+      case 'Tiles & Stone': return l10n.tilesStone;
+      case 'Paint & Prep': return l10n.paint;
+      case 'Ceiling': return l10n.ceiling;
+      case 'Plumbing': return l10n.plumbing;
+      case 'Sanitary': return l10n.sanitary;
+      case 'Electrical': return l10n.electrical;
+      case 'Kitchen Essentials': return l10n.kitchenEssentials;
+      case 'Solar Panels': return l10n.solarPanels;
+      case 'Epoxy': return l10n.epoxy;
+      case 'Wallpapers': return l10n.wallpapers;
+      default: return sub;
+    }
+  }
+}
+
+class _FilterBottomSheet extends StatefulWidget {
+  final String sortBy;
+  final RangeValues priceRange;
+  final List<String> selectedBrands;
+  final List<String> allBrands;
+  final Function(String, RangeValues, List<String>) onApply;
+
+  const _FilterBottomSheet({
+    required this.sortBy,
+    required this.priceRange,
+    required this.selectedBrands,
+    required this.allBrands,
+    required this.onApply,
+  });
+
+  @override
+  State<_FilterBottomSheet> createState() => _FilterBottomSheetState();
+}
+
+class _FilterBottomSheetState extends State<_FilterBottomSheet> {
+  late String _tempSortBy;
+  late RangeValues _tempPriceRange;
+  late List<String> _tempSelectedBrands;
+
+  @override
+  void initState() {
+    super.initState();
+    _tempSortBy = widget.sortBy;
+    _tempPriceRange = widget.priceRange;
+    _tempSelectedBrands = List.from(widget.selectedBrands);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: context.scaffoldColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      padding: EdgeInsets.only(
+        top: 24,
+        left: 24,
+        right: 24,
+        bottom: MediaQuery.of(context).padding.bottom + 24,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(l10n.sortBy, style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w900, color: context.primaryTextColor)),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _tempSortBy = 'Default';
+                    _tempPriceRange = const RangeValues(0, 100000);
+                    _tempSelectedBrands.clear();
+                  });
+                },
+                child: Text(l10n.clearAll, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          
+          _buildSortOption(l10n.all, 'Default'),
+          _buildSortOption(l10n.priceLowToHigh, 'Price: Low to High'),
+          _buildSortOption(l10n.priceHighToLow, 'Price: High to Low'),
+          
+          const SizedBox(height: 32),
+          Text(l10n.priceRangeLabel, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w900, color: context.primaryTextColor)),
+          const SizedBox(height: 8),
+          RangeSlider(
+            values: _tempPriceRange,
+            min: 0,
+            max: 100000,
+            divisions: 100,
+            activeColor: AppTheme.primaryBlue,
+            inactiveColor: context.borderColor,
+            labels: RangeLabels(
+              '₹${_tempPriceRange.start.round()}',
+              '₹${_tempPriceRange.end.round()}',
+            ),
+            onChanged: (values) {
+              setState(() {
+                _tempPriceRange = values;
+              });
+            },
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('₹${_tempPriceRange.start.round()}', style: TextStyle(color: context.secondaryTextColor, fontWeight: FontWeight.bold, fontSize: 12)),
+              Text('₹${_tempPriceRange.end.round()}+', style: TextStyle(color: context.secondaryTextColor, fontWeight: FontWeight.bold, fontSize: 12)),
+            ],
+          ),
+
+          const SizedBox(height: 32),
+          Text(l10n.brands, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w900, color: context.primaryTextColor)),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: widget.allBrands.map((brand) {
+              final isSelected = _tempSelectedBrands.contains(brand);
+              return FilterChip(
+                label: Text(brand, style: GoogleFonts.inter(fontSize: 12, fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500)),
+                selected: isSelected,
+                onSelected: (val) {
+                  setState(() {
+                    if (val) {
+                      _tempSelectedBrands.add(brand);
+                    } else {
+                      _tempSelectedBrands.remove(brand);
+                    }
+                  });
+                },
+                selectedColor: AppTheme.primaryBlue.withValues(alpha: 0.2),
+                checkmarkColor: AppTheme.primaryBlue,
+                labelStyle: TextStyle(color: isSelected ? AppTheme.primaryBlue : context.primaryTextColor),
+                backgroundColor: context.cardColor,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                side: BorderSide(color: isSelected ? AppTheme.primaryBlue : context.borderColor),
+              );
+            }).toList(),
+          ),
+
+          const SizedBox(height: 48),
+          SizedBox(
+            width: double.infinity,
+            height: 56,
+            child: ElevatedButton(
+              onPressed: () {
+                widget.onApply(_tempSortBy, _tempPriceRange, _tempSelectedBrands);
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primaryBlue,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                elevation: 0,
+              ),
+              child: Text(l10n.applyFilters, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 16, color: Colors.white)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSortOption(String label, String value) {
+    bool isSelected = _tempSortBy == value;
+    final context = this.context;
+    return InkWell(
+      onTap: () => setState(() => _tempSortBy = value),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(label, style: GoogleFonts.inter(fontSize: 14, fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500, color: isSelected ? AppTheme.primaryBlue : context.primaryTextColor)),
+            if (isSelected) const Icon(Icons.check_circle, color: AppTheme.primaryBlue, size: 20),
+          ],
+        ),
       ),
     );
   }

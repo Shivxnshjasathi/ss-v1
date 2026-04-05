@@ -663,6 +663,75 @@ class AppLocalizationsEn extends AppLocalizations {
   String get basics => 'Basics';
 
   @override
+  String get masonryStructure => 'Masonry';
+
+  @override
+  String get sandAggregates => 'Sand';
+
+  @override
+  String get openingsWoodwork => 'Woodwork';
+
+  @override
+  String get finishingAesthetics => 'Finishing';
+
+  @override
+  String get utilitiesInstallations => 'Utilities';
+
+  @override
+  String get sand => 'Sand';
+
+  @override
+  String get gitti => 'Gitti';
+
+  @override
+  String get murrum => 'Murrum';
+
+  @override
+  String get dust => 'Dust';
+
+  @override
+  String get tmtRebar => 'TMT Rebar';
+
+  @override
+  String get iron => 'Iron';
+
+  @override
+  String get frames => 'Frames (Choukhaat)';
+
+  @override
+  String get windows => 'Windows (Khidki)';
+
+  @override
+  String get grills => 'Grills';
+
+  @override
+  String get tilesStone => 'Tiles & Stone';
+
+  @override
+  String get ceiling => 'Ceiling';
+
+  @override
+  String get plumbing => 'Plumbing';
+
+  @override
+  String get sanitary => 'Sanitary';
+
+  @override
+  String get electrical => 'Electrical';
+
+  @override
+  String get kitchenEssentials => 'Kitchen Essentials';
+
+  @override
+  String get solarPanels => 'Solar Panels';
+
+  @override
+  String get epoxy => 'Epoxy';
+
+  @override
+  String get wallpapers => 'Wallpapers';
+
+  @override
   String get bulkOrders => 'BULK ORDERS';
 
   @override
@@ -1348,4 +1417,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get providerQuote => 'Provider Quote';
+
+  @override
+  String get sortBy => 'Sort By';
+
+  @override
+  String get priceLowToHigh => 'Price: Low to High';
+
+  @override
+  String get priceHighToLow => 'Price: High to Low';
+
+  @override
+  String get brands => 'Brands';
+
+  @override
+  String get clearAll => 'Clear All';
 }
