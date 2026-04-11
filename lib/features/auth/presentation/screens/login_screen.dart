@@ -8,6 +8,7 @@ import 'package:sampatti_bazar/core/utils/routing_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sampatti_bazar/core/services/logger_service.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -140,56 +141,56 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+                padding: EdgeInsets.symmetric(horizontal: 24.0.w, vertical: 32.0.h),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Center(
                       child: Container(
-                        padding: const EdgeInsets.all(12),
+                        padding: EdgeInsets.all(12.w),
                         decoration: BoxDecoration(
                           color: const Color(0xFF1E60FF),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.w),
                         ),
-                        child: const Icon(Icons.home_outlined, color: Colors.white, size: 32),
+                        child: Icon(Icons.home_outlined, color: Colors.white, size: 32.w),
                       ),
                     ),
-                    const SizedBox(height: 32),
+                    SizedBox(height: 32.h),
                     FittedBox(
                       fit: BoxFit.scaleDown,
                       alignment: Alignment.centerLeft,
-                      child: Text(l10n.welcomeTo, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1, height: 1.1)),
+                      child: Text(l10n.welcomeTo, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32.sp, letterSpacing: -1, height: 1.1.h)),
                     ),
                     FittedBox(
                       fit: BoxFit.scaleDown,
                       alignment: Alignment.centerLeft,
-                      child: Text(l10n.sampattiBazar, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1, color: Color(0xFF1E60FF), height: 1.1)),
+                      child: Text(l10n.sampattiBazar, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32.sp, letterSpacing: -1, color: Color(0xFF1E60FF), height: 1.1.h)),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16.h),
                     Text(
                       _isEmailLogin ? l10n.emailLoginHint : l10n.phoneLoginHint, 
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.primaryTextColor)
+                      style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w600, color: context.primaryTextColor)
                     ),
-                    const SizedBox(height: 32),
+                    SizedBox(height: 32.h),
                     
                     if (!_isEmailLogin) ...[
-                      Text(l10n.mobileNumber, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1.0)),
-                      const SizedBox(height: 12),
+                      Text(l10n.mobileNumber, style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1.0)),
+                      SizedBox(height: 12.h),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.baseline,
                         textBaseline: TextBaseline.alphabetic,
                         children: [
-                          Text('+91', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24, color: context.primaryTextColor)),
-                          const SizedBox(width: 8),
+                          Text('+91', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24.sp, color: context.primaryTextColor)),
+                          SizedBox(width: 8.w),
                           Expanded(
                             child: TextField(
                               controller: _phoneController,
                               keyboardType: TextInputType.phone,
                               cursorColor: const Color(0xFF1E60FF),
-                              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24, color: context.primaryTextColor, letterSpacing: 2.0),
+                              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24.sp, color: context.primaryTextColor, letterSpacing: 2.0),
                               decoration: InputDecoration(
                                 hintText: '00000 00000',
-                                hintStyle: TextStyle(fontWeight: FontWeight.w900, fontSize: 24, color: context.secondaryTextColor.withValues(alpha: 0.3), letterSpacing: 2.0),
+                                hintStyle: TextStyle(fontWeight: FontWeight.w900, fontSize: 24.sp, color: context.secondaryTextColor.withValues(alpha: 0.3), letterSpacing: 2.0),
                                 border: InputBorder.none,
                                 isDense: true,
                                 contentPadding: EdgeInsets.zero,
@@ -198,56 +199,56 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ),
                         ],
                       ),
-                      Container(height: 2, color: context.primaryTextColor, margin: const EdgeInsets.only(top: 8)),
+                      Container(height: 2.h, color: context.primaryTextColor, margin: EdgeInsets.only(top: 8.h)),
                     ] else ...[
-                      Text(l10n.emailAddress, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1.0)),
-                      const SizedBox(height: 8),
+                      Text(l10n.emailAddress, style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1.0)),
+                      SizedBox(height: 8.h),
                       TextField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         cursorColor: const Color(0xFF1E60FF),
-                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: context.primaryTextColor),
+                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.sp, color: context.primaryTextColor),
                         decoration: InputDecoration(
                           hintText: 'you@example.com',
-                          hintStyle: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: context.secondaryTextColor.withValues(alpha: 0.3)),
+                          hintStyle: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.sp, color: context.secondaryTextColor.withValues(alpha: 0.3)),
                           border: const UnderlineInputBorder(),
-                          focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: context.primaryTextColor, width: 2)),
+                          focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: context.primaryTextColor, width: 2.w)),
                         ),
                       ),
-                      const SizedBox(height: 24),
-                      Text(l10n.password, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1.0)),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 24.h),
+                      Text(l10n.password, style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1.0)),
+                      SizedBox(height: 8.h),
                       TextField(
                         controller: _passwordController,
                         obscureText: true,
                         cursorColor: const Color(0xFF1E60FF),
-                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: context.primaryTextColor),
+                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.sp, color: context.primaryTextColor),
                         decoration: InputDecoration(
                           hintText: '••••••••',
-                          hintStyle: TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: context.secondaryTextColor.withValues(alpha: 0.3)),
+                          hintStyle: TextStyle(fontWeight: FontWeight.w700, fontSize: 18.sp, color: context.secondaryTextColor.withValues(alpha: 0.3)),
                           border: const UnderlineInputBorder(),
-                          focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: context.primaryTextColor, width: 2)),
+                          focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: context.primaryTextColor, width: 2.w)),
                         ),
                       ),
                     ],
                     
-                    const SizedBox(height: 32),
+                    SizedBox(height: 32.h),
                     SizedBox(
                       width: double.infinity,
-                      height: 56,
+                      height: 56.h,
                       child: ElevatedButton(
                         onPressed: _isLoading ? null : (_isEmailLogin ? _onEmailLogin : _onGetOtp),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF1E60FF),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.w)),
                           elevation: 0,
                         ),
                         child: _isLoading 
-                            ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                            : Text(_isEmailLogin ? l10n.continueText : l10n.getOtp, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
+                            ? SizedBox(width: 24.w, height: 24.h, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                            : Text(_isEmailLogin ? l10n.continueText : l10n.getOtp, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp)),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16.h),
                     Center(
                       child: TextButton(
                         onPressed: () {
@@ -261,12 +262,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24.h),
                     Center(
                       child: Text.rich(
                         TextSpan(
                           text: '${l10n.agreementText}\n',
-                          style: TextStyle(fontSize: 10, color: context.primaryTextColor.withValues(alpha: 0.7)),
+                          style: TextStyle(fontSize: 10.sp, color: context.primaryTextColor.withValues(alpha: 0.7)),
                           children: [
                             TextSpan(text: l10n.termsOfService, style: TextStyle(color: context.primaryTextColor, decoration: TextDecoration.underline, fontWeight: FontWeight.bold)),
                             const TextSpan(text: ' & '),

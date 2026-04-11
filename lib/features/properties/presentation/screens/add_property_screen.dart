@@ -10,6 +10,7 @@ import 'package:sampatti_bazar/features/auth/data/auth_repository.dart';
 import 'package:uuid/uuid.dart';
 import 'package:sampatti_bazar/core/services/location_service.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class AddPropertyScreen extends ConsumerStatefulWidget {
   const AddPropertyScreen({super.key});
@@ -225,13 +226,13 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
           l10n.listPropertyTitle,
           style: TextStyle(
             color: context.primaryTextColor,
-            fontSize: 18,
+            fontSize: 18.sp,
             fontWeight: FontWeight.bold,
           ),
         ),
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 16.0),
+            padding: EdgeInsets.only(right: 16.0.w),
             child: Center(
               child: Text(
                 l10n.stepOf(_currentStep),
@@ -260,7 +261,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
               child: Form(
                 key: _formKey,
                 child: ListView(
-                  padding: const EdgeInsets.all(24.0),
+                  padding: EdgeInsets.all(24.0.w),
                   children: [
                     if (_currentStep == 1) _buildBasicInfoStep(l10n),
                     if (_currentStep == 2) _buildLocationAndDetailsStep(l10n),
@@ -271,7 +272,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
             ),
             // Bottom Action Bar
             Container(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.0.w),
               decoration: BoxDecoration(
                 color: context.cardColor,
                 boxShadow: [
@@ -290,9 +291,9 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
                       child: OutlinedButton(
                         onPressed: _previousStep,
                         style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          padding: EdgeInsets.symmetric(vertical: 16.h),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(12.w),
                           ),
                           side: BorderSide(
                             color: Theme.of(context).colorScheme.primary,
@@ -301,14 +302,14 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
                         child: Text(
                           l10n.back,
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 16.sp,
                             color: Theme.of(context).colorScheme.primary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
                     ),
-                  if (_currentStep > 1) const SizedBox(width: 16),
+                  if (_currentStep > 1) SizedBox(width: 16.w),
                   Expanded(
                     flex: 2,
                     child: ElevatedButton(
@@ -316,18 +317,18 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: EdgeInsets.symmetric(vertical: 16.h),
                         elevation: 0,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.w),
                         ),
                       ),
                       child: _isSubmitting 
-                        ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                        ? SizedBox(width: 24.w, height: 24.h, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                         : Text(
                             _currentStep < 3 ? l10n.continueButton : l10n.postListing,
-                            style: const TextStyle(
-                              fontSize: 16,
+                            style: TextStyle(
+                              fontSize: 16.sp,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -348,18 +349,18 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
       children: [
         Text(
           l10n.basicInfo,
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+          style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w900),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         Text(
           'What kind of property are you listing?', // Localize this later if needed
-          style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+          style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade600),
         ),
-        const SizedBox(height: 32),
+        SizedBox(height: 32.h),
         _buildLabel(l10n.listingType),
-        const SizedBox(height: 12),
+        SizedBox(height: 12.h),
         Wrap(
-          spacing: 12,
+          spacing: 12.h,
           runSpacing: 12,
           children: _listingTypes.map((type) {
             final isSelected = _listingType == type;
@@ -374,23 +375,23 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
               backgroundColor: context.surfaceColor,
               selectedColor: Theme.of(context).colorScheme.primary,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(20.w),
                 side: BorderSide(
                   color: isSelected
                       ? Theme.of(context).colorScheme.primary
                       : Colors.grey.shade300,
                 ),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
             );
           }).toList(),
         ),
 
-        const SizedBox(height: 24),
+        SizedBox(height: 24.h),
         _buildLabel(l10n.propertyType),
-        const SizedBox(height: 12),
+        SizedBox(height: 12.h),
         Wrap(
-          spacing: 12,
+          spacing: 12.h,
           runSpacing: 12,
           children: _propertyTypes
               .map(
@@ -413,28 +414,28 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
       children: [
         Text(
           l10n.propertyDetails,
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+          style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w900),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         Text(
           'Tell us more about your property and its location.', // Localize later
-          style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+          style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade600),
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: 24.h),
         OutlinedButton.icon(
           onPressed: _isFetchingLocation ? null : () => _fetchLocation(l10n),
           icon: _isFetchingLocation 
-            ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-            : const Icon(Icons.my_location, size: 18),
+            ? SizedBox(width: 16.w, height: 16.h, child: CircularProgressIndicator(strokeWidth: 2))
+            : Icon(Icons.my_location, size: 18.w),
           label: Text(_isFetchingLocation ? l10n.fetchingLocation : l10n.useCurrentLocation),
           style: OutlinedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.w)),
           ),
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: 24.h),
         _buildLabel('City'), // Localize to "City" if needed
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         _buildTextField(
           l10n,
           'Enter city (e.g., Jabalpur)',
@@ -442,25 +443,25 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
           controller: _cityController,
         ),
 
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         _buildLabel('Locality / Society'), // Localize later
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         _buildTextField(l10n, 'Enter locality', Icons.map_outlined, controller: _localityController),
 
-        const SizedBox(height: 24),
+        SizedBox(height: 24.h),
         _buildLabel(l10n.bhkConfiguration),
-        const SizedBox(height: 12),
+        SizedBox(height: 12.h),
         _buildChoiceChips(
           _bhkOptions,
           _bhk,
           (val) => setState(() => _bhk = val),
         ),
 
-        const SizedBox(height: 24),
+        SizedBox(height: 24.h),
         _buildLabel(l10n.furnishingStatus),
-        const SizedBox(height: 12),
+        SizedBox(height: 12.h),
         Wrap(
-          spacing: 12,
+          spacing: 12.h,
           runSpacing: 12,
           children: _furnishingOptions.map((option) {
             final isSelected = _furnishingStatus == option;
@@ -475,19 +476,19 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
               backgroundColor: context.surfaceColor,
               selectedColor: Theme.of(context).colorScheme.primary,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(20.w),
                 side: BorderSide(
                   color: isSelected
                       ? Theme.of(context).colorScheme.primary
                       : Colors.grey.shade300,
                 ),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
             );
           }).toList(),
         ),
 
-        const SizedBox(height: 24),
+        SizedBox(height: 24.h),
         Row(
           children: [
             Expanded(
@@ -495,7 +496,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildLabel(l10n.builtUpArea),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   _buildTextField(
                     l10n,
                     'sq.ft.',
@@ -506,13 +507,13 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
                 ],
               ),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16.w),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildLabel(l10n.bath), // Using bath from ARB
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   _buildTextField(
                     l10n,
                     'e.g., 2',
@@ -525,7 +526,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: 24.h),
         Row(
           children: [
             Expanded(
@@ -533,7 +534,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildLabel(l10n.yearBuilt),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   _buildTextField(
                     l10n,
                     'e.g. 2023',
@@ -544,13 +545,13 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
                 ],
               ),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16.w),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildLabel(l10n.lotSize),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   _buildTextField(
                     l10n,
                     'sq.ft.',
@@ -573,19 +574,19 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
       children: [
         Text(
           l10n.pricingPhotos,
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+          style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w900),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         Text(
           'Add a competitive price and high-quality photos.', // Localize later
-          style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+          style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade600),
         ),
-        const SizedBox(height: 32),
+        SizedBox(height: 32.h),
 
         _buildLabel(
           _listingType == 'Sell' ? l10n.expectedPrice : l10n.monthlyRent,
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         _buildTextField(
           l10n,
           'Enter amount',
@@ -594,16 +595,16 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
           controller: _priceController,
         ),
 
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         if (_listingType == 'Rent/Lease') ...[
           _buildLabel(l10n.securityDeposit),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.h),
           _buildTextField(l10n, 'Enter deposit amount', Icons.security, controller: _depositController),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
         ],
 
         _buildLabel(l10n.propertyDescription),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         _buildTextField(
           l10n,
           'Write a few lines about your property...', // Localize later
@@ -612,20 +613,20 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
           controller: _descriptionController,
         ),
 
-        const SizedBox(height: 24),
+        SizedBox(height: 24.h),
         _buildLabel(l10n.uploadPhotos),
-        const SizedBox(height: 12),
+        SizedBox(height: 12.h),
         GestureDetector(
           onTap: _pickImages,
           child: Container(
-            height: 160,
+            height: 160.h,
             width: double.infinity,
             decoration: BoxDecoration(
               color: Colors.grey.shade50,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(16.w),
               border: Border.all(
                 color: Colors.grey.shade300,
-                width: 2,
+                width: 2.w,
                 style: BorderStyle.none,
               ), // We'll simulate dashed by using an icon
             ),
@@ -637,10 +638,10 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
                     children: [
                       Icon(
                         Icons.add_photo_alternate_outlined,
-                        size: 48,
+                        size: 48.w,
                         color: Theme.of(context).colorScheme.primary,
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: 12.h),
                       Text(
                         l10n.uploadPhotos,
                         style: TextStyle(
@@ -648,10 +649,10 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
                           color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      const Text(
+                      SizedBox(height: 4.h),
+                      Text(
                         'Supports JPG, PNG (Max 5MB each)',
-                        style: TextStyle(color: Colors.grey, fontSize: 12),
+                        style: TextStyle(color: Colors.grey, fontSize: 12.sp),
                       ),
                     ],
                   ),
@@ -659,29 +660,29 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
               : ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: _selectedImages.length,
-                  padding: const EdgeInsets.all(8),
+                  padding: EdgeInsets.all(8.w),
                   itemBuilder: (context, index) {
                     return Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
+                      padding: EdgeInsets.only(right: 8.0.w),
                       child: Stack(
                         children: [
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.file(_selectedImages[index], height: 140, width: 140, fit: BoxFit.cover),
+                            borderRadius: BorderRadius.circular(8.w),
+                            child: Image.file(_selectedImages[index], height: 140.h, width: 140.w, fit: BoxFit.cover),
                           ),
                           Positioned(
-                            top: 4,
-                            right: 4,
+                            top: 4.h,
+                            right: 4.w,
                             child: GestureDetector(
                               onTap: () {
                                 setState(() {
                                   _selectedImages.removeAt(index);
                                 });
                               },
-                              child: const CircleAvatar(
-                                radius: 12,
+                              child: CircleAvatar(
+                                radius: 12.w,
                                 backgroundColor: Colors.red,
-                                child: Icon(Icons.close, size: 16, color: Colors.white),
+                                child: Icon(Icons.close, size: 16.w, color: Colors.white),
                               ),
                             ),
                           ),
@@ -700,7 +701,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
   Widget _buildLabel(String text) {
     return Text(
       text,
-      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
     );
   }
 
@@ -718,29 +719,29 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
       maxLines: maxLines,
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+        hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14.sp),
         prefixIcon: maxLines == 1
             ? Icon(icon, color: Colors.grey)
             : Padding(
-                padding: const EdgeInsets.only(bottom: 56),
+                padding: EdgeInsets.only(bottom: 56.h),
                 child: Icon(icon, color: Colors.grey),
               ),
         filled: true,
         fillColor: context.surfaceColor,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 16,
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: 16.w,
+          vertical: 16.h,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.w),
           borderSide: BorderSide(color: context.borderColor),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.w),
           borderSide: BorderSide(color: context.borderColor),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.w),
           borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
         ),
       ),
@@ -759,7 +760,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
     Function(String) onSelect,
   ) {
     return Wrap(
-      spacing: 12,
+      spacing: 12.h,
       runSpacing: 12,
       children: options.map((option) {
         final isSelected = selectedValue == option;
@@ -774,14 +775,14 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
           backgroundColor: context.surfaceColor,
           selectedColor: Theme.of(context).colorScheme.primary,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(20.w),
             side: BorderSide(
               color: isSelected
                   ? Theme.of(context).colorScheme.primary
                   : Colors.grey.shade300,
             ),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
         );
       }).toList(),
     );
@@ -796,13 +797,13 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 100,
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        width: 100.w,
+        padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 8.w),
         decoration: BoxDecoration(
           color: isSelected
               ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
               : context.surfaceColor,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.w),
           border: Border.all(
             color: isSelected
                 ? Theme.of(context).colorScheme.primary
@@ -817,14 +818,14 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
               color: isSelected
                   ? Theme.of(context).colorScheme.primary
                   : Colors.grey.shade600,
-              size: 32,
+              size: 32.w,
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12.h),
             Text(
               title,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 12.sp,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
                 color: isSelected
                     ? Theme.of(context).colorScheme.primary

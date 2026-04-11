@@ -265,13 +265,13 @@ class _VisitorRequestsViewState extends ConsumerState<_VisitorRequestsView> {
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(12.sp),
-            border: Border.all(color: AppTheme.primaryBlue.withValues(alpha: 0.3), width: 1.5),
+            border: Border.all(color: AppTheme.primaryBlue.withValues(alpha: 0.3), width: 1.5.w),
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               value: statuses.contains(req.status) ? req.status : 'Pending',
               isExpanded: true,
-              icon: const Icon(Icons.arrow_drop_down, color: AppTheme.primaryBlue),
+              icon: Icon(Icons.arrow_drop_down, color: AppTheme.primaryBlue),
               items: statuses.map((String status) {
                 return DropdownMenuItem<String>(
                   value: status,
@@ -495,7 +495,7 @@ class _VisitorRequestsViewState extends ConsumerState<_VisitorRequestsView> {
                                         child: Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            Container(width: 6, height: 6, decoration: BoxDecoration(color: statusColor, shape: BoxShape.circle)),
+                                            Container(width: 6.w, height: 6.h, decoration: BoxDecoration(color: statusColor, shape: BoxShape.circle)),
                                             SizedBox(width: 8.w),
                                             Text(req.status.toUpperCase(), style: TextStyle(color: statusColor, fontWeight: FontWeight.w900, fontSize: 10.sp, letterSpacing: 0.5)),
                                           ],
@@ -591,7 +591,7 @@ class _VisitorRequestsViewState extends ConsumerState<_VisitorRequestsView> {
         children: cities.map((city) {
           final isSelected = _selectedCity == city;
           return Padding(
-            padding: const EdgeInsets.only(right: 8.0),
+            padding: EdgeInsets.only(right: 8.0.w),
             child: ChoiceChip(
               label: Text(city),
               selected: isSelected,
@@ -603,10 +603,10 @@ class _VisitorRequestsViewState extends ConsumerState<_VisitorRequestsView> {
               labelStyle: TextStyle(
                 color: isSelected ? AppTheme.primaryBlue : context.secondaryTextColor,
                 fontWeight: isSelected ? FontWeight.w900 : FontWeight.bold,
-                fontSize: 12,
+                fontSize: 12.sp,
               ),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(12.w),
                 side: BorderSide(color: isSelected ? AppTheme.primaryBlue : context.borderColor),
               ),
             ),

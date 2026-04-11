@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/core/utils/routing_utils.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -65,26 +66,26 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             Center(
               child: Column(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.other_houses_outlined, // Similar modern home icon
                     color: Colors.white,
-                    size: 80,
+                    size: 80.w,
                   ),
-                  const SizedBox(height: 24),
-                  const Text(
+                  SizedBox(height: 24.h),
+                  Text(
                     'SAMPATTI',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 32,
+                      fontSize: 32.sp,
                       fontWeight: FontWeight.w900,
                       letterSpacing: -1,
                     ),
                   ),
-                  const Text(
+                  Text(
                     'BAZAR',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 24,
+                      fontSize: 24.sp,
                       fontWeight: FontWeight.w300,
                       letterSpacing: 1,
                     ),
@@ -96,41 +97,41 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             // Loading Section
             Column(
               children: [
-                const SizedBox(
-                  width: 24,
-                  height: 24,
+                SizedBox(
+                  width: 24.w,
+                  height: 24.h,
                   child: CircularProgressIndicator(
                     color: Colors.white,
                     strokeWidth: 2,
                   ),
                 ),
-                const SizedBox(height: 24),
-                const Text(
+                SizedBox(height: 24.h),
+                Text(
                   'LOADING EXPERIENCE',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: 10,
+                    fontSize: 10.sp,
                     fontWeight: FontWeight.bold,
                     letterSpacing: 2,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 Container(
-                  width: 40,
-                  height: 1,
+                  width: 40.w,
+                  height: 1.h,
                   color: Colors.white.withValues(alpha: 0.5),
                 ),
               ],
             ),
-            const SizedBox(height: 48),
+            SizedBox(height: 48.h),
             // Footer
             Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
+              padding: EdgeInsets.only(bottom: 16.0.h),
               child: Text(
                 '© 2024 SAMPATTI BAZAR. ALL RIGHTS RESERVED.',
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.7),
-                  fontSize: 8,
+                  fontSize: 8.sp,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 0.5,
                 ),

@@ -9,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:sampatti_bazar/features/properties/data/property_repository.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class ChatDetailScreen extends ConsumerStatefulWidget {
   final String chatId;
@@ -74,28 +75,28 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
               data: (otherUser) => Row(
                 children: [
                   CircleAvatar(
-                    radius: 18,
+                    radius: 18.w,
                     backgroundColor: AppTheme.primaryBlue.withValues(alpha: 0.1),
                     child: Text(otherUser?.name?.substring(0, 1).toUpperCase() ?? '?', 
-                               style: const TextStyle(color: AppTheme.primaryBlue, fontSize: 14, fontWeight: FontWeight.bold)),
+                               style: TextStyle(color: AppTheme.primaryBlue, fontSize: 14.sp, fontWeight: FontWeight.bold)),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12.w),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(otherUser?.name ?? 'User', style: TextStyle(color: context.primaryTextColor, fontWeight: FontWeight.w900, fontSize: 15)),
-                      Text('Online', style: TextStyle(color: Colors.green, fontSize: 10, fontWeight: FontWeight.bold)),
+                      Text(otherUser?.name ?? 'User', style: TextStyle(color: context.primaryTextColor, fontWeight: FontWeight.w900, fontSize: 15.sp)),
+                      Text('Online', style: TextStyle(color: Colors.green, fontSize: 10.sp, fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ],
               ),
-              loading: () => const Text('Chat', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
-              error: (_, __) => const Text('Chat', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
+              loading: () => Text('Chat', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900)),
+              error: (_, __) => Text('Chat', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900)),
             );
           },
-          loading: () => const Text('Chat', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
-          error: (_, __) => const Text('Chat', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
+          loading: () => Text('Chat', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900)),
+          error: (_, __) => Text('Chat', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900)),
         ),
         backgroundColor: context.scaffoldColor,
         elevation: 0,
@@ -123,7 +124,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
             loading: () => const SizedBox.shrink(),
             error: (_, __) => const SizedBox.shrink(),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8.w),
         ],
       ),
       body: userAsync.when(
@@ -148,8 +149,8 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.chat_bubble_outline, size: 48, color: context.secondaryTextColor.withValues(alpha: 0.2)),
-                            const SizedBox(height: 16),
+                            Icon(Icons.chat_bubble_outline, size: 48.w, color: context.secondaryTextColor.withValues(alpha: 0.2)),
+                            SizedBox(height: 16.h),
                             Text('Say hello!', style: TextStyle(color: context.secondaryTextColor, fontWeight: FontWeight.w500)),
                           ],
                         ),
@@ -158,7 +159,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
                     return ListView.builder(
                       controller: _scrollController,
                       reverse: true,
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
                       itemCount: messages.length,
                       itemBuilder: (context, index) {
                         final message = messages[index];
@@ -183,57 +184,57 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
 
   Widget _buildInputArea(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(
-        left: 16,
-        right: 16,
-        bottom: 24, // Let Scaffold handle keyboard, this is base padding
-        top: 12,
+      padding: EdgeInsets.only(
+        left: 16.w,
+        right: 16.w,
+        bottom: 24.h, // Let Scaffold handle keyboard, this is base padding
+        top: 12.h,
       ),
       decoration: BoxDecoration(
         color: context.scaffoldColor,
-        border: Border(top: BorderSide(color: context.borderColor, width: 0.5)),
+        border: Border(top: BorderSide(color: context.borderColor, width: 0.5.w)),
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
               color: AppTheme.primaryBlue.withValues(alpha: 0.08),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.add, color: AppTheme.primaryBlue, size: 20),
+            child: Icon(Icons.add, color: AppTheme.primaryBlue, size: 20.w),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12.w),
           Expanded(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
               decoration: BoxDecoration(
                 color: context.isDarkMode ? Colors.grey[900] : Colors.grey[100],
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(24.w),
               ),
               child: TextField(
                 controller: _messageController,
                 maxLines: null,
-                style: TextStyle(color: context.primaryTextColor, fontSize: 15),
+                style: TextStyle(color: context.primaryTextColor, fontSize: 15.sp),
                 decoration: InputDecoration(
                   hintText: 'Type a message...',
                   hintStyle: TextStyle(color: context.secondaryTextColor.withValues(alpha: 0.5)),
                   border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                  contentPadding: EdgeInsets.symmetric(vertical: 10.h),
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12.w),
           GestureDetector(
             onTap: _sendMessage,
             child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: const BoxDecoration(
+              padding: EdgeInsets.all(12.w),
+              decoration: BoxDecoration(
                 color: AppTheme.primaryBlue,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.send_rounded, color: Colors.white, size: 18),
+              child: Icon(Icons.send_rounded, color: Colors.white, size: 18.w),
             ),
           ),
         ],
@@ -253,14 +254,14 @@ class _MessageBubble extends StatelessWidget {
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
+        margin: EdgeInsets.only(bottom: 12.h),
         constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
         decoration: BoxDecoration(
           color: isMe ? AppTheme.primaryBlue : (context.isDarkMode ? Colors.grey[900] : Colors.grey[100]),
           borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(20),
-            topRight: const Radius.circular(20),
+            topLeft: Radius.circular(20.w),
+            topRight: Radius.circular(20.w),
             bottomLeft: Radius.circular(isMe ? 20 : 4),
             bottomRight: Radius.circular(isMe ? 4 : 20),
           ),
@@ -272,16 +273,16 @@ class _MessageBubble extends StatelessWidget {
               message.text,
               style: TextStyle(
                 color: isMe ? Colors.white : context.primaryTextColor,
-                fontSize: 14,
+                fontSize: 14.sp,
                 fontWeight: FontWeight.w500,
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4.h),
             Text(
               timeago.format(message.timestamp),
               style: TextStyle(
                 color: isMe ? Colors.white.withValues(alpha: 0.7) : context.secondaryTextColor,
-                fontSize: 8,
+                fontSize: 8.sp,
               ),
             ),
           ],
@@ -309,11 +310,11 @@ class _ContextCard extends ConsumerWidget {
         data: (property) {
           if (property == null) return const SizedBox.shrink();
           return Container(
-            margin: const EdgeInsets.all(12),
-            padding: const EdgeInsets.all(8),
+            margin: EdgeInsets.all(12.w),
+            padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
               color: context.cardColor,
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(16.w),
               border: Border.all(color: context.borderColor),
               boxShadow: [
                 BoxShadow(
@@ -326,27 +327,27 @@ class _ContextCard extends ConsumerWidget {
             child: Row(
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.w),
                   child: property.imageUrls.isNotEmpty && property.imageUrls.first.isNotEmpty
                     ? CachedNetworkImage(
                         imageUrl: property.imageUrls.first,
-                        width: 60,
-                        height: 60,
+                        width: 60.w,
+                        height: 60.h,
                         fit: BoxFit.cover,
                         placeholder: (context, url) => Container(color: Colors.grey[200]),
                         errorWidget: (context, url, error) => Container(
                           color: Colors.grey[200],
-                          child: const Icon(Icons.image_not_supported, color: Colors.grey, size: 20),
+                          child: Icon(Icons.image_not_supported, color: Colors.grey, size: 20.w),
                         ),
                       )
                     : Container(
-                        width: 60,
-                        height: 60,
+                        width: 60.w,
+                        height: 60.h,
                         color: Colors.grey[200],
-                        child: const Icon(Icons.image, color: Colors.grey, size: 20),
+                        child: Icon(Icons.image, color: Colors.grey, size: 20.w),
                       ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12.w),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -355,12 +356,12 @@ class _ContextCard extends ConsumerWidget {
                         property.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: context.primaryTextColor),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp, color: context.primaryTextColor),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4.h),
                       Text(
                         '₹${property.price.toInt()}',
-                        style: const TextStyle(color: AppTheme.primaryBlue, fontWeight: FontWeight.w900, fontSize: 13),
+                        style: TextStyle(color: AppTheme.primaryBlue, fontWeight: FontWeight.w900, fontSize: 13.sp),
                       ),
                     ],
                   ),
@@ -369,7 +370,7 @@ class _ContextCard extends ConsumerWidget {
                   onPressed: () {
                     context.push('/properties/${property.id}');
                   },
-                  child: const Text('View', style: TextStyle(fontSize: 12)),
+                  child: Text('View', style: TextStyle(fontSize: 12.sp)),
                 ),
               ],
             ),
@@ -383,21 +384,21 @@ class _ContextCard extends ConsumerWidget {
     if (type == 'service') {
       return Container(
         width: double.infinity,
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
         decoration: BoxDecoration(
           color: AppTheme.primaryBlue.withValues(alpha: 0.05),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.w),
           border: Border.all(color: AppTheme.primaryBlue.withValues(alpha: 0.1)),
         ),
         child: Row(
           children: [
-            const Icon(Icons.info_outline, color: AppTheme.primaryBlue, size: 18),
-            const SizedBox(width: 12),
+            Icon(Icons.info_outline, color: AppTheme.primaryBlue, size: 18.w),
+            SizedBox(width: 12.w),
             Expanded(
               child: Text(
                 'Inquiry regarding: $category',
-                style: const TextStyle(color: AppTheme.primaryBlue, fontSize: 13, fontWeight: FontWeight.w600),
+                style: TextStyle(color: AppTheme.primaryBlue, fontSize: 13.sp, fontWeight: FontWeight.w600),
               ),
             ),
           ],

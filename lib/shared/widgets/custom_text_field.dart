@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController? controller;
@@ -32,21 +33,21 @@ class CustomTextField extends StatelessWidget {
         hintText: hintText,
         prefixIcon: prefixIcon,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.w),
           borderSide: BorderSide(
             color: Theme.of(context).colorScheme.outline,
           ),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.w),
           borderSide: BorderSide(
             color: Theme.of(context).colorScheme.primary,
-            width: 2,
+            width: 2.w,
           ),
         ),
         filled: true,
         fillColor: Theme.of(context).colorScheme.surface,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
       ),
     );
   }

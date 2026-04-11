@@ -5,6 +5,7 @@ import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/services/data/service_request_repository.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 final myLegalDocumentsProvider = StreamProvider.autoDispose((ref) {
   final user = ref.watch(currentUserDataProvider).value;
@@ -56,42 +57,42 @@ class DocumentsScreen extends ConsumerWidget {
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(24.w),
             itemCount: allItems.length,
             itemBuilder: (context, index) {
               final doc = allItems[index] as Map<String, dynamic>;
               final isDyn = doc['isDynamic'] == true;
               return Container(
-                margin: const EdgeInsets.only(bottom: 16),
-                padding: const EdgeInsets.all(16),
+                margin: EdgeInsets.only(bottom: 16.h),
+                padding: EdgeInsets.all(16.w),
                 decoration: BoxDecoration(
                   color: context.cardColor,
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(16.w),
                   border: Border.all(color: isDyn ? AppTheme.primaryBlue.withValues(alpha: 0.3) : context.borderColor),
                 ),
                 child: Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: EdgeInsets.all(12.w),
                       decoration: BoxDecoration(
                         color: isDyn ? Colors.red.withValues(alpha: 0.1) : AppTheme.primaryBlue.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(isDyn ? Icons.picture_as_pdf : Icons.description, color: isDyn ? Colors.red : AppTheme.primaryBlue, size: 20),
+                      child: Icon(isDyn ? Icons.picture_as_pdf : Icons.description, color: isDyn ? Colors.red : AppTheme.primaryBlue, size: 20.w),
                     ),
-                    const SizedBox(width: 16),
+                    SizedBox(width: 16.w),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(doc['name'], style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: context.primaryTextColor)),
-                          const SizedBox(height: 4),
-                          Text('${doc['type']} • ${doc['date']}', style: TextStyle(color: context.secondaryTextColor, fontSize: 11, fontWeight: FontWeight.w500)),
+                          Text(doc['name'], style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp, color: context.primaryTextColor)),
+                          SizedBox(height: 4.h),
+                          Text('${doc['type']} • ${doc['date']}', style: TextStyle(color: context.secondaryTextColor, fontSize: 11.sp, fontWeight: FontWeight.w500)),
                         ],
                       ),
                     ),
                     IconButton(
-                      icon: Icon(Icons.download_rounded, color: isDyn ? Colors.green : AppTheme.primaryBlue, size: 20),
+                      icon: Icon(Icons.download_rounded, color: isDyn ? Colors.green : AppTheme.primaryBlue, size: 20.w),
                       onPressed: () {
                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Downloading ${doc['name']}...')));
                       },
@@ -106,8 +107,8 @@ class DocumentsScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {},
         backgroundColor: AppTheme.primaryBlue,
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text('UPLOAD DOCUMENT', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 11, letterSpacing: 0.5)),
+        icon: Icon(Icons.add, color: Colors.white),
+        label: Text('UPLOAD DOCUMENT', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 11.sp, letterSpacing: 0.5)),
       ),
     );
   }

@@ -6,6 +6,7 @@ import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/auth_repository.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -25,15 +26,15 @@ class ProfileScreen extends ConsumerWidget {
         elevation: 0,
         leading: IconButton(
           icon: Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
               color: const Color(0xFF00E5FF).withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(8.w),
             ),
             child: Icon(
               Icons.arrow_back_ios_new,
               color: context.iconColor,
-              size: 16,
+              size: 16.w,
             ),
           ),
           onPressed: () => context.pop(),
@@ -43,7 +44,7 @@ class ProfileScreen extends ConsumerWidget {
           style: TextStyle(
             fontWeight: FontWeight.w900,
             color: context.primaryTextColor,
-            fontSize: 18,
+            fontSize: 18.sp,
           ),
         ),
         actions: [
@@ -54,7 +55,7 @@ class ProfileScreen extends ConsumerWidget {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.notifications_none),
+            icon: Icon(Icons.notifications_none),
             onPressed: () {},
           ),
         ],
@@ -62,7 +63,7 @@ class ProfileScreen extends ConsumerWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const SizedBox(height: 24),
+            SizedBox(height: 24.h),
             // Avatar & Name Section
             Center(
               child: Stack(
@@ -70,15 +71,15 @@ class ProfileScreen extends ConsumerWidget {
                   Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: context.borderColor, width: 4),
+                      border: Border.all(color: context.borderColor, width: 4.w),
                     ),
                     child: CircleAvatar(
-                      radius: 54,
+                      radius: 54.w,
                       backgroundColor: context.isDarkMode ? Colors.grey[800] : Colors.grey[200],
                       child: Text(
                         (userAsync.value?.name ?? 'U').substring(0, 1).toUpperCase(),
                         style: TextStyle(
-                          fontSize: 40,
+                          fontSize: 40.sp,
                           fontWeight: FontWeight.w900,
                           color: context.isDarkMode ? Colors.white70 : Colors.black54,
                         ),
@@ -86,18 +87,18 @@ class ProfileScreen extends ConsumerWidget {
                     ),
                   ),
                   Positioned(
-                    bottom: 0,
-                    right: 8,
+                    bottom: 0.h,
+                    right: 8.w,
                     child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
+                      padding: EdgeInsets.all(4.w),
+                      decoration: BoxDecoration(
                         color: Color(0xFF00E5FF),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.verified,
                         color: Colors.white,
-                        size: 16,
+                        size: 16.w,
                       ),
                     ),
                   ),
@@ -110,49 +111,49 @@ class ProfileScreen extends ConsumerWidget {
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontWeight: FontWeight.w900,
-                fontSize: 24,
+                fontSize: 24.sp,
                 letterSpacing: -0.5,
                 color: context.primaryTextColor,
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4.h),
             Text(
               '${userAsync.value?.phoneNumber ?? '+91 XXXXX XXXXX'} • ${userAsync.value?.email ?? 'No email'}',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: context.secondaryTextColor,
-                fontSize: 12,
+                fontSize: 12.sp,
                 fontWeight: FontWeight.w500,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
                   decoration: BoxDecoration(
                     color: const Color(0xFF0066FF).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(20.w),
                   ),
                   child: Text(
                     userAsync.value?.role?.toUpperCase() ?? l10n.premiumMember,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Color(0xFF0066FF),
                       fontWeight: FontWeight.w900,
-                      fontSize: 10,
+                      fontSize: 10.sp,
                       letterSpacing: 0.5,
                     ),
                   ),
                 ),
                 if (userAsync.value?.isPreApproved == true) ...[
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8.w),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(colors: [Colors.orange, Colors.deepOrange]),
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(20.w),
                       boxShadow: [
                         BoxShadow(color: Colors.orange.withValues(alpha: 0.4), blurRadius: 8, offset: const Offset(0, 3)),
                       ],
@@ -160,14 +161,14 @@ class ProfileScreen extends ConsumerWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.verified, color: Colors.white, size: 12),
-                        const SizedBox(width: 4),
+                        Icon(Icons.verified, color: Colors.white, size: 12.w),
+                        SizedBox(width: 4.w),
                         Text(
                           'PRE-APPROVED: ₹${(userAsync.value!.preApprovalAmount! / 100000).toStringAsFixed(1)} L',
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w900,
-                            fontSize: 10,
+                            fontSize: 10.sp,
                             letterSpacing: 0.5,
                           ),
                         ),
@@ -177,11 +178,11 @@ class ProfileScreen extends ConsumerWidget {
                 ],
               ],
             ),
-            const SizedBox(height: 40),
+            SizedBox(height: 40.h),
 
             // Profile Options Menu
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              padding: EdgeInsets.symmetric(horizontal: 24.0.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -189,12 +190,12 @@ class ProfileScreen extends ConsumerWidget {
                     l10n.account,
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
-                      fontSize: 12,
+                      fontSize: 12.sp,
                       color: context.secondaryTextColor,
                       letterSpacing: 1,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   _buildMenuCard(
                     context,
                     items: [
@@ -221,17 +222,17 @@ class ProfileScreen extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32.h),
                   Text(
                     l10n.preferences,
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
-                      fontSize: 12,
+                      fontSize: 12.sp,
                       color: context.secondaryTextColor,
                       letterSpacing: 1,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   _buildMenuCard(
                     context,
                     items: [
@@ -258,20 +259,20 @@ class ProfileScreen extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32.h),
                   SizedBox(
                     width: double.infinity,
-                    height: 56,
+                    height: 56.h,
                     child: OutlinedButton.icon(
                       onPressed: () async {
                         await ref.read(userRepositoryProvider).clearCache();
                         await ref.read(authRepositoryProvider).signOut();
                         if (context.mounted) context.go('/login');
                       },
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.logout,
                         color: Colors.redAccent,
-                        size: 20,
+                        size: 20.w,
                       ),
                       label: Text(
                         l10n.logOut,
@@ -286,13 +287,13 @@ class ProfileScreen extends ConsumerWidget {
                           color: Colors.redAccent.withValues(alpha: 0.3),
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.w),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: EdgeInsets.symmetric(vertical: 16.h),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  SizedBox(height: 40.h),
                 ],
               ),
             ),
@@ -309,7 +310,7 @@ class ProfileScreen extends ConsumerWidget {
     return Container(
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.w),
         border: Border.all(
           color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
         ),
@@ -330,8 +331,8 @@ class ProfileScreen extends ConsumerWidget {
               item,
               if (idx != items.length - 1)
                 Padding(
-                  padding: const EdgeInsets.only(left: 64.0),
-                  child: Divider(height: 1, color: context.borderColor),
+                  padding: EdgeInsets.only(left: 64.0.w),
+                  child: Divider(height: 1.h, color: context.borderColor),
                 ),
             ],
           );
@@ -348,26 +349,26 @@ class ProfileScreen extends ConsumerWidget {
     VoidCallback onTap,
   ) {
     return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+      contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 4.h),
       leading: Container(
-        padding: const EdgeInsets.all(8),
+        padding: EdgeInsets.all(8.w),
         decoration: BoxDecoration(
           color: iconColor.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(8.w),
         ),
-        child: Icon(icon, color: iconColor, size: 20),
+        child: Icon(icon, color: iconColor, size: 20.w),
       ),
       title: Text(
         title,
         style: TextStyle(
           fontWeight: FontWeight.w900,
-          fontSize: 14,
+          fontSize: 14.sp,
           color: context.primaryTextColor,
         ),
       ),
       trailing: Icon(
         Icons.arrow_forward_ios,
-        size: 14,
+        size: 14.w,
         color: context.secondaryTextColor,
       ),
       onTap: onTap,

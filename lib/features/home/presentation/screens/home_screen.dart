@@ -56,9 +56,9 @@ class HomeScreen extends ConsumerWidget {
                     color: context.primaryTextColor,
                   ),
                 ),
-                const SizedBox(width: 8),
-                const Icon(Icons.location_on, size: 14, color: Color(0xFF1E60FF)),
-                const SizedBox(width: 2),
+                SizedBox(width: 8.w),
+                Icon(Icons.location_on, size: 14.w, color: Color(0xFF1E60FF)),
+                SizedBox(width: 2.w),
                 Text(
                   currentLocation,
                   style: TextStyle(
@@ -89,7 +89,7 @@ class HomeScreen extends ConsumerWidget {
                     decoration: BoxDecoration(
                       color: Colors.green,
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2),
+                      border: Border.all(color: Colors.white, width: 2.w),
                     ),
                   ),
                 ],
@@ -123,7 +123,7 @@ class HomeScreen extends ConsumerWidget {
                   ),
                   filled: true,
                   fillColor: context.surfaceColor,
-                  contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 16.w),
+                  contentPadding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 16.w),
                 ),
               ),
             ),
@@ -180,7 +180,7 @@ class HomeScreen extends ConsumerWidget {
                 if (properties.isEmpty) {
                   return Center(
                     child: Padding(
-                      padding: const EdgeInsets.all(32),
+                      padding: EdgeInsets.all(32.w),
                       child: Text(l10n.noPropertiesYet, style: const TextStyle(color: Colors.grey)),
                     ),
                   );
@@ -209,7 +209,7 @@ class HomeScreen extends ConsumerWidget {
                                   softWrap: true,
                                   style: context.textTheme.headlineSmall?.copyWith(
                                     fontWeight: FontWeight.w900,
-                                    height: 1.1,
+                                    height: 1.1.h,
                                     fontSize: 18.sp,
                                     color: context.primaryTextColor,
                                     letterSpacing: -0.5,
@@ -252,7 +252,7 @@ class HomeScreen extends ConsumerWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 32),
+                    SizedBox(height: 32.h),
 
                     // Newly Added Section
                     Padding(
@@ -293,9 +293,9 @@ class HomeScreen extends ConsumerWidget {
                   itemBuilder: (context, index) => const PropertyCardSkeleton(),
                 ),
               ),
-              error: (err, stack) => Center(child: Padding(padding: const EdgeInsets.all(32), child: Text('Error: $err'))),
+              error: (err, stack) => Center(child: Padding(padding: EdgeInsets.all(32.w), child: Text('Error: $err'))),
             ),
-            const SizedBox(height: 100), // padding for FAB
+            SizedBox(height: 100.h), // padding for FAB
           ],
         ),
       ),
@@ -304,9 +304,9 @@ class HomeScreen extends ConsumerWidget {
            context.push('/chatbot');
         },
         backgroundColor: const Color(0xFF1E60FF),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.w)),
         elevation: 4,
-        child: const Icon(Icons.chat_bubble_outline, color: Colors.white),
+        child: Icon(Icons.chat_bubble_outline, color: Colors.white),
       ),
     );
   }
@@ -336,7 +336,7 @@ class HomeScreen extends ConsumerWidget {
             decoration: BoxDecoration(
               color: context.cardColor,
               borderRadius: BorderRadius.circular(20.sp), // More rounded iOS style
-              border: Border.all(color: context.borderColor, width: 1.5),
+              border: Border.all(color: context.borderColor, width: 1.5.w),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.05),
@@ -380,7 +380,7 @@ class HomeScreen extends ConsumerWidget {
           image: DecorationImage(
             image: ResizeImage(
               CachedNetworkImageProvider(imageUrl),
-              width: 800,
+              width: 800.w.toInt(),
             ),
             fit: BoxFit.cover,
           ),
@@ -478,7 +478,7 @@ class HomeScreen extends ConsumerWidget {
         decoration: BoxDecoration(
           color: context.cardColor,
           borderRadius: BorderRadius.circular(20.sp), // Consistent iOS style
-          border: Border.all(color: context.borderColor, width: 1.2),
+          border: Border.all(color: context.borderColor, width: 1.2.w),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.03),
@@ -541,7 +541,7 @@ class HomeScreen extends ConsumerWidget {
                     children: [
                       Container(
                         padding: EdgeInsets.all(4.sp),
-                        decoration: const BoxDecoration(color: Color(0xFF1E60FF), shape: BoxShape.circle),
+                        decoration: BoxDecoration(color: Color(0xFF1E60FF), shape: BoxShape.circle),
                         child: Icon(Icons.flash_on, color: Colors.white, size: 8.sp),
                       ),
                       SizedBox(width: 6.w),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class AppTheme {
   static const Color primaryBlue = Color(0xFF1E60FF);
@@ -31,15 +32,15 @@ class AppTheme {
         bodySmall: TextStyle(fontFamily: 'Inter', color: Colors.black54),
         labelLarge: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w900, color: Colors.black),
       ),
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        iconTheme: IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.black),
         titleTextStyle: TextStyle(
           color: Colors.black,
           fontWeight: FontWeight.w900,
-          fontSize: 16,
+          fontSize: 16.sp,
           letterSpacing: 1.2,
         ),
       ),
@@ -48,8 +49,8 @@ class AppTheme {
           backgroundColor: primaryBlue,
           foregroundColor: Colors.white,
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          textStyle: const TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w900, fontSize: 16),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.w)),
+          textStyle: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w900, fontSize: 16.sp),
         ),
       ),
       useMaterial3: true,
@@ -82,15 +83,15 @@ class AppTheme {
         bodySmall: TextStyle(fontFamily: 'Inter', color: Colors.white54),
         labelLarge: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w900, color: Colors.white),
       ),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: Color(0xFF121212),
+      appBarTheme: AppBarTheme(
+        backgroundColor: const Color(0xFF121212),
         elevation: 0,
         centerTitle: true,
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
         titleTextStyle: TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.w900,
-          fontSize: 16,
+          fontSize: 16.sp,
           letterSpacing: 1.2,
         ),
       ),
@@ -99,8 +100,8 @@ class AppTheme {
           backgroundColor: primaryBlue,
           foregroundColor: Colors.white,
           elevation: 0,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          textStyle: const TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w900, fontSize: 16),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.w)),
+          textStyle: TextStyle(fontFamily: 'Inter', fontWeight: FontWeight.w900, fontSize: 16.sp),
         ),
       ),
       dividerColor: Colors.grey.shade800,

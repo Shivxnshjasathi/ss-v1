@@ -8,6 +8,7 @@ import 'package:sampatti_bazar/features/services/data/service_request_repository
 import 'package:sampatti_bazar/features/services/domain/service_request_model.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class ConstructionScreen extends ConsumerStatefulWidget {
   const ConstructionScreen({super.key});
@@ -191,15 +192,15 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
         elevation: 0,
         leading: IconButton(
           icon: Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
               color: AppTheme.primaryBlue.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(10.w),
             ),
             child: Icon(
               Icons.arrow_back_ios_new,
               color: context.iconColor,
-              size: 14,
+              size: 14.w,
             ),
           ),
           onPressed: () => context.pop(),
@@ -209,7 +210,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           style: TextStyle(
             fontWeight: FontWeight.w900,
             color: context.primaryTextColor,
-            fontSize: 18,
+            fontSize: 18.sp,
           ),
         ),
         actions: [
@@ -217,7 +218,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
             icon: Icon(Icons.headset_mic_outlined, color: context.iconColor),
             onPressed: () {},
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8.w),
         ],
       ),
       body: SingleChildScrollView(
@@ -226,22 +227,22 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           children: [
             // Category Toggle (from image)
             // Padding(
-            //   padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+            //   padding: EdgeInsets.symmetric(horizontal: 24.0.w, vertical: 16.0.h),
             //   child: Column(
             //     crossAxisAlignment: CrossAxisAlignment.start,
             //     children: [
-            //       const Text('Construction Category', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: -0.2)),
-            //       const SizedBox(height: 12),
+            //       Text('Construction Category', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13.sp, letterSpacing: -0.2)),
+            //       SizedBox(height: 12.h),
             //       _buildCategoryToggle(),
             //     ],
             //   ),
             // ),
 
             // Service Selector (Horizontal Scroll)
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              padding: EdgeInsets.symmetric(horizontal: 24.0.w),
               child: Row(
                 children: _services
                     .map((service) => _buildServiceChip(service, l10n))
@@ -249,18 +250,18 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
               ),
             ),
 
-            const SizedBox(height: 32),
+            SizedBox(height: 32.h),
 
             // Dynamic Form based on selected service
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              padding: EdgeInsets.symmetric(horizontal: 24.0.w),
               child: _buildDynamicBody(l10n),
             ),
           ],
         ),
       ),
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+        padding: EdgeInsets.fromLTRB(24, 16, 24, 32),
         decoration: BoxDecoration(
           color: context.scaffoldColor,
           boxShadow: [
@@ -274,21 +275,21 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
         child: SafeArea(
           top: false,
           child: SizedBox(
-            height: 54,
+            height: 54.h,
             child: ElevatedButton(
               onPressed: _submitForm,
               style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.primaryBlue,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.w),
                 ),
                 elevation: 0,
               ),
               child: Text(
                 l10n.requestQuote,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w900,
-                  fontSize: 13,
+                  fontSize: 13.sp,
                   color: Colors.white,
                   letterSpacing: 1,
                 ),
@@ -303,23 +304,23 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
   Widget _buildServiceChip(String label, AppLocalizations l10n) {
     bool isSelected = _selectedService == label;
     return Padding(
-      padding: const EdgeInsets.only(right: 12.0),
+      padding: EdgeInsets.only(right: 12.0.w),
       child: GestureDetector(
         onTap: () => setState(() => _selectedService = label),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
           decoration: BoxDecoration(
             color: isSelected
                 ? AppTheme.primaryBlue
                 : context.cardColor,
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(30.w),
             border: isSelected ? null : Border.all(color: context.borderColor),
           ),
           child: Text(
             _getLocalizedServiceName(label, l10n).toUpperCase(),
             style: TextStyle(
               fontWeight: FontWeight.w900,
-              fontSize: 10,
+              fontSize: 10.sp,
               letterSpacing: 0.5,
               color: isSelected ? Colors.white : context.primaryTextColor,
             ),
@@ -355,21 +356,21 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           l10n.constructionDetails,
           l10n.civilEngineersQuality,
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: 24.h),
         _buildTextField(
           l10n.plotSize,
           'e.g., 2400',
           TextInputType.number,
           controller: _plotSizeController,
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         _buildTextField(
           l10n.exactLocation,
           l10n.locationHint,
           TextInputType.text,
           controller: _locationController,
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         Row(
           children: [
             Expanded(
@@ -380,7 +381,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
                 controller: _budgetController,
               ),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16.w),
             Expanded(
               child: _buildTextField(
                 l10n.timelineLabel,
@@ -391,25 +392,25 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         _buildTextField(
           l10n.constructionType,
           l10n.constructionTypeHint,
           TextInputType.text,
           controller: _typeController,
         ),
-        const SizedBox(height: 32),
+        SizedBox(height: 32.h),
         Text(
           l10n.documentUpload,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.w900,
-            fontSize: 11,
+            fontSize: 11.sp,
             letterSpacing: 0.5,
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12.h),
         _buildUploadBox(l10n.uploadPlotMap),
-        const SizedBox(height: 32),
+        SizedBox(height: 32.h),
       ],
     );
   }
@@ -423,7 +424,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           l10n.architecturalDesign,
           l10n.archSubtitle,
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: 24.h),
         Row(
           children: [
             Expanded(
@@ -434,7 +435,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
                 controller: _dimensionsController,
               ),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16.w),
             Expanded(
               child: _buildTextField(
                 l10n.facingLabel,
@@ -445,7 +446,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         Row(
           children: [
             Expanded(
@@ -456,7 +457,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
                 controller: _floorsController,
               ),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16.w),
             Expanded(
               child: _buildTextField(
                 l10n.roomRequirement,
@@ -467,27 +468,27 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         _buildTextField(
           l10n.parkingCapacity,
           l10n.parkingHint,
           TextInputType.text,
           controller: _parkingController,
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         _buildTextField(
           l10n.specialNeeds,
           l10n.specialNeedsHint,
           TextInputType.text,
           controller: _specialNeedsController,
         ),
-        const SizedBox(height: 32),
+        SizedBox(height: 32.h),
         _buildSelectionBox(l10n.outputRequired, _outputRequired, [
           l10n.conceptualPlan,
           l10n.structuralPlan,
           l10n.threeDElevation,
         ], (val) => setState(() => _outputRequired = val)),
-        const SizedBox(height: 32),
+        SizedBox(height: 32.h),
       ],
     );
   }
@@ -501,7 +502,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           l10n.interiors,
           l10n.interiorSubtitle,
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: 24.h),
         Row(
           children: [
             Expanded(
@@ -512,7 +513,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
                 controller: _propTypeController,
               ),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16.w),
             Expanded(
               child: _buildTextField(
                 l10n.bhkRooms,
@@ -523,7 +524,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         Row(
           children: [
             Expanded(
@@ -534,7 +535,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
                 controller: _areaController,
               ),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16.w),
             Expanded(
               child: _buildTextField(
                 l10n.budgetLabel,
@@ -545,7 +546,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         _buildSelectionBox(l10n.stylePreference, _stylePreference, [
           l10n.modernMinimalist,
           l10n.traditionalIndian,
@@ -553,21 +554,21 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           l10n.industrial,
           l10n.luxury,
         ], (val) => setState(() => _stylePreference = val)),
-        const SizedBox(height: 32),
+        SizedBox(height: 32.h),
         Text(
           l10n.scopeSelection,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.w900,
-            fontSize: 11,
+            fontSize: 11.sp,
             letterSpacing: 0.5,
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12.h),
         _buildCheckbox(l10n.fullHomeInterior),
         _buildCheckbox(l10n.modularKitchen),
         _buildCheckbox(l10n.wardrobesStorage),
         _buildCheckbox(l10n.roomRenovation),
-        const SizedBox(height: 32),
+        SizedBox(height: 32.h),
       ],
     );
   }
@@ -581,21 +582,21 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           l10n.expertConsultation,
           l10n.consultSubtitle,
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: 24.h),
         _buildTextField(
           l10n.consultationTopic,
           l10n.consultTopicHint,
           TextInputType.text,
           controller: _consultTopicController,
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         _buildTextField(
           l10n.propertyAddress,
           l10n.propertyAddressHint,
           TextInputType.text,
           controller: _locationController,
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         _buildTextField(
           l10n.detailedQuery,
           l10n.queryHint,
@@ -603,38 +604,38 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           maxLines: 4,
           controller: _queryController,
         ),
-        const SizedBox(height: 32),
+        SizedBox(height: 32.h),
         Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16.w),
           decoration: BoxDecoration(
             color: AppTheme.primaryBlue.withValues(alpha: 0.05),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(12.w),
             border: Border.all(
               color: AppTheme.primaryBlue.withValues(alpha: 0.1),
             ),
           ),
           child: Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.verified_user_outlined,
                 color: AppTheme.primaryBlue,
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 16.w),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       l10n.verifiedExpertsOnly,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w900,
-                        fontSize: 11,
+                        fontSize: 11.sp,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4.h),
                     Text(
                       l10n.expertsSubtitle,
-                      style: TextStyle(color: context.secondaryTextColor, fontSize: 10),
+                      style: TextStyle(color: context.secondaryTextColor, fontSize: 10.sp),
                     ),
                   ],
                 ),
@@ -642,7 +643,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
             ],
           ),
         ),
-        const SizedBox(height: 32),
+        SizedBox(height: 32.h),
       ],
     );
   }
@@ -656,14 +657,14 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           l10n.boringBorewell,
           l10n.borewellSubtitle,
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: 24.h),
         _buildTextField(
           l10n.exactLocationBorewell,
           l10n.landmarkHint,
           TextInputType.text,
           controller: _locationController,
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         Row(
           children: [
             Expanded(
@@ -674,7 +675,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
                 controller: _soilTypeController,
               ),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16.w),
             Expanded(
               child: _buildTextField(
                 l10n.expectedDepth,
@@ -685,13 +686,13 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         _buildSelectionBox(l10n.purposeLabel, _borewellPurpose, [
           l10n.residentialWater,
           l10n.agricultureFarming,
           l10n.industrialSupply,
         ], (val) => setState(() => _borewellPurpose = val)),
-        const SizedBox(height: 32),
+        SizedBox(height: 32.h),
       ],
     );
   }
@@ -717,17 +718,17 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           title,
           style: GoogleFonts.inter(
             fontWeight: FontWeight.w900,
-            fontSize: 24,
+            fontSize: 24.sp,
             letterSpacing: -1.0,
           ),
         ),
-        const SizedBox(height: 6),
+        SizedBox(height: 6.h),
         Text(
           subtitle,
           style: TextStyle(
             color: Colors.grey[600],
-            fontSize: 12,
-            height: 1.5,
+            fontSize: 12.sp,
+            height: 1.5.h,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -749,23 +750,23 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           labelText,
           style: TextStyle(
             fontWeight: FontWeight.w900,
-            fontSize: 10,
+            fontSize: 10.sp,
             color: context.primaryTextColor,
             letterSpacing: 0.5,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         Container(
           decoration: BoxDecoration(
             color: context.surfaceColor,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(12.w),
           ),
           child: TextField(
             controller: controller,
             maxLines: maxLines,
             keyboardType: type,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 14.sp,
               fontWeight: FontWeight.w600,
               color: context.primaryTextColor,
             ),
@@ -776,19 +777,19 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
                 fontWeight: FontWeight.w500,
               ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(12.w),
                 borderSide: BorderSide.none,
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
+                borderRadius: BorderRadius.circular(12.w),
+                borderSide: BorderSide(
                   color: AppTheme.primaryBlue,
-                  width: 1.5,
+                  width: 1.5.w,
                 ),
               ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 16,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 16.w,
+                vertical: 16.h,
               ),
               isDense: true,
             ),
@@ -811,19 +812,19 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           label,
           style: TextStyle(
             fontWeight: FontWeight.w900,
-            fontSize: 10,
+            fontSize: 10.sp,
             color: context.primaryTextColor,
             letterSpacing: 0.5,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         GestureDetector(
           onTap: () => _showSelectionMenu(label, options, value, onChanged),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
             decoration: BoxDecoration(
               color: context.surfaceColor,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(12.w),
               border: Border.all(color: context.borderColor),
             ),
             child: Row(
@@ -833,7 +834,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
                   child: Text(
                     value,
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 14.sp,
                       fontWeight: FontWeight.w600,
                       color: context.primaryTextColor,
                     ),
@@ -854,17 +855,17 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (ctx) => Container(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24.w),
         decoration: BoxDecoration(
           color: Theme.of(ctx).scaffoldBackgroundColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24.w)),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
-            const SizedBox(height: 16),
+            Text(title, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18.sp)),
+            SizedBox(height: 16.h),
             Flexible(
               child: ListView.builder(
                 shrinkWrap: true,
@@ -881,7 +882,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
                         color: isSelected ? AppTheme.primaryBlue : context.primaryTextColor,
                       ),
                     ),
-                    trailing: isSelected ? const Icon(Icons.check_circle, color: AppTheme.primaryBlue) : null,
+                    trailing: isSelected ? Icon(Icons.check_circle, color: AppTheme.primaryBlue) : null,
                     onTap: () {
                       onChanged(option);
                       Navigator.pop(ctx);
@@ -890,7 +891,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
                 },
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
           ],
         ),
       ),
@@ -909,8 +910,8 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
         });
       },
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        margin: EdgeInsets.only(bottom: 12.h),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
         decoration: BoxDecoration(
           color: isChecked
               ? AppTheme.primaryBlue.withValues(alpha: 0.05)
@@ -918,21 +919,21 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           border: Border.all(
             color: isChecked ? AppTheme.primaryBlue : context.borderColor,
           ),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.w),
         ),
         child: Row(
           children: [
             Icon(
               isChecked ? Icons.check_circle : Icons.circle_outlined,
               color: isChecked ? AppTheme.primaryBlue : Colors.grey.shade300,
-              size: 20,
+              size: 20.w,
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12.w),
             Text(
               label,
               style: TextStyle(
                 fontWeight: FontWeight.w900,
-                fontSize: 13,
+                fontSize: 13.sp,
                 color: context.primaryTextColor,
               ),
             ),
@@ -946,36 +947,36 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
     final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+      padding: EdgeInsets.symmetric(vertical: 24.h, horizontal: 16.w),
       decoration: BoxDecoration(
         color: context.cardColor,
         border: Border.all(color: context.borderColor),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.w),
       ),
       child: Column(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: EdgeInsets.all(12.w),
             decoration: BoxDecoration(
               color: AppTheme.primaryBlue.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.cloud_upload_outlined,
               color: AppTheme.primaryBlue,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           Text(
             l10n.tapToUpload,
-            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: context.primaryTextColor),
+            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp, color: context.primaryTextColor),
           ),
-          const SizedBox(height: 6),
+          SizedBox(height: 6.h),
           Text(
             subtitle,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 11,
+              fontSize: 11.sp,
               color: context.secondaryTextColor,
               fontWeight: FontWeight.w500,
             ),

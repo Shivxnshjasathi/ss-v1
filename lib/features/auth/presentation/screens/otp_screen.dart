@@ -7,6 +7,7 @@ import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/core/utils/routing_utils.dart';
 import 'package:sampatti_bazar/core/services/logger_service.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class OtpScreen extends ConsumerStatefulWidget {
   final String phoneNumber;
@@ -69,7 +70,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
         backgroundColor: context.scaffoldColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.chevron_left, color: context.iconColor, size: 32),
+          icon: Icon(Icons.chevron_left, color: context.iconColor, size: 32.w),
           onPressed: () => context.pop(),
         ),
       ),
@@ -77,23 +78,23 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
         children: [
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding: EdgeInsets.symmetric(horizontal: 24.0.w, vertical: 16.0.h),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                    FittedBox(
                     fit: BoxFit.scaleDown,
                     alignment: Alignment.centerLeft,
-                    child: Text(l10n.verifyYour, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1, height: 1.1)),
+                    child: Text(l10n.verifyYour, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32.sp, letterSpacing: -1, height: 1.1.h)),
                   ),
                    FittedBox(
                     fit: BoxFit.scaleDown,
                     alignment: Alignment.centerLeft,
-                    child: Text(l10n.number, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 32, letterSpacing: -1, color: Color(0xFF1E60FF), height: 1.1)),
+                    child: Text(l10n.number, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32.sp, letterSpacing: -1, color: Color(0xFF1E60FF), height: 1.1.h)),
                   ),
-                  const SizedBox(height: 16),
-                  Text('${l10n.otpEntryHint}\n+91 ${widget.phoneNumber}', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.primaryTextColor, height: 1.5)),
-                  const SizedBox(height: 48),
+                  SizedBox(height: 16.h),
+                  Text('${l10n.otpEntryHint}\n+91 ${widget.phoneNumber}', style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w600, color: context.primaryTextColor, height: 1.5.h)),
+                  SizedBox(height: 48.h),
                   
                   // Custom OTP Boxes
                   Stack(
@@ -110,7 +111,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                           autofocus: true,
                           cursorColor: Colors.transparent,
                           enabled: !_isLoading,
-                          style: const TextStyle(color: Colors.transparent, fontSize: 1),
+                          style: TextStyle(color: Colors.transparent, fontSize: 1.sp),
                           decoration: const InputDecoration(
                             border: InputBorder.none,
                             counterText: '',
@@ -131,18 +132,18 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                   ),
                   
                   if (_isLoading)
-                    const Padding(
-                      padding: EdgeInsets.only(top: 24.0),
+                    Padding(
+                      padding: EdgeInsets.only(top: 24.0.h),
                       child: Center(child: CircularProgressIndicator(color: Color(0xFF1E60FF))),
                     ),
                   
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32.h),
                   
                   Center(
                     child: Text.rich(
                       TextSpan(
                         text: l10n.didntReceiveCode,
-                        style: TextStyle(fontSize: 12, color: context.primaryTextColor.withValues(alpha: 0.6), fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize: 12.sp, color: context.primaryTextColor.withValues(alpha: 0.6), fontWeight: FontWeight.bold),
                         children: [
                           TextSpan(text: '${l10n.resendIn} 00:45', style: const TextStyle(color: Color(0xFF1E60FF), fontWeight: FontWeight.bold)),
                         ],
@@ -165,8 +166,8 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     String digit = hasValue ? _otpCode[index] : '';
 
     return Container(
-      width: 44, // Slightly smaller for better fit on narrow screens
-      height: 56,
+      width: 44.w, // Slightly smaller for better fit on narrow screens
+      height: 56.h,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: context.scaffoldColor,
@@ -179,7 +180,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       ),
       child: Text(
         digit,
-        style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32, color: context.primaryTextColor),
+        style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32.sp, color: context.primaryTextColor),
       ),
     );
   }

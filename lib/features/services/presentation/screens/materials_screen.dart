@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sampatti_bazar/shared/widgets/app_card.dart';
 import 'package:sampatti_bazar/shared/widgets/primary_button.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class MaterialsScreen extends StatelessWidget {
   const MaterialsScreen({super.key});
@@ -14,7 +15,7 @@ class MaterialsScreen extends StatelessWidget {
          slivers: [
            SliverToBoxAdapter(
              child: Padding(
-               padding: const EdgeInsets.all(16.0),
+               padding: EdgeInsets.all(16.0.w),
                child: Column(
                  crossAxisAlignment: CrossAxisAlignment.start,
                  children: [
@@ -22,7 +23,7 @@ class MaterialsScreen extends StatelessWidget {
                       'Wholesale Materials & Furniture',
                       style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8.h),
                     Text(
                       'Get bulk quotes for cement, TMT bars, bricks, and imported furniture directly from suppliers.',
                       style: TextStyle(color: Colors.grey[600]),
@@ -32,7 +33,7 @@ class MaterialsScreen extends StatelessWidget {
              ),
            ),
            SliverPadding(
-             padding: const EdgeInsets.symmetric(horizontal: 16.0),
+             padding: EdgeInsets.symmetric(horizontal: 16.0.w),
              sliver: SliverGrid(
                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                  crossAxisCount: 2,
@@ -50,7 +51,7 @@ class MaterialsScreen extends StatelessWidget {
                ]),
              ),
            ),
-           const SliverPadding(padding: EdgeInsets.only(bottom: 24)),
+           SliverPadding(padding: EdgeInsets.only(bottom: 24.h)),
          ],
        ),
      );
@@ -58,7 +59,7 @@ class MaterialsScreen extends StatelessWidget {
 
   Widget _buildMaterialCard(BuildContext context, String title, String price, String imageUrl) {
     return AppCard(
-      padding: const EdgeInsets.all(12),
+      padding: EdgeInsets.all(12.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -66,22 +67,22 @@ class MaterialsScreen extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(8.w),
               ),
               clipBehavior: Clip.antiAlias,
               child: CachedNetworkImage(
                 imageUrl: imageUrl,
                 fit: BoxFit.cover,
                 placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
+                errorWidget: (context, url, error) => Icon(Icons.error),
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12.h),
           Text(title, style: const TextStyle(fontWeight: FontWeight.bold), maxLines: 2, overflow: TextOverflow.ellipsis),
-          const SizedBox(height: 4),
-          Text(price, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
-          const SizedBox(height: 8),
+          SizedBox(height: 4.h),
+          Text(price, style: TextStyle(color: Colors.grey[600], fontSize: 12.sp)),
+          SizedBox(height: 8.h),
           PrimaryButton(
             text: 'Get Quote',
             onPressed: () {

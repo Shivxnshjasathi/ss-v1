@@ -21,6 +21,7 @@ import 'package:sampatti_bazar/features/services/presentation/screens/cart_scree
 import 'package:sampatti_bazar/features/services/presentation/screens/checkout_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/movers_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/services_hub_screen.dart';
+import 'package:sampatti_bazar/features/services/presentation/screens/other_services_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/service_tracking_screen.dart';
 import 'package:sampatti_bazar/features/profile/presentation/screens/profile_screen.dart';
 import 'package:sampatti_bazar/features/profile/presentation/screens/edit_profile_screen.dart';
@@ -34,6 +35,7 @@ import 'package:sampatti_bazar/features/services/presentation/screens/providers/
 import 'package:sampatti_bazar/features/services/presentation/screens/providers/builder_agent_dashboard_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/providers/finance_dashboard_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/providers/movers_dashboard_screen.dart';
+import 'package:sampatti_bazar/features/services/presentation/screens/providers/handyman_dashboard_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/emi_calculator_screen.dart';
 import 'package:sampatti_bazar/features/chat/presentation/screens/chat_list_screen.dart';
 import 'package:sampatti_bazar/features/chat/presentation/screens/chat_detail_screen.dart';
@@ -195,6 +197,10 @@ final goRouter = GoRouter(
       ]
     ),
     GoRoute(
+      path: '/services/other',
+      builder: (context, state) => const OtherServicesScreen(),
+    ),
+    GoRoute(
       path: '/services/tracking',
       builder: (context, state) => const ServiceTrackingScreen(),
     ),
@@ -225,6 +231,10 @@ final goRouter = GoRouter(
     GoRoute(
       path: '/provider/movers',
       builder: (context, state) => const MoversDashboardScreen(),
+    ),
+    GoRoute(
+      path: '/provider/handyman',
+      builder: (context, state) => const HandymanDashboardScreen(),
     ),
     GoRoute(
       path: '/chats/:id',

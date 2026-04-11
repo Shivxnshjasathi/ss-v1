@@ -9,6 +9,7 @@ import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/services/domain/service_request_model.dart';
 import 'package:sampatti_bazar/features/services/data/service_request_repository.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class MoversScreen extends ConsumerStatefulWidget {
   const MoversScreen({super.key});
@@ -145,14 +146,14 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.w)),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.check_circle, color: Colors.green, size: 60),
-                const SizedBox(height: 16),
-                Text(l10n.moversBookedSuccess, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18), textAlign: TextAlign.center),
-                const SizedBox(height: 8),
+                Icon(Icons.check_circle, color: Colors.green, size: 60.w),
+                SizedBox(height: 16.h),
+                Text(l10n.moversBookedSuccess, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18.sp), textAlign: TextAlign.center),
+                SizedBox(height: 8.h),
                 Text(
                   l10n.moversArrivalMsg(
                     _pickupController.text,
@@ -160,9 +161,9 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
                     _selectedTime.format(context),
                   ),
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.grey, fontSize: 12),
+                  style: TextStyle(color: Colors.grey, fontSize: 12.sp),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24.h),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -171,7 +172,7 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.primaryBlue,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.w)),
                     ),
                     child: const Text('Track Booking', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                   ),
@@ -199,14 +200,14 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
         elevation: 0,
         leadingWidth: 72,
         leading: Padding(
-          padding: const EdgeInsets.only(left: 16.0, top: 8, bottom: 8),
+          padding: EdgeInsets.only(left: 16.0.w, top: 8.h, bottom: 8.h),
           child: Container(
             decoration: BoxDecoration(
               color: AppTheme.primaryBlue,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(8.w),
             ),
             child: IconButton(
-              icon: const Icon(Icons.local_shipping, color: Colors.white, size: 20),
+              icon: Icon(Icons.local_shipping, color: Colors.white, size: 20.w),
               onPressed: () => context.pop(),
               padding: EdgeInsets.zero,
             ),
@@ -217,7 +218,7 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
           style: GoogleFonts.inter(
             fontWeight: FontWeight.w900,
             color: context.primaryTextColor,
-            fontSize: 18,
+            fontSize: 18.sp,
             letterSpacing: -0.5,
           ),
         ),
@@ -226,29 +227,29 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(height: 1, color: context.borderColor),
+            Container(height: 1.h, color: context.borderColor),
             Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: EdgeInsets.all(24.0.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildSectionLabel(l10n.transitRoute),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   _buildTransitRouteCard(l10n),
                   
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32.h),
                   
                   _buildSectionLabel(l10n.propertySize),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   _buildPropertySizeRow(),
                   
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32.h),
 
                   _buildSectionLabel(l10n.approxDistance),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   Row(
                     children: [
-                      Text('${_distanceKm.round()} km', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14)),
+                      Text('${_distanceKm.round()} km', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp)),
                       Expanded(
                         child: Slider(
                           value: _distanceKm,
@@ -266,30 +267,30 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
                     ],
                   ),
 
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32.h),
                   
                   _buildSectionLabel(l10n.schedulePickup),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   _buildScheduleRow(context),
                   
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12.h),
                   Row(
                     children: [
-                      Icon(Icons.info_outline, size: 12, color: Colors.grey[600]),
-                      const SizedBox(width: 6),
-                      Text(l10n.shiftingTimeDisclaimer, style: TextStyle(color: Colors.grey[600], fontSize: 10, fontWeight: FontWeight.w600)),
+                      Icon(Icons.info_outline, size: 12.w, color: Colors.grey[600]),
+                      SizedBox(width: 6.w),
+                      Text(l10n.shiftingTimeDisclaimer, style: TextStyle(color: Colors.grey[600], fontSize: 10.sp, fontWeight: FontWeight.w600)),
                     ],
                   ),
                   
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32.h),
                   
                   _buildBookingSummaryCard(l10n),
                   
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32.h),
                   
                   SizedBox(
                     width: double.infinity,
-                    height: 54,
+                    height: 54.h,
                     child: OutlinedButton.icon(
                       icon: Icon(_includePacking ? Icons.check_box : Icons.check_box_outline_blank, color: _includePacking ? AppTheme.primaryBlue : Colors.grey),
                       onPressed: () {
@@ -298,36 +299,36 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
                         });
                       },
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: _includePacking ? AppTheme.primaryBlue : Colors.grey.shade300, width: 2),
+                        side: BorderSide(color: _includePacking ? AppTheme.primaryBlue : Colors.grey.shade300, width: 2.w),
                         backgroundColor: _includePacking ? AppTheme.primaryBlue.withValues(alpha: 0.05) : Colors.transparent,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.w)),
                       ),
                       label: Row(
                         children: [
-                          Text(' ${l10n.professionalPacking}', style: const TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 13)),
+                          Text(' ${l10n.professionalPacking}', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 13.sp)),
                           const Spacer(),
-                          Text('+₹999', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.grey.shade600, fontSize: 13)),
+                          Text('+₹999', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.grey.shade600, fontSize: 13.sp)),
                         ],
                       ),
                     ),
                   ),
                   
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24.h),
                   
                   SizedBox(
                     width: double.infinity,
-                    height: 54,
+                    height: 54.h,
                     child: ElevatedButton(
                       onPressed: _confirmBooking,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.primaryBlue,
                         elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.w)),
                       ),
-                      child: Text(l10n.confirmBooking, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: Colors.white)),
+                      child: Text(l10n.confirmBooking, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp, color: Colors.white)),
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  SizedBox(height: 40.h),
                 ],
               ),
             ),
@@ -340,26 +341,26 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
   Widget _buildSectionLabel(String label) {
     return Text(
       label,
-      style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 11, letterSpacing: 0.5, color: context.primaryTextColor),
+      style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 11.sp, letterSpacing: 0.5, color: context.primaryTextColor),
     );
   }
 
   Widget _buildTransitRouteCard(AppLocalizations l10n) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
         color: context.cardColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.w),
         border: Border.all(color: context.borderColor),
       ),
       child: Stack(
         children: [
           Positioned(
-            left: 11,
-            top: 24,
-            bottom: 24,
+            left: 11.w,
+            top: 24.h,
+            bottom: 24.h,
             child: Container(
-              width: 2,
+              width: 2.w,
               color: Colors.grey.shade300,
             ),
           ),
@@ -370,36 +371,36 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    width: 24,
-                    height: 24,
+                    width: 24.w,
+                    height: 24.h,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppTheme.primaryBlue, width: 2),
+                      border: Border.all(color: AppTheme.primaryBlue, width: 2.w),
                     ),
                     child: Center(
                       child: Container(
-                        width: 8,
-                        height: 8,
-                        decoration: const BoxDecoration(
+                        width: 8.w,
+                        height: 8.h,
+                        decoration: BoxDecoration(
                           color: AppTheme.primaryBlue,
                           shape: BoxShape.circle,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16.w),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(l10n.pickupLocation, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)),
-                        const SizedBox(height: 2),
+                        Text(l10n.pickupLocation, style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)),
+                        SizedBox(height: 2.h),
                         TextField(
                           controller: _pickupController,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                          decoration: const InputDecoration(
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
+                          decoration: InputDecoration(
                             isDense: true,
-                            contentPadding: EdgeInsets.symmetric(vertical: 4),
+                            contentPadding: EdgeInsets.symmetric(vertical: 4.h),
                             border: InputBorder.none,
                           ),
                         ),
@@ -408,30 +409,30 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    width: 24,
-                    height: 24,
-                    child: const Icon(Icons.location_on_rounded, color: Colors.black87, size: 24),
+                    width: 24.w,
+                    height: 24.h,
+                    child: Icon(Icons.location_on_rounded, color: Colors.black87, size: 24.w),
                   ),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16.w),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(l10n.dropLocation, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)),
-                        const SizedBox(height: 2),
+                        Text(l10n.dropLocation, style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)),
+                        SizedBox(height: 2.h),
                         TextField(
                           controller: _dropController,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
                           decoration: InputDecoration(
                             hintText: l10n.searchDestination,
-                            hintStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.grey.shade500),
+                            hintStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp, color: Colors.grey.shade500),
                             isDense: true,
-                            contentPadding: const EdgeInsets.symmetric(vertical: 4),
+                            contentPadding: EdgeInsets.symmetric(vertical: 4.h),
                             border: InputBorder.none,
                           ),
                         ),
@@ -453,11 +454,11 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
       child: Row(
         children: [
           _buildSizeChip('1 BHK'),
-          const SizedBox(width: 12),
+          SizedBox(width: 12.w),
           _buildSizeChip('2 BHK'),
-          const SizedBox(width: 12),
+          SizedBox(width: 12.w),
           _buildSizeChip('3 BHK'),
-          const SizedBox(width: 12),
+          SizedBox(width: 12.w),
           _buildSizeChip('4+ BHK'),
         ],
       ),
@@ -473,17 +474,17 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
         });
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+        padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 24.w),
         decoration: BoxDecoration(
           color: isSelected ? AppTheme.primaryBlue : context.cardColor,
-          border: isSelected ? null : Border.all(color: context.borderColor, width: 1.5),
-          borderRadius: BorderRadius.circular(30),
+          border: isSelected ? null : Border.all(color: context.borderColor, width: 1.5.w),
+          borderRadius: BorderRadius.circular(30.w),
         ),
         child: Text(
           label,
           style: TextStyle(
             fontWeight: FontWeight.w900,
-            fontSize: 12,
+            fontSize: 12.sp,
             color: isSelected ? Colors.white : context.primaryTextColor,
           ),
         ),
@@ -499,39 +500,39 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
           child: GestureDetector(
             onTap: () => _selectDate(context),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
               decoration: BoxDecoration(
                 color: context.cardColor,
                 border: Border.all(color: context.borderColor),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(12.w),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.calendar_today_outlined, size: 18, color: context.primaryTextColor),
-                  const SizedBox(width: 12),
-                  Text(DateFormat('MMM d, yyyy').format(_selectedDate), style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: context.primaryTextColor)),
+                  Icon(Icons.calendar_today_outlined, size: 18.w, color: context.primaryTextColor),
+                  SizedBox(width: 12.w),
+                  Text(DateFormat('MMM d, yyyy').format(_selectedDate), style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13.sp, color: context.primaryTextColor)),
                 ],
               ),
             ),
           ),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: 12.w),
         Expanded(
           flex: 2,
           child: GestureDetector(
             onTap: () => _selectTime(context),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(color: Colors.grey.shade300),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(12.w),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.schedule, size: 18, color: context.primaryTextColor),
-                  const SizedBox(width: 8),
-                  Text(_selectedTime.format(context), style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: context.primaryTextColor)),
+                  Icon(Icons.schedule, size: 18.w, color: context.primaryTextColor),
+                  SizedBox(width: 8.w),
+                  Text(_selectedTime.format(context), style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13.sp, color: context.primaryTextColor)),
                 ],
               ),
             ),
@@ -554,31 +555,31 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
       decoration: BoxDecoration(
         color: context.cardColor,
         border: Border.all(color: context.borderColor),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.w),
       ),
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: EdgeInsets.all(20.0.w),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(l10n.bookingSummary, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 14)),
+                Text(l10n.bookingSummary, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 14.sp)),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                   decoration: BoxDecoration(
                     color: AppTheme.cyanAccent.withValues(alpha: 0.1),
                     border: Border.all(color: AppTheme.cyanAccent.withValues(alpha: 0.2)),
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(4.w),
                   ),
-                  child: Text(l10n.premiumCare, style: GoogleFonts.inter(color: AppTheme.cyanAccent, fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
+                  child: Text(l10n.premiumCare, style: GoogleFonts.inter(color: AppTheme.cyanAccent, fontSize: 9.sp, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
                 ),
               ],
             ),
           ),
-          Divider(height: 1, color: Colors.grey.shade200),
+          Divider(height: 1.h, color: Colors.grey.shade200),
           Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: EdgeInsets.all(20.0.w),
             child: Column(
               children: [
                 Row(
@@ -587,7 +588,7 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
                     Expanded(child: _buildSummaryItem(l10n.packing.toUpperCase(), _includePacking ? l10n.included : l10n.none)),
                   ],
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24.h),
                 Row(
                   children: [
                     Expanded(child: _buildSummaryItem(l10n.distance.toUpperCase(), '${_distanceKm.round()} km')),
@@ -598,10 +599,10 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0),
+            padding: EdgeInsets.symmetric(horizontal: 20.0.w, vertical: 20.0.h),
             decoration: BoxDecoration(
               color: context.surfaceColor,
-              borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(16), bottomRight: Radius.circular(16)),
+              borderRadius: BorderRadius.only(bottomLeft: Radius.circular(16.w), bottomRight: Radius.circular(16.w)),
               border: Border(top: BorderSide(color: context.borderColor)),
             ),
             child: Row(
@@ -609,12 +610,12 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.verified_outlined, color: AppTheme.primaryBlue, size: 18),
-                    const SizedBox(width: 8),
-                    Text(l10n.estQuote, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: Colors.grey)),
+                    Icon(Icons.verified_outlined, color: AppTheme.primaryBlue, size: 18.w),
+                    SizedBox(width: 8.w),
+                    Text(l10n.estQuote, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12.sp, color: Colors.grey)),
                   ],
                 ),
-                Text(formatCurrency(totalQuote), style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 24, color: AppTheme.primaryBlue)),
+                Text(formatCurrency(totalQuote), style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 24.sp, color: AppTheme.primaryBlue)),
               ],
             ),
           ),
@@ -627,9 +628,9 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w900, color: Colors.black54, letterSpacing: 0.5)),
-        const SizedBox(height: 6),
-        Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: context.primaryTextColor)),
+        Text(label, style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.w900, color: Colors.black54, letterSpacing: 0.5)),
+        SizedBox(height: 6.h),
+        Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13.sp, color: context.primaryTextColor)),
       ],
     );
   }

@@ -33,7 +33,7 @@ class ServicesHubScreen extends StatelessWidget {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -41,7 +41,7 @@ class ServicesHubScreen extends StatelessWidget {
               l10n.financialEcosystem,
               style: Theme.of(context).textTheme.displayMedium,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
             Text(
               l10n.servicesSubtitle,
               style: TextStyle(color: context.secondaryTextColor, fontSize: 14.sp),
@@ -60,7 +60,7 @@ class ServicesHubScreen extends StatelessWidget {
                  _buildServiceGridItem(context, l10n.movers, Icons.local_shipping_outlined, l10n.safeRelocation, '/services/movers'),
                  _buildServiceGridItem(context, l10n.legalDocs, Icons.gavel, l10n.verifiedLawyers, '/services/legal'),
                  _buildServiceGridItem(context, l10n.marketplace, Icons.shopping_bag_outlined, l10n.materialsAndMore, '/services/marketplace'),
-                 _buildServiceGridItem(context, l10n.serviceTracking, Icons.receipt_long_outlined, l10n.trackOrders, '/services/tracking'),
+                 _buildServiceGridItem(context, 'Other Services', Icons.home_repair_service_outlined, 'Plumbing, Electric, etc.', '/services/other'),
               ],
             ),
             SizedBox(height: 32.h),
@@ -72,9 +72,15 @@ class ServicesHubScreen extends StatelessWidget {
             _buildToolsSupportList(context, l10n),
             SizedBox(height: 32.h),
             _buildVerifiedBanner(context, l10n),
-            const SizedBox(height: 32),
+            SizedBox(height: 32.h),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => context.push('/services/tracking'),
+        backgroundColor: AppTheme.primaryBlue,
+        icon: const Icon(Icons.location_on_outlined, color: Colors.white),
+        label: Text(l10n.serviceTracking, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ),
     );
   }
@@ -202,7 +208,7 @@ class GlobalSearchDelegate extends SearchDelegate {
     {'name': l10n.movers, 'route': '/services/movers', 'icon': Icons.local_shipping_outlined, 'cat': l10n.servicesLabel},
     {'name': l10n.legalDocs, 'route': '/services/legal', 'icon': Icons.gavel, 'cat': l10n.legal},
     {'name': l10n.marketplace, 'route': '/services/marketplace', 'icon': Icons.shopping_bag_outlined, 'cat': l10n.materials},
-    {'name': l10n.serviceTracking, 'route': '/services/tracking', 'icon': Icons.receipt_long_outlined, 'cat': l10n.activity},
+    {'name': 'Other Services', 'route': '/services/other', 'icon': Icons.home_repair_service_outlined, 'cat': l10n.servicesLabel},
     {'name': l10n.buy, 'route': '/properties', 'icon': Icons.home, 'cat': l10n.propertiesLabel},
     {'name': l10n.rent, 'route': '/properties', 'icon': Icons.vignette_outlined, 'cat': l10n.propertiesLabel},
     {'name': l10n.list, 'route': '/properties/add', 'icon': Icons.add_home_work_outlined, 'cat': l10n.activity},
@@ -247,8 +253,8 @@ class GlobalSearchDelegate extends SearchDelegate {
           return ListTile(
             leading: Icon(feature['icon'] as IconData, color: context.iconColor),
             title: Text(feature['name'] as String, style: TextStyle(color: context.primaryTextColor, fontWeight: FontWeight.bold)),
-            subtitle: Text(feature['cat'] as String, style: TextStyle(color: context.secondaryTextColor, fontSize: 12)),
-            trailing: Icon(Icons.arrow_forward_ios, size: 14, color: context.secondaryTextColor),
+            subtitle: Text(feature['cat'] as String, style: TextStyle(color: context.secondaryTextColor, fontSize: 12.sp)),
+            trailing: Icon(Icons.arrow_forward_ios, size: 14.w, color: context.secondaryTextColor),
             onTap: () {
               close(context, null);
               context.push(feature['route'] as String);

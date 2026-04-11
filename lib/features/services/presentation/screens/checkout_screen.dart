@@ -4,6 +4,7 @@ import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/shared/widgets/custom_text_field.dart';
 import 'package:sampatti_bazar/features/services/domain/cart_service.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -39,23 +40,23 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.w)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.check_circle, color: Colors.green, size: 60),
-              const SizedBox(height: 16),
-              Text(l10n.orderSuccess, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
-              const SizedBox(height: 8),
+              Icon(Icons.check_circle, color: Colors.green, size: 60.w),
+              SizedBox(height: 16.h),
+              Text(l10n.orderSuccess, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18.sp)),
+              SizedBox(height: 8.h),
               Text(l10n.orderSuccessSubtitle, textAlign: TextAlign.center, style: const TextStyle(color: Colors.grey)),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
                     context.go('/home'); // Send to home or tracking route
                   },
-                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF1E60FF), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF1E60FF), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.w))),
                   child: Text(l10n.backToHome, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                 ),
               ),
@@ -78,67 +79,67 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         backgroundColor: context.scaffoldColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: context.iconColor, size: 16),
+          icon: Icon(Icons.arrow_back_ios_new, color: context.iconColor, size: 16.w),
           onPressed: () => context.pop(),
         ),
-        title: Text(l10n.checkoutTitle, style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 18)),
+        title: Text(l10n.checkoutTitle, style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 18.sp)),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.deliveryAddress, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
-            const SizedBox(height: 16),
+            Text(l10n.deliveryAddress, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp)),
+            SizedBox(height: 16.h),
             CustomTextField(controller: _nameController, labelText: l10n.contactName),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             CustomTextField(controller: _phoneController, labelText: l10n.phoneNumber, keyboardType: TextInputType.phone),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             CustomTextField(controller: _addressController, labelText: l10n.deliveryAddress),
-            const SizedBox(height: 32),
-            Text(l10n.paymentMethod, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
-            const SizedBox(height: 16),
+            SizedBox(height: 32.h),
+            Text(l10n.paymentMethod, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp)),
+            SizedBox(height: 16.h),
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16.w),
               decoration: BoxDecoration(
                 border: Border.all(color: const Color(0xFF1E60FF)),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(12.w),
                 color: const Color(0xFFF4FAFD),
               ),
               child: Row(
                 children: [
-                   const Icon(Icons.payment, color: Color(0xFF1E60FF)),
-                   const SizedBox(width: 16),
+                   Icon(Icons.payment, color: Color(0xFF1E60FF)),
+                   SizedBox(width: 16.w),
                    Text(l10n.payOnDelivery, style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF1E60FF))),
                    const Spacer(),
-                   const Icon(Icons.check_circle, color: Color(0xFF1E60FF)),
+                   Icon(Icons.check_circle, color: Color(0xFF1E60FF)),
                 ],
               ),
             ),
-            const SizedBox(height: 32),
-            Text(l10n.orderSummary, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
-            const SizedBox(height: 16),
+            SizedBox(height: 32.h),
+            Text(l10n.orderSummary, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp)),
+            SizedBox(height: 16.h),
             _buildSummaryRow(l10n.itemsTotal, total, l10n),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
             _buildSummaryRow(l10n.deliveryFee, 0.0, l10n),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
             _buildSummaryRow(l10n.taxCharges, total * 0.05, l10n), // Example 5% GST
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 16),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 16.h),
               child: Divider(),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(l10n.grandTotal, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
-                Text(_formatCurrency(total + (total * 0.05)), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 20, color: Color(0xFF1E60FF))),
+                Text(l10n.grandTotal, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp)),
+                Text(_formatCurrency(total + (total * 0.05)), style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20.sp, color: Color(0xFF1E60FF))),
               ],
             ),
           ],
         ),
       ),
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24.w),
         decoration: BoxDecoration(
           color: context.scaffoldColor,
           boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 20, offset: const Offset(0, -5))],
@@ -146,14 +147,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         child: SafeArea(
           top: false,
           child: SizedBox(
-            height: 54,
+            height: 54.h,
             child: ElevatedButton(
               onPressed: _placeOrder,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF1E60FF),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.w)),
               ),
-              child: Text(l10n.confirmOrder, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: Colors.white)),
+              child: Text(l10n.confirmOrder, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp, color: Colors.white)),
             ),
           ),
         ),

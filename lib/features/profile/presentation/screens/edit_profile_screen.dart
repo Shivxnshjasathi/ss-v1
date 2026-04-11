@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class EditProfileScreen extends ConsumerStatefulWidget {
   const EditProfileScreen({super.key});
@@ -82,7 +83,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24.w),
         child: Column(
           children: [
             Center(
@@ -91,15 +92,15 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                    Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: context.borderColor, width: 4),
+                      border: Border.all(color: context.borderColor, width: 4.w),
                     ),
                     child: CircleAvatar(
-                      radius: 54,
+                      radius: 54.w,
                       backgroundColor: context.isDarkMode ? Colors.grey[800] : Colors.grey[200],
                       child: Text(
                         (_nameController.text.isNotEmpty ? _nameController.text : 'U').substring(0, 1).toUpperCase(),
                         style: TextStyle(
-                          fontSize: 40,
+                          fontSize: 40.sp,
                           fontWeight: FontWeight.w900,
                           color: context.isDarkMode ? Colors.white70 : Colors.black54,
                         ),
@@ -107,39 +108,39 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     ),
                   ),
                   Positioned(
-                    bottom: 0,
-                    right: 8,
+                    bottom: 0.h,
+                    right: 8.w,
                     child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: const BoxDecoration(
+                      padding: EdgeInsets.all(8.w),
+                      decoration: BoxDecoration(
                         color: AppTheme.primaryBlue,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.camera_alt, color: Colors.white, size: 16),
+                      child: Icon(Icons.camera_alt, color: Colors.white, size: 16.w),
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 40),
+            SizedBox(height: 40.h),
             _buildTextField(l10n.fullName, _nameController),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             _buildTextField(l10n.emailAddress, _emailController, keyboardType: TextInputType.emailAddress),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             _buildTextField(l10n.phoneNumber, _phoneController, keyboardType: TextInputType.phone),
-            const SizedBox(height: 40),
+            SizedBox(height: 40.h),
             SizedBox(
               width: double.infinity,
-              height: 56,
+              height: 56.h,
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _saveProfile,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primaryBlue,
                   foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.w)),
                 ),
                 child: _isLoading 
-                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                  ? SizedBox(width: 20.w, height: 20.h, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                   : Text(l10n.saveChanges, style: const TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1)),
               ),
             ),
@@ -153,21 +154,21 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 10, color: context.secondaryTextColor, letterSpacing: 1)),
-        const SizedBox(height: 8),
+        Text(label, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 10.sp, color: context.secondaryTextColor, letterSpacing: 1)),
+        SizedBox(height: 8.h),
         Container(
           decoration: BoxDecoration(
             color: context.cardColor,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(12.w),
             border: Border.all(color: context.borderColor),
           ),
           child: TextField(
             controller: controller,
             keyboardType: keyboardType,
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: context.primaryTextColor),
-            decoration: const InputDecoration(
+            style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: context.primaryTextColor),
+            decoration: InputDecoration(
               border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
             ),
           ),
         ),

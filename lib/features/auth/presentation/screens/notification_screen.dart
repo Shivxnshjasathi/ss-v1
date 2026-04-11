@@ -6,6 +6,7 @@ import 'package:sampatti_bazar/features/auth/data/auth_repository.dart';
 import 'package:sampatti_bazar/features/services/data/booking_repository.dart';
 import 'package:sampatti_bazar/features/services/domain/booking_model.dart';
 import 'package:sampatti_bazar/core/services/logger_service.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class NotificationScreen extends ConsumerStatefulWidget {
   const NotificationScreen({super.key});
@@ -42,7 +43,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> with Si
         backgroundColor: context.scaffoldColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: context.iconColor, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new, color: context.iconColor, size: 20.w),
           onPressed: () => context.pop(),
         ),
         title: Text('Activity Center', style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor)),
@@ -51,7 +52,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> with Si
           indicatorColor: Theme.of(context).colorScheme.primary,
           labelColor: context.primaryTextColor,
           unselectedLabelColor: context.secondaryTextColor,
-          labelStyle: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
+          labelStyle: TextStyle(fontWeight: FontWeight.w900, fontSize: 13.sp),
           tabs: const [
             Tab(text: 'MY BOOKINGS'),
             Tab(text: 'MY VISITORS'),
@@ -88,8 +89,8 @@ class _BookingsList extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.event_busy, size: 64, color: context.secondaryTextColor.withValues(alpha: 0.3)),
-                const SizedBox(height: 16),
+                Icon(Icons.event_busy, size: 64.w, color: context.secondaryTextColor.withValues(alpha: 0.3)),
+                SizedBox(height: 16.h),
                 Text(
                   isOwner ? 'No visitor requests yet.' : 'You haven\'t booked any visits yet.',
                   style: TextStyle(color: context.secondaryTextColor),
@@ -100,7 +101,7 @@ class _BookingsList extends ConsumerWidget {
         }
 
         return ListView.builder(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16.w),
           itemCount: bookings.length,
           itemBuilder: (context, index) {
             final booking = bookings[index];
@@ -125,11 +126,11 @@ class _BookingCard extends ConsumerWidget {
     final statusColor = _getStatusColor(booking.status);
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.only(bottom: 16.h),
+      padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         color: context.cardColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.w),
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -139,43 +140,43 @@ class _BookingCard extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                 decoration: BoxDecoration(
                   color: statusColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(6.w),
                 ),
                 child: Text(
                   booking.status.toUpperCase(),
-                  style: TextStyle(color: statusColor, fontSize: 10, fontWeight: FontWeight.w900),
+                  style: TextStyle(color: statusColor, fontSize: 10.sp, fontWeight: FontWeight.w900),
                 ),
               ),
               Text(
                 _formatDate(booking.bookingDate),
-                style: TextStyle(color: context.secondaryTextColor, fontSize: 12),
+                style: TextStyle(color: context.secondaryTextColor, fontSize: 12.sp),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12.h),
           Text(
             booking.propertyTitle,
-            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+            style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4.h),
           Row(
             children: [
-              Icon(Icons.location_on, size: 14, color: context.secondaryTextColor),
-              const SizedBox(width: 4),
+              Icon(Icons.location_on, size: 14.w, color: context.secondaryTextColor),
+              SizedBox(width: 4.w),
               Expanded(
                 child: Text(
                   booking.propertyLocation,
-                  style: TextStyle(color: context.secondaryTextColor, fontSize: 12),
+                  style: TextStyle(color: context.secondaryTextColor, fontSize: 12.sp),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           Row(
             children: [
               if (booking.status == 'pending' || booking.status == 'confirmed')
@@ -185,13 +186,13 @@ class _BookingCard extends ConsumerWidget {
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.redAccent,
                       side: BorderSide(color: Colors.redAccent.withValues(alpha: 0.3)),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.w)),
                     ),
-                    child: const Text('CANCEL', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13)),
+                    child: Text('CANCEL', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13.sp)),
                   ),
                 ),
               if (isOwner && booking.status == 'pending') ...[
-                const SizedBox(width: 12),
+                SizedBox(width: 12.w),
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () => _updateStatus(context, ref, 'confirmed'),
@@ -199,9 +200,9 @@ class _BookingCard extends ConsumerWidget {
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Colors.white,
                       elevation: 0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.w)),
                     ),
-                    child: const Text('CONFIRM', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13)),
+                    child: Text('CONFIRM', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13.sp)),
                   ),
                 ),
               ],

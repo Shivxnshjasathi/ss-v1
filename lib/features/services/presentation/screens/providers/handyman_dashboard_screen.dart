@@ -12,14 +12,14 @@ import 'package:sampatti_bazar/features/services/domain/service_request_model.da
 import 'package:sampatti_bazar/core/utils/responsive.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class LegalDashboardScreen extends ConsumerStatefulWidget {
-  const LegalDashboardScreen({super.key});
+class HandymanDashboardScreen extends ConsumerStatefulWidget {
+  const HandymanDashboardScreen({super.key});
 
   @override
-  ConsumerState<LegalDashboardScreen> createState() => _LegalDashboardScreenState();
+  ConsumerState<HandymanDashboardScreen> createState() => _HandymanDashboardScreenState();
 }
 
-class _LegalDashboardScreenState extends ConsumerState<LegalDashboardScreen> {
+class _HandymanDashboardScreenState extends ConsumerState<HandymanDashboardScreen> {
   String _selectedCity = 'All';
   bool _sortByCity = false;
   bool _isCityInitialized = false;
@@ -29,47 +29,7 @@ class _LegalDashboardScreenState extends ConsumerState<LegalDashboardScreen> {
     return result.trim().toUpperCase();
   }
 
-  Widget _buildStatusPicker(BuildContext context, ServiceRequestModel query) {
-    final statuses = ['Pending', 'Accepted', 'In Progress', 'Completed', 'Cancelled'];
-    
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('UPDATE CASE STATUS', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10.sp, color: Colors.grey, letterSpacing: 0.5)),
-        SizedBox(height: 8.h),
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(horizontal: 16.w),
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(12.sp),
-            border: Border.all(color: AppTheme.primaryBlue.withValues(alpha: 0.3), width: 1.5.w),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: statuses.contains(query.status) ? query.status : 'Pending',
-              isExpanded: true,
-              icon: Icon(Icons.arrow_drop_down, color: AppTheme.primaryBlue),
-              items: statuses.map((String status) {
-                return DropdownMenuItem<String>(
-                  value: status,
-                  child: Text(status.toUpperCase(), style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13.sp, color: AppTheme.primaryBlue)),
-                );
-              }).toList(),
-              onChanged: (String? newValue) async {
-                if (newValue != null) {
-                  await ref.read(serviceRequestRepositoryProvider).updateRequestStatus(query.id, newValue);
-                  if (context.mounted) Navigator.pop(context);
-                }
-              },
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  void _showQueryDetailsBottomSheet(ServiceRequestModel query) {
+  void _showLeadDetailsBottomSheet(ServiceRequestModel lead) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -94,15 +54,15 @@ class _LegalDashboardScreenState extends ConsumerState<LegalDashboardScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                         Text('Query Details', style: Theme.of(context).textTheme.displayMedium?.copyWith(fontSize: 24.sp)),
+                         Text('Lead Details', style: Theme.of(context).textTheme.displayMedium?.copyWith(fontSize: 24.sp)),
                          SizedBox(height: 8.h),
                          Text('Full information submitted by the client.', style: TextStyle(color: Colors.grey, fontSize: 12.sp)),
                       ],
                     ),
                   ),
-                  if (query.userContact.isNotEmpty)
+                  if (lead.userContact.isNotEmpty)
                     IconButton.filled(
-                      onPressed: () => launchUrl(Uri.parse('tel:${query.userContact}')),
+                      onPressed: () => launchUrl(Uri.parse('tel:${lead.userContact}')),
                       icon: Icon(Icons.phone, size: 20.sp),
                       style: IconButton.styleFrom(backgroundColor: AppTheme.primaryBlue),
                     ),
@@ -110,24 +70,24 @@ class _LegalDashboardScreenState extends ConsumerState<LegalDashboardScreen> {
               ),
               SizedBox(height: 32.h),
               
-              _buildReadOnlyForm(context, 'CLIENT NAME', query.userName),
+              _buildReadOnlyForm(context, 'CLIENT NAME', lead.userName),
               SizedBox(height: 20.h),
-              _buildReadOnlyForm(context, 'CONTACT NUMBER', query.userContact),
+              _buildReadOnlyForm(context, 'CONTACT NUMBER', lead.userContact),
               SizedBox(height: 20.h),
               
               // Dynamic fields from details map
-              ...query.details.entries.where((e) => e.value != null && e.value.toString().isNotEmpty).map((entry) {
+              ...lead.details.entries.where((e) => e.value != null && e.value.toString().isNotEmpty).map((entry) {
                 return Padding(
                   padding: EdgeInsets.only(bottom: 20.h),
                   child: _buildReadOnlyForm(context, _formatLabel(entry.key), entry.value.toString()),
                 );
               }),
               
-              if (query.location != null && query.location!.isNotEmpty)
-                 _buildReadOnlyForm(context, 'CITY / REGION', query.location!),
+              if (lead.location != null && lead.location!.isNotEmpty)
+                _buildReadOnlyForm(context, 'LOCATION', lead.location!),
                 
               SizedBox(height: 20.h),
-              _buildStatusPicker(context, query),
+              _buildStatusPicker(context, lead),
               SizedBox(height: 32.h),
               
               SizedBox(
@@ -151,6 +111,46 @@ class _LegalDashboardScreenState extends ConsumerState<LegalDashboardScreen> {
     );
   }
 
+  Widget _buildStatusPicker(BuildContext context, ServiceRequestModel lead) {
+    final statuses = ['Pending', 'Accepted', 'In Progress', 'Completed', 'Cancelled'];
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('UPDATE STATUS', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10.sp, color: Colors.grey, letterSpacing: 0.5)),
+        SizedBox(height: 8.h),
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(12.sp),
+            border: Border.all(color: AppTheme.primaryBlue.withValues(alpha: 0.3), width: 1.5.w),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: statuses.contains(lead.status) ? lead.status : 'Pending',
+              isExpanded: true,
+              icon: Icon(Icons.arrow_drop_down, color: AppTheme.primaryBlue),
+              items: statuses.map((String status) {
+                return DropdownMenuItem<String>(
+                  value: status,
+                  child: Text(status.toUpperCase(), style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13.sp, color: AppTheme.primaryBlue)),
+                );
+              }).toList(),
+              onChanged: (String? newValue) async {
+                if (newValue != null) {
+                  await ref.read(serviceRequestRepositoryProvider).updateRequestStatus(lead.id, newValue);
+                  if (context.mounted) Navigator.pop(context);
+                }
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildReadOnlyForm(BuildContext context, String label, String value) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -171,16 +171,6 @@ class _LegalDashboardScreenState extends ConsumerState<LegalDashboardScreen> {
     );
   }
 
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'accepted': return Colors.blue;
-      case 'in progress': return AppTheme.primaryBlue;
-      case 'completed': return Colors.green;
-      case 'cancelled': return Colors.red;
-      default: return Colors.orange;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     if (!_isCityInitialized) {
@@ -190,12 +180,12 @@ class _LegalDashboardScreenState extends ConsumerState<LegalDashboardScreen> {
         _isCityInitialized = true;
       }
     }
-    final queriesAsync = ref.watch(legalLeadsProvider);
+    final leadsAsync = ref.watch(handymanLeadsProvider);
 
     return Scaffold(
       backgroundColor: context.scaffoldColor,
       appBar: AppBar(
-        title: Text('Legal Advisor Dashboard', style: TextStyle(color: context.primaryTextColor, fontWeight: FontWeight.w900, fontSize: 18.sp)),
+        title: Text('Provider Dashboard', style: TextStyle(color: context.primaryTextColor, fontWeight: FontWeight.w900, fontSize: 18.sp)),
         backgroundColor: context.scaffoldColor,
         elevation: 0,
         actions: [
@@ -209,12 +199,12 @@ class _LegalDashboardScreenState extends ConsumerState<LegalDashboardScreen> {
           ),
         ],
       ),
-      body: queriesAsync.when(
-        data: (queries) {
+      body: leadsAsync.when(
+        data: (leads) {
           // Apply Filter
           var filteredList = _selectedCity == 'All' 
-              ? List<ServiceRequestModel>.from(queries)
-              : queries.where((q) => (q.location?.toLowerCase() ?? '') == _selectedCity.toLowerCase()).toList();
+              ? List<ServiceRequestModel>.from(leads)
+              : leads.where((l) => (l.location?.toLowerCase() ?? '') == _selectedCity.toLowerCase()).toList();
 
           // Apply Sort
           if (_sortByCity) {
@@ -229,10 +219,10 @@ class _LegalDashboardScreenState extends ConsumerState<LegalDashboardScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                     Column(
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Client Queries', style: Theme.of(context).textTheme.displayMedium?.copyWith(fontSize: 24.sp)),
+                        Text('Handyman Leads', style: Theme.of(context).textTheme.displayMedium?.copyWith(fontSize: 24.sp)),
                         SizedBox(height: 4.h),
                         Text(_selectedCity == 'All' ? 'Showing All Cities' : 'Filtered: $_selectedCity', 
                              style: TextStyle(color: AppTheme.primaryBlue, fontWeight: FontWeight.bold, fontSize: 12.sp)),
@@ -245,17 +235,17 @@ class _LegalDashboardScreenState extends ConsumerState<LegalDashboardScreen> {
                   ],
                 ),
                 SizedBox(height: 16.h),
-                _buildFilterBar(queries),
+                _buildFilterBar(leads),
                 SizedBox(height: 24.h),
                 Expanded(
                   child: filteredList.isEmpty 
-                    ? Center(child: Text('No queries found for chosen filters.', style: TextStyle(color: context.secondaryTextColor)))
+                    ? Center(child: Text('No leads found for chosen filters.', style: TextStyle(color: context.secondaryTextColor)))
                     : ListView.builder(
                         padding: EdgeInsets.only(bottom: 100.h),
                         itemCount: filteredList.length,
                         itemBuilder: (context, index) {
-                          final query = filteredList[index];
-                          final statusColor = _getStatusColor(query.status);
+                          final lead = filteredList[index];
+                          final statusColor = _getStatusColor(lead.status);
                           
                           return Container(
                             margin: EdgeInsets.only(bottom: 20.h),
@@ -268,7 +258,7 @@ class _LegalDashboardScreenState extends ConsumerState<LegalDashboardScreen> {
                               border: Border.all(color: context.borderColor.withValues(alpha: 0.5)),
                             ),
                             child: InkWell(
-                              onTap: () => _showQueryDetailsBottomSheet(query),
+                              onTap: () => _showLeadDetailsBottomSheet(lead),
                               borderRadius: BorderRadius.circular(24.sp),
                               child: Padding(
                                 padding: EdgeInsets.all(20.sp),
@@ -289,37 +279,37 @@ class _LegalDashboardScreenState extends ConsumerState<LegalDashboardScreen> {
                                             children: [
                                               Container(width: 6.w, height: 6.h, decoration: BoxDecoration(color: statusColor, shape: BoxShape.circle)),
                                               SizedBox(width: 8.w),
-                                              Text(query.status.toUpperCase(), style: TextStyle(color: statusColor, fontWeight: FontWeight.w900, fontSize: 10.sp, letterSpacing: 0.5)),
+                                              Text(lead.status.toUpperCase(), style: TextStyle(color: statusColor, fontWeight: FontWeight.w900, fontSize: 10.sp, letterSpacing: 0.5)),
                                             ],
                                           ),
                                         ),
-                                        Text(timeago.format(query.createdAt), style: TextStyle(color: context.secondaryTextColor, fontSize: 10.sp, fontWeight: FontWeight.bold)),
+                                        Text(timeago.format(lead.createdAt), style: TextStyle(color: context.secondaryTextColor, fontSize: 10.sp, fontWeight: FontWeight.bold)),
                                       ],
                                     ),
                                     SizedBox(height: 16.h),
-                                    Text(query.category, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18.sp, color: context.primaryTextColor, letterSpacing: -0.5)),
+                                    Text(lead.category, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18.sp, color: context.primaryTextColor, letterSpacing: -0.5)),
                                     SizedBox(height: 8.h),
                                     Row(
                                       children: [
                                         Icon(Icons.person_outline, size: 14.sp, color: AppTheme.primaryBlue),
                                         SizedBox(width: 6.w),
-                                        Text(query.userName, style: TextStyle(color: context.primaryTextColor, fontSize: 13.sp, fontWeight: FontWeight.w600)),
+                                        Text(lead.userName, style: TextStyle(color: context.primaryTextColor, fontSize: 13.sp, fontWeight: FontWeight.w600)),
                                         SizedBox(width: 12.w),
-                                        if (query.location != null) ...[
+                                        if (lead.location != null) ...[
                                           Icon(Icons.location_on_outlined, size: 14.sp, color: Colors.green),
                                           SizedBox(width: 4.w),
-                                          Text(query.location!, style: TextStyle(color: Colors.green, fontSize: 12.sp, fontWeight: FontWeight.bold)),
+                                          Text(lead.location!, style: TextStyle(color: Colors.green, fontSize: 12.sp, fontWeight: FontWeight.bold)),
                                         ],
                                       ],
                                     ),
                                     SizedBox(height: 12.h),
-                                    Text(query.details['notes'] ?? query.category, style: TextStyle(color: context.secondaryTextColor, fontSize: 12.sp, height: 1.5.h), maxLines: 2, overflow: TextOverflow.ellipsis),
+                                    Text(lead.details['notes'] ?? lead.category, style: TextStyle(color: context.secondaryTextColor, fontSize: 12.sp, height: 1.5.h), maxLines: 2, overflow: TextOverflow.ellipsis),
                                     SizedBox(height: 20.h),
                                     Row(
                                       children: [
                                         Expanded(
                                           child: ElevatedButton.icon(
-                                            onPressed: () => launchUrl(Uri.parse('tel:${query.userContact}')),
+                                            onPressed: () => launchUrl(Uri.parse('tel:${lead.userContact}')),
                                             icon: Icon(Icons.phone, size: 16.sp),
                                             label: Text('CALL CLIENT', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11.sp, letterSpacing: 0.5)),
                                             style: ElevatedButton.styleFrom(
@@ -340,8 +330,8 @@ class _LegalDashboardScreenState extends ConsumerState<LegalDashboardScreen> {
                                               
                                               final chatId = await ref.read(chatRepositoryProvider).startOrGetChat(
                                                 userProfile.uid, 
-                                                query.userId,
-                                                metadata: {'type': 'service', 'category': query.category},
+                                                lead.userId,
+                                                metadata: {'type': 'service', 'category': lead.category},
                                               );
                                               if (context.mounted) {
                                                 context.push('/chats/$chatId');
@@ -378,8 +368,18 @@ class _LegalDashboardScreenState extends ConsumerState<LegalDashboardScreen> {
     );
   }
 
-  Widget _buildFilterBar(List<ServiceRequestModel> queries) {
-    final cities = ['All', ...queries.map((q) => q.location).whereType<String>().toSet().toList()];
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'accepted': return Colors.blue;
+      case 'in progress': return AppTheme.primaryBlue;
+      case 'completed': return Colors.green;
+      case 'cancelled': return Colors.red;
+      default: return Colors.orange;
+    }
+  }
+
+  Widget _buildFilterBar(List<ServiceRequestModel> leads) {
+    final cities = ['All', ...leads.map((l) => l.location).whereType<String>().toSet().toList()];
     cities.sort();
 
     if (cities.length <= 1) return const SizedBox.shrink();

@@ -8,6 +8,7 @@ import 'package:sampatti_bazar/features/properties/data/property_repository.dart
 import 'package:sampatti_bazar/features/properties/domain/property_model.dart';
 import 'package:sampatti_bazar/core/services/logger_service.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class SavedPropertiesScreen extends ConsumerWidget {
   const SavedPropertiesScreen({super.key});
@@ -36,7 +37,7 @@ class SavedPropertiesScreen extends ConsumerWidget {
             elevation: 0,
             title: Text(
               l10n.savedProperties,
-              style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 24),
+              style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 24.sp),
             ),
           ),
           body: savedAsync.when(
@@ -46,8 +47,8 @@ class SavedPropertiesScreen extends ConsumerWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.favorite_border, size: 64, color: context.secondaryTextColor),
-                      const SizedBox(height: 16),
+                      Icon(Icons.favorite_border, size: 64.w, color: context.secondaryTextColor),
+                      SizedBox(height: 16.h),
                       Text(l10n.noSavedYet, style: TextStyle(color: context.secondaryTextColor)),
                     ],
                   ),
@@ -55,7 +56,7 @@ class SavedPropertiesScreen extends ConsumerWidget {
               }
 
               return ListView.builder(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16.w),
                 itemCount: properties.length,
                 itemBuilder: (context, index) {
                   final prop = properties[index];
@@ -80,11 +81,11 @@ class SavedPropertiesScreen extends ConsumerWidget {
     return GestureDetector(
       onTap: () => context.push('/properties/detail/${property.id}'),
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.all(12),
+        margin: EdgeInsets.only(bottom: 16.h),
+        padding: EdgeInsets.all(12.w),
         decoration: BoxDecoration(
           color: context.cardColor,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.w),
           border: Border.all(color: context.borderColor),
           boxShadow: [
             BoxShadow(
@@ -98,10 +99,10 @@ class SavedPropertiesScreen extends ConsumerWidget {
           children: [
             // Image
             Container(
-              width: 100,
-              height: 100,
+              width: 100.w,
+              height: 100.h,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(12.w),
                 image: DecorationImage(
                   image: CachedNetworkImageProvider(
                     property.imageUrls.isNotEmpty 
@@ -112,7 +113,7 @@ class SavedPropertiesScreen extends ConsumerWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16.w),
             // Details
             Expanded(
               child: Column(
@@ -120,35 +121,35 @@ class SavedPropertiesScreen extends ConsumerWidget {
                 children: [
                   Text(
                     property.title,
-                    style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+                    style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4.h),
                   Row(
                     children: [
-                       Icon(Icons.location_on, size: 12, color: context.secondaryTextColor),
-                      const SizedBox(width: 4),
+                       Icon(Icons.location_on, size: 12.w, color: context.secondaryTextColor),
+                      SizedBox(width: 4.w),
                       Text(
                         property.city,
-                        style: TextStyle(color: context.secondaryTextColor, fontSize: 12, fontWeight: FontWeight.bold),
+                        style: TextStyle(color: context.secondaryTextColor, fontSize: 12.sp, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   Text(
                     '₹${property.price.toInt()}',
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.primary,
-                      fontSize: 18,
+                      fontSize: 18.sp,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  SizedBox(height: 4.h),
                   Row(
                     children: [
                       _buildSpecSmall(context, Icons.king_bed_outlined, '${property.bedrooms}'),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12.w),
                       _buildSpecSmall(context, Icons.bathtub_outlined, '${property.bathrooms}'),
                     ],
                   ),
@@ -164,9 +165,9 @@ class SavedPropertiesScreen extends ConsumerWidget {
   Widget _buildSpecSmall(BuildContext context, IconData icon, String value) {
     return Row(
       children: [
-        Icon(icon, size: 14, color: context.secondaryTextColor),
-        const SizedBox(width: 4),
-        Text(value, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor)),
+        Icon(icon, size: 14.w, color: context.secondaryTextColor),
+        SizedBox(width: 4.w),
+        Text(value, style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold, color: context.secondaryTextColor)),
       ],
     );
   }

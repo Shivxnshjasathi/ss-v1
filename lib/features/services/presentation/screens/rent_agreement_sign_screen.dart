@@ -10,6 +10,7 @@ import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/services/data/service_request_repository.dart';
 import 'package:sampatti_bazar/features/services/domain/service_request_model.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class RentAgreementSignScreen extends ConsumerStatefulWidget {
   final String agreementId;
@@ -33,33 +34,33 @@ class _RentAgreementSignScreenState extends ConsumerState<RentAgreementSignScree
       builder: (ctx) => Padding(
         padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
         child: Container(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(24.w),
           decoration: BoxDecoration(
             color: Theme.of(ctx).scaffoldBackgroundColor,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24.w)),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('E-KYC Verification', style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 24)),
-              const SizedBox(height: 8),
+              Text('E-KYC Verification', style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 24.sp)),
+              SizedBox(height: 8.h),
               const Text('Enter your 12-digit Aadhaar to verify identity.', style: TextStyle(color: Colors.grey)),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
               TextField(
                 controller: _aadhaarController,
                 keyboardType: TextInputType.number,
                 maxLength: 12,
                 decoration: InputDecoration(
                   labelText: 'Aadhaar Number',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                  prefixIcon: const Icon(Icons.fingerprint),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.w)),
+                  prefixIcon: Icon(Icons.fingerprint),
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
               SizedBox(
                 width: double.infinity,
-                height: 50,
+                height: 50.h,
                 child: ElevatedButton(
                   onPressed: () {
                     if (_aadhaarController.text.length == 12) {
@@ -78,7 +79,7 @@ class _RentAgreementSignScreenState extends ConsumerState<RentAgreementSignScree
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryBlue,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.w)),
                   ),
                   child: const Text('Verify via OTP Mock', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                 ),
@@ -101,20 +102,20 @@ class _RentAgreementSignScreenState extends ConsumerState<RentAgreementSignScree
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        title: const Text('Draw Your Signature', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
+        title: Text('Draw Your Signature', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18.sp)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 300,
-              height: 150,
+              width: 300.w,
+              height: 150.h,
               decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade300)),
               child: Signature(
                 controller: signatureController,
                 backgroundColor: Colors.grey.shade100,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -185,16 +186,16 @@ class _RentAgreementSignScreenState extends ConsumerState<RentAgreementSignScree
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.w)),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.verified, color: Colors.green, size: 60),
-                const SizedBox(height: 16),
-                const Text('Document Signed!', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
-                const SizedBox(height: 8),
+                Icon(Icons.verified, color: Colors.green, size: 60.w),
+                SizedBox(height: 16.h),
+                Text('Document Signed!', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18.sp)),
+                SizedBox(height: 8.h),
                 const Text('Your digital signature has been affixed legally.', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)),
-                const SizedBox(height: 24),
+                SizedBox(height: 24.h),
                 ElevatedButton(
                   onPressed: () {
                     context.pop();
@@ -225,7 +226,7 @@ class _RentAgreementSignScreenState extends ConsumerState<RentAgreementSignScree
     return Scaffold(
       backgroundColor: context.scaffoldColor,
       appBar: AppBar(
-        title: const Text('Sign Rental Agreement', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
+        title: Text('Sign Rental Agreement', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp)),
         centerTitle: true,
         backgroundColor: context.scaffoldColor,
         elevation: 0,
@@ -247,26 +248,26 @@ class _RentAgreementSignScreenState extends ConsumerState<RentAgreementSignScree
           final fullyExecuted = doc.status.toLowerCase() == 'fully executed' || doc.status.toLowerCase() == 'completed';
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(24.w),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (fullyExecuted)
                   Container(
-                    margin: const EdgeInsets.only(bottom: 24),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(color: Colors.green.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.green.withValues(alpha: 0.3))),
+                    margin: EdgeInsets.only(bottom: 24.h),
+                    padding: EdgeInsets.all(16.w),
+                    decoration: BoxDecoration(color: Colors.green.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12.w), border: Border.all(color: Colors.green.withValues(alpha: 0.3))),
                     child: Row(
                       children: [
-                        const Icon(Icons.gavel, color: Colors.green, size: 32),
-                        const SizedBox(width: 16),
+                        Icon(Icons.gavel, color: Colors.green, size: 32.w),
+                        SizedBox(width: 16.w),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text('Fully Executed', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.green, fontSize: 16)),
-                              SizedBox(height: 4),
-                              Text('This legal document has been signed by both parties and securely stamped.', style: TextStyle(color: Colors.green, fontSize: 12, fontWeight: FontWeight.w500, height: 1.4)),
+                            children: [
+                              Text('Fully Executed', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.green, fontSize: 16.sp)),
+                              SizedBox(height: 4.h),
+                              Text('This legal document has been signed by both parties and securely stamped.', style: TextStyle(color: Colors.green, fontSize: 12.sp, fontWeight: FontWeight.w500, height: 1.4.h)),
                             ],
                           ),
                         ),
@@ -275,71 +276,71 @@ class _RentAgreementSignScreenState extends ConsumerState<RentAgreementSignScree
                   ),
 
                 Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(color: AppTheme.cyanAccent.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(12), border: Border.all(color: AppTheme.cyanAccent.withValues(alpha: 0.1))),
+                  padding: EdgeInsets.all(16.w),
+                  decoration: BoxDecoration(color: AppTheme.cyanAccent.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(12.w), border: Border.all(color: AppTheme.cyanAccent.withValues(alpha: 0.1))),
                   child: Row(
                     children: [
-                      Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: context.scaffoldColor, borderRadius: BorderRadius.circular(8)), child: const Icon(Icons.verified_user_outlined, color: AppTheme.cyanAccent, size: 20)),
-                      const SizedBox(width: 12),
+                      Container(padding: EdgeInsets.all(8.w), decoration: BoxDecoration(color: context.scaffoldColor, borderRadius: BorderRadius.circular(8.w)), child: Icon(Icons.verified_user_outlined, color: AppTheme.cyanAccent, size: 20.w)),
+                      SizedBox(width: 12.w),
                       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text('Digital Smart Contract', style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: -0.2)),
-                        const SizedBox(height: 2),
-                        Text('E-Stamped Series • UID: ${doc.id}', style: TextStyle(fontSize: 9, color: context.secondaryTextColor, fontWeight: FontWeight.w800, letterSpacing: 0.5))
+                        Text('Digital Smart Contract', style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12.sp, letterSpacing: -0.2)),
+                        SizedBox(height: 2.h),
+                        Text('E-Stamped Series • UID: ${doc.id}', style: TextStyle(fontSize: 9.sp, color: context.secondaryTextColor, fontWeight: FontWeight.w800, letterSpacing: 0.5))
                       ]),
                     ],
                   ),
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: 32.h),
                 Row(
                   children: [
                     Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(l10n.lessorLabel, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)), 
-                      const SizedBox(height: 8), 
-                      Text(details['lessorName'] ?? 'Unknown', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: -0.3)),
+                      Text(l10n.lessorLabel, style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)), 
+                      SizedBox(height: 8.h), 
+                      Text(details['lessorName'] ?? 'Unknown', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15.sp, letterSpacing: -0.3)),
                       if (details['lessorSignatureImage'] != null) ...[
-                        const SizedBox(height: 8),
-                        Image.memory(base64Decode(details['lessorSignatureImage']), height: 50, color: Colors.blue.shade900),
+                        SizedBox(height: 8.h),
+                        Image.memory(base64Decode(details['lessorSignatureImage']), height: 50.h, color: Colors.blue.shade900),
                       ]
                     ])),
                     Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(l10n.lesseeLabel, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)), 
-                      const SizedBox(height: 8), 
-                      Text(details['lesseeName'] ?? 'Unknown', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: -0.3)),
+                      Text(l10n.lesseeLabel, style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)), 
+                      SizedBox(height: 8.h), 
+                      Text(details['lesseeName'] ?? 'Unknown', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15.sp, letterSpacing: -0.3)),
                       if (details['lesseeSignatureImage'] != null) ...[
-                        const SizedBox(height: 8),
-                        Image.memory(base64Decode(details['lesseeSignatureImage']), height: 50, color: Colors.blue.shade900),
+                        SizedBox(height: 8.h),
+                        Image.memory(base64Decode(details['lesseeSignatureImage']), height: 50.h, color: Colors.blue.shade900),
                       ]
                     ])),
                   ],
                 ),
-                const SizedBox(height: 32),
+                SizedBox(height: 32.h),
                 _buildClause('01', l10n.premisesTerm, 'The Lessor hereby leases to the Lessee the residential apartment located at ${details['propertyAddress']} for a period of 11 months.'),
                 _buildClause('02', l10n.monthlyRentClause, 'The Lessee shall pay a monthly rent of ₹${details['rent']} on or before the 5th of every calendar month via bank transfer.'),
                 _buildClause('03', l10n.securityDepositClause, 'An interest-free refundable security deposit of ₹${details['deposit']} has been paid. This shall be returned upon peaceful possession handover.'),
-                const SizedBox(height: 32),
+                SizedBox(height: 32.h),
                 
                 if (fullyExecuted)
                   SizedBox(
                     width: double.infinity,
-                    height: 54,
+                    height: 54.h,
                     child: OutlinedButton.icon(
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Simulating PDF Download...')));
                       },
-                      icon: const Icon(Icons.download, color: AppTheme.primaryBlue),
-                      label: const Text('Download Legal PDF', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: AppTheme.primaryBlue)),
-                      style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), side: const BorderSide(color: AppTheme.primaryBlue)),
+                      icon: Icon(Icons.download, color: AppTheme.primaryBlue),
+                      label: Text('Download Legal PDF', style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w900, color: AppTheme.primaryBlue)),
+                      style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.w)), side: const BorderSide(color: AppTheme.primaryBlue)),
                     ),
                   )
                 else if (hasLesseeSigned)
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(color: Colors.green.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
-                    child: const Column(
+                    padding: EdgeInsets.all(16.w),
+                    decoration: BoxDecoration(color: Colors.green.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12.w)),
+                    child: Column(
                       children: [
-                        Icon(Icons.check_circle, color: Colors.green, size: 32),
-                        SizedBox(height: 8),
+                        Icon(Icons.check_circle, color: Colors.green, size: 32.w),
+                        SizedBox(height: 8.h),
                         Text('You have successfully signed this document.', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
                       ],
                     ),
@@ -347,27 +348,27 @@ class _RentAgreementSignScreenState extends ConsumerState<RentAgreementSignScree
                 else if (isCreator)
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(color: Colors.orange.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.orange.withValues(alpha: 0.3))),
-                    child: const Column(
+                    padding: EdgeInsets.all(16.w),
+                    decoration: BoxDecoration(color: Colors.orange.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12.w), border: Border.all(color: Colors.orange.withValues(alpha: 0.3))),
+                    child: Column(
                       children: [
-                        Icon(Icons.pending_actions, color: Colors.orange, size: 32),
-                        SizedBox(height: 8),
-                        Text('Awaiting Tenant Signature', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.orange, fontSize: 15)),
-                        SizedBox(height: 4),
-                        Text('You have successfully created and signed this document as the Lessor. Please share the link with the Tenant for their signature.', textAlign: TextAlign.center, style: TextStyle(color: Colors.orange, fontSize: 12, height: 1.4)),
+                        Icon(Icons.pending_actions, color: Colors.orange, size: 32.w),
+                        SizedBox(height: 8.h),
+                        Text('Awaiting Tenant Signature', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.orange, fontSize: 15.sp)),
+                        SizedBox(height: 4.h),
+                        Text('You have successfully created and signed this document as the Lessor. Please share the link with the Tenant for their signature.', textAlign: TextAlign.center, style: TextStyle(color: Colors.orange, fontSize: 12.sp, height: 1.4.h)),
                       ],
                     ),
                   )
                 else
                   SizedBox(
                     width: double.infinity,
-                    height: 54,
+                    height: 54.h,
                     child: ElevatedButton.icon(
                       onPressed: _isLoading ? null : () => _showSignatureDialog(doc),
-                      icon: _isLoading ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : const Icon(Icons.fingerprint, color: Colors.white),
-                      label: Text(_isKycVerified ? 'Accept & Digitally Sign' : 'Complete E-KYC to Sign', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Colors.white)),
-                      style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryBlue, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                      icon: _isLoading ? SizedBox(width: 20.w, height: 20.h, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : Icon(Icons.fingerprint, color: Colors.white),
+                      label: Text(_isKycVerified ? 'Accept & Digitally Sign' : 'Complete E-KYC to Sign', style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w900, color: Colors.white)),
+                      style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryBlue, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.w))),
                     ),
                   ),
               ],
@@ -380,13 +381,13 @@ class _RentAgreementSignScreenState extends ConsumerState<RentAgreementSignScree
 
   Widget _buildClause(String number, String title, String body) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 24.0),
+      padding: EdgeInsets.only(bottom: 24.0.h),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(number, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey)),
-          const SizedBox(width: 16),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: Theme.of(context).textTheme.bodyLarge?.color, letterSpacing: -0.2)), const SizedBox(height: 6), Text(body, style: const TextStyle(color: Colors.grey, fontSize: 12, height: 1.5, fontWeight: FontWeight.w500)), const SizedBox(height: 16), Divider(height: 1, color: Colors.grey.withValues(alpha: 0.2))])),
+          Text(number, style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w900, color: Colors.grey)),
+          SizedBox(width: 16.w),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13.sp, color: Theme.of(context).textTheme.bodyLarge?.color, letterSpacing: -0.2)), SizedBox(height: 6.h), Text(body, style: TextStyle(color: Colors.grey, fontSize: 12.sp, height: 1.5.h, fontWeight: FontWeight.w500)), SizedBox(height: 16.h), Divider(height: 1.h, color: Colors.grey.withValues(alpha: 0.2))])),
         ],
       ),
     );

@@ -9,6 +9,7 @@ import 'package:sampatti_bazar/core/utils/routing_utils.dart';
 import 'package:sampatti_bazar/core/services/location_service.dart';
 import 'package:sampatti_bazar/core/services/logger_service.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -188,69 +189,69 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         title: Text(l10n.completeProfile, style: TextStyle(color: context.primaryTextColor)),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(24.0.w),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(l10n.welcomeToSampatti, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24, color: context.primaryTextColor)),
-              const SizedBox(height: 8),
-              Text(l10n.onboardingSubtitle, style: TextStyle(color: context.secondaryTextColor, fontSize: 14)),
-              const SizedBox(height: 32),
+              Text(l10n.welcomeToSampatti, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24.sp, color: context.primaryTextColor)),
+              SizedBox(height: 8.h),
+              Text(l10n.onboardingSubtitle, style: TextStyle(color: context.secondaryTextColor, fontSize: 14.sp)),
+              SizedBox(height: 32.h),
               
-              Text(l10n.fullName, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
-              const SizedBox(height: 8),
+              Text(l10n.fullName, style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, color: Colors.grey)),
+              SizedBox(height: 8.h),
               TextFormField(
                 controller: _nameController,
                 decoration: InputDecoration(
                   hintText: 'e.g. Rahul Sharma',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.w), borderSide: BorderSide(color: context.borderColor)),
+                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12.w), borderSide: BorderSide(color: context.borderColor)),
                   filled: true,
                   fillColor: context.cardColor,
                 ),
                 style: TextStyle(color: context.primaryTextColor),
                 validator: (value) => value == null || value.isEmpty ? l10n.enterName : null,
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
 
-              Text(l10n.phoneNumber, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
-              const SizedBox(height: 8),
+              Text(l10n.phoneNumber, style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, color: Colors.grey)),
+              SizedBox(height: 8.h),
               TextFormField(
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
                 decoration: InputDecoration(
                   hintText: 'e.g. +91 9876543210',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.w), borderSide: BorderSide(color: context.borderColor)),
+                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12.w), borderSide: BorderSide(color: context.borderColor)),
                   filled: true,
                   fillColor: context.cardColor,
                 ),
                 style: TextStyle(color: context.primaryTextColor),
               validator: (value) => value == null || value.isEmpty ? l10n.enterPhone : null,
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
               
-              Text(l10n.emailAddress, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
-              const SizedBox(height: 8),
+              Text(l10n.emailAddress, style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, color: Colors.grey)),
+              SizedBox(height: 8.h),
               TextFormField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   hintText: 'e.g. rahul@example.com',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.w), borderSide: BorderSide(color: context.borderColor)),
+                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12.w), borderSide: BorderSide(color: context.borderColor)),
                   filled: true,
                   fillColor: context.cardColor,
                 ),
                 style: TextStyle(color: context.primaryTextColor),
                 validator: (value) => (value == null || value.isEmpty || !value.contains('@')) ? 'Please enter a valid email' : null,
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
               
-              Text(l10n.cityLocation, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
-              const SizedBox(height: 8),
+              Text(l10n.cityLocation, style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, color: Colors.grey)),
+              SizedBox(height: 8.h),
               Row(
                 children: [
                   Expanded(
@@ -258,8 +259,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       controller: _locationController,
                       decoration: InputDecoration(
                         hintText: 'e.g. Jabalpur',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-                        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.w), borderSide: BorderSide(color: context.borderColor)),
+                        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12.w), borderSide: BorderSide(color: context.borderColor)),
                         filled: true,
                         fillColor: context.cardColor,
                       ),
@@ -267,26 +268,26 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       validator: (value) => value == null || value.isEmpty ? l10n.enterCity : null,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8.w),
                   IconButton(
                     onPressed: _isFetchingLocation ? null : _fetchLocation,
                     icon: _isFetchingLocation 
-                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                      : const Icon(Icons.my_location, color: Color(0xFF1E60FF)),
+                      ? SizedBox(width: 20.w, height: 20.h, child: CircularProgressIndicator(strokeWidth: 2))
+                      : Icon(Icons.my_location, color: Color(0xFF1E60FF)),
                     tooltip: 'Fetch Current Location',
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
 
-              Text(l10n.yourRole, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
-              const SizedBox(height: 8),
+              Text(l10n.yourRole, style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, color: Colors.grey)),
+              SizedBox(height: 8.h),
               DropdownButtonFormField<String>(
                 value: _selectedRoleKey,
                 dropdownColor: context.cardColor,
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
-                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: context.borderColor)),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.w), borderSide: BorderSide(color: context.borderColor)),
+                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12.w), borderSide: BorderSide(color: context.borderColor)),
                   filled: true,
                   fillColor: context.cardColor,
                 ),
@@ -295,20 +296,20 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   if (val != null) setState(() { _selectedRoleKey = val; });
                 },
               ),
-              const SizedBox(height: 48),
+              SizedBox(height: 48.h),
 
               SizedBox(
                 width: double.infinity,
-                height: 56,
+                height: 56.h,
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _onCompleteSetup,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF1E60FF),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.w)),
                   ),
                   child: _isLoading 
-                      ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : Text(l10n.completeSetup, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: Colors.white)),
+                      ? SizedBox(width: 24.w, height: 24.h, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                      : Text(l10n.completeSetup, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp, color: Colors.white)),
                 ),
               ),
             ],

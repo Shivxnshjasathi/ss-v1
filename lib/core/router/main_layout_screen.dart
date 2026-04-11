@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class MainLayoutScreen extends StatelessWidget {
   const MainLayoutScreen({super.key, required this.navigationShell});
@@ -41,23 +42,23 @@ class MainLayoutScreen extends StatelessWidget {
           elevation: 0,
           items: [
             BottomNavigationBarItem(
-              icon: const Icon(Icons.home_outlined),
-              activeIcon: const Icon(Icons.home),
+              icon: Icon(Icons.home_outlined),
+              activeIcon: Icon(Icons.home),
               label: l10n.homeLabel,
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.grid_view_outlined),
-              activeIcon: const Icon(Icons.grid_view),
+              icon: Icon(Icons.grid_view_outlined),
+              activeIcon: Icon(Icons.grid_view),
               label: l10n.servicesLabel,
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.favorite_border),
-              activeIcon: const Icon(Icons.favorite),
+              icon: Icon(Icons.favorite_border),
+              activeIcon: Icon(Icons.favorite),
               label: l10n.savedLabel,
             ),
             BottomNavigationBarItem(
-              icon: const Icon(Icons.forum_outlined),
-              activeIcon: const Icon(Icons.forum),
+              icon: Icon(Icons.forum_outlined),
+              activeIcon: Icon(Icons.forum),
               label: l10n.messagesLabel,
             ),
           ],

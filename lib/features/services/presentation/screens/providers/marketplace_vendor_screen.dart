@@ -7,6 +7,7 @@ import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/services/data/marketplace_repository.dart';
 import 'package:sampatti_bazar/features/services/domain/marketplace_item_model.dart';
 import 'package:uuid/uuid.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class MarketplaceVendorScreen extends ConsumerStatefulWidget {
   const MarketplaceVendorScreen({super.key});
@@ -41,42 +42,42 @@ class _MarketplaceVendorScreenState extends ConsumerState<MarketplaceVendorScree
         ),
         decoration: BoxDecoration(
           color: context.scaffoldColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24.w)),
         ),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(24.w),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('List New Item', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: context.primaryTextColor)),
-              const SizedBox(height: 24),
+              Text('List New Item', style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w900, color: context.primaryTextColor)),
+              SizedBox(height: 24.h),
               _buildTextField('ITEM NAME', 'e.g. Ambuja Cement', controller: _nameController),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               _buildTextField('CATEGORY', 'e.g. Cement, Steel, Sand', controller: _categoryController),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               Row(
                 children: [
                   Expanded(child: _buildTextField('PRICE (₹)', '0.00', keyboardType: TextInputType.number, controller: _priceController)),
-                  const SizedBox(width: 16),
+                  SizedBox(width: 16.w),
                   Expanded(child: _buildTextField('UNIT', 'e.g. per bag, ton', controller: _unitController)),
                 ],
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: 32.h),
               SizedBox(
                 width: double.infinity,
-                height: 54,
+                height: 54.h,
                 child: ElevatedButton(
                   onPressed: _publishItem,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryBlue,
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.w)),
                   ),
-                  child: const Text('Publish Item', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13)),
+                  child: Text('Publish Item', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13.sp)),
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
             ],
           ),
         ),
@@ -133,23 +134,23 @@ class _MarketplaceVendorScreenState extends ConsumerState<MarketplaceVendorScree
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: Colors.grey, letterSpacing: 0.5)),
-        const SizedBox(height: 8),
+        Text(label, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10.sp, color: Colors.grey, letterSpacing: 0.5)),
+        SizedBox(height: 8.h),
         Container(
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(12.w),
             border: Border.all(color: Theme.of(context).dividerColor.withValues(alpha: 0.1)),
           ),
           child: TextField(
             controller: controller,
             keyboardType: keyboardType,
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Theme.of(context).textTheme.bodyLarge?.color),
+            style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600, color: Theme.of(context).textTheme.bodyLarge?.color),
             decoration: InputDecoration(
               hintText: hint,
               hintStyle: TextStyle(color: Colors.grey.shade400),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.w), borderSide: BorderSide.none),
+              contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
               isDense: true,
             ),
           ),
@@ -188,19 +189,19 @@ class _MarketplaceVendorScreenState extends ConsumerState<MarketplaceVendorScree
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showAddItemModal,
         backgroundColor: AppTheme.primaryBlue,
-        icon: const Icon(Icons.add, color: Colors.white),
+        icon: Icon(Icons.add, color: Colors.white),
         label: const Text('Add Item', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
       ),
       body: inventoryAsync.when(
         data: (items) => Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: EdgeInsets.all(24.0.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('Listed Products', style: Theme.of(context).textTheme.displayMedium),
-              const SizedBox(height: 8),
-              Text('Items visible to consumers in the Marketplace.', style: TextStyle(color: context.secondaryTextColor, fontSize: 13)),
-              const SizedBox(height: 24),
+              SizedBox(height: 8.h),
+              Text('Items visible to consumers in the Marketplace.', style: TextStyle(color: context.secondaryTextColor, fontSize: 13.sp)),
+              SizedBox(height: 24.h),
               Expanded(
                 child: items.isEmpty 
                   ? Center(child: Text('No items listed yet.', style: TextStyle(color: context.secondaryTextColor)))
@@ -209,11 +210,11 @@ class _MarketplaceVendorScreenState extends ConsumerState<MarketplaceVendorScree
                       itemBuilder: (context, index) {
                         final item = items[index];
                         return Container(
-                          margin: const EdgeInsets.only(bottom: 16),
-                          padding: const EdgeInsets.all(16),
+                          margin: EdgeInsets.only(bottom: 16.h),
+                          padding: EdgeInsets.all(16.w),
                           decoration: BoxDecoration(
                             color: context.cardColor,
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(16.w),
                             border: Border.all(color: context.borderColor),
                           ),
                           child: Column(
@@ -223,54 +224,54 @@ class _MarketplaceVendorScreenState extends ConsumerState<MarketplaceVendorScree
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                                     decoration: BoxDecoration(
                                       color: item.status == 'In Stock'
                                         ? Colors.green.withValues(alpha: 0.1) 
                                         : Colors.red.withValues(alpha: 0.1),
-                                      borderRadius: BorderRadius.circular(8),
+                                      borderRadius: BorderRadius.circular(8.w),
                                     ),
                                     child: Text(
                                       item.status.toUpperCase(), 
                                       style: TextStyle(
                                         color: item.status == 'In Stock' ? Colors.green : Colors.red, 
                                         fontWeight: FontWeight.w900, 
-                                        fontSize: 10
+                                        fontSize: 10.sp
                                       )
                                     ),
                                   ),
-                                  Text(item.category, style: TextStyle(color: context.secondaryTextColor, fontSize: 11, fontWeight: FontWeight.bold)),
+                                  Text(item.category, style: TextStyle(color: context.secondaryTextColor, fontSize: 11.sp, fontWeight: FontWeight.bold)),
                                 ],
                               ),
-                              const SizedBox(height: 12),
-                              Text(item.name, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
-                              const SizedBox(height: 4),
+                              SizedBox(height: 12.h),
+                              Text(item.name, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp)),
+                              SizedBox(height: 4.h),
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  Text('₹${item.price}', style: const TextStyle(color: AppTheme.primaryBlue, fontSize: 18, fontWeight: FontWeight.w900)),
-                                  const SizedBox(width: 4),
+                                  Text('₹${item.price}', style: TextStyle(color: AppTheme.primaryBlue, fontSize: 18.sp, fontWeight: FontWeight.w900)),
+                                  SizedBox(width: 4.w),
                                   Padding(
-                                    padding: const EdgeInsets.only(bottom: 3.0),
-                                    child: Text(item.unit, style: TextStyle(color: context.secondaryTextColor, fontSize: 11, fontWeight: FontWeight.w500)),
+                                    padding: EdgeInsets.only(bottom: 3.0.h),
+                                    child: Text(item.unit, style: TextStyle(color: context.secondaryTextColor, fontSize: 11.sp, fontWeight: FontWeight.w500)),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 16),
+                              SizedBox(height: 16.h),
                               Divider(color: context.borderColor),
-                              const SizedBox(height: 8),
+                              SizedBox(height: 8.h),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   Row(
                                     children: [
                                       IconButton(
-                                        icon: const Icon(Icons.edit_outlined, size: 20), 
+                                        icon: Icon(Icons.edit_outlined, size: 20.w), 
                                         onPressed: () {}, 
                                         color: Colors.grey
                                       ),
                                       IconButton(
-                                        icon: const Icon(Icons.delete_outline, size: 20), 
+                                        icon: Icon(Icons.delete_outline, size: 20.w), 
                                         onPressed: () async {
                                           await ref.read(marketplaceRepositoryProvider).deleteItem(item.id);
                                         }, 

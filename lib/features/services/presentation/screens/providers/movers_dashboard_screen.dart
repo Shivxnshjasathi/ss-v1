@@ -11,6 +11,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:sampatti_bazar/features/services/domain/service_request_model.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class MoversDashboardScreen extends ConsumerStatefulWidget {
   const MoversDashboardScreen({super.key});
@@ -30,24 +31,24 @@ class _MoversDashboardScreenState extends ConsumerState<MoversDashboardScreen> {
         height: MediaQuery.of(context).size.height * 0.85,
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(32.w)),
         ),
-        padding: const EdgeInsets.all(24),
+        padding: EdgeInsets.all(24.w),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Center(
                 child: Container(
-                  width: 40, 
-                  height: 4, 
+                  width: 40.w, 
+                  height: 4.h, 
                   decoration: BoxDecoration(
                     color: Colors.grey.withValues(alpha: 0.3), 
-                    borderRadius: BorderRadius.circular(2)
+                    borderRadius: BorderRadius.circular(2.w)
                   )
                 )
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -55,69 +56,69 @@ class _MoversDashboardScreenState extends ConsumerState<MoversDashboardScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                         Text('Movers Request Details', style: Theme.of(context).textTheme.displayMedium?.copyWith(fontSize: 24)),
-                         const SizedBox(height: 8),
-                         const Text('Review transit route and update final pricing quote.', style: TextStyle(color: Colors.grey, fontSize: 12)),
+                         Text('Movers Request Details', style: Theme.of(context).textTheme.displayMedium?.copyWith(fontSize: 24.sp)),
+                         SizedBox(height: 8.h),
+                         Text('Review transit route and update final pricing quote.', style: TextStyle(color: Colors.grey, fontSize: 12.sp)),
                       ],
                     ),
                   ),
                   if (lead.userContact.isNotEmpty)
                     IconButton.filled(
                       onPressed: () => launchUrl(Uri.parse('tel:${lead.userContact}')),
-                      icon: const Icon(Icons.phone, size: 20),
+                      icon: Icon(Icons.phone, size: 20.w),
                       style: IconButton.styleFrom(backgroundColor: AppTheme.primaryBlue),
                     ),
                 ],
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: 32.h),
               
               _buildReadOnlyForm(context, 'CLIENT NAME', lead.userName),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               _buildReadOnlyForm(context, 'CONTACT NUMBER', lead.userContact),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               
               _buildReadOnlyForm(context, 'PICKUP & DROP', '${lead.details['pickupLocation']} ➔ ${lead.details['dropLocation']}'),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               
               Row(
                 children: [
                   Expanded(child: _buildReadOnlyForm(context, 'PROPERTY SIZE', lead.details['propertySize'] ?? 'N/A')),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12.w),
                   Expanded(child: _buildReadOnlyForm(context, 'PACKING', lead.details['includePacking'] == true ? 'Included' : 'None')),
                 ],
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
 
               Row(
                 children: [
                   Expanded(child: _buildReadOnlyForm(context, 'DISTANCE', '${lead.details['distance']} km')),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12.w),
                   Expanded(child: _buildReadOnlyForm(context, 'EST. QUOTE', '₹${lead.details['estimatedQuote'] ?? '0'}')),
                 ],
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               
               if (lead.details['finalQuote'] != null)
                 _buildReadOnlyForm(context, 'CURRENT FINAL QUOTE', '₹${lead.details['finalQuote']}', isHighlight: true),
                 
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               _buildStatusPicker(context, lead),
-              const SizedBox(height: 32),
+              SizedBox(height: 32.h),
               
               SizedBox(
                 width: double.infinity,
-                height: 54,
+                height: 54.h,
                 child: ElevatedButton(
                   onPressed: () => Navigator.pop(context),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryBlue,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.w)),
                     elevation: 0,
                   ),
-                  child: const Text('DONE', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: 1.5, fontSize: 14)),
+                  child: Text('DONE', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: 1.5, fontSize: 14.sp)),
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
             ],
           ),
         ),
@@ -131,25 +132,25 @@ class _MoversDashboardScreenState extends ConsumerState<MoversDashboardScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('UPDATE STATUS & QUOTE', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: Colors.grey, letterSpacing: 0.5)),
-        const SizedBox(height: 8),
+        Text('UPDATE STATUS & QUOTE', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10.sp, color: Colors.grey, letterSpacing: 0.5)),
+        SizedBox(height: 8.h),
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppTheme.primaryBlue.withValues(alpha: 0.3), width: 1.5),
+            borderRadius: BorderRadius.circular(12.w),
+            border: Border.all(color: AppTheme.primaryBlue.withValues(alpha: 0.3), width: 1.5.w),
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               value: statuses.contains(lead.status) ? lead.status : 'Pending',
               isExpanded: true,
-              icon: const Icon(Icons.arrow_drop_down, color: AppTheme.primaryBlue),
+              icon: Icon(Icons.arrow_drop_down, color: AppTheme.primaryBlue),
               items: statuses.map((String status) {
                 return DropdownMenuItem<String>(
                   value: status,
-                  child: Text(status.toUpperCase(), style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: AppTheme.primaryBlue)),
+                  child: Text(status.toUpperCase(), style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13.sp, color: AppTheme.primaryBlue)),
                 );
               }).toList(),
               onChanged: (String? newValue) async {
@@ -176,21 +177,21 @@ class _MoversDashboardScreenState extends ConsumerState<MoversDashboardScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: Theme.of(context).cardColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.w)),
         title: const Text('Set Final Quote', style: TextStyle(fontWeight: FontWeight.bold)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Enter the final agreed price for this transit.', style: TextStyle(fontSize: 12, color: Colors.grey)),
-            const SizedBox(height: 16),
+            Text('Enter the final agreed price for this transit.', style: TextStyle(fontSize: 12.sp, color: Colors.grey)),
+            SizedBox(height: 16.h),
             TextField(
               controller: quoteController,
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               decoration: InputDecoration(
                 prefixText: '₹ ',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.w)),
               ),
             ),
           ],
@@ -221,17 +222,17 @@ class _MoversDashboardScreenState extends ConsumerState<MoversDashboardScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: isHighlight ? AppTheme.primaryBlue : Colors.grey, letterSpacing: 0.5)),
-        const SizedBox(height: 8),
+        Text(label, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10.sp, color: isHighlight ? AppTheme.primaryBlue : Colors.grey, letterSpacing: 0.5)),
+        SizedBox(height: 8.h),
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
           decoration: BoxDecoration(
             color: isHighlight ? AppTheme.primaryBlue.withValues(alpha: 0.1) : Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(12.w),
             border: Border.all(color: isHighlight ? AppTheme.primaryBlue : Theme.of(context).dividerColor.withValues(alpha: 0.1)),
           ),
-          child: Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: isHighlight ? AppTheme.primaryBlue : Theme.of(context).textTheme.bodyLarge?.color)),
+          child: Text(value, style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold, color: isHighlight ? AppTheme.primaryBlue : Theme.of(context).textTheme.bodyLarge?.color)),
         ),
       ],
     );
@@ -245,7 +246,7 @@ class _MoversDashboardScreenState extends ConsumerState<MoversDashboardScreen> {
     return Scaffold(
       backgroundColor: context.scaffoldColor,
       appBar: AppBar(
-        title: Text(l10n.moversDashboard, style: TextStyle(color: context.primaryTextColor, fontWeight: FontWeight.w900, fontSize: 18)),
+        title: Text(l10n.moversDashboard, style: TextStyle(color: context.primaryTextColor, fontWeight: FontWeight.w900, fontSize: 18.sp)),
         backgroundColor: context.scaffoldColor,
         elevation: 0,
         actions: [
@@ -265,17 +266,17 @@ class _MoversDashboardScreenState extends ConsumerState<MoversDashboardScreen> {
             return const Center(child: Text('No moving requests yet.', style: TextStyle(color: Colors.grey)));
           }
           return ListView.builder(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(24.w),
             itemCount: leads.length,
             itemBuilder: (context, index) {
               final lead = leads[index];
               final statusColor = _getStatusColor(lead.status);
               
               return Container(
-                margin: const EdgeInsets.only(bottom: 20),
+                margin: EdgeInsets.only(bottom: 20.h),
                 decoration: BoxDecoration(
                   color: context.cardColor,
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(24.w),
                   boxShadow: [
                     BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 20, offset: const Offset(0, 8)),
                   ],
@@ -283,9 +284,9 @@ class _MoversDashboardScreenState extends ConsumerState<MoversDashboardScreen> {
                 ),
                 child: InkWell(
                   onTap: () => _showLeadDetailsBottomSheet(lead),
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(24.w),
                   child: Padding(
-                    padding: const EdgeInsets.all(20),
+                    padding: EdgeInsets.all(20.w),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -293,44 +294,44 @@ class _MoversDashboardScreenState extends ConsumerState<MoversDashboardScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                               decoration: BoxDecoration(
                                 color: statusColor.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(12.w),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Container(width: 6, height: 6, decoration: BoxDecoration(color: statusColor, shape: BoxShape.circle)),
-                                  const SizedBox(width: 8),
-                                  Text(lead.status.toUpperCase(), style: TextStyle(color: statusColor, fontWeight: FontWeight.w900, fontSize: 10, letterSpacing: 0.5)),
+                                  Container(width: 6.w, height: 6.h, decoration: BoxDecoration(color: statusColor, shape: BoxShape.circle)),
+                                  SizedBox(width: 8.w),
+                                  Text(lead.status.toUpperCase(), style: TextStyle(color: statusColor, fontWeight: FontWeight.w900, fontSize: 10.sp, letterSpacing: 0.5)),
                                 ],
                               ),
                             ),
-                            Text(timeago.format(lead.createdAt), style: TextStyle(color: context.secondaryTextColor, fontSize: 10, fontWeight: FontWeight.bold)),
+                            Text(timeago.format(lead.createdAt), style: TextStyle(color: context.secondaryTextColor, fontSize: 10.sp, fontWeight: FontWeight.bold)),
                           ],
                         ),
-                        const SizedBox(height: 16),
-                        Text('${lead.details['pickupLocation']} ➔ ${lead.details['dropLocation']}', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: context.primaryTextColor, letterSpacing: -0.5), maxLines: 2, overflow: TextOverflow.ellipsis),
-                        const SizedBox(height: 8),
+                        SizedBox(height: 16.h),
+                        Text('${lead.details['pickupLocation']} ➔ ${lead.details['dropLocation']}', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp, color: context.primaryTextColor, letterSpacing: -0.5), maxLines: 2, overflow: TextOverflow.ellipsis),
+                        SizedBox(height: 8.h),
                         Row(
                           children: [
-                            const Icon(Icons.person_outline, size: 14, color: AppTheme.primaryBlue),
-                            const SizedBox(width: 6),
-                            Text(lead.userName, style: TextStyle(color: context.primaryTextColor, fontSize: 13, fontWeight: FontWeight.w600)),
-                            const SizedBox(width: 12),
-                            const Icon(Icons.social_distance_outlined, size: 14, color: Colors.green),
-                            const SizedBox(width: 4),
-                            Text('${lead.details['distance']} km', style: const TextStyle(color: Colors.green, fontSize: 12, fontWeight: FontWeight.bold)),
+                            Icon(Icons.person_outline, size: 14.w, color: AppTheme.primaryBlue),
+                            SizedBox(width: 6.w),
+                            Text(lead.userName, style: TextStyle(color: context.primaryTextColor, fontSize: 13.sp, fontWeight: FontWeight.w600)),
+                            SizedBox(width: 12.w),
+                            Icon(Icons.social_distance_outlined, size: 14.w, color: Colors.green),
+                            SizedBox(width: 4.w),
+                            Text('${lead.details['distance']} km', style: TextStyle(color: Colors.green, fontSize: 12.sp, fontWeight: FontWeight.bold)),
                           ],
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: 12.h),
                         Row(
                           children: [
-                            Expanded(child: Text('Size: ${lead.details['propertySize']}', style: TextStyle(color: context.secondaryTextColor, fontSize: 12, height: 1.5))),
+                            Expanded(child: Text('Size: ${lead.details['propertySize']}', style: TextStyle(color: context.secondaryTextColor, fontSize: 12.sp, height: 1.5.h))),
                             Text(
                               lead.details['finalQuote'] != null ? 'Quote: ₹${lead.details['finalQuote']}' : 'Est: ₹${lead.details['estimatedQuote']}', 
-                              style: TextStyle(color: lead.details['finalQuote'] != null ? AppTheme.primaryBlue : Colors.grey, fontSize: 12, fontWeight: FontWeight.w900)
+                              style: TextStyle(color: lead.details['finalQuote'] != null ? AppTheme.primaryBlue : Colors.grey, fontSize: 12.sp, fontWeight: FontWeight.w900)
                             ),
                           ],
                         ),

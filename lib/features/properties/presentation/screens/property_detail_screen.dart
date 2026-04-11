@@ -88,9 +88,9 @@ class PropertyDetailScreen extends ConsumerWidget {
                    minimumSize: Size(40.w, 40.w),
                  ),
                ),
-               const SizedBox(width: 8),
+               SizedBox(width: 8.w),
                IconButton(
-                 icon: const Icon(Icons.share_outlined, color: Colors.white),
+                 icon: Icon(Icons.share_outlined, color: Colors.white),
                   onPressed: () {
                     Share.share(
                       'Check out this property on Sampatti Bazar: ${property.title} in ${property.city} for ₹${property.price.toInt()}.', // Consider localizing this message too
@@ -106,7 +106,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                    minimumSize: const Size(40, 40),
                  ),
                ),
-               const SizedBox(width: 16),
+               SizedBox(width: 16.w),
             ],
             flexibleSpace: FlexibleSpaceBar(
               background: Stack(
@@ -149,20 +149,20 @@ class PropertyDetailScreen extends ConsumerWidget {
                            children: [
                              if (property.isZeroBrokerage)
                                Container(
-                                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                 padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
                                  decoration: BoxDecoration(
                                    color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.85),
-                                   borderRadius: BorderRadius.circular(8),
+                                   borderRadius: BorderRadius.circular(8.w),
                                  ),
                                  child: Row(
                                     children: [
-                                      const Icon(Icons.star, color: Colors.white, size: 12),
-                                      const SizedBox(width: 4),
+                                      Icon(Icons.star, color: Colors.white, size: 12.w),
+                                      SizedBox(width: 4.w),
                                       Text(
                                         l10n.zeroBrokerageTag,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           color: Colors.white,
-                                          fontSize: 10,
+                                          fontSize: 10.sp,
                                           fontWeight: FontWeight.w900,
                                           letterSpacing: 0.5,
                                         ),
@@ -171,7 +171,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                                  ),
                                ),
                              if (property.isZeroBrokerage && property.isVerified)
-                               const SizedBox(width: 8),
+                               SizedBox(width: 8.w),
                              if (property.isVerified)
                                Container(
                                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
@@ -223,16 +223,16 @@ class PropertyDetailScreen extends ConsumerWidget {
                 children: [
                   Text(
                     property.title.split(' ').map((str) => str.isNotEmpty ? '${str[0].toUpperCase()}${str.substring(1).toLowerCase()}' : '').join(' '),
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: context.primaryTextColor, letterSpacing: -0.5),
+                    style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w900, color: context.primaryTextColor, letterSpacing: -0.5),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
                   Row(
                     children: [
-                      Icon(Icons.location_on, color: AppTheme.primaryBlue, size: 16),
-                      const SizedBox(width: 6),
+                      Icon(Icons.location_on, color: AppTheme.primaryBlue, size: 16.w),
+                      SizedBox(width: 6.w),
                       Text(
                         '${property.location.toUpperCase()[0]}${property.location.substring(1).toLowerCase()}, ${property.city.toUpperCase()[0]}${property.city.substring(1).toLowerCase()}',
-                        style: TextStyle(color: context.secondaryTextColor, fontSize: 13, fontWeight: FontWeight.w600),
+                        style: TextStyle(color: context.secondaryTextColor, fontSize: 13.sp, fontWeight: FontWeight.w600),
                       ),
                     ],
                   ),
@@ -256,8 +256,8 @@ class PropertyDetailScreen extends ConsumerWidget {
                             ],
                           ),
                         ),
-                        Container(width: 1, height: 40, color: context.borderColor),
-                        const SizedBox(width: 24),
+                        Container(width: 1.w, height: 40.h, color: context.borderColor),
+                        SizedBox(width: 24.w),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
@@ -277,17 +277,17 @@ class PropertyDetailScreen extends ConsumerWidget {
                     ),
                   ),
                    
-                   const SizedBox(height: 32),
+                   SizedBox(height: 32.h),
                    Text(l10n.overview, style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1.5)),
-                   const SizedBox(height: 16),
+                   SizedBox(height: 16.h),
                    _buildOverviewGrid(context, property, l10n),
                    
-                   const SizedBox(height: 32),
+                   SizedBox(height: 32.h),
                    Text(l10n.amenities, style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1.5)),
-                   const SizedBox(height: 16),
+                   SizedBox(height: 16.h),
                    _buildAmenities(context, property.amenities, l10n),
                    
-                   const SizedBox(height: 32),
+                   SizedBox(height: 32.h),
                    
                    Text(
                      l10n.propertyDescription,
@@ -296,17 +296,17 @@ class PropertyDetailScreen extends ConsumerWidget {
                        fontWeight: FontWeight.bold,
                      ),
                    ),
-                   const SizedBox(height: 16),
+                   SizedBox(height: 16.h),
                      Text(
                        property.description.isNotEmpty ? property.description : l10n.noDescription,
                        style: TextStyle(
                          color: context.secondaryTextColor,
                          fontSize: 14.sp,
-                         height: 1.6,
+                         height: 1.6.h,
                          fontWeight: FontWeight.w400,
                        ),
                      ),
-                   const SizedBox(height: 16),
+                   SizedBox(height: 16.h),
                    Text(
                      l10n.readFullSpec,
                      style: TextStyle(
@@ -332,26 +332,26 @@ class PropertyDetailScreen extends ConsumerWidget {
                          Row(
                            children: [
                              Container(
-                               padding: const EdgeInsets.all(12),
+                               padding: EdgeInsets.all(12.w),
                                decoration: BoxDecoration(
                                  color: AppTheme.primaryBlue.withValues(alpha: 0.1),
-                                 borderRadius: BorderRadius.circular(16),
+                                 borderRadius: BorderRadius.circular(16.w),
                                ),
-                               child: const Icon(Icons.location_on, color: AppTheme.primaryBlue, size: 24),
+                               child: Icon(Icons.location_on, color: AppTheme.primaryBlue, size: 24.w),
                              ),
-                             const SizedBox(width: 16),
+                             SizedBox(width: 16.w),
                              Expanded(
                                child: Column(
                                  crossAxisAlignment: CrossAxisAlignment.start,
                                  children: [
                                    Text(
                                      property.city.isNotEmpty ? (property.city[0].toUpperCase() + property.city.substring(1).toLowerCase()) : 'Location',
-                                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: context.primaryTextColor),
+                                     style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900, color: context.primaryTextColor),
                                    ),
-                                   const SizedBox(height: 2),
+                                   SizedBox(height: 2.h),
                                    Text(
                                      property.location,
-                                     style: TextStyle(fontSize: 13, color: context.secondaryTextColor, fontWeight: FontWeight.w500),
+                                     style: TextStyle(fontSize: 13.sp, color: context.secondaryTextColor, fontWeight: FontWeight.w500),
                                      maxLines: 2,
                                      overflow: TextOverflow.ellipsis,
                                    ),
@@ -360,7 +360,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                              ),
                            ],
                          ),
-                         const SizedBox(height: 24),
+                         SizedBox(height: 24.h),
                          SizedBox(
                            width: double.infinity,
                            child: OutlinedButton.icon(
@@ -428,29 +428,29 @@ class PropertyDetailScreen extends ConsumerWidget {
                                 ),
                               ],
                             ),
-                            const SizedBox(width: 16),
+                            SizedBox(width: 16.w),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     owner?.name ?? 'Loading...',
-                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: context.primaryTextColor),
+                                    style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900, color: context.primaryTextColor),
                                   ),
                                   Text(
                                     owner?.role ?? l10n.ownerLabel,
-                                    style: TextStyle(fontSize: 12, color: context.secondaryTextColor, fontWeight: FontWeight.bold),
+                                    style: TextStyle(fontSize: 12.sp, color: context.secondaryTextColor, fontWeight: FontWeight.bold),
                                   ),
                                   if (owner != null && (owner.trustScore ?? 0) > 0) ...[
                                     SizedBox(height: 4.h),
-                                    Row(
+                                    Wrap(
+                                      spacing: 4.w,
+                                      runSpacing: 4.h,
+                                      crossAxisAlignment: WrapCrossAlignment.center,
                                       children: [
                                         Icon(Icons.star, color: Colors.amber, size: 14.sp),
-                                        SizedBox(width: 4.w),
                                         Text('${owner.trustScore!.toStringAsFixed(1)} (${owner.ratingCount ?? 0})', style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.bold, color: context.primaryTextColor)),
-                                        SizedBox(width: 8.w),
                                         Text('•', style: TextStyle(color: Colors.grey, fontSize: 10.sp)),
-                                        SizedBox(width: 8.w),
                                         Text('${owner.totalDeals ?? 0} clear deals', style: TextStyle(fontSize: 10.sp, color: Colors.green, fontWeight: FontWeight.w800)),
                                       ],
                                     ),
@@ -490,7 +490,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                                  padding: EdgeInsets.zero,
                                ),
                              ),
-                            const SizedBox(width: 12),
+                            SizedBox(width: 12.w),
                             Container(
                               decoration: BoxDecoration(
                                 color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
@@ -511,7 +511,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                                 padding: EdgeInsets.zero,
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            SizedBox(width: 12.w),
                             Container(
                               decoration: BoxDecoration(
                                 color: Colors.amber.withValues(alpha: 0.1),
@@ -548,7 +548,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                            padding: EdgeInsets.all(16.sp),
                            decoration: BoxDecoration(
                              color: context.cardColor,
-                             borderRadius: BorderRadius.circular(12),
+                             borderRadius: BorderRadius.circular(12.w),
                              border: Border.all(color: context.borderColor),
                            ),
                            child: Column(
@@ -580,13 +580,13 @@ class PropertyDetailScreen extends ConsumerWidget {
                            ),
                          ),
                        ),
-                       const SizedBox(width: 16),
+                       SizedBox(width: 16.w),
                        Expanded(
                          child: Container(
-                           padding: const EdgeInsets.all(16),
+                           padding: EdgeInsets.all(16.w),
                            decoration: BoxDecoration(
                                                            color: context.isDarkMode ? Colors.white.withValues(alpha: 0.05) : Colors.grey.shade50,
-                             borderRadius: BorderRadius.circular(12),
+                             borderRadius: BorderRadius.circular(12.w),
                                                            border: Border.all(color: context.borderColor),
                            ),
                            child: Column(
@@ -603,7 +603,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                                    letterSpacing: 0.5,
                                  ),
                                ),
-                               const SizedBox(height: 4),
+                               SizedBox(height: 4.h),
                                  FittedBox(
                                    fit: BoxFit.scaleDown,
                                    child: Text(
@@ -622,7 +622,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                        ),
                      ],
                    ),
-                   const SizedBox(height: 24),
+                   SizedBox(height: 24.h),
                 ],
               ),
             ),
@@ -753,11 +753,11 @@ class PropertyDetailScreen extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text('How was your experience with this property lister?'),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             StatefulBuilder(builder: (context, setState) {
               return Column(
                 children: [
-                  Text(rating.toStringAsFixed(1), style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.amber)),
+                  Text(rating.toStringAsFixed(1), style: TextStyle(fontSize: 32.sp, fontWeight: FontWeight.bold, color: Colors.amber)),
                   Slider(
                     value: rating,
                     min: 1,
@@ -816,10 +816,10 @@ class PropertyDetailScreen extends ConsumerWidget {
 
   Widget _buildOverviewItem(BuildContext context, IconData icon, String label, String value) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
       decoration: BoxDecoration(
         color: context.isDarkMode ? Colors.grey[900]?.withValues(alpha: 0.3) : Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20.w),
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
@@ -827,22 +827,22 @@ class PropertyDetailScreen extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
               color: AppTheme.primaryBlue.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, color: AppTheme.primaryBlue, size: 18),
+            child: Icon(icon, color: AppTheme.primaryBlue, size: 18.w),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12.h),
           FittedBox(
             fit: BoxFit.scaleDown,
-            child: Text(label, textAlign: TextAlign.center, style: TextStyle(fontSize: 10, color: context.secondaryTextColor, fontWeight: FontWeight.w800, letterSpacing: 0.5)),
+            child: Text(label, textAlign: TextAlign.center, style: TextStyle(fontSize: 10.sp, color: context.secondaryTextColor, fontWeight: FontWeight.w800, letterSpacing: 0.5)),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4.h),
           FittedBox(
             fit: BoxFit.scaleDown,
-            child: Text(value, textAlign: TextAlign.center, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: context.primaryTextColor)),
+            child: Text(value, textAlign: TextAlign.center, style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w900, color: context.primaryTextColor)),
           ),
         ],
       ),
@@ -852,13 +852,13 @@ class PropertyDetailScreen extends ConsumerWidget {
   Widget _buildAmenities(BuildContext context, List<String> amenities, AppLocalizations l10n) {
     if (amenities.isEmpty) return Text(l10n.noAmenities);
     return Wrap(
-      spacing: 12,
+      spacing: 12.h,
       runSpacing: 12,
       children: amenities.map((amenity) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.05),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.w),
           border: Border.all(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)),
         ),
         child: Text(
@@ -866,7 +866,7 @@ class PropertyDetailScreen extends ConsumerWidget {
           style: TextStyle(
             color: Theme.of(context).colorScheme.primary,
             fontWeight: FontWeight.bold,
-            fontSize: 13,
+            fontSize: 13.sp,
           ),
         ),
       )).toList(),

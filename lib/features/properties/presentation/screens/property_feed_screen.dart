@@ -70,7 +70,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
         backgroundColor: context.scaffoldColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: context.iconColor, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new, color: context.iconColor, size: 20.w),
           onPressed: () => context.pop(),
         ),
         title: Text(
@@ -92,7 +92,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                     padding: EdgeInsets.symmetric(horizontal: 16.w),
                     decoration: BoxDecoration(
                       color: context.cardColor,
-                      border: Border.all(color: context.borderColor, width: 1.5),
+                      border: Border.all(color: context.borderColor, width: 1.5.w),
                       borderRadius: BorderRadius.circular(16.sp),
                       boxShadow: [
                         BoxShadow(
@@ -105,7 +105,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                     child: Row(
                       children: [
                         Icon(Icons.search, color: context.iconColor),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12.w),
                         Expanded(
                           child: TextField(
                             controller: _searchController,
@@ -292,14 +292,14 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: context.scaffoldColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24.w)),
       ),
       builder: (context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setModalState) {
             return Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: EdgeInsets.all(24.0.w),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -307,19 +307,19 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(l10n.filterProperties, style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: context.primaryTextColor)),
+                      Text(l10n.filterProperties, style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w900, color: context.primaryTextColor)),
                       IconButton(
-                        icon: const Icon(Icons.close),
+                        icon: Icon(Icons.close),
                         onPressed: () => Navigator.pop(context),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32.h),
                   
-                  Text(l10n.propertyType, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1)),
-                  const SizedBox(height: 12),
+                  Text(l10n.propertyType, style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1)),
+                  SizedBox(height: 12.h),
                   Wrap(
-                    spacing: 12,
+                    spacing: 12.h,
                     runSpacing: 12,
                     children: _propertyTypes.map((type) {
                       final isSelected = tempType == type;
@@ -333,9 +333,9 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                     }).toList(),
                   ),
                   
-                  const SizedBox(height: 40),
-                  Text(l10n.priceRangeLabel, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1)),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 40.h),
+                  Text(l10n.priceRangeLabel, style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1)),
+                  SizedBox(height: 12.h),
                   RangeSlider(
                     values: tempPriceRange,
                     min: 0,
@@ -356,11 +356,11 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                     ],
                   ),
                   
-                  const SizedBox(height: 40),
-                  Text(l10n.bedroomsLabel, style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1)),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 40.h),
+                  Text(l10n.bedroomsLabel, style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1)),
+                  SizedBox(height: 12.h),
                   Wrap(
-                    spacing: 12,
+                    spacing: 12.h,
                     runSpacing: 12,
                     children: _bedroomOptions.map((beds) {
                       final isSelected = tempBedrooms == beds;
@@ -373,11 +373,11 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                       );
                     }).toList(),
                   ),
-                  const SizedBox(height: 48),
+                  SizedBox(height: 48.h),
 
                   SizedBox(
                     width: double.infinity,
-                    height: 56,
+                    height: 56.h,
                     child: ElevatedButton(
                       onPressed: () {
                         setState(() {
@@ -392,7 +392,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                         foregroundColor: Colors.white,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.w),
                         ),
                       ),
                       child: Text(
@@ -404,7 +404,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24.h),
                 ],
               ),
             );
@@ -430,12 +430,12 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
       backgroundColor: context.cardColor,
       selectedColor: Theme.of(context).colorScheme.primary,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20.w),
         side: BorderSide(
           color: isSelected ? Theme.of(context).colorScheme.primary : context.borderColor,
         ),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
     );
   }
 
@@ -447,7 +447,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
         decoration: BoxDecoration(
           color: context.cardColor,
           borderRadius: BorderRadius.circular(24.sp), // More rounded iOS style
-          border: Border.all(color: context.borderColor, width: 1.5),
+          border: Border.all(color: context.borderColor, width: 1.5.w),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.08), // Softer, pro shadow
@@ -490,8 +490,8 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                 ),
                 // Top Tags
                 Positioned(
-                  top: 16,
-                  left: 16,
+                  top: 16.h,
+                  left: 16.w,
                   child: Row(
                     children: [
                       if (property.isZeroBrokerage)
@@ -518,7 +518,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                           ),
                         ),
                       if (property.isZeroBrokerage && property.isVerified)
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8.w),
                       if (property.isVerified)
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
@@ -575,7 +575,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
             ),
             // Details Section
             Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: EdgeInsets.all(20.0.w),
               child: Column(
                 children: [
                   Row(
@@ -604,29 +604,29 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                       _buildAmenity(Icons.square_foot_outlined, '${property.areaSqFt.toInt()} ${l10n.sqft}'),
                     ],
                   ),
-                   const SizedBox(height: 20),
-                  Divider(height: 1, color: context.borderColor),
-                  const SizedBox(height: 16),
+                   SizedBox(height: 20.h),
+                  Divider(height: 1.h, color: context.borderColor),
+                  SizedBox(height: 16.h),
                   Row(
                     children: [
                       CircleAvatar(
-                        radius: 16,
+                        radius: 16.w,
                         backgroundImage: ResizeImage(
                           const CachedNetworkImageProvider('https://i.pravatar.cc/150?u=marcus'),
                           width: 100.w.toInt(),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12.w),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                            Text(
                             l10n.listedBy,
-                            style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 0.5),
+                            style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 0.5),
                           ),
                           Text(
                             property.ownerId.isNotEmpty ? 'Owner' : 'Unknown', // Owner/Unknown needs l10n?
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: context.primaryTextColor),
+                            style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold, color: context.primaryTextColor),
                           ),
                         ],
                       ),
@@ -636,14 +636,14 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                           foregroundColor: Theme.of(context).colorScheme.primary,
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 0.h),
                           minimumSize: const Size(60, 36),
                           elevation: 0,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(8.w),
                           ),
                         ),
-                        child: Text(l10n.viewDetails, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                        child: Text(l10n.viewDetails, style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold)),
                       ),
                     ],
                   ),
@@ -661,9 +661,9 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Icon(icon, size: 22, color: context.secondaryTextColor),
-        const SizedBox(height: 6),
-        Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: context.primaryTextColor)),
+        Icon(icon, size: 22.w, color: context.secondaryTextColor),
+        SizedBox(height: 6.h),
+        Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13.sp, color: context.primaryTextColor)),
       ],
     );
   }

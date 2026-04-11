@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'dart:math';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class EmiCalculatorScreen extends StatefulWidget {
   const EmiCalculatorScreen({super.key});
@@ -51,15 +52,15 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
         elevation: 0,
         leading: IconButton(
           icon: Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
               color: const Color(0xFF1E60FF),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(8.w),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.arrow_back_ios_new,
               color: Colors.white,
-              size: 16,
+              size: 16.w,
             ),
           ),
           onPressed: () => context.pop(),
@@ -69,29 +70,29 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
           style: TextStyle(
             fontWeight: FontWeight.w900,
             color: context.primaryTextColor,
-            fontSize: 18,
+            fontSize: 18.sp,
           ),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(24.0.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               l10n.emiCalculator,
-              style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 24),
+              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24.sp),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
             Text(
               l10n.homeLoanSubtitle,
               style: TextStyle(
                 color: Colors.grey[700],
-                fontSize: 12,
-                height: 1.5,
+                fontSize: 12.sp,
+                height: 1.5.h,
               ),
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 32.h),
             _buildSliderCard(
               icon: Icons.attach_money,
               label: l10n.loanAmount,
@@ -103,7 +104,7 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
               max: 10000000,
               onChanged: (val) => setState(() => loanAmount = val),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             _buildSliderCard(
               icon: Icons.calendar_today,
               label: l10n.tenure,
@@ -115,7 +116,7 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
               max: 30,
               onChanged: (val) => setState(() => tenure = val),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             _buildSliderCard(
               icon: Icons.percent,
               label: l10n.interestRate,
@@ -127,9 +128,9 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
               max: 15,
               onChanged: (val) => setState(() => interestRate = val),
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 32.h),
             _buildSummaryCard(l10n),
-            const SizedBox(height: 32),
+            SizedBox(height: 32.h),
           ],
         ),
       ),
@@ -148,22 +149,22 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
     required ValueChanged<double> onChanged,
   }) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
         color: context.cardColor,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(8.w),
         border: Border.all(color: context.borderColor),
       ),
       child: Column(
         children: [
           Row(
             children: [
-              Icon(icon, size: 16, color: Colors.black54),
-              const SizedBox(width: 12),
+              Icon(icon, size: 16.w, color: Colors.black54),
+              SizedBox(width: 12.w),
               Text(
                 label,
-                style: const TextStyle(
-                  fontSize: 10,
+                style: TextStyle(
+                  fontSize: 10.sp,
                   fontWeight: FontWeight.bold,
                   color: Colors.grey,
                   letterSpacing: 0.5,
@@ -172,14 +173,14 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
               const Spacer(),
               Text(
                 valueText,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w900,
-                  fontSize: 14,
+                  fontSize: 14.sp,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           SliderTheme(
             data: SliderThemeData(
               trackHeight: 2,
@@ -204,16 +205,16 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
             children: [
               Text(
                 minLabel,
-                style: const TextStyle(
-                  fontSize: 8,
+                style: TextStyle(
+                  fontSize: 8.sp,
                   fontWeight: FontWeight.bold,
                   color: Colors.grey,
                 ),
               ),
               Text(
                 maxLabel,
-                style: const TextStyle(
-                  fontSize: 8,
+                style: TextStyle(
+                  fontSize: 8.sp,
                   fontWeight: FontWeight.bold,
                   color: Colors.grey,
                 ),
@@ -227,55 +228,55 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
 
   Widget _buildSummaryCard(AppLocalizations l10n) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(24.w),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.w),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             l10n.estimatedMonthlyEmi,
-            style: const TextStyle(
+            style: TextStyle(
               color: Color(0xFF1E60FF),
-              fontSize: 10,
+              fontSize: 10.sp,
               fontWeight: FontWeight.bold,
               letterSpacing: 0.5,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.h),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
                 _formatCurrency(_emi),
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w900,
-                  fontSize: 32,
-                  height: 1,
+                  fontSize: 32.sp,
+                  height: 1.h,
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12.w),
               Container(
-                margin: const EdgeInsets.only(bottom: 4),
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                margin: EdgeInsets.only(bottom: 4.h),
+                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                 decoration: BoxDecoration(
                   border: Border.all(color: const Color(0xFF1E60FF)),
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(4.w),
                 ),
                 child: Text(
                   l10n.lowRate,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Color(0xFF1E60FF),
-                    fontSize: 8,
+                    fontSize: 8.sp,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 32),
+          SizedBox(height: 32.h),
           Row(
             children: [
               Expanded(
@@ -284,18 +285,18 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
                   children: [
                     Text(
                       l10n.totalInterest,
-                      style: const TextStyle(
-                        fontSize: 10,
+                      style: TextStyle(
+                        fontSize: 10.sp,
                         fontWeight: FontWeight.bold,
                         color: Colors.grey,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4.h),
                     Text(
                       _formatCurrency(_totalInterest),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w900,
-                        fontSize: 14,
+                        fontSize: 14.sp,
                       ),
                     ),
                   ],
@@ -307,18 +308,18 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
                   children: [
                     Text(
                       l10n.totalPayable,
-                      style: const TextStyle(
-                        fontSize: 10,
+                      style: TextStyle(
+                        fontSize: 10.sp,
                         fontWeight: FontWeight.bold,
                         color: Colors.grey,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4.h),
                     Text(
                       _formatCurrency(_totalPayable),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w900,
-                        fontSize: 14,
+                        fontSize: 14.sp,
                       ),
                     ),
                   ],
@@ -326,12 +327,12 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 32),
+          SizedBox(height: 32.h),
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16.w),
             decoration: BoxDecoration(
               color: context.cardColor,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(12.w),
               border: Border.all(
                 color: const Color(0xFF1E60FF).withValues(alpha: 0.2),
               ),
@@ -339,21 +340,21 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
+                Icon(
                   Icons.pie_chart_outline,
-                  size: 16,
+                  size: 16.w,
                   color: Color(0xFF1E60FF),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8.w),
                 Text(
                   l10n.viewRepaymentSchedule,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 12,
+                    fontSize: 12.sp,
                   ),
                 ),
                 const Spacer(),
-                const Icon(Icons.chevron_right, size: 16, color: Colors.grey),
+                Icon(Icons.chevron_right, size: 16.w, color: Colors.grey),
               ],
             ),
           ),

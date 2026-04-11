@@ -34,6 +34,12 @@ final moversLeadsProvider = StreamProvider<List<ServiceRequestModel>>((ref) {
   return ref.watch(serviceRequestRepositoryProvider).streamRequestsByCategory('Movers');
 });
 
+final handymanLeadsProvider = StreamProvider<List<ServiceRequestModel>>((ref) {
+  LoggerService.i('ServiceStream: Listening to Handyman leads');
+  const categories = ['Electrical fitting & services', 'Plumbing fitting & service', 'House painting', 'House cleaning', 'All'];
+  return ref.watch(serviceRequestRepositoryProvider).streamRequestsByCategories(categories);
+});
+
 final allSiteVisitsStreamProvider = StreamProvider<List<ServiceRequestModel>>((ref) {
   LoggerService.i('ServiceStream: Listening to ALL site visits');
   return ref.watch(serviceRequestRepositoryProvider).streamAllSiteVisits();

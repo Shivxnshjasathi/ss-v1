@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class HomeLoanScreen extends ConsumerStatefulWidget {
   const HomeLoanScreen({super.key});
@@ -73,12 +74,12 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
           context: context,
           builder: (ctx) => AlertDialog(
             backgroundColor: context.surfaceColor,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.w)),
             title: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(isApproved ? Icons.verified : Icons.info, color: isApproved ? Colors.green : Colors.orange, size: 60),
-                const SizedBox(height: 16),
+                Icon(isApproved ? Icons.verified : Icons.info, color: isApproved ? Colors.green : Colors.orange, size: 60.w),
+                SizedBox(height: 16.h),
                 Text(
                   isApproved ? 'Pre-Approved!' : 'Application Reviewed',
                   textAlign: TextAlign.center,
@@ -124,15 +125,15 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
         elevation: 0,
         leading: IconButton(
           icon: Container(
-            padding: const EdgeInsets.all(8),
+            padding: EdgeInsets.all(8.w),
             decoration: BoxDecoration(
               color: AppTheme.primaryBlue.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(10.w),
             ),
             child: Icon(
               Icons.arrow_back_ios_new,
               color: context.iconColor,
-              size: 14,
+              size: 14.w,
             ),
           ),
           onPressed: () => context.pop(),
@@ -142,7 +143,7 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
           style: TextStyle(
             fontWeight: FontWeight.w900,
             color: context.primaryTextColor,
-            fontSize: 18,
+            fontSize: 18.sp,
           ),
         ),
         actions: [
@@ -150,11 +151,11 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
             icon: Icon(Icons.headset_mic_outlined, color: context.iconColor),
             onPressed: () {},
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8.w),
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.all(24.0.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -169,7 +170,7 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 32.h),
             Form(
               key: _formKey,
               child: Column(
@@ -179,7 +180,7 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
                     l10n.loanEligibilityForm,
                     'Tell us a little about your financial profile.',
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24.h),
                   Row(
                     children: [
                       Expanded(
@@ -192,7 +193,7 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
                               val == null || val.isEmpty ? '*' : null,
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: 16.w),
                       Expanded(
                         child: _buildTextField(
                           labelText: l10n.cibilScore,
@@ -211,7 +212,7 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   Row(
                     children: [
                       Expanded(
@@ -224,7 +225,7 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
                               val == null || val.isEmpty ? '*' : null,
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: 16.w),
                       Expanded(
                         child: _buildTextField(
                           labelText: l10n.propertyValue,
@@ -238,21 +239,21 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 48),
+            SizedBox(height: 48.h),
             _buildSectionHeader(
               'Current Bank Interest Rates',
               'Real-time estimates for Indian home loans',
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24.h),
             ..._bankRates.map((bank) => _buildBankRateItem(bank)).toList(),
-            const SizedBox(height: 32),
+            SizedBox(height: 32.h),
 
             // Requirements Section
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20.w),
               decoration: BoxDecoration(
                 color: const Color(0xFFF4FAFD),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(16.w),
                 border: Border.all(
                   color: AppTheme.cyanAccent.withValues(alpha: 0.1),
                 ),
@@ -262,22 +263,22 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.verified_user_outlined,
-                          color: AppTheme.primaryBlue, size: 20),
-                      const SizedBox(width: 8),
+                      Icon(Icons.verified_user_outlined,
+                          color: AppTheme.primaryBlue, size: 20.w),
+                      SizedBox(width: 8.w),
                       Text('General Requirements',
                           style: TextStyle(
                               fontWeight: FontWeight.w900,
-                              fontSize: 13,
+                              fontSize: 13.sp,
                               color: context.primaryTextColor)),
                     ],
                   ),
-                  const SizedBox(height: 12),
-                  const Text(
+                  SizedBox(height: 12.h),
+                  Text(
                     'Ensure you have these before applying for faster approval processing.',
-                    style: TextStyle(color: Colors.black54, fontSize: 10),
+                    style: TextStyle(color: Colors.black54, fontSize: 10.sp),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
                   _buildReqRow('Age', '21 - 65 years'),
                   _buildReqRow(
                       'Minimum CIBIL', '700+ (Preferred for low rates)'),
@@ -290,7 +291,7 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
         ),
       ),
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+        padding: EdgeInsets.fromLTRB(24, 16, 24, 32),
         decoration: BoxDecoration(
           color: context.scaffoldColor,
           boxShadow: [
@@ -304,27 +305,27 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
         child: SafeArea(
           top: false,
           child: SizedBox(
-            height: 54,
+            height: 54.h,
             child: ElevatedButton(
               onPressed: _isLoading ? null : _submitApplication,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.primaryBlue,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.w),
                 ),
                 elevation: 0,
               ),
               child: _isLoading
-                  ? const SizedBox(
-                      width: 24,
-                      height: 24,
+                  ? SizedBox(
+                      width: 24.w,
+                      height: 24.h,
                       child: CircularProgressIndicator(
                           color: Colors.white, strokeWidth: 2))
                   : Text(
                       l10n.submitApplication.toUpperCase(),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w900,
-                        fontSize: 13,
+                        fontSize: 13.sp,
                         color: Colors.white,
                         letterSpacing: 1,
                       ),
@@ -344,18 +345,18 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
           title,
           style: GoogleFonts.inter(
             fontWeight: FontWeight.w900,
-            fontSize: 24,
+            fontSize: 24.sp,
             letterSpacing: -1.0,
             color: context.primaryTextColor,
           ),
         ),
-        const SizedBox(height: 6),
+        SizedBox(height: 6.h),
         Text(
           subtitle,
           style: TextStyle(
             color: Colors.grey[600],
-            fontSize: 12,
-            height: 1.5,
+            fontSize: 12.sp,
+            height: 1.5.h,
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -365,21 +366,21 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
 
   Widget _buildServiceChip(String label, bool isSelected, VoidCallback onTap) {
     return Padding(
-      padding: const EdgeInsets.only(right: 12.0),
+      padding: EdgeInsets.only(right: 12.0.w),
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
           decoration: BoxDecoration(
             color: isSelected ? AppTheme.primaryBlue : context.cardColor,
-            borderRadius: BorderRadius.circular(30),
+            borderRadius: BorderRadius.circular(30.w),
             border: isSelected ? null : Border.all(color: context.borderColor),
           ),
           child: Text(
             label.toUpperCase(),
             style: TextStyle(
               fontWeight: FontWeight.w900,
-              fontSize: 10,
+              fontSize: 10.sp,
               letterSpacing: 0.5,
               color: isSelected ? Colors.white : context.primaryTextColor,
             ),
@@ -403,22 +404,22 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
           labelText.toUpperCase(),
           style: TextStyle(
             fontWeight: FontWeight.w900,
-            fontSize: 10,
+            fontSize: 10.sp,
             color: context.primaryTextColor,
             letterSpacing: 0.5,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         Container(
           decoration: BoxDecoration(
             color: context.surfaceColor,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(12.w),
           ),
           child: TextFormField(
             controller: controller,
             keyboardType: type,
             style: TextStyle(
-              fontSize: 14,
+              fontSize: 14.sp,
               fontWeight: FontWeight.w600,
               color: context.primaryTextColor,
             ),
@@ -429,22 +430,22 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
                 fontWeight: FontWeight.w500,
               ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(12.w),
                 borderSide: BorderSide.none,
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
+                borderRadius: BorderRadius.circular(12.w),
+                borderSide: BorderSide(
                   color: AppTheme.primaryBlue,
-                  width: 1.5,
+                  width: 1.5.w,
                 ),
               ),
               errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.w),
                   borderSide: const BorderSide(color: Colors.redAccent)),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 16,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 16.w,
+                vertical: 16.h,
               ),
               isDense: true,
             ),
@@ -457,11 +458,11 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
 
   Widget _buildBankRateItem(Map<String, dynamic> bank) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.only(bottom: 12.h),
+      padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         color: context.cardColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.w),
         border: Border.all(color: context.borderColor),
       ),
       child: Row(
@@ -474,27 +475,27 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
                 Text(bank['bank']!,
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                        fontSize: 14.sp,
                         color: context.primaryTextColor)),
-                const SizedBox(height: 4),
+                SizedBox(height: 4.h),
                 Text('Proc. Fee: ${bank['fees']}',
                     style: TextStyle(
-                        color: context.secondaryTextColor, fontSize: 10)),
+                        color: context.secondaryTextColor, fontSize: 10.sp)),
               ],
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
             decoration: BoxDecoration(
               color: Colors.green.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(8.w),
             ),
             child: Text(
               bank['rate']!,
-              style: const TextStyle(
+              style: TextStyle(
                   color: Colors.green,
                   fontWeight: FontWeight.w900,
-                  fontSize: 12),
+                  fontSize: 12.sp),
             ),
           ),
         ],
@@ -504,20 +505,20 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
 
   Widget _buildReqRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
+      padding: EdgeInsets.only(bottom: 8.0.h),
       child: Row(
         children: [
           Icon(Icons.check_circle,
-              size: 14, color: AppTheme.primaryBlue.withValues(alpha: 0.6)),
-          const SizedBox(width: 8),
+              size: 14.w, color: AppTheme.primaryBlue.withValues(alpha: 0.6)),
+          SizedBox(width: 8.w),
           Expanded(
               child: Text(label,
                   style: TextStyle(
-                      color: context.secondaryTextColor, fontSize: 11))),
+                      color: context.secondaryTextColor, fontSize: 11.sp))),
           Text(value,
               style: TextStyle(
                   fontWeight: FontWeight.w900,
-                  fontSize: 11,
+                  fontSize: 11.sp,
                   color: context.primaryTextColor)),
         ],
       ),
