@@ -18,6 +18,10 @@ class PropertyModel {
   final bool isZeroBrokerage;
   final int? builtIn;
   final double? lotSizeSqFt;
+  final double? latitude;
+  final double? longitude;
+  final String? street;
+  final String? areaName;
 
   PropertyModel({
     required this.id,
@@ -39,6 +43,10 @@ class PropertyModel {
     this.isZeroBrokerage = false,
     this.builtIn,
     this.lotSizeSqFt,
+    this.latitude,
+    this.longitude,
+    this.street,
+    this.areaName,
   });
 
   Map<String, dynamic> toMap() {
@@ -62,6 +70,10 @@ class PropertyModel {
       'isZeroBrokerage': isZeroBrokerage,
       'builtIn': builtIn,
       'lotSizeSqFt': lotSizeSqFt,
+      'latitude': latitude,
+      'longitude': longitude,
+      'street': street,
+      'areaName': areaName,
     };
   }
 
@@ -86,6 +98,10 @@ class PropertyModel {
       isZeroBrokerage: map['isZeroBrokerage'] ?? false,
       builtIn: map['builtIn']?.toInt(),
       lotSizeSqFt: map['lotSizeSqFt']?.toDouble(),
+      latitude: (map['latitude'] as num?)?.toDouble(),
+      longitude: (map['longitude'] as num?)?.toDouble(),
+      street: map['street'],
+      areaName: map['areaName'],
     );
   }
 }

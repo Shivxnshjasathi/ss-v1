@@ -16,6 +16,7 @@ class UserModel {
   final bool? isPreApproved;
   final double? preApprovalAmount;
   final int? cibilScore;
+  final String? profileImageUrl;
 
   UserModel({
     required this.uid,
@@ -31,6 +32,7 @@ class UserModel {
     this.isPreApproved,
     this.preApprovalAmount,
     this.cibilScore,
+    this.profileImageUrl,
   });
 
   Map<String, dynamic> toMap() {
@@ -48,6 +50,7 @@ class UserModel {
       'isPreApproved': isPreApproved,
       'preApprovalAmount': preApprovalAmount,
       'cibilScore': cibilScore,
+      'profileImageUrl': profileImageUrl,
     };
   }
 
@@ -68,6 +71,7 @@ class UserModel {
       isPreApproved: map['isPreApproved'] as bool?,
       preApprovalAmount: (map['preApprovalAmount'] as num?)?.toDouble(),
       cibilScore: map['cibilScore'] as int?,
+      profileImageUrl: map['profileImageUrl'],
     );
   }
 
@@ -85,6 +89,7 @@ class UserModel {
     bool? isPreApproved,
     double? preApprovalAmount,
     int? cibilScore,
+    String? profileImageUrl,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
@@ -100,6 +105,7 @@ class UserModel {
       isPreApproved: isPreApproved ?? this.isPreApproved,
       preApprovalAmount: preApprovalAmount ?? this.preApprovalAmount,
       cibilScore: cibilScore ?? this.cibilScore,
+      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
     );
   }
 }

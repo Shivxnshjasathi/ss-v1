@@ -9,6 +9,8 @@ import 'package:sampatti_bazar/features/properties/domain/property_model.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
 import 'package:sampatti_bazar/core/widgets/skeleton_loaders.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 
 class PropertyFeedScreen extends ConsumerStatefulWidget {
   const PropertyFeedScreen({super.key});
@@ -752,23 +754,49 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                         ),
                       ),
                       SizedBox(height: 4.h),
-                      Row(
-                        children: [
-                          Icon(
-                            LucideIcons.mapPin,
-                            color: Colors.white70,
-                            size: 16.sp,
-                          ),
-                          SizedBox(width: 6.w),
-                          Text(
-                            property.city,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 13.sp,
-                              fontWeight: FontWeight.w500,
+                      InkWell(
+                        onTap: () async {
+                          final Uri url;
+                          if (property.latitude != null && property.longitude != null) {
+                            url = Uri.parse(
+                              'https://www.google.com/maps/search/?api=1&query=${property.latitude},${property.longitude}',
+                            );
+                          } else {
+                            final query = Uri.encodeComponent(
+                              '${property.location}, ${property.city}',
+                            );
+                            url = Uri.parse(
+                              'https://www.google.com/maps/search/?api=1&query=$query',
+                            );
+                          }
+                          if (await canLaunchUrl(url)) {
+                            await launchUrl(url);
+                          }
+                        },
+                        child: Row(
+                          children: [
+                            Icon(
+                              LucideIcons.mapPin,
+                              color: Colors.white70,
+                              size: 16.sp,
                             ),
-                          ),
-                        ],
+                            SizedBox(width: 6.w),
+                            Text(
+                              property.city,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            SizedBox(width: 4.w),
+                            Icon(
+                              LucideIcons.externalLink,
+                              color: Colors.white54,
+                              size: 10.sp,
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -829,37 +857,51 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                   SizedBox(height: 16.h),
                   Row(
                     children: [
-                      CircleAvatar(
-                        radius: 16.w,
-                        backgroundImage: ResizeImage(
-                          const CachedNetworkImageProvider(
-                            'https://i.pravatar.cc/150?u=marcus',
-                          ),
-                          width: 100.w.toInt(),
-                        ),
+                      Consumer(
+                        builder: (context, ref, child) {
+                          final ownerAsync = ref.watch(userProfileProvider(property.ownerId));
+                          return ownerAsync.when(
+                            data: (owner) => CircleAvatar(
+                              radius: 16.w,
+                              backgroundColor: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                              backgroundImage: (owner?.profileImageUrl != null && owner!.profileImageUrl!.isNotEmpty)
+                                  ? NetworkImage(owner.profileImageUrl!)
+                                  : NetworkImage('https://ui-avatars.com/api/?name=${Uri.encodeComponent(owner?.name ?? 'User')}&background=random&size=128'),
+                            ),
+                            loading: () => CircleAvatar(radius: 16.w, backgroundColor: context.borderColor),
+                            error: (_, __) => CircleAvatar(radius: 16.w, backgroundImage: const NetworkImage('https://i.pravatar.cc/150?u=error')),
+                          );
+                        },
                       ),
                       SizedBox(width: 12.w),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            l10n.listedBy,
+                            l10n.listedBy.toUpperCase(),
                             style: TextStyle(
                               fontSize: 9.sp,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w800,
                               color: context.secondaryTextColor,
-                              letterSpacing: 0.5,
+                              letterSpacing: 0.8,
                             ),
                           ),
-                          Text(
-                            property.ownerId.isNotEmpty
-                                ? 'Owner'
-                                : 'Unknown', // Owner/Unknown needs l10n?
-                            style: TextStyle(
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.bold,
-                              color: context.primaryTextColor,
-                            ),
+                          Consumer(
+                            builder: (context, ref, child) {
+                              final ownerAsync = ref.watch(userProfileProvider(property.ownerId));
+                              return ownerAsync.when(
+                                data: (owner) => Text(
+                                  owner?.name ?? 'Owner',
+                                  style: TextStyle(
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: context.primaryTextColor,
+                                  ),
+                                ),
+                                loading: () => Container(width: 60.w, height: 10.h, color: context.borderColor),
+                                error: (_, __) => Text('Owner', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.sp)),
+                              );
+                            },
                           ),
                         ],
                       ),

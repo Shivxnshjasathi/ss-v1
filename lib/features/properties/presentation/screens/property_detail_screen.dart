@@ -137,156 +137,35 @@ class PropertyDetailScreen extends ConsumerWidget {
                   SizedBox(width: 16.w),
                 ],
                 flexibleSpace: FlexibleSpaceBar(
-                  background: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Hero(
-                        tag: 'property_image_${property.id}',
-                        child: CachedNetworkImage(
-                          imageUrl: property.imageUrls.isNotEmpty
-                              ? property.imageUrls.first
-                              : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-                          fit: BoxFit.cover,
-                          memCacheHeight: 800,
-                          memCacheWidth: 800,
-                        ),
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.black.withValues(alpha: 0.4),
-                              Colors.transparent,
-                              Colors.transparent,
-                              Colors.black.withValues(alpha: 0.8),
-                            ],
-                            stops: const [0.0, 0.2, 0.6, 1.0],
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 24.h,
-                        left: 20.w,
-                        right: 20.w,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                if (property.isZeroBrokerage)
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 10.w,
-                                      vertical: 6.h,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary
-                                          .withValues(alpha: 0.85),
-                                      borderRadius: BorderRadius.circular(8.w),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          LucideIcons.star,
-                                          color: Colors.white,
-                                          size: 12.w,
-                                          fill: 1.0,
-                                        ),
-                                        SizedBox(width: 6.w),
-                                        Text(
-                                          l10n.zeroBrokerageTag,
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 10.sp,
-                                            fontWeight: FontWeight.w900,
-                                            letterSpacing: 0.5,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                if (property.isZeroBrokerage &&
-                                    property.isVerified)
-                                  SizedBox(width: 8.w),
-                                if (property.isVerified)
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 10.w,
-                                      vertical: 6.h,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withValues(
-                                        alpha: 0.95,
-                                      ),
-                                      borderRadius: BorderRadius.circular(8.sp),
-                                      border: Border.all(
-                                        color: Colors.white.withValues(
-                                          alpha: 0.3,
-                                        ),
-                                      ),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          LucideIcons.badgeCheck,
-                                          color: AppTheme.primaryBlue,
-                                          size: 12.sp,
-                                        ),
-                                        SizedBox(width: 6.w),
-                                        Text(
-                                          l10n.verifiedTag,
-                                          style: TextStyle(
-                                            color: Colors.black87,
-                                            fontSize: 10.sp,
-                                            fontWeight: FontWeight.w900,
-                                            letterSpacing: 0.5,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                              ],
-                            ),
-                            SizedBox(height: 12.h),
-                            Text(
-                                  property.title,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 28.sp,
-                                    fontWeight: FontWeight.w900,
-                                    letterSpacing: -1.0,
-                                  ),
-                                  )
-                                ],
-                              ),
-                      ),
-                    ],
+                  background: Hero(
+                    tag: 'property_image_${property.id}',
+                    child: CachedNetworkImage(
+                      imageUrl: property.imageUrls.isNotEmpty
+                          ? property.imageUrls.first
+                          : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
+                      fit: BoxFit.cover,
+                      memCacheHeight: 1000,
+                      memCacheWidth: 1000,
+                    ),
                   ),
                 ),
               ),
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: EdgeInsets.all(24.0.w),
+                  padding: EdgeInsets.fromLTRB(24.w, 24.h, 24.w, 0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Title & Location Section
                       Text(
-                        property.title
-                            .split(' ')
-                            .map(
-                              (str) => str.isNotEmpty
-                                  ? '${str[0].toUpperCase()}${str.substring(1).toLowerCase()}'
-                                  : '',
-                            )
-                            .join(' '),
+                        property.title,
                         style: TextStyle(
-                          fontSize: 24.sp,
+                          fontSize: 28.sp,
                           fontWeight: FontWeight.w900,
                           color: context.primaryTextColor,
+                          fontFamily: 'Poppins',
+                          letterSpacing: -0.5,
+                          height: 1.2,
                         ),
                       ),
                       SizedBox(height: 8.h),
@@ -299,112 +178,108 @@ class PropertyDetailScreen extends ConsumerWidget {
                           ),
                           SizedBox(width: 8.w),
                           Text(
-                            '${property.location.toUpperCase()[0]}${property.location.substring(1).toLowerCase()}, ${property.city.toUpperCase()[0]}${property.city.substring(1).toLowerCase()}',
+                            '${property.location}, ${property.city}',
                             style: TextStyle(
                               color: context.secondaryTextColor,
-                              fontSize: 13.sp,
-                              fontWeight: FontWeight.w600,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
                       ),
                       SizedBox(height: 32.h),
+
+                      // Price & Total Area Card
                       Container(
-                            padding: EdgeInsets.all(20.sp),
-                            decoration: BoxDecoration(
-                              color: context.isDarkMode
-                                  ? Colors.white.withValues(alpha: 0.05)
-                                  : Colors.grey[50],
-                              borderRadius: BorderRadius.circular(24.sp),
-                              border: Border.all(color: context.borderColor),
+                        padding: EdgeInsets.all(24.sp),
+                        decoration: BoxDecoration(
+                          color: context.isDarkMode
+                              ? Colors.white.withValues(alpha: 0.05)
+                              : Colors.grey[50], // Very soft grey as per UI
+                          borderRadius: BorderRadius.circular(28.sp),
+                          border: Border.all(color: context.borderColor, width: 1.2),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    l10n.askingPrice.toUpperCase(),
+                                    style: TextStyle(
+                                      color: context.secondaryTextColor,
+                                      fontSize: 10.sp,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: 1.5,
+                                    ),
+                                  ),
+                                  SizedBox(height: 6.h),
+                                  Text(
+                                    '₹${property.price.toInt()}',
+                                    style: TextStyle(
+                                      color: AppTheme.primaryBlue,
+                                      fontSize: 28.sp,
+                                      fontWeight: FontWeight.w900,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                            Container(
+                              width: 1,
+                              height: 48.h,
+                              color: context.borderColor,
+                            ),
+                            SizedBox(width: 24.w),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    l10n.totalArea.toUpperCase(),
+                                    style: TextStyle(
+                                      color: context.secondaryTextColor,
+                                      fontSize: 10.sp,
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: 1.5,
+                                    ),
+                                  ),
+                                  SizedBox(height: 6.h),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
                                       Text(
-                                        l10n.askingPrice,
+                                        property.areaSqFt.toInt().toString(),
                                         style: TextStyle(
-                                          color: context.secondaryTextColor,
-                                          fontSize: 10.sp,
-                                          fontWeight: FontWeight.w800,
-                                          letterSpacing: 1,
+                                          color: context.primaryTextColor,
+                                          fontSize: 28.sp,
+                                          fontWeight: FontWeight.w900,
                                         ),
                                       ),
-                                      SizedBox(height: 4.h),
-                                      Text(
-                                        '₹${property.price.toInt()}',
-                                        style: TextStyle(
-                                          color: AppTheme.primaryBlue,
-                                          fontSize: 26.sp,
-                                          fontWeight: FontWeight.w900,
+                                      Padding(
+                                        padding: EdgeInsets.only(bottom: 6.h, left: 4.w),
+                                        child: Text(
+                                          l10n.sqft.toUpperCase(),
+                                          style: TextStyle(
+                                            color: context.secondaryTextColor,
+                                            fontSize: 10.sp,
+                                            fontWeight: FontWeight.w800,
+                                          ),
                                         ),
                                       ),
                                     ],
                                   ),
-                                ),
-                                Container(
-                                  width: 1.w,
-                                  height: 40.h,
-                                  color: context.borderColor,
-                                ),
-                                SizedBox(width: 24.w),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      l10n.totalArea,
-                                      style: TextStyle(
-                                        color: context.secondaryTextColor,
-                                        fontSize: 10.sp,
-                                        fontWeight: FontWeight.w800,
-                                        letterSpacing: 1,
-                                      ),
-                                    ),
-                                    SizedBox(height: 4.h),
-                                    RichText(
-                                      text: TextSpan(
-                                        children: [
-                                          TextSpan(
-                                            text: property.areaSqFt
-                                                .toInt()
-                                                .toString(),
-                                            style: TextStyle(
-                                              color: context.primaryTextColor,
-                                              fontSize: 22.sp,
-                                              fontWeight: FontWeight.w900,
-                                            ),
-                                          ),
-                                          TextSpan(
-                                            text: ' ${l10n.sqft.toUpperCase()}',
-                                            style: TextStyle(
-                                              color: context.secondaryTextColor,
-                                              fontSize: 10.sp,
-                                              fontWeight: FontWeight.w900,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-
-                      SizedBox(height: 32.h),
-                      Text(
-                        l10n.overview,
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.bold,
-                          color: context.secondaryTextColor,
-                          letterSpacing: 1.5,
+                          ],
                         ),
                       ),
+
+                      SizedBox(height: 32.h),
+                      _buildSectionHeader(l10n.overview.toUpperCase()),
                       SizedBox(height: 16.h),
                       _buildOverviewGrid(
                         context,
@@ -413,15 +288,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                       ),
 
                       SizedBox(height: 32.h),
-                      Text(
-                        l10n.amenities,
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.bold,
-                          color: context.secondaryTextColor,
-                          letterSpacing: 1.5,
-                        ),
-                      ),
+                      _buildSectionHeader(l10n.amenities.toUpperCase()),
                       SizedBox(height: 16.h),
                       _buildAmenities(context, property.amenities, l10n),
 
@@ -457,22 +324,14 @@ class PropertyDetailScreen extends ConsumerWidget {
                       ),
 
                       SizedBox(height: 32.h),
-                      Text(
-                        l10n.locationLabel,
-                        style: TextStyle(
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.bold,
-                          color: context.secondaryTextColor,
-                          letterSpacing: 1.5,
-                        ),
-                      ),
+                      _buildSectionHeader(l10n.locationLabel.toUpperCase()),
                       SizedBox(height: 16.h),
                       Container(
-                        padding: EdgeInsets.all(20.sp),
+                        padding: EdgeInsets.all(24.sp),
                         decoration: BoxDecoration(
                           color: context.cardColor,
-                          borderRadius: BorderRadius.circular(24.sp),
-                          border: Border.all(color: context.borderColor),
+                          borderRadius: BorderRadius.circular(28.sp),
+                          border: Border.all(color: context.borderColor, width: 1.2),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -480,12 +339,12 @@ class PropertyDetailScreen extends ConsumerWidget {
                             Row(
                               children: [
                                 Container(
-                                  padding: EdgeInsets.all(12.w),
+                                  padding: EdgeInsets.all(16.w),
                                   decoration: BoxDecoration(
                                     color: AppTheme.primaryBlue.withValues(
                                       alpha: 0.1,
                                     ),
-                                    borderRadius: BorderRadius.circular(16.w),
+                                    shape: BoxShape.circle,
                                   ),
                                   child: Icon(
                                     LucideIcons.mapPin,
@@ -493,7 +352,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                                     size: 24.w,
                                   ),
                                 ),
-                                SizedBox(width: 16.w),
+                                SizedBox(width: 20.w),
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
@@ -501,22 +360,19 @@ class PropertyDetailScreen extends ConsumerWidget {
                                     children: [
                                       Text(
                                         property.city.isNotEmpty
-                                            ? (property.city[0].toUpperCase() +
-                                                  property.city
-                                                      .substring(1)
-                                                      .toLowerCase())
+                                            ? property.city
                                             : 'Location',
                                         style: TextStyle(
-                                          fontSize: 16.sp,
+                                          fontSize: 20.sp,
                                           fontWeight: FontWeight.w900,
                                           color: context.primaryTextColor,
                                         ),
                                       ),
-                                      SizedBox(height: 2.h),
+                                      SizedBox(height: 4.h),
                                       Text(
                                         property.location,
                                         style: TextStyle(
-                                          fontSize: 13.sp,
+                                          fontSize: 14.sp,
                                           color: context.secondaryTextColor,
                                           fontWeight: FontWeight.w500,
                                         ),
@@ -528,37 +384,46 @@ class PropertyDetailScreen extends ConsumerWidget {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 24.h),
+                            SizedBox(height: 32.h),
                             SizedBox(
                               width: double.infinity,
-                              child: OutlinedButton.icon(
+                              child: ElevatedButton.icon(
                                 onPressed: () async {
-                                  final query = Uri.encodeComponent(
-                                    '${property.location}, ${property.city}',
-                                  );
-                                  final url = Uri.parse(
-                                    'https://www.google.com/maps/search/?api=1&query=$query',
-                                  );
+                                  final Uri url;
+                                  if (property.latitude != null && property.longitude != null) {
+                                    url = Uri.parse(
+                                      'https://www.google.com/maps/search/?api=1&query=${property.latitude},${property.longitude}',
+                                    );
+                                  } else {
+                                    final query = Uri.encodeComponent(
+                                      '${property.location}, ${property.city}',
+                                    );
+                                    url = Uri.parse(
+                                      'https://www.google.com/maps/search/?api=1&query=$query',
+                                    );
+                                  }
                                   if (await canLaunchUrl(url)) {
                                     await launchUrl(url);
                                   }
                                 },
                                 icon: Icon(LucideIcons.map, size: 18.sp),
                                 label: Text(
-                                  l10n.getDirections,
+                                  l10n.getDirections.toUpperCase(),
                                   style: TextStyle(
                                     fontWeight: FontWeight.w900,
                                     fontSize: 13.sp,
-                                    letterSpacing: 1,
+                                    letterSpacing: 1.5,
                                   ),
                                 ),
-                                style: OutlinedButton.styleFrom(
-                                  padding: EdgeInsets.symmetric(vertical: 16.h),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: AppTheme.primaryBlue,
+                                  elevation: 0,
+                                  padding: EdgeInsets.symmetric(vertical: 18.h),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(16.sp),
+                                    side: BorderSide(color: context.borderColor, width: 1.5),
                                   ),
-                                  side: BorderSide(color: context.borderColor),
-                                  foregroundColor: AppTheme.primaryBlue,
                                 ),
                               ),
                             ),
@@ -601,9 +466,9 @@ class PropertyDetailScreen extends ConsumerWidget {
                                         child: CircleAvatar(
                                           radius: 30.sp,
                                           backgroundColor: AppTheme.primaryBlue.withValues(alpha: 0.1),
-                                          backgroundImage: (owner?.phoneNumber != null && owner!.phoneNumber.isNotEmpty)
-                                              ? NetworkImage('https://ui-avatars.com/api/?name=${Uri.encodeComponent(owner.name ?? 'User')}&background=random&size=128')
-                                              : const NetworkImage('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80'),
+                                          backgroundImage: (owner?.profileImageUrl != null && owner!.profileImageUrl!.isNotEmpty)
+                                              ? NetworkImage(owner.profileImageUrl!)
+                                              : NetworkImage('https://ui-avatars.com/api/?name=${Uri.encodeComponent(owner?.name ?? 'User')}&background=random&size=128'),
                                         ),
                                       ),
                                       Positioned(
@@ -722,108 +587,6 @@ class PropertyDetailScreen extends ConsumerWidget {
                         ),
                       ),
 
-                      SizedBox(height: 32.h),
-
-                      Text(
-                        l10n.propertyDetails,
-                        style: TextStyle(
-                          fontSize: 20.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 16.h),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Container(
-                              padding: EdgeInsets.all(16.sp),
-                              decoration: BoxDecoration(
-                                color: context.cardColor,
-                                borderRadius: BorderRadius.circular(12.w),
-                                border: Border.all(color: context.borderColor),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Icon(
-                                    LucideIcons.calendar,
-                                    size: 24.sp,
-                                    color: AppTheme.primaryBlue,
-                                  ),
-                                  SizedBox(height: 12.h),
-                                  Text(
-                                    l10n.builtIn,
-                                    style: TextStyle(
-                                      fontSize: 10.sp,
-                                      fontWeight: FontWeight.bold,
-                                      color: context.secondaryTextColor,
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                  SizedBox(height: 4.h),
-                                  FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    child: Text(
-                                      property.builtIn?.toString() ?? 'N/A',
-                                      style: TextStyle(
-                                        fontSize: 18.sp,
-                                        fontWeight: FontWeight.w900,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 16.w),
-                          Expanded(
-                            child: Container(
-                              padding: EdgeInsets.all(16.w),
-                              decoration: BoxDecoration(
-                                color: context.isDarkMode
-                                    ? Colors.white.withValues(alpha: 0.05)
-                                    : Colors.grey.shade50,
-                                borderRadius: BorderRadius.circular(12.w),
-                                border: Border.all(color: context.borderColor),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Icon(
-                                    LucideIcons.maximize,
-                                    size: 24.sp,
-                                    color: AppTheme.primaryBlue,
-                                  ),
-                                  SizedBox(height: 12.h),
-                                  Text(
-                                    l10n.lotSize,
-                                    style: TextStyle(
-                                      fontSize: 10.sp,
-                                      fontWeight: FontWeight.bold,
-                                      color: context.secondaryTextColor,
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                  SizedBox(height: 4.h),
-                                  FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    child: Text(
-                                      property.lotSizeSqFt != null
-                                          ? '${property.lotSizeSqFt!.toInt().toString()} ${l10n.sqft.toUpperCase()}'
-                                          : 'N/A',
-                                      style: TextStyle(
-                                        fontSize: 18.sp,
-                                        fontWeight: FontWeight.w900,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 24.h),
                     ],
                   ),
                 ),
@@ -835,32 +598,34 @@ class PropertyDetailScreen extends ConsumerWidget {
               color: context.cardColor,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  offset: const Offset(0, -4),
-                  blurRadius: 10,
+                  color: Colors.black.withValues(alpha: 0.1),
+                  offset: const Offset(0, -10),
+                  blurRadius: 30,
                 ),
               ],
             ),
-            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
             child: SafeArea(
               child: SizedBox(
                 width: double.infinity,
-                height: 56.h,
+                height: 60.h,
                 child: ElevatedButton(
                   onPressed: () => _scheduleTour(context, ref, property, l10n),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    backgroundColor: AppTheme.primaryBlue,
                     foregroundColor: Colors.white,
-                    elevation: 0,
+                    elevation: 5,
+                    shadowColor: AppTheme.primaryBlue.withValues(alpha: 0.4),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.sp),
+                      borderRadius: BorderRadius.circular(16.sp),
                     ),
                   ),
                   child: Text(
                     l10n.bookVisit,
                     style: TextStyle(
                       fontSize: 16.sp,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.2,
                     ),
                   ),
                 ),
@@ -1118,6 +883,21 @@ class PropertyDetailScreen extends ConsumerWidget {
       ),
     );
   }
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 16.h),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: 12.sp,
+          fontWeight: FontWeight.w800,
+          color: Colors.blueGrey[400],
+          letterSpacing: 1.2,
+        ),
+      ),
+    );
+  }
+
 
   Widget _buildOverviewGrid(
     BuildContext context,
@@ -1128,9 +908,9 @@ class PropertyDetailScreen extends ConsumerWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       crossAxisCount: 2,
-      childAspectRatio: 1.3,
-      mainAxisSpacing: 16,
-      crossAxisSpacing: 16,
+      childAspectRatio: 0.9,
+      mainAxisSpacing: 20,
+      crossAxisSpacing: 20,
       children: [
         _buildOverviewItem(
           context,
@@ -1181,51 +961,43 @@ class PropertyDetailScreen extends ConsumerWidget {
     String value,
   ) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
       decoration: BoxDecoration(
         color: context.isDarkMode
             ? Colors.grey[900]?.withValues(alpha: 0.3)
             : Colors.white,
-        borderRadius: BorderRadius.circular(20.w),
-        border: Border.all(color: context.borderColor),
+        borderRadius: BorderRadius.circular(24.sp),
+        border: Border.all(color: context.borderColor, width: 1.2),
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: EdgeInsets.all(8.w),
+            padding: EdgeInsets.all(10.w),
             decoration: BoxDecoration(
               color: AppTheme.primaryBlue.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
+              borderRadius: BorderRadius.circular(12.w),
             ),
-            child: Icon(icon, color: AppTheme.primaryBlue, size: 18.w),
+            child: Icon(icon, color: AppTheme.primaryBlue, size: 20.w),
           ),
-          SizedBox(height: 12.h),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              label,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 10.sp,
-                color: context.secondaryTextColor,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 0.5,
-              ),
+          const Spacer(),
+          Text(
+            label.toUpperCase(),
+            style: TextStyle(
+              fontSize: 9.sp,
+              color: context.secondaryTextColor,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 0.8,
             ),
           ),
           SizedBox(height: 4.h),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              value,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 15.sp,
-                fontWeight: FontWeight.w900,
-                color: context.primaryTextColor,
-              ),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 18.sp,
+              fontWeight: FontWeight.w900,
+              color: context.primaryTextColor,
+              height: 1.1,
             ),
           ),
         ],
@@ -1238,30 +1010,35 @@ class PropertyDetailScreen extends ConsumerWidget {
     List<String> amenities,
     AppLocalizations l10n,
   ) {
-    if (amenities.isEmpty) return Text(l10n.noAmenities);
+    if (amenities.isEmpty) {
+      return Text(
+        l10n.noAmenities,
+        style: TextStyle(
+          color: context.secondaryTextColor,
+          fontSize: 14.sp,
+          fontWeight: FontWeight.w500,
+        ),
+      );
+    }
     return Wrap(
-      spacing: 12.h,
-      runSpacing: 12,
+      spacing: 12.w,
+      runSpacing: 12.h,
       children: amenities
           .map(
             (amenity) => Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
               decoration: BoxDecoration(
-                color: Theme.of(
-                  context,
-                ).colorScheme.primary.withValues(alpha: 0.05),
+                color: context.isDarkMode
+                    ? Colors.white.withValues(alpha: 0.05)
+                    : Colors.grey[50],
                 borderRadius: BorderRadius.circular(12.w),
-                border: Border.all(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.primary.withValues(alpha: 0.1),
-                ),
+                border: Border.all(color: context.borderColor),
               ),
               child: Text(
                 amenity,
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,
+                  color: context.primaryTextColor,
+                  fontWeight: FontWeight.w600,
                   fontSize: 13.sp,
                 ),
               ),
