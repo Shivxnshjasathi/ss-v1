@@ -7,8 +7,9 @@ class AppTheme {
   static const Color primaryGradientEnd = Color(0xFF00D1FF);
   static const Color cyanAccent = Color(0xFF00D1FF);
   
-  static const Color surfaceLight = Color(0xFFF8FAFC);
+  static const Color surfaceLight = Color(0xFFF1F5F9);
   static const Color surfaceDark = Color(0xFF0F172A);
+  static const Color cardDark = Color(0xFF1E293B);
 
   static ThemeData get lightTheme {
     return ThemeData(
@@ -176,8 +177,8 @@ extension ThemeExtension on BuildContext {
   
   Color get surfaceColor => colorScheme.surface;
   Color get scaffoldColor => theme.scaffoldBackgroundColor;
-  Color get primaryTextColor => textTheme.bodyLarge?.color ?? Colors.black;
-  Color get secondaryTextColor => isDarkMode ? Colors.white70 : Colors.black54;
+  Color get primaryTextColor => theme.brightness == Brightness.dark ? Colors.white : const Color(0xFF0F172A);
+  Color get secondaryTextColor => theme.brightness == Brightness.dark ? const Color(0xFF94A3B8) : const Color(0xFF475569);
   Color get borderColor => isDarkMode ? Colors.grey.shade800 : Colors.grey.shade200;
   Color get cardColor => theme.cardColor;
   Color get iconColor => theme.iconTheme.color ?? Colors.black;

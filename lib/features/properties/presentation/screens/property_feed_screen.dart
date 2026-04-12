@@ -152,7 +152,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                       controller: _searchController,
                       onChanged: (_) => setState(() {}),
                       decoration: InputDecoration(
-                        hintText: 'Search properties...',
+                        hintText: 'Search by location, locality...',
                         hintStyle: TextStyle(
                           color: context.secondaryTextColor.withValues(alpha: 0.4),
                           fontSize: 14.sp,

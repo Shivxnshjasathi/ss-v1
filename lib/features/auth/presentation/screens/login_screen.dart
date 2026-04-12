@@ -11,6 +11,7 @@ import 'package:sampatti_bazar/features/auth/data/auth_repository.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:sampatti_bazar/shared/widgets/primary_button.dart';
+import 'package:sampatti_bazar/core/utils/validators.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -20,6 +21,7 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -35,8 +37,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   void _onGetOtp() async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    
     final phone = _phoneController.text.trim();
-    if (phone.length >= 10) {
+    if (phone.length == 10) {
       setState(() {
         _isLoading = true;
       });
@@ -114,15 +118,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   void _onEmailLogin() async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
-
-    if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter email and password')),
-      );
-      return;
-    }
 
     setState(() {
       _isLoading = true;
@@ -192,8 +191,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             Expanded(
               child: SingleChildScrollView(
                 padding: EdgeInsets.symmetric(horizontal: 24.0.w, vertical: 32.0.h),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Center(
                       child: Container(
@@ -216,7 +217,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         fontFamily: 'Poppins',
                         fontSize: 24.sp,
                         fontWeight: FontWeight.w900,
-                        color: Colors.black,
+                        color: context.primaryTextColor,
                         letterSpacing: -0.5,
                       ),
                     ),
@@ -238,7 +239,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         fontFamily: 'Poppins',
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w500,
-                        color: Colors.grey.shade600,
+                        color: context.secondaryTextColor,
                       ),
                     ),
                     SizedBox(height: 32.h),
@@ -265,12 +266,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               fontFamily: 'Poppins',
                               fontWeight: FontWeight.w900,
                               fontSize: 20.sp,
-                              color: Colors.black,
+                              color: context.primaryTextColor,
                             ),
                           ),
                           SizedBox(width: 12.w),
                           Expanded(
-                            child: TextField(
+                            child: TextFormField(
                               controller: _phoneController,
                               keyboardType: TextInputType.phone,
                               cursorColor: AppTheme.primaryBlue,
@@ -293,17 +294,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 border: InputBorder.none,
                                 enabledBorder: InputBorder.none,
                                 focusedBorder: InputBorder.none,
+                                errorStyle: const TextStyle(height: 0, fontSize: 0), // Hide default error text
                                 isDense: true,
                                 contentPadding: EdgeInsets.zero,
                                 filled: false,
                               ),
+                              validator: (val) => Validators.phone(val, l10n),
                             ),
                           ),
                         ],
                       ),
                       Container(
                         height: 2.h,
-                        color: Colors.black87,
+                        color: context.borderColor,
                         margin: EdgeInsets.only(top: 8.h),
                       ),
                     ] else ...[
@@ -318,11 +321,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           letterSpacing: 1.0,
                         ),
                       ),
-                      TextField(
+                      TextFormField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16.sp),
                         decoration: InputDecoration(
+                          hintText: 'e.g., example@domain.com',
+                          hintStyle: TextStyle(color: Colors.grey.shade400, fontWeight: FontWeight.w500, fontSize: 13.sp),
                           border: UnderlineInputBorder(borderSide: BorderSide(color: Colors.black87, width: 2.h)),
                           enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.black87, width: 2.h)),
                           focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppTheme.primaryBlue, width: 2.h)),
@@ -330,6 +335,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           contentPadding: EdgeInsets.symmetric(vertical: 8.h),
                           filled: false,
                         ),
+                        validator: (val) => Validators.email(val, l10n),
                       ),
                       SizedBox(height: 24.h),
                       Text(
@@ -342,18 +348,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           letterSpacing: 1.0,
                         ),
                       ),
-                      TextField(
+                      TextFormField(
                         controller: _passwordController,
                         obscureText: true,
                         style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16.sp),
                         decoration: InputDecoration(
-                          border: UnderlineInputBorder(borderSide: BorderSide(color: Colors.black87, width: 2.h)),
-                          enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.black87, width: 2.h)),
+                          hintText: '••••••••',
+                          hintStyle: TextStyle(color: context.secondaryTextColor.withValues(alpha: 0.3), fontWeight: FontWeight.w500, fontSize: 13.sp),
+                          border: UnderlineInputBorder(borderSide: BorderSide(color: context.borderColor, width: 2.h)),
+                          enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: context.borderColor, width: 2.h)),
                           focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppTheme.primaryBlue, width: 2.h)),
                           isDense: true,
                           contentPadding: EdgeInsets.symmetric(vertical: 8.h),
                           filled: false,
                         ),
+                        validator: (val) => Validators.required(val, l10n.password, l10n),
                       ),
                     ],
 
@@ -376,11 +385,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         icon: Icon(
                           _isEmailLogin ? LucideIcons.phone : LucideIcons.mail,
                           size: 14.w,
-                          color: Colors.grey.shade700,
+                          color: context.secondaryTextColor,
                         ),
                         label: Text(
                           _isEmailLogin ? l10n.usePhone : l10n.useEmail,
-                          style: TextStyle(fontWeight: FontWeight.w800, color: Colors.grey.shade700, fontSize: 12.sp),
+                          style: TextStyle(fontWeight: FontWeight.w800, color: context.secondaryTextColor, fontSize: 12.sp),
                         ),
                       ),
                     ),
@@ -392,14 +401,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           style: TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: 10.sp,
-                            color: Colors.black87,
+                            color: context.secondaryTextColor,
                             height: 1.5,
                           ),
                           children: [
                             TextSpan(
                               text: l10n.termsOfService,
-                              style: const TextStyle(
-                                color: Colors.black,
+                              style: TextStyle(
+                                color: context.primaryTextColor,
                                 fontWeight: FontWeight.w800,
                                 decoration: TextDecoration.underline,
                               ),
@@ -407,8 +416,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             const TextSpan(text: ' & '),
                             TextSpan(
                               text: l10n.privacyPolicy,
-                              style: const TextStyle(
-                                color: Colors.black,
+                              style: TextStyle(
+                                color: context.primaryTextColor,
                                 fontWeight: FontWeight.w800,
                                 decoration: TextDecoration.underline,
                               ),
@@ -420,6 +429,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                   ],
                 ),
+              ),
               ),
             ),
           ],

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sampatti_bazar/l10n/app_localizations.dart';
+import 'package:sampatti_bazar/core/utils/validators.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
 import 'package:uuid/uuid.dart';
@@ -18,6 +20,7 @@ class OtherServicesScreen extends ConsumerStatefulWidget {
 }
 
 class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _addressController = TextEditingController();
   final _descriptionController = TextEditingController();
 
@@ -33,13 +36,7 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
   bool _isLoading = false;
 
   Future<void> _submitRequest() async {
-    if (_addressController.text.trim().isEmpty ||
-        _descriptionController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill out all fields.')),
-      );
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
 
@@ -127,7 +124,6 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
     super.dispose();
   }
 
-  // Same header matching construction UI
   Widget _buildSectionHeader(String title, String subtitle) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,69 +152,54 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
     );
   }
 
-  // Same textfield matching construction UI
-  Widget _buildTextField(
-    String labelText,
-    String hintText,
-    TextInputType type, {
+  Widget _buildTextFieldWidget(
+    TextEditingController controller,
+    String label, {
+    String? hint,
+    IconData? icon,
+    String? Function(String?)? validator,
+    TextInputType? keyboardType,
     int maxLines = 1,
-    TextEditingController? controller,
+    int? maxLength,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          labelText.toUpperCase(),
-          style: TextStyle(
-            fontWeight: FontWeight.w900,
-            fontSize: 10.sp,
-            color: AppTheme.primaryBlue,
-            letterSpacing: 1.5,
-            fontFamily: 'Poppins',
-          ),
+          label.toUpperCase(),
+          style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w900, color: AppTheme.primaryBlue, letterSpacing: 1.5),
         ),
         SizedBox(height: 10.h),
-        Container(
-          decoration: BoxDecoration(
-            color: context.surfaceColor,
-            borderRadius: BorderRadius.circular(16.sp),
-            border: Border.all(color: context.borderColor),
-          ),
-          child: TextField(
-            controller: controller,
-            maxLines: maxLines,
-            keyboardType: type,
-            style: TextStyle(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w700,
-              color: context.primaryTextColor,
-              fontFamily: 'Poppins',
-            ),
-            decoration: InputDecoration(
-              hintText: hintText,
-              hintStyle: TextStyle(
-                color: context.secondaryTextColor.withValues(alpha: 0.5),
-                fontWeight: FontWeight.w500,
-              ),
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: 18.w,
-                vertical: 16.h,
-              ),
-            ),
+        TextFormField(
+          controller: controller,
+          keyboardType: keyboardType,
+          maxLines: maxLines,
+          maxLength: maxLength,
+          validator: validator,
+          style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600, color: context.primaryTextColor),
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: TextStyle(color: context.secondaryTextColor.withValues(alpha: 0.3), fontSize: 13.sp),
+            prefixIcon: icon != null ? Icon(icon, color: AppTheme.primaryBlue.withValues(alpha: 0.4), size: 20.sp) : null,
+            filled: true,
+            fillColor: context.cardColor,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(16.sp), borderSide: BorderSide(color: context.borderColor)),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16.sp), borderSide: BorderSide(color: context.borderColor)),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16.sp), borderSide: BorderSide(color: AppTheme.primaryBlue, width: 1.5)),
+            contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 18.h),
           ),
         ),
+        SizedBox(height: 16.h),
       ],
     );
   }
 
   Widget _buildCategoryChip(String label) {
     bool isSelected = _selectedCategory == label;
-    // Map internal key to pretty label
     String displayLabel = label;
     if (label == 'Electrical fitting & services') {
       displayLabel = 'ELECTRICAL';
-    } else if (label == 'Plumbing fitting & service') {
+    } else if (label == 'Plumbing services') {
       displayLabel = 'PLUMBING';
     } else if (label == 'House painting') {
       displayLabel = 'PAINTING';
@@ -267,6 +248,7 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: context.scaffoldColor,
       appBar: AppBar(
@@ -323,8 +305,6 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 8.h),
-
-            // Category Selector (Horizontal Scroll matching 'CONSTRUCTION, ARCHITECTURE...')
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: EdgeInsets.symmetric(horizontal: 24.0.w),
@@ -338,40 +318,15 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
                     .toList(),
               ),
             ),
-
             SizedBox(height: 32.h),
-
-            // Form Content
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.0.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionHeader(
-                    'Service Details',
-                    'Book certified professionals for all your home repair and maintenance needs. Fast, reliable, and verified.',
-                  ),
-                  SizedBox(height: 24.h),
-
-                  _buildTextField(
-                    'SERVICE ADDRESS',
-                    'e.g. 123 Main St, Apartment 4B',
-                    TextInputType.text,
-                    controller: _addressController,
-                  ),
-
-                  SizedBox(height: 16.h),
-
-                  _buildTextField(
-                    'PROBLEM DESCRIPTION',
-                    'Please describe in detail what needs to be fixed...',
-                    TextInputType.multiline,
-                    maxLines: 5,
-                    controller: _descriptionController,
-                  ),
-
-                  SizedBox(height: 32.h),
-                ],
+              padding: EdgeInsets.symmetric(horizontal: 24.w),
+              child: _buildTextFieldWidget(
+                _descriptionController,
+                'Description',
+                hint: 'Please describe in detail what needs to be fixed...',
+                keyboardType: TextInputType.multiline,
+                maxLines: 5,
               ),
             ),
           ],

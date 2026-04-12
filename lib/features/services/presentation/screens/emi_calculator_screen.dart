@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'dart:math';
@@ -144,6 +145,8 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
               max: 15,
               onChanged: (val) => setState(() => interestRate = val),
             ),
+            SizedBox(height: 32.h),
+            _buildChartSection(l10n),
             SizedBox(height: 32.h),
             _buildSummaryCard(l10n),
             SizedBox(height: 32.h),
@@ -373,39 +376,72 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
               ),
             ],
           ),
-          SizedBox(height: 32.h),
-          Container(
-            padding: EdgeInsets.all(18.w),
-            decoration: BoxDecoration(
-              color: context.cardColor,
-              borderRadius: BorderRadius.circular(16.sp),
-              border: Border.all(color: context.borderColor),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.pie_chart_outline,
-                  size: 20.sp,
-                  color: AppTheme.primaryBlue,
-                ),
-                SizedBox(width: 12.w),
-                Text(
-                  l10n.viewRepaymentSchedule,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 13.sp,
-                    fontFamily: 'Poppins',
-                    color: context.primaryTextColor,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildChartSection(AppLocalizations l10n) {
+    return Container(
+      height: 300.h,
+      padding: EdgeInsets.all(24.w),
+      decoration: BoxDecoration(
+        color: context.cardColor,
+        borderRadius: BorderRadius.circular(24.sp),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: Column(
+        children: [
+          Text(
+            'BREAKDOWN'.toUpperCase(),
+            style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w900, color: context.secondaryTextColor, letterSpacing: 1.5),
+          ),
+          SizedBox(height: 24.h),
+          Expanded(
+            child: PieChart(
+              PieChartData(
+                sectionsSpace: 4,
+                centerSpaceRadius: 50.sp,
+                sections: [
+                  PieChartSectionData(
+                    value: loanAmount,
+                    title: 'Principal',
+                    color: AppTheme.primaryBlue,
+                    radius: 60.sp,
+                    titleStyle: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
-                ),
-                const Spacer(),
-                Icon(Icons.chevron_right, size: 20.sp, color: context.secondaryTextColor),
-              ],
+                  PieChartSectionData(
+                    value: _totalInterest,
+                    title: 'Interest',
+                    color: AppTheme.cyanAccent,
+                    radius: 50.sp,
+                    titleStyle: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, color: Colors.black87),
+                  ),
+                ],
+              ),
             ),
+          ),
+          SizedBox(height: 24.h),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildLegendItem('Principal', AppTheme.primaryBlue),
+              SizedBox(width: 24.w),
+              _buildLegendItem('Interest', AppTheme.cyanAccent),
+            ],
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildLegendItem(String label, Color color) {
+    return Row(
+      children: [
+        Container(width: 12.w, height: 12.w, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+        SizedBox(width: 8.w),
+        Text(label, style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w700, color: context.primaryTextColor)),
+      ],
     );
   }
 }

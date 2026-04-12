@@ -10,6 +10,7 @@ import 'package:sampatti_bazar/features/auth/data/auth_repository.dart';
 import 'package:uuid/uuid.dart';
 import 'package:sampatti_bazar/core/services/location_service.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
+import 'package:sampatti_bazar/core/utils/validators.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class AddPropertyScreen extends ConsumerStatefulWidget {
@@ -438,7 +439,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
         SizedBox(height: 8.h),
         _buildTextField(
           l10n,
-          'Enter city (e.g., Jabalpur)',
+          'e.g., Jabalpur',
           Icons.location_city_outlined,
           controller: _cityController,
         ),
@@ -446,7 +447,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
         SizedBox(height: 16.h),
         _buildLabel('Locality / Society'), // Localize later
         SizedBox(height: 8.h),
-        _buildTextField(l10n, 'Enter locality', Icons.map_outlined, controller: _localityController),
+        _buildTextField(l10n, 'e.g., Vijay Nagar', Icons.map_outlined, controller: _localityController),
 
         SizedBox(height: 24.h),
         _buildLabel(l10n.bhkConfiguration),
@@ -499,10 +500,11 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
                   SizedBox(height: 8.h),
                   _buildTextField(
                     l10n,
-                    'sq.ft.',
+                    'e.g., 1200',
                     Icons.square_foot,
                     keyboardType: TextInputType.number,
                     controller: _areaController,
+                    validator: (val) => Validators.number(val, l10n.builtUpArea, l10n),
                   ),
                 ],
               ),
@@ -520,6 +522,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
                     Icons.bathtub_outlined,
                     keyboardType: TextInputType.number,
                     controller: _bathroomsController,
+                    validator: (val) => Validators.number(val, l10n.bath, l10n),
                   ),
                 ],
               ),
@@ -541,6 +544,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
                     Icons.calendar_today_outlined,
                     keyboardType: TextInputType.number,
                     controller: _builtInController,
+                    validator: (val) => Validators.number(val, l10n.yearBuilt, l10n),
                   ),
                 ],
               ),
@@ -554,10 +558,11 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
                   SizedBox(height: 8.h),
                   _buildTextField(
                     l10n,
-                    'sq.ft.',
+                    'e.g., 5000',
                     Icons.aspect_ratio_outlined,
                     keyboardType: TextInputType.number,
                     controller: _lotSizeController,
+                    validator: (val) => Validators.number(val, l10n.lotSize, l10n),
                   ),
                 ],
               ),
@@ -589,17 +594,18 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
         SizedBox(height: 8.h),
         _buildTextField(
           l10n,
-          'Enter amount',
+          'e.g., 40000',
           Icons.currency_rupee,
           keyboardType: TextInputType.number,
           controller: _priceController,
+          validator: (val) => Validators.number(val, _listingType == 'Sell' ? l10n.expectedPrice : l10n.monthlyRent, l10n),
         ),
 
         SizedBox(height: 16.h),
         if (_listingType == 'Rent/Lease') ...[
           _buildLabel(l10n.securityDeposit),
           SizedBox(height: 8.h),
-          _buildTextField(l10n, 'Enter deposit amount', Icons.security, controller: _depositController),
+          _buildTextField(l10n, 'e.g., 20000', Icons.security, controller: _depositController, validator: (val) => Validators.number(val, l10n.securityDeposit, l10n)),
           SizedBox(height: 16.h),
         ],
 
@@ -712,6 +718,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
     TextEditingController? controller,
     TextInputType? keyboardType,
     int maxLines = 1,
+    String? Function(String?)? validator,
   }) {
     return TextFormField(
       controller: controller,

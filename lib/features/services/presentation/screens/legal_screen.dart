@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:signature/signature.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
+import 'package:sampatti_bazar/core/utils/validators.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/services/data/service_request_repository.dart';
 import 'package:sampatti_bazar/features/services/domain/service_request_model.dart';
@@ -30,6 +31,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
   ];
 
   // Rent Agreement State
+  final _formKey = GlobalKey<FormState>();
   int _currentStep = 0;
   final _lessorController = TextEditingController();
   final _lesseeController = TextEditingController();
@@ -49,6 +51,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
   final _fullNameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _cityController = TextEditingController();
+  final _consultDescriptionController = TextEditingController();
   
   String _legalReq = 'Buying Property';
   String _assetType = 'Apartment';
@@ -66,21 +69,12 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
     _fullNameController.dispose();
     _phoneController.dispose();
     _cityController.dispose();
+    _consultDescriptionController.dispose();
     super.dispose();
   }
 
   void _nextStep() {
-    if (_currentStep == 0) {
-      if (_lessorController.text.trim().isEmpty || 
-          _lesseeController.text.trim().isEmpty || 
-          _lesseeEmailController.text.trim().isEmpty ||
-          _addressController.text.trim().isEmpty ||
-          _rentController.text.trim().isEmpty ||
-          _depositController.text.trim().isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please fill all mandatory fields to proceed.'), backgroundColor: Colors.red));
-        return;
-      }
-    }
+    if (!(_formKey.currentState?.validate() ?? false)) return;
     if (_currentStep < 2) {
       setState(() => _currentStep++);
     }
@@ -352,6 +346,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
           'requirement': _legalReq,
           'city': _cityController.text,
           'propertyId': _propIdController.text,
+          'description': _consultDescriptionController.text,
         },
         location: _cityController.text,
         createdAt: DateTime.now(),
@@ -425,7 +420,17 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: context.scaffoldColor,
-      appBar: AppBar(
+      appBar: _buildAppBar(l10n),
+      body: Form(
+        key: _formKey,
+        child: _buildBody(l10n),
+      ),
+      bottomNavigationBar: _buildDynamicBottomNav(l10n),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar(AppLocalizations l10n) {
+    return AppBar(
         backgroundColor: context.scaffoldColor,
         elevation: 0,
         automaticallyImplyLeading: false,
@@ -479,8 +484,11 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
             ),
           ),
         ],
-      ),
-      body: Column(
+      );
+  }
+
+  Widget _buildBody(AppLocalizations l10n) {
+    return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(height: 12.h),
@@ -508,9 +516,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
             ),
           ),
         ],
-      ),
-      bottomNavigationBar: _buildDynamicBottomNav(l10n),
-    );
+      );
   }
 
   Widget _buildServiceChip(String label, AppLocalizations l10n) {
@@ -720,19 +726,15 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
         SizedBox(height: 8.h),
         Text(l10n.fillAgreementTerms, style: TextStyle(color: context.secondaryTextColor, fontSize: 13.sp, height: 1.5.h)),
         SizedBox(height: 32.h),
-        _buildTextFieldWidget(_lessorController, l10n.lessorName, icon: Icons.person_outline),
-        SizedBox(height: 20.h),
-        _buildTextFieldWidget(_lesseeController, l10n.lesseeName, icon: Icons.person_outline),
-        SizedBox(height: 20.h),
-        _buildTextFieldWidget(_lesseeEmailController, 'Tenant Email Address', icon: Icons.email_outlined, keyboardType: TextInputType.emailAddress),
-        SizedBox(height: 20.h),
-        _buildTextFieldWidget(_addressController, l10n.propertyAddress, icon: Icons.location_on_outlined, maxLines: 3),
-        SizedBox(height: 20.h),
+        _buildTextFieldWidget(_lessorController, l10n.lessorName, hint: 'e.g., Rajesh Kumar', icon: Icons.person_outline, validator: (val) => Validators.required(val, l10n.lessorName, l10n)),
+        _buildTextFieldWidget(_lesseeController, l10n.lesseeName, hint: 'e.g., Suresh Singh', icon: Icons.person_outline, validator: (val) => Validators.required(val, l10n.lesseeName, l10n)),
+        _buildTextFieldWidget(_lesseeEmailController, 'Tenant Email Address', hint: 'e.g., suresh@example.com', icon: Icons.email_outlined, keyboardType: TextInputType.emailAddress, validator: (val) => Validators.email(val, l10n)),
+        _buildTextFieldWidget(_addressController, l10n.propertyAddress, hint: 'e.g., Plot No. 45, Vijay Nagar, Jabalpur', icon: Icons.location_on_outlined, maxLines: 3, validator: (val) => Validators.required(val, l10n.propertyAddress, l10n)),
         Row(
           children: [
-            Expanded(child: _buildTextFieldWidget(_rentController, l10n.monthlyRent, keyboardType: TextInputType.number, icon: Icons.currency_rupee)),
+            Expanded(child: _buildTextFieldWidget(_rentController, l10n.monthlyRent, hint: 'e.g., 15000', keyboardType: TextInputType.number, icon: Icons.currency_rupee, validator: (val) => Validators.number(val, l10n.monthlyRent, l10n))),
             SizedBox(width: 16.w),
-            Expanded(child: _buildTextFieldWidget(_depositController, l10n.depositLabel, keyboardType: TextInputType.number, icon: Icons.account_balance_wallet_outlined)),
+            Expanded(child: _buildTextFieldWidget(_depositController, l10n.depositLabel, hint: 'e.g., 30000', keyboardType: TextInputType.number, icon: Icons.account_balance_wallet_outlined, validator: (val) => Validators.number(val, l10n.depositLabel, l10n))),
           ],
         ),
         SizedBox(height: 32.h),
@@ -914,15 +916,24 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
         ),
         SizedBox(height: 32.h),
 
-        _buildTextFieldWidget(_fullNameController, l10n.fullName, icon: Icons.person_outline),
-        SizedBox(height: 16.h),
-        _buildTextFieldWidget(_phoneController, l10n.phoneNumber, keyboardType: TextInputType.phone, icon: Icons.phone_outlined),
-        SizedBox(height: 16.h),
-        _buildTextFieldWidget(_cityController, l10n.cityRegion, icon: Icons.location_city_outlined),
-        SizedBox(height: 16.h),
-        _buildTextFieldWidget(_propIdController, l10n.propertyIdAny, icon: Icons.home_work_outlined),
-        SizedBox(height: 16.h),
+        _buildTextFieldWidget(_fullNameController, l10n.fullName, hint: 'e.g., Rajesh Kumar', icon: Icons.person_outline, validator: (val) => Validators.required(val, l10n.fullName, l10n)),
+        _buildTextFieldWidget(_phoneController, l10n.phoneNumber, hint: '98XXXXXXXX', keyboardType: TextInputType.phone, icon: Icons.phone_outlined, validator: (val) => Validators.phone(val, l10n)),
+        _buildTextFieldWidget(_cityController, l10n.cityRegion, hint: 'e.g., Jabalpur, MP', icon: Icons.location_city_outlined, validator: (val) => Validators.required(val, l10n.cityRegion, l10n)),
+        _buildTextFieldWidget(_propIdController, l10n.propertyIdAny, hint: 'e.g., SB-1234 (If any)', icon: Icons.home_work_outlined),
         _buildDropdownField(l10n.legalRequirement, _legalReq, [l10n.buyingProperty, l10n.legalDispute, l10n.propertyVerification, l10n.other], (val) => setState(() => _legalReq = val)),
+        TextFormField(
+          controller: _consultDescriptionController,
+          maxLines: 5,
+          decoration: InputDecoration(
+            hintText: 'e.g., I need assistance with property title verification and document review...',
+            hintStyle: TextStyle(color: context.secondaryTextColor.withValues(alpha: 0.5), fontSize: 13.sp),
+            filled: true,
+            fillColor: AppTheme.primaryBlue.withValues(alpha: 0.05),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.w), borderSide: BorderSide.none),
+            contentPadding: EdgeInsets.all(16.w),
+          ),
+          validator: (val) => Validators.required(val, l10n.expertsSubtitle, l10n),
+        ),
         SizedBox(height: 32.h),
       ],
     );
@@ -962,10 +973,8 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
         ),
         SizedBox(height: 32.h),
 
-        _buildTextFieldWidget(_propIdController, l10n.propertyIdOptional, icon: Icons.home_work_outlined),
-        SizedBox(height: 16.h),
-        _buildTextFieldWidget(_propLocationController, l10n.exactLocality, icon: Icons.location_on_outlined),
-        SizedBox(height: 16.h),
+        _buildTextFieldWidget(_propIdController, l10n.propertyIdOptional, hint: 'e.g., MP-14-1234', icon: Icons.home_work_outlined),
+        _buildTextFieldWidget(_propLocationController, l10n.exactLocality, hint: 'e.g., Flat 4B, Emerald Heights', icon: Icons.location_on_outlined, validator: (val) => Validators.required(val, l10n.exactLocality, l10n)),
         _buildDropdownField(l10n.typeOfAsset, _assetType, [l10n.apartment, l10n.villaRowHouse, l10n.commercialOffice, 'Plot / Land'], (val) => setState(() => _assetType = val)),
         SizedBox(height: 24.h),
         
@@ -994,39 +1003,44 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
 
   // --- Core Shared Builders ---
 
-  Widget _buildTextFieldWidget(TextEditingController controller, String labelText, {TextInputType keyboardType = TextInputType.text, IconData? icon, int maxLines = 1}) {
+  Widget _buildTextFieldWidget(
+    TextEditingController controller,
+    String label, {
+    String? hint,
+    IconData? icon,
+    String? Function(String?)? validator,
+    TextInputType? keyboardType,
+    int maxLines = 1,
+    int? maxLength,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(labelText, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11.sp, color: context.secondaryTextColor, letterSpacing: 0.5)),
+        Text(
+          label.toUpperCase(),
+          style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w900, color: context.secondaryTextColor, letterSpacing: 1.0),
+        ),
         SizedBox(height: 8.h),
-        Container(
-          decoration: BoxDecoration(
-            color: context.cardColor,
-            borderRadius: BorderRadius.circular(12.sp),
-            border: Border.all(color: context.borderColor),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.02),
-                blurRadius: 4,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: TextField(
-            controller: controller,
-            keyboardType: keyboardType,
-            maxLines: maxLines,
-            style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600, color: context.primaryTextColor),
-            decoration: InputDecoration(
-              prefixIcon: icon != null ? Icon(icon, color: Colors.grey.shade400, size: 20.sp) : null,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.sp), borderSide: BorderSide.none),
-              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12.sp), borderSide: BorderSide(color: AppTheme.primaryBlue, width: 1.5.w)),
-              contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-              isDense: true,
-            ),
+        TextFormField(
+          controller: controller,
+          keyboardType: keyboardType,
+          maxLines: maxLines,
+          maxLength: maxLength,
+          validator: validator,
+          style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600, color: context.primaryTextColor),
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: TextStyle(color: context.secondaryTextColor.withValues(alpha: 0.3), fontSize: 13.sp),
+            prefixIcon: icon != null ? Icon(icon, color: AppTheme.primaryBlue.withValues(alpha: 0.4), size: 20.sp) : null,
+            filled: true,
+            fillColor: context.cardColor,
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.sp), borderSide: BorderSide(color: context.borderColor)),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12.sp), borderSide: BorderSide(color: context.borderColor)),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12.sp), borderSide: BorderSide(color: AppTheme.primaryBlue, width: 1.5)),
+            contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
           ),
         ),
+        SizedBox(height: 16.h),
       ],
     );
   }

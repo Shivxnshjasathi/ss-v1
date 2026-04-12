@@ -7,6 +7,7 @@ import 'package:sampatti_bazar/features/services/data/service_request_repository
 import 'package:sampatti_bazar/features/services/domain/service_request_model.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
+import 'package:sampatti_bazar/core/utils/validators.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class ConstructionScreen extends ConsumerStatefulWidget {
@@ -17,6 +18,7 @@ class ConstructionScreen extends ConsumerStatefulWidget {
 }
 
 class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
+  final _formKey = GlobalKey<FormState>();
   final String _selectedCategory = 'Residential'; // Residential or Commercial
   String _selectedService =
       'Construction'; // Construction, Architecture, Interiors, Consultation, Borewell
@@ -269,7 +271,10 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
             // Dynamic Form based on selected service
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: _buildDynamicBody(l10n),
+              child: Form(
+                key: _formKey,
+                child: _buildDynamicBody(l10n),
+              ),
             ),
           ],
         ),
@@ -389,13 +394,15 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           'e.g., 2400',
           TextInputType.number,
           controller: _plotSizeController,
+          validator: (val) => Validators.number(val, l10n.plotSize, l10n),
         ),
         SizedBox(height: 16.h),
         _buildTextField(
           l10n.exactLocation,
-          l10n.locationHint,
+          'e.g., Plot 42, Civil Lines',
           TextInputType.text,
           controller: _locationController,
+          validator: (val) => Validators.required(val, l10n.exactLocation, l10n),
         ),
         SizedBox(height: 16.h),
         Row(
@@ -412,9 +419,10 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
             Expanded(
               child: _buildTextField(
                 l10n.timelineLabel,
-                l10n.timelineHint,
+                'e.g., 6 months',
                 TextInputType.text,
                 controller: _timelineController,
+                validator: (val) => Validators.required(val, l10n.timelineLabel, l10n),
               ),
             ),
           ],
@@ -422,9 +430,10 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
         SizedBox(height: 16.h),
         _buildTextField(
           l10n.constructionType,
-          l10n.constructionTypeHint,
+          'e.g., Duplex / Row House',
           TextInputType.text,
           controller: _typeController,
+          validator: (val) => Validators.required(val, l10n.constructionType, l10n),
         ),
         SizedBox(height: 32.h),
         Text(
@@ -457,18 +466,20 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
             Expanded(
               child: _buildTextField(
                 l10n.plotDimensions,
-                l10n.dimensionsHint,
+                'e.g., 30x50 ft',
                 TextInputType.text,
                 controller: _dimensionsController,
+                validator: (val) => Validators.required(val, l10n.plotDimensions, l10n),
               ),
             ),
             SizedBox(width: 16.w),
             Expanded(
               child: _buildTextField(
                 l10n.facingLabel,
-                l10n.facingHint,
+                'e.g., North / East',
                 TextInputType.text,
                 controller: _facingController,
+                validator: (val) => Validators.required(val, l10n.facingLabel, l10n),
               ),
             ),
           ],
@@ -535,9 +546,10 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
             Expanded(
               child: _buildTextField(
                 l10n.propertyType,
-                l10n.propertyTypeHint,
+                'e.g., Apartment / Villa',
                 TextInputType.text,
                 controller: _propTypeController,
+                validator: (val) => Validators.required(val, l10n.propertyType, l10n),
               ),
             ),
             SizedBox(width: 16.w),
@@ -557,9 +569,10 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
             Expanded(
               child: _buildTextField(
                 l10n.carpetArea,
-                l10n.sqFtHint,
+                'e.g., 1500',
                 TextInputType.number,
                 controller: _areaController,
+                validator: (val) => Validators.number(val, l10n.carpetArea, l10n),
               ),
             ),
             SizedBox(width: 16.w),
@@ -612,9 +625,10 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
         SizedBox(height: 24.h),
         _buildTextField(
           l10n.consultationTopic,
-          l10n.consultTopicHint,
+          'e.g., Structural Analysis',
           TextInputType.text,
           controller: _consultTopicController,
+          validator: (val) => Validators.required(val, l10n.consultationTopic, l10n),
         ),
         SizedBox(height: 16.h),
         _buildTextField(
@@ -771,6 +785,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
     TextInputType type, {
     int maxLines = 1,
     TextEditingController? controller,
+    String? Function(String?)? validator,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -792,10 +807,11 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
             borderRadius: BorderRadius.circular(16.sp),
             border: Border.all(color: context.borderColor),
           ),
-          child: TextField(
+          child: TextFormField(
             controller: controller,
             maxLines: maxLines,
             keyboardType: type,
+            validator: validator,
             style: TextStyle(
               fontSize: 14.sp,
               fontWeight: FontWeight.w700,
