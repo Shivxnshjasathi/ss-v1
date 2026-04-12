@@ -18,14 +18,10 @@ class AppCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16.w),
-      ),
-      color: color ?? Theme.of(context).colorScheme.surface,
-      clipBehavior: Clip.antiAlias,
+      color: color,
       child: InkWell(
         onTap: onTap,
+        borderRadius: BorderRadius.circular(24.w),
         child: Padding(
           padding: padding ?? EdgeInsets.all(16.0.w),
           child: child,

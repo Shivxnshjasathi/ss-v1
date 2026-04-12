@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/properties/data/property_repository.dart';
@@ -20,7 +22,7 @@ class HomeScreen extends ConsumerWidget {
     final propertiesAsync = ref.watch(propertiesStreamProvider);
     final locationAsync = ref.watch(userLocationProvider);
     final l10n = AppLocalizations.of(context)!;
-    
+
     final fullName = userAsync.value?.name ?? 'User';
     final firstName = fullName.split(' ')[0];
     final currentLocation = locationAsync.when(
@@ -57,20 +59,24 @@ class HomeScreen extends ConsumerWidget {
                   ),
                 ),
                 SizedBox(width: 8.w),
-                Icon(Icons.location_on, size: 14.w, color: Color(0xFF1E60FF)),
-                SizedBox(width: 2.w),
+                Icon(
+                  LucideIcons.mapPin,
+                  size: 14.w,
+                  color: AppTheme.primaryBlue,
+                ),
+                SizedBox(width: 4.w),
                 Text(
                   currentLocation,
                   style: TextStyle(
                     fontSize: 12.sp,
                     color: context.secondaryTextColor,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ],
             ),
           ],
-        ),
+        ).animate().fadeIn(duration: 400.ms).slideX(begin: -0.1, end: 0),
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 16.w),
@@ -80,7 +86,9 @@ class HomeScreen extends ConsumerWidget {
                 alignment: Alignment.bottomRight,
                 children: [
                   CircleAvatar(
-                    backgroundImage: const CachedNetworkImageProvider('https://i.pravatar.cc/150?u=a042581f4e29026704d'),
+                    backgroundImage: const CachedNetworkImageProvider(
+                      'https://i.pravatar.cc/150?u=a042581f4e29026704d',
+                    ),
                     radius: 20.sp,
                   ),
                   Container(
@@ -110,22 +118,36 @@ class HomeScreen extends ConsumerWidget {
                 onTap: () => context.push('/properties'),
                 decoration: InputDecoration(
                   hintText: l10n.searchProperties,
-                  hintStyle: TextStyle(color: Colors.grey[500], fontSize: 13.sp),
-                  prefixIcon: Icon(Icons.search, color: Colors.grey, size: 20.sp),
-                  suffixIcon: Icon(Icons.tune, color: Colors.grey, size: 20.sp),
+                  hintStyle: TextStyle(
+                    color: Colors.grey[500],
+                    fontSize: 13.sp,
+                  ),
+                  prefixIcon: Icon(
+                    LucideIcons.search,
+                    color: Colors.grey,
+                    size: 18.sp,
+                  ),
+                  suffixIcon: Icon(
+                    LucideIcons.slidersHorizontal,
+                    color: Colors.grey,
+                    size: 18.sp,
+                  ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.sp),
+                    borderRadius: BorderRadius.circular(16.w),
                     borderSide: BorderSide(color: context.borderColor),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.sp),
+                    borderRadius: BorderRadius.circular(16.w),
                     borderSide: BorderSide(color: context.borderColor),
                   ),
                   filled: true,
                   fillColor: context.surfaceColor,
-                  contentPadding: EdgeInsets.symmetric(vertical: 0.h, horizontal: 16.w),
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical: 0.h,
+                    horizontal: 16.w,
+                  ),
                 ),
-              ),
+              ).animate().fadeIn(delay: 200.ms),
             ),
 
             SizedBox(height: 24.h),
@@ -133,44 +155,54 @@ class HomeScreen extends ConsumerWidget {
             // Categories Grid
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: _buildAdaptiveCategoryGrid(
-                context,
-                [
-                  _CategoryData(l10n.buy, Icons.home_outlined, () {
-                    LoggerService.i('Home: Buy tapped');
-                    context.push('/properties');
-                  }),
-                  _CategoryData(l10n.rent, Icons.domain, () {
-                    LoggerService.i('Home: Rent tapped');
-                    context.push('/properties');
-                  }),
-                  _CategoryData(l10n.list, Icons.add_home_work_outlined, () {
-                    LoggerService.i('Home: List property tapped');
-                    context.push('/add-property');
-                  }),
-                  _CategoryData(l10n.marketplace, Icons.shopping_bag_outlined, () {
-                    LoggerService.i('Home: Marketplace tapped');
-                    context.push('/services/marketplace');
-                  }),
-                ],
-              ),
-            ),
+              child: _buildAdaptiveCategoryGrid(context, [
+                _CategoryData(l10n.buy, LucideIcons.house, () {
+                  LoggerService.i('Home: Buy tapped');
+                  context.push('/properties');
+                }),
+                _CategoryData(l10n.rent, LucideIcons.building2, () {
+                  LoggerService.i('Home: Rent tapped');
+                  context.push('/properties');
+                }),
+                _CategoryData(l10n.list, LucideIcons.plus, () {
+                  LoggerService.i('Home: List property tapped');
+                  context.push('/add-property');
+                }),
+                _CategoryData(l10n.marketplace, LucideIcons.shoppingBag, () {
+                  LoggerService.i('Home: Marketplace tapped');
+                  context.push('/services/marketplace');
+                }),
+              ]),
+            ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1, end: 0),
 
             SizedBox(height: 16.h),
 
             // Quick Access Services Grid
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: _buildAdaptiveCategoryGrid(
-                context,
-                [
-                  _CategoryData(l10n.loan, Icons.account_balance_outlined, () => context.push('/services/loan')),
-                  _CategoryData(l10n.construct, Icons.architecture_outlined, () => context.push('/services/construction')),
-                  _CategoryData(l10n.legal, Icons.gavel_outlined, () => context.push('/services/legal')),
-                  _CategoryData(l10n.movers, Icons.local_shipping_outlined, () => context.push('/services/movers')),
-                ],
-              ),
-            ),
+              child: _buildAdaptiveCategoryGrid(context, [
+                _CategoryData(
+                  l10n.loan,
+                  LucideIcons.landmark,
+                  () => context.push('/services/loan'),
+                ),
+                _CategoryData(
+                  l10n.construct,
+                  LucideIcons.pencilRuler,
+                  () => context.push('/services/construction'),
+                ),
+                _CategoryData(
+                  l10n.legal,
+                  LucideIcons.gavel,
+                  () => context.push('/services/legal'),
+                ),
+                _CategoryData(
+                  l10n.movers,
+                  LucideIcons.truck,
+                  () => context.push('/services/movers'),
+                ),
+              ]),
+            ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.1, end: 0),
 
             SizedBox(height: 32.h),
 
@@ -181,13 +213,20 @@ class HomeScreen extends ConsumerWidget {
                   return Center(
                     child: Padding(
                       padding: EdgeInsets.all(32.w),
-                      child: Text(l10n.noPropertiesYet, style: const TextStyle(color: Colors.grey)),
+                      child: Text(
+                        l10n.noPropertiesYet,
+                        style: const TextStyle(color: Colors.grey),
+                      ),
                     ),
                   );
                 }
-                
-                final zeroBrokerage = properties.where((p) => p.isZeroBrokerage).toList();
-                final featured = zeroBrokerage.isNotEmpty ? zeroBrokerage : properties.take(5).toList();
+
+                final zeroBrokerage = properties
+                    .where((p) => p.isZeroBrokerage)
+                    .toList();
+                final featured = zeroBrokerage.isNotEmpty
+                    ? zeroBrokerage
+                    : properties.take(5).toList();
 
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,13 +246,14 @@ class HomeScreen extends ConsumerWidget {
                                   l10n.featuredZeroBrokerage,
                                   maxLines: 2,
                                   softWrap: true,
-                                  style: context.textTheme.headlineSmall?.copyWith(
-                                    fontWeight: FontWeight.w900,
-                                    height: 1.1.h,
-                                    fontSize: 18.sp,
-                                    color: context.primaryTextColor,
-                                    letterSpacing: -0.5,
-                                  ),
+                                  style: context.textTheme.headlineSmall
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.w900,
+                                        height: 1.1.h,
+                                        fontSize: 18.sp,
+                                        color: context.primaryTextColor,
+                                        letterSpacing: -0.5,
+                                      ),
                                 ),
                               ],
                             ),
@@ -225,15 +265,24 @@ class HomeScreen extends ConsumerWidget {
                               children: [
                                 Text(
                                   l10n.seeAll,
-                                  style: TextStyle(color: context.colorScheme.primary, fontWeight: FontWeight.w900, fontSize: 12.sp, letterSpacing: 0.5),
+                                  style: TextStyle(
+                                    color: context.colorScheme.primary,
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 12.sp,
+                                    letterSpacing: 0.5,
+                                  ),
                                 ),
                                 SizedBox(width: 4.w),
-                                Icon(Icons.arrow_forward, size: 16.sp, color: context.colorScheme.primary),
+                                Icon(
+                                  LucideIcons.arrowRight,
+                                  size: 16.sp,
+                                  color: context.colorScheme.primary,
+                                ),
                               ],
                             ),
                           ),
                         ],
-                      ),
+                      ).animate().fadeIn(delay: 800.ms),
                     ),
                     SizedBox(height: 16.h),
                     SizedBox(
@@ -246,7 +295,20 @@ class HomeScreen extends ConsumerWidget {
                           final prop = featured[index];
                           return Padding(
                             padding: EdgeInsets.only(right: 16.w),
-                            child: _buildFeaturedCard(context, prop.title, '₹${prop.price.toInt()}', prop.city, prop.imageUrls.isNotEmpty ? prop.imageUrls.first : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80', prop.id),
+                            child:
+                                _buildFeaturedCard(
+                                      context,
+                                      prop.title,
+                                      '₹${prop.price.toInt()}',
+                                      prop.city,
+                                      prop.imageUrls.isNotEmpty
+                                          ? prop.imageUrls.first
+                                          : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80',
+                                      prop.id,
+                                    )
+                                    .animate()
+                                    .fadeIn(delay: (800 + index * 100).ms)
+                                    .slideX(begin: 0.2, end: 0),
                           );
                         },
                       ),
@@ -259,24 +321,36 @@ class HomeScreen extends ConsumerWidget {
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
                       child: Text(
                         l10n.newlyAdded,
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 20.sp),
+                        style: Theme.of(
+                          context,
+                        ).textTheme.titleLarge?.copyWith(fontSize: 20.sp),
                       ),
                     ),
                     SizedBox(height: 16.h),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
                       child: Column(
-                        children: properties.take(5).toList().map((prop) {
+                        children: properties.take(5).toList().asMap().entries.map((
+                          entry,
+                        ) {
+                          final index = entry.key;
+                          final prop = entry.value;
                           return Padding(
                             padding: EdgeInsets.only(bottom: 12.h),
-                            child: _buildNewlyAddedItem(
-                              context: context,
-                              title: prop.title,
-                              price: '₹${prop.price.toInt()}',
-                              type: prop.type,
-                              image: prop.imageUrls.isNotEmpty ? prop.imageUrls.first : 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=300&q=80',
-                              propertyId: prop.id,
-                            ),
+                            child:
+                                _buildNewlyAddedItem(
+                                      context: context,
+                                      title: prop.title,
+                                      price: '₹${prop.price.toInt()}',
+                                      type: prop.type,
+                                      image: prop.imageUrls.isNotEmpty
+                                          ? prop.imageUrls.first
+                                          : 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=300&q=80',
+                                      propertyId: prop.id,
+                                    )
+                                    .animate()
+                                    .fadeIn(delay: (1000 + index * 100).ms)
+                                    .slideY(begin: 0.1, end: 0),
                           );
                         }).toList(),
                       ),
@@ -293,7 +367,12 @@ class HomeScreen extends ConsumerWidget {
                   itemBuilder: (context, index) => const PropertyCardSkeleton(),
                 ),
               ),
-              error: (err, stack) => Center(child: Padding(padding: EdgeInsets.all(32.w), child: Text('Error: $err'))),
+              error: (err, stack) => Center(
+                child: Padding(
+                  padding: EdgeInsets.all(32.w),
+                  child: Text('Error: $err'),
+                ),
+              ),
             ),
             SizedBox(height: 100.h), // padding for FAB
           ],
@@ -301,29 +380,51 @@ class HomeScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-           context.push('/chatbot');
+          context.push('/chatbot');
         },
-        backgroundColor: const Color(0xFF1E60FF),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.w)),
-        elevation: 4,
-        child: Icon(Icons.chat_bubble_outline, color: Colors.white),
-      ),
+        backgroundColor: AppTheme.primaryBlue,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.w),
+        ),
+        elevation: 10,
+        child: Icon(LucideIcons.messageCircle, color: Colors.white, size: 24.w),
+      ).animate().scale(delay: 1200.ms, curve: Curves.elasticOut),
     );
   }
 
-  Widget _buildAdaptiveCategoryGrid(BuildContext context, List<_CategoryData> items) {
+  Widget _buildAdaptiveCategoryGrid(
+    BuildContext context,
+    List<_CategoryData> items,
+  ) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final itemWidth = (constraints.maxWidth - (items.length - 1) * 12) / items.length;
+        final itemWidth =
+            (constraints.maxWidth - (items.length - 1) * 12) / items.length;
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: items.map((item) => _buildCategoryItem(context, item.title, item.icon, item.onTap, itemWidth)).toList(),
+          children: items
+              .map(
+                (item) => _buildCategoryItem(
+                  context,
+                  item.title,
+                  item.icon,
+                  item.onTap,
+                  itemWidth,
+                ),
+              )
+              .toList(),
         );
       },
     );
   }
 
-  Widget _buildCategoryItem(BuildContext context, String title, IconData icon, VoidCallback onTap, double width) {
+  Widget _buildCategoryItem(
+    BuildContext context,
+    String title,
+    IconData icon,
+    VoidCallback onTap,
+    double width,
+  ) {
     return GestureDetector(
       onTapDown: (_) {}, // For visual feedback if needed
       onTap: onTap,
@@ -335,24 +436,35 @@ class HomeScreen extends ConsumerWidget {
             height: width.clamp(50.0, 70.0),
             decoration: BoxDecoration(
               color: context.cardColor,
-              borderRadius: BorderRadius.circular(20.sp), // More rounded iOS style
+              borderRadius: BorderRadius.circular(
+                20.sp,
+              ), // More rounded iOS style
               border: Border.all(color: context.borderColor, width: 1.5.w),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
-                )
+                ),
               ],
             ),
-            child: Icon(icon, color: context.iconColor, size: width.clamp(20.0, 28.0).sp),
+            child: Icon(
+              icon,
+              color: context.iconColor,
+              size: width.clamp(20.0, 28.0).sp,
+            ),
           ),
           SizedBox(height: 8.h),
           SizedBox(
             width: width,
             child: Text(
               title,
-              style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, letterSpacing: 0.5, color: context.primaryTextColor),
+              style: TextStyle(
+                fontSize: 10.sp,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
+                color: context.primaryTextColor,
+              ),
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -362,20 +474,30 @@ class HomeScreen extends ConsumerWidget {
       ),
     );
   }
-  Widget _buildFeaturedCard(BuildContext context, String title, String price, String location, String imageUrl, String propertyId) {
+
+  Widget _buildFeaturedCard(
+    BuildContext context,
+    String title,
+    String price,
+    String location,
+    String imageUrl,
+    String propertyId,
+  ) {
     return GestureDetector(
       onTap: () => context.push('/properties/detail/$propertyId'),
       child: Container(
         width: 260.w, // Slightly wider for better visual impact
         decoration: BoxDecoration(
           color: context.cardColor,
-          borderRadius: BorderRadius.circular(24.sp), // Smoother rounded corners
+          borderRadius: BorderRadius.circular(
+            24.sp,
+          ), // Smoother rounded corners
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.08), // Softer shadow
               blurRadius: 15,
               offset: const Offset(0, 8),
-            )
+            ),
           ],
           image: DecorationImage(
             image: ResizeImage(
@@ -392,7 +514,10 @@ class HomeScreen extends ConsumerWidget {
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.black.withValues(alpha: 0.8), Colors.transparent],
+                  colors: [
+                    Colors.black.withValues(alpha: 0.8),
+                    Colors.transparent,
+                  ],
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                   stops: const [0.0, 0.5],
@@ -411,7 +536,11 @@ class HomeScreen extends ConsumerWidget {
                 ),
                 child: Text(
                   'Zero Brokerage',
-                  style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 10.sp,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
@@ -426,12 +555,20 @@ class HomeScreen extends ConsumerWidget {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.location_on, color: Colors.white.withValues(alpha: 0.7), size: 14.sp),
+                      Icon(
+                        LucideIcons.mapPin,
+                        color: Colors.white.withValues(alpha: 0.9),
+                        size: 12.sp,
+                      ),
                       SizedBox(width: 4.w),
                       Expanded(
                         child: Text(
                           location,
-                          style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -441,7 +578,11 @@ class HomeScreen extends ConsumerWidget {
                   SizedBox(height: 4.h),
                   Text(
                     title,
-                    style: TextStyle(color: Colors.white, fontSize: 18.sp, fontWeight: FontWeight.w900),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w900,
+                    ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -452,12 +593,19 @@ class HomeScreen extends ConsumerWidget {
                     children: [
                       Text(
                         price,
-                        style: TextStyle(color: Colors.white, fontSize: 20.sp, fontWeight: FontWeight.w900),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.w900,
+                        ),
                       ),
                       SizedBox(width: 4.w),
                       Text(
                         '/ month',
-                        style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 12.sp),
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.7),
+                          fontSize: 12.sp,
+                        ),
                       ),
                     ],
                   ),
@@ -470,7 +618,14 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildNewlyAddedItem({required BuildContext context, required String title, required String price, required String type, required String image, required String propertyId}) {
+  Widget _buildNewlyAddedItem({
+    required BuildContext context,
+    required String title,
+    required String price,
+    required String type,
+    required String image,
+    required String propertyId,
+  }) {
     return GestureDetector(
       onTap: () => context.push('/properties/detail/$propertyId'),
       child: Container(
@@ -484,7 +639,7 @@ class HomeScreen extends ConsumerWidget {
               color: Colors.black.withValues(alpha: 0.03),
               blurRadius: 10,
               offset: const Offset(0, 4),
-            )
+            ),
           ],
         ),
         child: Row(
@@ -513,20 +668,35 @@ class HomeScreen extends ConsumerWidget {
                       Expanded(
                         child: Text(
                           title,
-                          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp, color: context.primaryTextColor, letterSpacing: -0.2),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w900,
+                            fontSize: 14.sp,
+                            color: context.primaryTextColor,
+                            letterSpacing: -0.2,
+                          ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8.w,
+                          vertical: 4.h,
+                        ),
                         decoration: BoxDecoration(
-                          color: context.colorScheme.primary.withValues(alpha: 0.1),
+                          color: context.colorScheme.primary.withValues(
+                            alpha: 0.1,
+                          ),
                           borderRadius: BorderRadius.circular(8.sp),
                         ),
                         child: Text(
                           type.toUpperCase(),
-                          style: TextStyle(fontSize: 8.sp, fontWeight: FontWeight.w900, color: context.colorScheme.primary, letterSpacing: 0.5),
+                          style: TextStyle(
+                            fontSize: 8.sp,
+                            fontWeight: FontWeight.w900,
+                            color: context.colorScheme.primary,
+                            letterSpacing: 0.5,
+                          ),
                         ),
                       ),
                     ],
@@ -534,20 +704,37 @@ class HomeScreen extends ConsumerWidget {
                   SizedBox(height: 8.h),
                   Text(
                     price,
-                    style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18.sp, color: context.primaryTextColor, letterSpacing: -0.5),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 18.sp,
+                      color: context.primaryTextColor,
+                      letterSpacing: -0.5,
+                    ),
                   ),
                   SizedBox(height: 6.h),
                   Row(
                     children: [
                       Container(
                         padding: EdgeInsets.all(4.sp),
-                        decoration: BoxDecoration(color: Color(0xFF1E60FF), shape: BoxShape.circle),
-                        child: Icon(Icons.flash_on, color: Colors.white, size: 8.sp),
+                        decoration: BoxDecoration(
+                          color: Color(0xFF1E60FF),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          LucideIcons.zap,
+                          color: Colors.white,
+                          size: 8.sp,
+                        ),
                       ),
-                      SizedBox(width: 6.w),
+                      SizedBox(width: 8.w),
                       Text(
                         'DIRECT OWNER',
-                        style: TextStyle(color: const Color(0xFF1E60FF), fontSize: 9.sp, fontWeight: FontWeight.w900, letterSpacing: 0.5),
+                        style: TextStyle(
+                          color: AppTheme.primaryBlue,
+                          fontSize: 9.sp,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.0,
+                        ),
                       ),
                     ],
                   ),

@@ -18,7 +18,7 @@ class ConstructionScreen extends ConsumerStatefulWidget {
 }
 
 class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
-  String _selectedCategory = 'Residential'; // Residential or Commercial
+  final String _selectedCategory = 'Residential'; // Residential or Commercial
   String _selectedService =
       'Construction'; // Construction, Architecture, Interiors, Consultation, Borewell
 
@@ -901,14 +901,15 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
   Widget _buildCheckbox(String label) {
     bool isChecked = _interiorScopes.contains(label);
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          if (isChecked)
-            _interiorScopes.remove(label);
-          else
-            _interiorScopes.add(label);
-        });
-      },
+        onTap: () {
+          setState(() {
+            if (isChecked) {
+              _interiorScopes.remove(label);
+            } else {
+              _interiorScopes.add(label);
+            }
+          });
+        },
       child: Container(
         margin: EdgeInsets.only(bottom: 12.h),
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),

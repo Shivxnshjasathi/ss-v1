@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/core/utils/routing_utils.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
@@ -31,7 +33,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     }
 
     // Wait for minimum splash duration if no cache (first time or force fetch)
-    await Future.delayed(const Duration(seconds: 1)); // Reduced from 2s to 1s for better UX
+    await Future.delayed(const Duration(milliseconds: 1500));
     
     if (mounted) {
       final user = FirebaseAuth.instance.currentUser;
@@ -57,7 +59,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1765FE), // Vibrant electric blue from design
+      backgroundColor: AppTheme.primaryBlue,
       body: SafeArea(
         child: Column(
           children: [
@@ -66,11 +68,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             Center(
               child: Column(
                 children: [
-                  Icon(
-                    Icons.other_houses_outlined, // Similar modern home icon
-                    color: Colors.white,
-                    size: 80.w,
-                  ),
+                  Image.asset(
+                    'assets/images/app_logo.png',
+                    width: 120.w,
+                    height: 120.w,
+                  ).animate().fadeIn(duration: 800.ms).slideY(begin: 0.2, end: 0, curve: Curves.easeOutCirc),
                   SizedBox(height: 24.h),
                   Text(
                     'SAMPATTI',
@@ -80,16 +82,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                       fontWeight: FontWeight.w900,
                       letterSpacing: -1,
                     ),
-                  ),
+                  ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2, end: 0),
                   Text(
                     'BAZAR',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 24.sp,
                       fontWeight: FontWeight.w300,
-                      letterSpacing: 1,
+                      letterSpacing: 2,
                     ),
-                  ),
+                  ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2, end: 0),
                 ],
               ),
             ),
@@ -100,7 +102,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 SizedBox(
                   width: 24.w,
                   height: 24.h,
-                  child: CircularProgressIndicator(
+                  child: const CircularProgressIndicator(
                     color: Colors.white,
                     strokeWidth: 2,
                   ),
@@ -109,20 +111,23 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 Text(
                   'LOADING EXPERIENCE',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.white.withValues(alpha: 0.8),
                     fontSize: 10.sp,
                     fontWeight: FontWeight.bold,
-                    letterSpacing: 2,
+                    letterSpacing: 3,
                   ),
                 ),
-                SizedBox(height: 8.h),
+                SizedBox(height: 12.h),
                 Container(
                   width: 40.w,
                   height: 1.h,
-                  color: Colors.white.withValues(alpha: 0.5),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(1),
+                  ),
                 ),
               ],
-            ),
+            ).animate().fadeIn(delay: 800.ms),
             SizedBox(height: 48.h),
             // Footer
             Padding(
@@ -130,13 +135,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               child: Text(
                 '© 2024 SAMPATTI BAZAR. ALL RIGHTS RESERVED.',
                 style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.7),
+                  color: Colors.white.withValues(alpha: 0.5),
                   fontSize: 8.sp,
                   fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
+                  letterSpacing: 1,
                 ),
               ),
-            ),
+            ).animate().fadeIn(delay: 1.seconds),
           ],
         ),
       ),

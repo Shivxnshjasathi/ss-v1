@@ -413,7 +413,7 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
+                  SizedBox(
                     width: 24.w,
                     height: 24.h,
                     child: Icon(Icons.location_on_rounded, color: Colors.black87, size: 24.w),

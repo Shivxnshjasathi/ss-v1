@@ -124,18 +124,22 @@ class _RentAgreementSignScreenState extends ConsumerState<RentAgreementSignScree
                   child: const Text('Clear', style: TextStyle(color: Colors.red)),
                 ),
                 ElevatedButton(
-                  onPressed: () async {
-                    if (signatureController.isNotEmpty) {
-                      final Uint8List? data = await signatureController.toPngBytes();
-                      if (data != null) {
-                        final String base64Signature = base64Encode(data);
-                        Navigator.pop(ctx);
-                        _signDocument(doc, base64Signature);
+                    onPressed: () async {
+                      if (signatureController.isNotEmpty) {
+                        final Uint8List? data = await signatureController.toPngBytes();
+                        if (data != null) {
+                          final String base64Signature = base64Encode(data);
+                          if (ctx.mounted) {
+                            Navigator.pop(ctx);
+                            _signDocument(doc, base64Signature);
+                          }
+                        }
+                      } else {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please draw your signature')));
+                        }
                       }
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please draw your signature')));
-                    }
-                  },
+                    },
                   style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryBlue),
                   child: const Text('Confirm', style: TextStyle(color: Colors.white)),
                 ),

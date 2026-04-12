@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:uuid/uuid.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
@@ -14,27 +16,31 @@ class OtherServicesScreen extends ConsumerStatefulWidget {
   const OtherServicesScreen({super.key});
 
   @override
-  ConsumerState<OtherServicesScreen> createState() => _OtherServicesScreenState();
+  ConsumerState<OtherServicesScreen> createState() =>
+      _OtherServicesScreenState();
 }
 
 class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
   final _addressController = TextEditingController();
   final _descriptionController = TextEditingController();
-  
+
   String _selectedCategory = 'Electrical fitting & services';
   final List<String> _categories = [
     'Electrical fitting & services',
     'Plumbing fitting & service',
     'House painting',
     'House cleaning',
-    'All'
+    'All',
   ];
 
   bool _isLoading = false;
 
   Future<void> _submitRequest() async {
-    if (_addressController.text.trim().isEmpty || _descriptionController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please fill out all fields.')));
+    if (_addressController.text.trim().isEmpty ||
+        _descriptionController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill out all fields.')),
+      );
       return;
     }
 
@@ -44,7 +50,15 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
       final user = ref.read(currentUserDataProvider).value;
       if (user == null) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please login to request a service', style: TextStyle(color: Colors.white)), backgroundColor: Colors.red));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Please login to request a service',
+                style: TextStyle(color: Colors.white),
+              ),
+              backgroundColor: Colors.red,
+            ),
+          );
         }
         return;
       }
@@ -59,16 +73,15 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
         createdAt: DateTime.now(),
         location: _addressController.text,
         tenantEmail: user.email,
-        details: {
-          'problemDescription': _descriptionController.text,
-        },
+        details: {'problemDescription': _descriptionController.text},
       );
 
       await ref.read(serviceRequestRepositoryProvider).addRequest(request);
-      
-      LoggerService.trackEvent('other_service_requested', parameters: {
-        'category': _selectedCategory,
-      });
+
+      LoggerService.trackEvent(
+        'other_service_requested',
+        parameters: {'category': _selectedCategory},
+      );
 
       if (mounted) {
         showDialog(
@@ -76,7 +89,9 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
           barrierDismissible: false,
           builder: (ctx) => AlertDialog(
             title: const Text('Request Received'),
-            content: Text('Your $_selectedCategory request has been sent successfully. A professional will contact you shortly.'),
+            content: Text(
+              'Your $_selectedCategory request has been sent successfully. A professional will contact you shortly.',
+            ),
             actions: [
               TextButton(
                 onPressed: () {
@@ -91,7 +106,15 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to submit request: $e', style: const TextStyle(color: Colors.white)), backgroundColor: Colors.red));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Failed to submit request: $e',
+              style: const TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     } finally {
       if (mounted) {
@@ -203,11 +226,16 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
     bool isSelected = _selectedCategory == label;
     // Map internal key to pretty label
     String displayLabel = label;
-    if (label == 'Electrical fitting & services') displayLabel = 'ELECTRICAL';
-    else if (label == 'Plumbing fitting & service') displayLabel = 'PLUMBING';
-    else if (label == 'House painting') displayLabel = 'PAINTING';
-    else if (label == 'House cleaning') displayLabel = 'CLEANING';
-    else if (label == 'All') displayLabel = 'ALL SERVICES';
+    if (label == 'Electrical fitting & services')
+      displayLabel = 'ELECTRICAL';
+    else if (label == 'Plumbing fitting & service')
+      displayLabel = 'PLUMBING';
+    else if (label == 'House painting')
+      displayLabel = 'PAINTING';
+    else if (label == 'House cleaning')
+      displayLabel = 'CLEANING';
+    else if (label == 'All')
+      displayLabel = 'ALL SERVICES';
 
     return Padding(
       padding: EdgeInsets.only(right: 12.0.w),
@@ -216,9 +244,7 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
           decoration: BoxDecoration(
-            color: isSelected
-                ? AppTheme.primaryBlue
-                : context.cardColor,
+            color: isSelected ? AppTheme.primaryBlue : context.cardColor,
             borderRadius: BorderRadius.circular(30.w),
             border: isSelected ? null : Border.all(color: context.borderColor),
           ),
@@ -251,9 +277,9 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
               borderRadius: BorderRadius.circular(10.w),
             ),
             child: Icon(
-              Icons.arrow_back_ios_new,
+              LucideIcons.chevronLeft,
               color: context.iconColor,
-              size: 14.w,
+              size: 18.w,
             ),
           ),
           onPressed: () => context.pop(),
@@ -268,7 +294,11 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.headset_mic_outlined, color: context.iconColor),
+            icon: Icon(
+              LucideIcons.headphones,
+              color: context.iconColor,
+              size: 20.w,
+            ),
             onPressed: () {},
           ),
           SizedBox(width: 8.w),
@@ -279,14 +309,21 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 8.h),
-            
+
             // Category Selector (Horizontal Scroll matching 'CONSTRUCTION, ARCHITECTURE...')
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: EdgeInsets.symmetric(horizontal: 24.0.w),
               child: Row(
                 children: _categories
-                    .map((cat) => _buildCategoryChip(cat))
+                    .asMap()
+                    .entries
+                    .map(
+                      (entry) => _buildCategoryChip(entry.value)
+                          .animate()
+                          .fadeIn(delay: (200 + entry.key * 50).ms)
+                          .slideX(begin: 0.2, end: 0),
+                    )
                     .toList(),
               ),
             ),
@@ -302,26 +339,26 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
                   _buildSectionHeader(
                     'Service Details',
                     'Book certified professionals for all your home repair and maintenance needs. Fast, reliable, and verified.',
-                  ),
+                  ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1, end: 0),
                   SizedBox(height: 24.h),
-                  
+
                   _buildTextField(
                     'SERVICE ADDRESS',
                     'e.g. 123 Main St, Apartment 4B',
                     TextInputType.text,
                     controller: _addressController,
-                  ),
-                  
+                  ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.1, end: 0),
+
                   SizedBox(height: 16.h),
-                  
+
                   _buildTextField(
                     'PROBLEM DESCRIPTION',
                     'Please describe in detail what needs to be fixed...',
                     TextInputType.multiline,
                     maxLines: 5,
                     controller: _descriptionController,
-                  ),
-                  
+                  ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.1, end: 0),
+
                   SizedBox(height: 32.h),
                 ],
               ),
@@ -343,30 +380,41 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
         ),
         child: SafeArea(
           top: false,
-          child: SizedBox(
-            height: 54.h,
-            child: ElevatedButton(
-              onPressed: _isLoading ? null : _submitRequest,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryBlue,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.w),
-                ),
-                elevation: 0,
-              ),
-              child: _isLoading 
-                ? SizedBox(height: 20.h, width: 20.h, child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                : Text(
-                'REQUEST PROFESSIONAL',
-                style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 13.sp,
-                  color: Colors.white,
-                  letterSpacing: 1,
-                ),
-              ),
-            ),
-          ),
+          child:
+              SizedBox(
+                    height: 54.h,
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _submitRequest,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.primaryBlue,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16.w),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: _isLoading
+                          ? SizedBox(
+                              height: 20.h,
+                              width: 20.h,
+                              child: const CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : Text(
+                              'REQUEST PROFESSIONAL',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w900,
+                                fontSize: 13.sp,
+                                letterSpacing: 1.5,
+                              ),
+                            ),
+                    ),
+                  )
+                  .animate()
+                  .fadeIn(delay: 800.ms)
+                  .scale(begin: const Offset(0.9, 0.9)),
         ),
       ),
     );

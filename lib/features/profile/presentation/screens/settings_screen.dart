@@ -39,7 +39,7 @@ class AppSettingsScreen extends ConsumerWidget {
                 Icons.dark_mode_outlined, 
                 trailing: Switch.adaptive(
                   value: isDark,
-                  activeColor: AppTheme.primaryBlue,
+                  activeTrackColor: AppTheme.primaryBlue,
                   onChanged: (_) {
                     ref.read(themeProvider.notifier).toggleTheme();
                   },
@@ -110,7 +110,7 @@ class AppSettingsScreen extends ConsumerWidget {
   Widget _buildSwitch(bool value) {
     return Switch.adaptive(
       value: value,
-      activeColor: AppTheme.primaryBlue,
+      activeTrackColor: AppTheme.primaryBlue,
       onChanged: (_) {},
     );
   }

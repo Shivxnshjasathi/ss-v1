@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/properties/data/property_repository.dart';
@@ -18,7 +20,7 @@ class SavedPropertiesScreen extends ConsumerWidget {
     LoggerService.trackScreen('SavedPropertiesScreen');
     final userAsync = ref.watch(currentUserDataProvider);
     final l10n = AppLocalizations.of(context)!;
-    
+
     return userAsync.when(
       data: (user) {
         if (user == null) {
@@ -37,7 +39,11 @@ class SavedPropertiesScreen extends ConsumerWidget {
             elevation: 0,
             title: Text(
               l10n.savedProperties,
-              style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 24.sp),
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                color: context.primaryTextColor,
+                fontSize: 24.sp,
+              ),
             ),
           ),
           body: savedAsync.when(
@@ -47,9 +53,22 @@ class SavedPropertiesScreen extends ConsumerWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.favorite_border, size: 64.w, color: context.secondaryTextColor),
+                      Icon(
+                        LucideIcons.heart,
+                        size: 48.w,
+                        color: context.secondaryTextColor.withValues(
+                          alpha: 0.2,
+                        ),
+                      ),
                       SizedBox(height: 16.h),
-                      Text(l10n.noSavedYet, style: TextStyle(color: context.secondaryTextColor)),
+                      Text(
+                        l10n.noSavedYet,
+                        style: TextStyle(
+                          color: context.secondaryTextColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14.sp,
+                        ),
+                      ),
                     ],
                   ),
                 );
@@ -60,20 +79,33 @@ class SavedPropertiesScreen extends ConsumerWidget {
                 itemCount: properties.length,
                 itemBuilder: (context, index) {
                   final prop = properties[index];
-                  return _buildSavedCard(context, prop);
+                  return _buildSavedCard(context, prop)
+                      .animate()
+                      .fadeIn(delay: (index * 100).ms)
+                      .slideX(begin: 0.1, end: 0);
                 },
               );
             },
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (e, st) {
-              LoggerService.e('Error loading saved properties', error: e, stack: st);
+              LoggerService.e(
+                'Error loading saved properties',
+                error: e,
+                stack: st,
+              );
               return Center(child: Text('Error: $e'));
             },
           ),
         );
       },
-      loading: () => Scaffold(backgroundColor: context.scaffoldColor, body: const Center(child: CircularProgressIndicator())),
-      error: (e, st) => Scaffold(backgroundColor: context.scaffoldColor, body: Center(child: Text('Error: $e'))),
+      loading: () => Scaffold(
+        backgroundColor: context.scaffoldColor,
+        body: const Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, st) => Scaffold(
+        backgroundColor: context.scaffoldColor,
+        body: Center(child: Text('Error: $e')),
+      ),
     );
   }
 
@@ -92,7 +124,7 @@ class SavedPropertiesScreen extends ConsumerWidget {
               color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 10,
               offset: const Offset(0, 4),
-            )
+            ),
           ],
         ),
         child: Row(
@@ -105,8 +137,8 @@ class SavedPropertiesScreen extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(12.w),
                 image: DecorationImage(
                   image: CachedNetworkImageProvider(
-                    property.imageUrls.isNotEmpty 
-                        ? property.imageUrls.first 
+                    property.imageUrls.isNotEmpty
+                        ? property.imageUrls.first
                         : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=300&q=80',
                   ),
                   fit: BoxFit.cover,
@@ -121,18 +153,29 @@ class SavedPropertiesScreen extends ConsumerWidget {
                 children: [
                   Text(
                     property.title,
-                    style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 16.sp,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   SizedBox(height: 4.h),
                   Row(
                     children: [
-                       Icon(Icons.location_on, size: 12.w, color: context.secondaryTextColor),
-                      SizedBox(width: 4.w),
+                      Icon(
+                        LucideIcons.mapPin,
+                        size: 12.w,
+                        color: AppTheme.primaryBlue,
+                      ),
+                      SizedBox(width: 6.w),
                       Text(
                         property.city,
-                        style: TextStyle(color: context.secondaryTextColor, fontSize: 12.sp, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          color: context.secondaryTextColor,
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ],
                   ),
@@ -148,9 +191,17 @@ class SavedPropertiesScreen extends ConsumerWidget {
                   SizedBox(height: 4.h),
                   Row(
                     children: [
-                      _buildSpecSmall(context, Icons.king_bed_outlined, '${property.bedrooms}'),
+                      _buildSpecSmall(
+                        context,
+                        LucideIcons.bed,
+                        '${property.bedrooms}',
+                      ),
                       SizedBox(width: 12.w),
-                      _buildSpecSmall(context, Icons.bathtub_outlined, '${property.bathrooms}'),
+                      _buildSpecSmall(
+                        context,
+                        LucideIcons.bath,
+                        '${property.bathrooms}',
+                      ),
                     ],
                   ),
                 ],
@@ -167,7 +218,14 @@ class SavedPropertiesScreen extends ConsumerWidget {
       children: [
         Icon(icon, size: 14.w, color: context.secondaryTextColor),
         SizedBox(width: 4.w),
-        Text(value, style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold, color: context.secondaryTextColor)),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 12.sp,
+            fontWeight: FontWeight.bold,
+            color: context.secondaryTextColor,
+          ),
+        ),
       ],
     );
   }

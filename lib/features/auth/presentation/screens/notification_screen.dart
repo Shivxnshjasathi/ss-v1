@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/auth_repository.dart';
 import 'package:sampatti_bazar/features/services/data/booking_repository.dart';
@@ -15,7 +17,8 @@ class NotificationScreen extends ConsumerStatefulWidget {
   ConsumerState<NotificationScreen> createState() => _NotificationScreenState();
 }
 
-class _NotificationScreenState extends ConsumerState<NotificationScreen> with SingleTickerProviderStateMixin {
+class _NotificationScreenState extends ConsumerState<NotificationScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -34,7 +37,9 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> with Si
   Widget build(BuildContext context) {
     final user = ref.watch(authRepositoryProvider).currentUser;
     if (user == null) {
-      return const Scaffold(body: Center(child: Text('Please log in to view notifications.')));
+      return const Scaffold(
+        body: Center(child: Text('Please log in to view notifications.')),
+      );
     }
 
     return Scaffold(
@@ -43,10 +48,20 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> with Si
         backgroundColor: context.scaffoldColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: context.iconColor, size: 20.w),
+          icon: Icon(
+            LucideIcons.chevronLeft,
+            color: context.iconColor,
+            size: 20.w,
+          ),
           onPressed: () => context.pop(),
         ),
-        title: Text('Activity Center', style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor)),
+        title: Text(
+          'Activity Center',
+          style: TextStyle(
+            fontWeight: FontWeight.w900,
+            color: context.primaryTextColor,
+          ),
+        ),
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Theme.of(context).colorScheme.primary,
@@ -78,7 +93,7 @@ class _BookingsList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bookingsAsync = isOwner 
+    final bookingsAsync = isOwner
         ? ref.watch(ownerBookingsProvider(userId))
         : ref.watch(userBookingsProvider(userId));
 
@@ -89,11 +104,21 @@ class _BookingsList extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.event_busy, size: 64.w, color: context.secondaryTextColor.withValues(alpha: 0.3)),
+                Icon(
+                  LucideIcons.calendarOff,
+                  size: 48.w,
+                  color: context.secondaryTextColor.withValues(alpha: 0.2),
+                ),
                 SizedBox(height: 16.h),
                 Text(
-                  isOwner ? 'No visitor requests yet.' : 'You haven\'t booked any visits yet.',
-                  style: TextStyle(color: context.secondaryTextColor),
+                  isOwner
+                      ? 'No visitor requests yet.'
+                      : 'You haven\'t booked any visits yet.',
+                  style: TextStyle(
+                    color: context.secondaryTextColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14.sp,
+                  ),
                 ),
               ],
             ),
@@ -105,7 +130,10 @@ class _BookingsList extends ConsumerWidget {
           itemCount: bookings.length,
           itemBuilder: (context, index) {
             final booking = bookings[index];
-            return _BookingCard(booking: booking, isOwner: isOwner);
+            return _BookingCard(booking: booking, isOwner: isOwner)
+                .animate()
+                .fadeIn(delay: (index * 100).ms)
+                .slideX(begin: 0.1, end: 0);
           },
         );
       },
@@ -147,12 +175,19 @@ class _BookingCard extends ConsumerWidget {
                 ),
                 child: Text(
                   booking.status.toUpperCase(),
-                  style: TextStyle(color: statusColor, fontSize: 10.sp, fontWeight: FontWeight.w900),
+                  style: TextStyle(
+                    color: statusColor,
+                    fontSize: 10.sp,
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
               ),
               Text(
                 _formatDate(booking.bookingDate),
-                style: TextStyle(color: context.secondaryTextColor, fontSize: 12.sp),
+                style: TextStyle(
+                  color: context.secondaryTextColor,
+                  fontSize: 12.sp,
+                ),
               ),
             ],
           ),
@@ -164,12 +199,15 @@ class _BookingCard extends ConsumerWidget {
           SizedBox(height: 4.h),
           Row(
             children: [
-              Icon(Icons.location_on, size: 14.w, color: context.secondaryTextColor),
-              SizedBox(width: 4.w),
+              Icon(LucideIcons.mapPin, size: 14.w, color: AppTheme.primaryBlue),
+              SizedBox(width: 8.w),
               Expanded(
                 child: Text(
                   booking.propertyLocation,
-                  style: TextStyle(color: context.secondaryTextColor, fontSize: 12.sp),
+                  style: TextStyle(
+                    color: context.secondaryTextColor,
+                    fontSize: 12.sp,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -185,10 +223,20 @@ class _BookingCard extends ConsumerWidget {
                     onPressed: () => _updateStatus(context, ref, 'cancelled'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.redAccent,
-                      side: BorderSide(color: Colors.redAccent.withValues(alpha: 0.3)),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.w)),
+                      side: BorderSide(
+                        color: Colors.redAccent.withValues(alpha: 0.3),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.w),
+                      ),
                     ),
-                    child: Text('CANCEL', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13.sp)),
+                    child: Text(
+                      'CANCEL',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 13.sp,
+                      ),
+                    ),
                   ),
                 ),
               if (isOwner && booking.status == 'pending') ...[
@@ -200,9 +248,17 @@ class _BookingCard extends ConsumerWidget {
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: Colors.white,
                       elevation: 0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.w)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.w),
+                      ),
                     ),
-                    child: Text('CONFIRM', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13.sp)),
+                    child: Text(
+                      'CONFIRM',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 13.sp,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -215,10 +271,14 @@ class _BookingCard extends ConsumerWidget {
 
   Color _getStatusColor(String status) {
     switch (status) {
-      case 'confirmed': return Colors.green;
-      case 'cancelled': return Colors.red;
-      case 'completed': return Colors.blue;
-      default: return Colors.orange;
+      case 'confirmed':
+        return Colors.green;
+      case 'cancelled':
+        return Colors.red;
+      case 'completed':
+        return Colors.blue;
+      default:
+        return Colors.orange;
     }
   }
 
@@ -226,17 +286,27 @@ class _BookingCard extends ConsumerWidget {
     return '${date.day}/${date.month}/${date.year}';
   }
 
-  void _updateStatus(BuildContext context, WidgetRef ref, String newStatus) async {
+  void _updateStatus(
+    BuildContext context,
+    WidgetRef ref,
+    String newStatus,
+  ) async {
     try {
-      await ref.read(bookingRepositoryProvider).updateBookingStatus(booking.id, newStatus);
+      await ref
+          .read(bookingRepositoryProvider)
+          .updateBookingStatus(booking.id, newStatus);
       LoggerService.i('Booking ${booking.id} updated to $newStatus');
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Status updated to $newStatus')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Status updated to $newStatus')));
       }
     } catch (e) {
       LoggerService.e('Failed to update booking status', error: e);
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to update status')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to update status')),
+        );
       }
     }
   }

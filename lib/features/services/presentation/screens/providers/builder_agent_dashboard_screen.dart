@@ -580,7 +580,7 @@ class _VisitorRequestsViewState extends ConsumerState<_VisitorRequestsView> {
   }
 
   Widget _buildFilterBar(BuildContext context, WidgetRef ref, List<ServiceRequestModel> requests) {
-    final cities = ['All', ...requests.map((r) => r.location).whereType<String>().toSet().toList()];
+    final cities = ['All', ...requests.map((r) => r.location).whereType<String>().toSet()];
     cities.sort();
 
     if (cities.length <= 1) return const SizedBox.shrink();

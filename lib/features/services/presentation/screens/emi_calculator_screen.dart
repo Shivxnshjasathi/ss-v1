@@ -96,7 +96,7 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
             _buildSliderCard(
               icon: Icons.attach_money,
               label: l10n.loanAmount,
-              valueText: '${_formatCurrency(loanAmount)}',
+              valueText: _formatCurrency(loanAmount),
               minLabel: '₹1,00,000',
               maxLabel: '₹1,00,00,000',
               value: loanAmount,

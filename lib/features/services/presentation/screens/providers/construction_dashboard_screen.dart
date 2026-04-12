@@ -379,7 +379,7 @@ class _ConstructionDashboardScreenState extends ConsumerState<ConstructionDashbo
   }
 
   Widget _buildFilterBar(List<ServiceRequestModel> leads) {
-    final cities = ['All', ...leads.map((l) => l.location).whereType<String>().toSet().toList()];
+    final cities = ['All', ...leads.map((l) => l.location).whereType<String>().toSet()];
     cities.sort();
 
     if (cities.length <= 1) return const SizedBox.shrink();

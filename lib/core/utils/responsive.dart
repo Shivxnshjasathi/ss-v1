@@ -35,13 +35,13 @@ class Responsive {
 
 extension ResponsiveExtension on num {
   /// Scaling for Width
-  double get w => Responsive.w(this.toDouble());
+  double get w => Responsive.w(toDouble());
 
   /// Scaling for Height
-  double get h => Responsive.h(this.toDouble());
+  double get h => Responsive.h(toDouble());
 
   /// Scaling for Text (SP)
-  double get sp => Responsive.sp(this.toDouble());
+  double get sp => Responsive.sp(toDouble());
 }
 
 extension BuildContextResponsive on BuildContext {

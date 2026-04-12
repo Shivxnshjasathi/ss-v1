@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sampatti_bazar/core/providers/theme_provider.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/auth_repository.dart';
@@ -26,15 +28,15 @@ class ProfileScreen extends ConsumerWidget {
         elevation: 0,
         leading: IconButton(
           icon: Container(
-            padding: EdgeInsets.all(8.w),
+            padding: EdgeInsets.all(10.w),
             decoration: BoxDecoration(
-              color: const Color(0xFF00E5FF).withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8.w),
+              color: AppTheme.primaryBlue.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12.w),
             ),
             child: Icon(
-              Icons.arrow_back_ios_new,
+              LucideIcons.chevronLeft,
               color: context.iconColor,
-              size: 16.w,
+              size: 20.w,
             ),
           ),
           onPressed: () => context.pop(),
@@ -43,79 +45,94 @@ class ProfileScreen extends ConsumerWidget {
           l10n.myProfile,
           style: TextStyle(
             fontWeight: FontWeight.w900,
-            color: context.primaryTextColor,
+            color: context.primaryTextColor,$
             fontSize: 18.sp,
           ),
         ),
         actions: [
           IconButton(
-            icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
+            icon: Icon(isDark ? LucideIcons.sun : LucideIcons.moon, size: 20.w),
             onPressed: () {
               ref.read(themeProvider.notifier).toggleTheme();
             },
           ),
           IconButton(
-            icon: Icon(Icons.notifications_none),
+            icon: Icon(LucideIcons.bell, size: 20.w),
             onPressed: () {},
           ),
         ],
-      ),
+      ).animate().fadeIn().slideY(begin: -0.1, end: 0),
       body: SingleChildScrollView(
         child: Column(
           children: [
             SizedBox(height: 24.h),
             // Avatar & Name Section
             Center(
-              child: Stack(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: context.borderColor, width: 4.w),
-                    ),
-                    child: CircleAvatar(
-                      radius: 54.w,
-                      backgroundColor: context.isDarkMode ? Colors.grey[800] : Colors.grey[200],
-                      child: Text(
-                        (userAsync.value?.name ?? 'U').substring(0, 1).toUpperCase(),
-                        style: TextStyle(
-                          fontSize: 40.sp,
-                          fontWeight: FontWeight.w900,
-                          color: context.isDarkMode ? Colors.white70 : Colors.black54,
+                  child: Stack(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: context.borderColor,
+                            width: 4.w,
+                          ),
+                        ),
+                        child: CircleAvatar(
+                          radius: 54.w,
+                          backgroundColor: context.isDarkMode
+                              ? Colors.grey[800]
+                              : Colors.grey[200],
+                          child: Text(
+                            (userAsync.value?.name ?? 'U')
+                                .substring(0, 1)
+                                .toUpperCase(),
+                            style: TextStyle(
+                              fontSize: 40.sp,
+                              fontWeight: FontWeight.w900,
+                              color: context.isDarkMode
+                                  ? Colors.white70
+                                  : Colors.black54,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 0.h,
-                    right: 8.w,
-                    child: Container(
-                      padding: EdgeInsets.all(4.w),
-                      decoration: BoxDecoration(
-                        color: Color(0xFF00E5FF),
-                        shape: BoxShape.circle,
+                      Positioned(
+                        bottom: 0.h,
+                        right: 8.w,
+                        child: Container(
+                          padding: EdgeInsets.all(6.w),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryBlue,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: context.scaffoldColor,
+                              width: 3.w,
+                            ),
+                          ),
+                          child: Icon(
+                            LucideIcons.badgeCheck,
+                            color: Colors.white,
+                            size: 14.w,
+                          ),
+                        ),
                       ),
-                      child: Icon(
-                        Icons.verified,
-                        color: Colors.white,
-                        size: 16.w,
-                      ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-            ),
+                )
+                .animate()
+                .fadeIn(duration: 800.ms)
+                .scale(begin: const Offset(0.8, 0.8)),
             Text(
               userAsync.value?.name ?? 'User',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
+              style: context.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.w900,
                 fontSize: 24.sp,
                 letterSpacing: -0.5,
-                color: context.primaryTextColor,
               ),
-            ),
+            ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1, end: 0),
             SizedBox(height: 4.h),
             Text(
               '${userAsync.value?.phoneNumber ?? '+91 XXXXX XXXXX'} • ${userAsync.value?.email ?? 'No email'}',
@@ -132,37 +149,53 @@ class ProfileScreen extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 8.h,
+                  ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0066FF).withValues(alpha: 0.1),
+                    color: AppTheme.primaryBlue.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20.w),
                   ),
                   child: Text(
                     userAsync.value?.role?.toUpperCase() ?? l10n.premiumMember,
                     style: TextStyle(
-                      color: Color(0xFF0066FF),
+                      color: AppTheme.primaryBlue,
                       fontWeight: FontWeight.w900,
                       fontSize: 10.sp,
-                      letterSpacing: 0.5,
+                      letterSpacing: 1.0,
                     ),
                   ),
-                ),
+                ).animate().fadeIn(delay: 400.ms),
                 if (userAsync.value?.isPreApproved == true) ...[
                   SizedBox(width: 8.w),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 12.w,
+                      vertical: 8.h,
+                    ),
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(colors: [Colors.orange, Colors.deepOrange]),
+                      gradient: const LinearGradient(
+                        colors: [Colors.orange, Colors.deepOrange],
+                      ),
                       borderRadius: BorderRadius.circular(20.w),
                       boxShadow: [
-                        BoxShadow(color: Colors.orange.withValues(alpha: 0.4), blurRadius: 8, offset: const Offset(0, 3)),
+                        BoxShadow(
+                          color: Colors.orange.withValues(alpha: 0.4),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
+                        ),
                       ],
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.verified, color: Colors.white, size: 12.w),
-                        SizedBox(width: 4.w),
+                        Icon(
+                          LucideIcons.badgeCheck,
+                          color: Colors.white,
+                          size: 12.w,
+                        ),
+                        SizedBox(width: 6.w),
                         Text(
                           'PRE-APPROVED: ₹${(userAsync.value!.preApprovalAmount! / 100000).toStringAsFixed(1)} L',
                           style: TextStyle(
@@ -174,7 +207,7 @@ class ProfileScreen extends ConsumerWidget {
                         ),
                       ],
                     ),
-                  ),
+                  ).animate().fadeIn(delay: 600.ms).slideX(begin: 0.1, end: 0),
                 ],
               ],
             ),
@@ -202,21 +235,21 @@ class ProfileScreen extends ConsumerWidget {
                       _buildMenuItem(
                         context,
                         l10n.personalInfo,
-                        Icons.person_outline,
-                        const Color(0xFF0066FF),
+                        LucideIcons.user,
+                        AppTheme.primaryBlue,
                         () => context.push('/profile/edit'),
                       ),
                       _buildMenuItem(
                         context,
                         l10n.savedProperties,
-                        Icons.favorite_border,
+                        LucideIcons.heart,
                         Colors.pinkAccent,
                         () => context.go('/saved'),
                       ),
                       _buildMenuItem(
                         context,
                         l10n.myDocuments,
-                        Icons.description_outlined,
+                        LucideIcons.fileText,
                         Colors.orange,
                         () => context.push('/profile/documents'),
                       ),
@@ -239,26 +272,26 @@ class ProfileScreen extends ConsumerWidget {
                       _buildMenuItem(
                         context,
                         l10n.appSettings,
-                        Icons.settings_outlined,
-                        Colors.grey[800]!,
+                        LucideIcons.settings,
+                        Colors.blueGrey,
                         () => context.push('/profile/settings'),
                       ),
                       _buildMenuItem(
                         context,
                         l10n.helpSupport,
-                        Icons.help_outline,
+                        LucideIcons.lifeBuoy,
                         Colors.teal,
                         () => context.push('/profile/support'),
                       ),
                       _buildMenuItem(
                         context,
                         l10n.termsPrivacy,
-                        Icons.privacy_tip_outlined,
+                        LucideIcons.shieldCheck,
                         Colors.indigo,
                         () {},
                       ),
                     ],
-                  ),
+                  ).animate().fadeIn(delay: 700.ms).slideY(begin: 0.1, end: 0),
                   SizedBox(height: 32.h),
                   SizedBox(
                     width: double.infinity,
@@ -270,29 +303,30 @@ class ProfileScreen extends ConsumerWidget {
                         if (context.mounted) context.go('/login');
                       },
                       icon: Icon(
-                        Icons.logout,
+                        LucideIcons.logOut,
                         color: Colors.redAccent,
-                        size: 20.w,
+                        size: 18.w,
                       ),
                       label: Text(
-                        l10n.logOut,
+                        l10n.logOut.toUpperCase(),
                         style: const TextStyle(
                           color: Colors.redAccent,
                           fontWeight: FontWeight.w900,
-                          letterSpacing: 1,
+                          letterSpacing: 2,
                         ),
                       ),
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(
-                          color: Colors.redAccent.withValues(alpha: 0.3),
+                          color: Colors.redAccent.withOpacity(0.3),
+                          width: 1.5.w,
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.w),
+                          borderRadius: BorderRadius.circular(16.w),
                         ),
                         padding: EdgeInsets.symmetric(vertical: 16.h),
                       ),
                     ),
-                  ),
+                  ).animate().fadeIn(delay: 900.ms).slideY(begin: 0.1, end: 0),
                   SizedBox(height: 40.h),
                 ],
               ),
@@ -367,9 +401,9 @@ class ProfileScreen extends ConsumerWidget {
         ),
       ),
       trailing: Icon(
-        Icons.arrow_forward_ios,
-        size: 14.w,
-        color: context.secondaryTextColor,
+        LucideIcons.chevronRight,
+        size: 16.w,
+        color: context.secondaryTextColor.withOpacity(0.5),
       ),
       onTap: onTap,
     );

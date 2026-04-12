@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/chat/data/chat_repository.dart';
@@ -46,7 +48,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
 
     _messageController.clear();
     await ref.read(chatRepositoryProvider).sendMessage(widget.chatId, message);
-    
+
     // Scroll to bottom after sending
     _scrollController.animateTo(
       0.0,
@@ -67,62 +69,119 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
         titleSpacing: 0,
         title: chatAsync.when(
           data: (chats) {
-            final chat = chats.firstWhere((c) => c.id == widget.chatId, orElse: () => chats.first);
+            final chat = chats.firstWhere(
+              (c) => c.id == widget.chatId,
+              orElse: () => chats.first,
+            );
             final otherId = chat.getOtherMemberId(userAsync.value?.uid ?? '');
             final otherUserAsync = ref.watch(userProfileProvider(otherId));
-            
+
             return otherUserAsync.when(
               data: (otherUser) => Row(
                 children: [
                   CircleAvatar(
                     radius: 18.w,
-                    backgroundColor: AppTheme.primaryBlue.withValues(alpha: 0.1),
-                    child: Text(otherUser?.name?.substring(0, 1).toUpperCase() ?? '?', 
-                               style: TextStyle(color: AppTheme.primaryBlue, fontSize: 14.sp, fontWeight: FontWeight.bold)),
+                    backgroundColor: AppTheme.primaryBlue.withValues(
+                      alpha: 0.1,
+                    ),
+                    child: Text(
+                      otherUser?.name?.substring(0, 1).toUpperCase() ?? '?',
+                      style: TextStyle(
+                        color: AppTheme.primaryBlue,
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                   SizedBox(width: 12.w),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(otherUser?.name ?? 'User', style: TextStyle(color: context.primaryTextColor, fontWeight: FontWeight.w900, fontSize: 15.sp)),
-                      Text('Online', style: TextStyle(color: Colors.green, fontSize: 10.sp, fontWeight: FontWeight.bold)),
+                      Text(
+                        otherUser?.name ?? 'User',
+                        style: TextStyle(
+                          color: context.primaryTextColor,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 15.sp,
+                        ),
+                      ),
+                      Text(
+                        'Online',
+                        style: TextStyle(
+                          color: Colors.green,
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                 ],
               ),
-              loading: () => Text('Chat', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900)),
-              error: (_, __) => Text('Chat', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900)),
+              loading: () => Text(
+                'Chat',
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900),
+              ),
+              error: (_, st) => Text(
+                'Chat',
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900),
+              ),
             );
           },
-          loading: () => Text('Chat', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900)),
-          error: (_, __) => Text('Chat', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900)),
+          loading: () => Text(
+            'Chat',
+            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900),
+          ),
+          error: (_, st) => Text(
+            'Chat',
+            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w900),
+          ),
         ),
         backgroundColor: context.scaffoldColor,
         elevation: 0,
         actions: [
-          IconButton(icon: Icon(Icons.videocam_outlined, color: context.primaryTextColor), onPressed: () {}),
+          IconButton(
+            icon: Icon(
+              LucideIcons.video,
+              color: context.primaryTextColor,
+              size: 20.w,
+            ),
+            onPressed: () {},
+          ),
           chatAsync.when(
             data: (chats) {
-              final chat = chats.firstWhere((c) => c.id == widget.chatId, orElse: () => chats.first);
+              final chat = chats.firstWhere(
+                (c) => c.id == widget.chatId,
+                orElse: () => chats.first,
+              );
               final otherId = chat.getOtherMemberId(userAsync.value?.uid ?? '');
               return IconButton(
-                icon: Icon(Icons.call_outlined, color: context.primaryTextColor), 
+                icon: Icon(
+                  LucideIcons.phone,
+                  color: context.primaryTextColor,
+                  size: 20.w,
+                ),
                 onPressed: () async {
-                  final otherUser = ref.read(userProfileProvider(otherId)).value;
+                  final otherUser = ref
+                      .read(userProfileProvider(otherId))
+                      .value;
                   if (otherUser?.phoneNumber != null) {
                     final uri = Uri.parse('tel:${otherUser!.phoneNumber}');
                     if (await canLaunchUrl(uri)) {
                       await launchUrl(uri);
                     }
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Phone number not available')));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Phone number not available'),
+                      ),
+                    );
                   }
                 },
               );
             },
             loading: () => const SizedBox.shrink(),
-            error: (_, __) => const SizedBox.shrink(),
+            error: (_, st) => const SizedBox.shrink(),
           ),
           SizedBox(width: 8.w),
         ],
@@ -135,11 +194,16 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
             children: [
               chatAsync.when(
                 data: (chats) {
-                  final chat = chats.firstWhere((c) => c.id == widget.chatId, orElse: () => chats.first);
-                  return _ContextCard(metadata: chat.metadata);
+                  final chat = chats.firstWhere(
+                    (c) => c.id == widget.chatId,
+                    orElse: () => chats.first,
+                  );
+                  return _ContextCard(
+                    metadata: chat.metadata,
+                  ).animate().fadeIn().slideY(begin: -0.1, end: 0);
                 },
                 loading: () => const SizedBox.shrink(),
-                error: (_, __) => const SizedBox.shrink(),
+                error: (_, st) => const SizedBox.shrink(),
               ),
               Expanded(
                 child: messagesAsync.when(
@@ -149,9 +213,22 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.chat_bubble_outline, size: 48.w, color: context.secondaryTextColor.withValues(alpha: 0.2)),
+                            Icon(
+                              LucideIcons.messageSquare,
+                              size: 48.w,
+                              color: context.secondaryTextColor.withValues(
+                                alpha: 0.1,
+                              ),
+                            ),
                             SizedBox(height: 16.h),
-                            Text('Say hello!', style: TextStyle(color: context.secondaryTextColor, fontWeight: FontWeight.w500)),
+                            Text(
+                              'Say hello!',
+                              style: TextStyle(
+                                color: context.secondaryTextColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14.sp,
+                              ),
+                            ),
                           ],
                         ),
                       );
@@ -159,7 +236,10 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
                     return ListView.builder(
                       controller: _scrollController,
                       reverse: true,
-                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16.w,
+                        vertical: 20.h,
+                      ),
                       itemCount: messages.length,
                       itemBuilder: (context, index) {
                         final message = messages[index];
@@ -168,7 +248,11 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
                       },
                     );
                   },
-                  loading: () => const Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue)),
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(
+                      color: AppTheme.primaryBlue,
+                    ),
+                  ),
                   error: (e, st) => Center(child: Text('Error: $e')),
                 ),
               ),
@@ -176,7 +260,9 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
             ],
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue)),
+        loading: () => const Center(
+          child: CircularProgressIndicator(color: AppTheme.primaryBlue),
+        ),
         error: (e, st) => Center(child: Text('Error: $e')),
       ),
     );
@@ -192,7 +278,9 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
       ),
       decoration: BoxDecoration(
         color: context.scaffoldColor,
-        border: Border(top: BorderSide(color: context.borderColor, width: 0.5.w)),
+        border: Border(
+          top: BorderSide(color: context.borderColor, width: 0.5.w),
+        ),
       ),
       child: Row(
         children: [
@@ -202,7 +290,11 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
               color: AppTheme.primaryBlue.withValues(alpha: 0.08),
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.add, color: AppTheme.primaryBlue, size: 20.w),
+            child: Icon(
+              LucideIcons.plus,
+              color: AppTheme.primaryBlue,
+              size: 18.w,
+            ),
           ),
           SizedBox(width: 12.w),
           Expanded(
@@ -215,10 +307,15 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
               child: TextField(
                 controller: _messageController,
                 maxLines: null,
-                style: TextStyle(color: context.primaryTextColor, fontSize: 15.sp),
+                style: TextStyle(
+                  color: context.primaryTextColor,
+                  fontSize: 15.sp,
+                ),
                 decoration: InputDecoration(
                   hintText: 'Type a message...',
-                  hintStyle: TextStyle(color: context.secondaryTextColor.withValues(alpha: 0.5)),
+                  hintStyle: TextStyle(
+                    color: context.secondaryTextColor.withValues(alpha: 0.5),
+                  ),
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.symmetric(vertical: 10.h),
                 ),
@@ -234,7 +331,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
                 color: AppTheme.primaryBlue,
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.send_rounded, color: Colors.white, size: 18.w),
+              child: Icon(LucideIcons.send, color: Colors.white, size: 18.w),
             ),
           ),
         ],
@@ -252,43 +349,52 @@ class _MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: EdgeInsets.only(bottom: 12.h),
-        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-        decoration: BoxDecoration(
-          color: isMe ? AppTheme.primaryBlue : (context.isDarkMode ? Colors.grey[900] : Colors.grey[100]),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20.w),
-            topRight: Radius.circular(20.w),
-            bottomLeft: Radius.circular(isMe ? 20 : 4),
-            bottomRight: Radius.circular(isMe ? 4 : 20),
+          alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+          child: Container(
+            margin: EdgeInsets.only(bottom: 12.h),
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.75,
+            ),
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+            decoration: BoxDecoration(
+              color: isMe
+                  ? AppTheme.primaryBlue
+                  : (context.isDarkMode ? Colors.grey[900] : Colors.grey[100]),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20.w),
+                topRight: Radius.circular(20.w),
+                bottomLeft: Radius.circular(isMe ? 20 : 4),
+                bottomRight: Radius.circular(isMe ? 4 : 20),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  message.text,
+                  style: TextStyle(
+                    color: isMe ? Colors.white : context.primaryTextColor,
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  timeago.format(message.timestamp),
+                  style: TextStyle(
+                    color: isMe
+                        ? Colors.white.withValues(alpha: 0.7)
+                        : context.secondaryTextColor,
+                    fontSize: 8.sp,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              message.text,
-              style: TextStyle(
-                color: isMe ? Colors.white : context.primaryTextColor,
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            SizedBox(height: 4.h),
-            Text(
-              timeago.format(message.timestamp),
-              style: TextStyle(
-                color: isMe ? Colors.white.withValues(alpha: 0.7) : context.secondaryTextColor,
-                fontSize: 8.sp,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+        )
+        .animate()
+        .fadeIn(duration: 300.ms)
+        .slideY(begin: 0.1, end: 0, curve: Curves.easeOut);
   }
 }
 
@@ -321,31 +427,42 @@ class _ContextCard extends ConsumerWidget {
                   color: Colors.black.withValues(alpha: 0.03),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
-                )
+                ),
               ],
             ),
             child: Row(
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12.w),
-                  child: property.imageUrls.isNotEmpty && property.imageUrls.first.isNotEmpty
-                    ? CachedNetworkImage(
-                        imageUrl: property.imageUrls.first,
-                        width: 60.w,
-                        height: 60.h,
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(color: Colors.grey[200]),
-                        errorWidget: (context, url, error) => Container(
+                  child:
+                      property.imageUrls.isNotEmpty &&
+                          property.imageUrls.first.isNotEmpty
+                      ? CachedNetworkImage(
+                          imageUrl: property.imageUrls.first,
+                          width: 60.w,
+                          height: 60.h,
+                          fit: BoxFit.cover,
+                          placeholder: (context, url) =>
+                              Container(color: Colors.grey[200]),
+                          errorWidget: (context, url, error) => Container(
+                            color: Colors.grey[200],
+                            child: Icon(
+                              LucideIcons.imageOff,
+                              color: Colors.grey,
+                              size: 20.w,
+                            ),
+                          ),
+                        )
+                      : Container(
+                          width: 60.w,
+                          height: 60.h,
                           color: Colors.grey[200],
-                          child: Icon(Icons.image_not_supported, color: Colors.grey, size: 20.w),
+                          child: Icon(
+                            LucideIcons.image,
+                            color: Colors.grey,
+                            size: 20.w,
+                          ),
                         ),
-                      )
-                    : Container(
-                        width: 60.w,
-                        height: 60.h,
-                        color: Colors.grey[200],
-                        child: Icon(Icons.image, color: Colors.grey, size: 20.w),
-                      ),
                 ),
                 SizedBox(width: 12.w),
                 Expanded(
@@ -356,12 +473,20 @@ class _ContextCard extends ConsumerWidget {
                         property.title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp, color: context.primaryTextColor),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14.sp,
+                          color: context.primaryTextColor,
+                        ),
                       ),
                       SizedBox(height: 4.h),
                       Text(
                         '₹${property.price.toInt()}',
-                        style: TextStyle(color: AppTheme.primaryBlue, fontWeight: FontWeight.w900, fontSize: 13.sp),
+                        style: TextStyle(
+                          color: AppTheme.primaryBlue,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 13.sp,
+                        ),
                       ),
                     ],
                   ),
@@ -377,7 +502,7 @@ class _ContextCard extends ConsumerWidget {
           );
         },
         loading: () => const SizedBox.shrink(),
-        error: (_, __) => const SizedBox.shrink(),
+        error: (_, st) => const SizedBox.shrink(),
       );
     }
 
@@ -389,16 +514,22 @@ class _ContextCard extends ConsumerWidget {
         decoration: BoxDecoration(
           color: AppTheme.primaryBlue.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(12.w),
-          border: Border.all(color: AppTheme.primaryBlue.withValues(alpha: 0.1)),
+          border: Border.all(
+            color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+          ),
         ),
         child: Row(
           children: [
-            Icon(Icons.info_outline, color: AppTheme.primaryBlue, size: 18.w),
+            Icon(LucideIcons.info, color: AppTheme.primaryBlue, size: 18.w),
             SizedBox(width: 12.w),
             Expanded(
               child: Text(
                 'Inquiry regarding: $category',
-                style: TextStyle(color: AppTheme.primaryBlue, fontSize: 13.sp, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                  color: AppTheme.primaryBlue,
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ],

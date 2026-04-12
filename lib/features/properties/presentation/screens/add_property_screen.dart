@@ -38,7 +38,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
   bool _isSubmitting = false;
   bool _isFetchingLocation = false;
 
-  List<File> _selectedImages = [];
+  final List<File> _selectedImages = [];
 
   final List<String> _propertyTypes = [
     'Apartment',

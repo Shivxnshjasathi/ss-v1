@@ -379,7 +379,7 @@ class _LegalDashboardScreenState extends ConsumerState<LegalDashboardScreen> {
   }
 
   Widget _buildFilterBar(List<ServiceRequestModel> queries) {
-    final cities = ['All', ...queries.map((q) => q.location).whereType<String>().toSet().toList()];
+    final cities = ['All', ...queries.map((q) => q.location).whereType<String>().toSet()];
     cities.sort();
 
     if (cities.length <= 1) return const SizedBox.shrink();

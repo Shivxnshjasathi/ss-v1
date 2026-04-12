@@ -27,7 +27,7 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
     {
       'bank': 'State Bank of India (SBI)',
       'rate': '8.40% - 9.05%',
-      'fees': '0.35%'
+      'fees': '0.35%',
     },
     {'bank': 'HDFC Bank', 'rate': '8.50% - 9.10%', 'fees': '₹3000'},
     {'bank': 'ICICI Bank', 'rate': '8.75% - 9.15%', 'fees': '0.50%'},
@@ -47,26 +47,29 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
   Future<void> _submitApplication() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
-      
+
       try {
         final parsedCibil = int.tryParse(_cibilController.text) ?? 0;
-        final parsedIncome = double.tryParse(_incomeController.text.replaceAll(',', '')) ?? 0.0;
-        
+        final parsedIncome =
+            double.tryParse(_incomeController.text.replaceAll(',', '')) ?? 0.0;
+
         // Simulating Bank Underwriting Algorithm
         // 60x Monthly Income for standard eligibility if CIBIL > 700
         bool isApproved = parsedCibil >= 700 && parsedIncome > 0;
         double preApprovalAmount = isApproved ? (parsedIncome / 12) * 60 : 0.0;
-        
+
         final user = ref.read(currentUserDataProvider).value;
         if (user != null) {
-          await ref.read(userRepositoryProvider).updatePreApprovalStatus(
-            user.uid,
-            isApproved,
-            preApprovalAmount,
-            parsedCibil,
-          );
+          await ref
+              .read(userRepositoryProvider)
+              .updatePreApprovalStatus(
+                user.uid,
+                isApproved,
+                preApprovalAmount,
+                parsedCibil,
+              );
         }
-        
+
         if (!mounted) return;
         setState(() => _isLoading = false);
 
@@ -74,23 +77,32 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
           context: context,
           builder: (ctx) => AlertDialog(
             backgroundColor: context.surfaceColor,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.w)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.w),
+            ),
             title: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(isApproved ? Icons.verified : Icons.info, color: isApproved ? Colors.green : Colors.orange, size: 60.w),
+                Icon(
+                  isApproved ? Icons.verified : Icons.info,
+                  color: isApproved ? Colors.green : Colors.orange,
+                  size: 60.w,
+                ),
                 SizedBox(height: 16.h),
                 Text(
                   isApproved ? 'Pre-Approved!' : 'Application Reviewed',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: context.primaryTextColor, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: context.primaryTextColor,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
             content: Text(
-              isApproved 
-                ? 'Congratulations! Based on your profile, you are pre-approved for an estimated loan up to ₹${preApprovalAmount.toInt()}.\nThe badge has been added to your profile.'
-                : 'Your profile has been captured, but your CIBIL score is currently too low for instant pre-approval. A human agent will contact you shortly.',
+              isApproved
+                  ? 'Congratulations! Based on your profile, you are pre-approved for an estimated loan up to ₹${preApprovalAmount.toInt()}.\nThe badge has been added to your profile.'
+                  : 'Your profile has been captured, but your CIBIL score is currently too low for instant pre-approval. A human agent will contact you shortly.',
               textAlign: TextAlign.center,
               style: TextStyle(color: context.secondaryTextColor),
             ),
@@ -100,15 +112,20 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
                   Navigator.of(ctx).pop();
                   if (isApproved) context.pop(); // Go back on success
                 },
-                child: const Text('OK', style: TextStyle(color: AppTheme.primaryBlue)),
-              )
+                child: const Text(
+                  'OK',
+                  style: TextStyle(color: AppTheme.primaryBlue),
+                ),
+              ),
             ],
           ),
         );
       } catch (e) {
         if (mounted) {
           setState(() => _isLoading = false);
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Error: $e')));
         }
       }
     }
@@ -163,10 +180,16 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  _buildServiceChip(l10n.salaried,
-                      _employmentType == 'Salaried', () => setState(() => _employmentType = 'Salaried')),
-                  _buildServiceChip(l10n.selfEmployed,
-                      _employmentType == 'Self-Employed', () => setState(() => _employmentType = 'Self-Employed')),
+                  _buildServiceChip(
+                    l10n.salaried,
+                    _employmentType == 'Salaried',
+                    () => setState(() => _employmentType = 'Salaried'),
+                  ),
+                  _buildServiceChip(
+                    l10n.selfEmployed,
+                    _employmentType == 'Self-Employed',
+                    () => setState(() => _employmentType = 'Self-Employed'),
+                  ),
                 ],
               ),
             ),
@@ -263,14 +286,20 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.verified_user_outlined,
-                          color: AppTheme.primaryBlue, size: 20.w),
+                      Icon(
+                        Icons.verified_user_outlined,
+                        color: AppTheme.primaryBlue,
+                        size: 20.w,
+                      ),
                       SizedBox(width: 8.w),
-                      Text('General Requirements',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w900,
-                              fontSize: 13.sp,
-                              color: context.primaryTextColor)),
+                      Text(
+                        'General Requirements',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 13.sp,
+                          color: context.primaryTextColor,
+                        ),
+                      ),
                     ],
                   ),
                   SizedBox(height: 12.h),
@@ -281,7 +310,9 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
                   SizedBox(height: 16.h),
                   _buildReqRow('Age', '21 - 65 years'),
                   _buildReqRow(
-                      'Minimum CIBIL', '700+ (Preferred for low rates)'),
+                    'Minimum CIBIL',
+                    '700+ (Preferred for low rates)',
+                  ),
                   _buildReqRow('Income Proof', 'Salary slips / 2 Yrs ITR'),
                   _buildReqRow('Down Payment', 'At least 10% - 20% of value'),
                 ],
@@ -320,7 +351,10 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
                       width: 24.w,
                       height: 24.h,
                       child: CircularProgressIndicator(
-                          color: Colors.white, strokeWidth: 2))
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
                   : Text(
                       l10n.submitApplication.toUpperCase(),
                       style: TextStyle(
@@ -441,8 +475,9 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
                 ),
               ),
               errorBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.w),
-                  borderSide: const BorderSide(color: Colors.redAccent)),
+                borderRadius: BorderRadius.circular(12.w),
+                borderSide: const BorderSide(color: Colors.redAccent),
+              ),
               contentPadding: EdgeInsets.symmetric(
                 horizontal: 16.w,
                 vertical: 16.h,
@@ -472,15 +507,22 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(bank['bank']!,
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14.sp,
-                        color: context.primaryTextColor)),
+                Text(
+                  bank['bank']!,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14.sp,
+                    color: context.primaryTextColor,
+                  ),
+                ),
                 SizedBox(height: 4.h),
-                Text('Proc. Fee: ${bank['fees']}',
-                    style: TextStyle(
-                        color: context.secondaryTextColor, fontSize: 10.sp)),
+                Text(
+                  'Proc. Fee: ${bank['fees']}',
+                  style: TextStyle(
+                    color: context.secondaryTextColor,
+                    fontSize: 10.sp,
+                  ),
+                ),
               ],
             ),
           ),
@@ -493,9 +535,10 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
             child: Text(
               bank['rate']!,
               style: TextStyle(
-                  color: Colors.green,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 12.sp),
+                color: Colors.green,
+                fontWeight: FontWeight.w900,
+                fontSize: 12.sp,
+              ),
             ),
           ),
         ],
@@ -508,18 +551,29 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
       padding: EdgeInsets.only(bottom: 8.0.h),
       child: Row(
         children: [
-          Icon(Icons.check_circle,
-              size: 14.w, color: AppTheme.primaryBlue.withValues(alpha: 0.6)),
+          Icon(
+            Icons.check_circle,
+            size: 14.w,
+            color: AppTheme.primaryBlue.withValues(alpha: 0.6),
+          ),
           SizedBox(width: 8.w),
           Expanded(
-              child: Text(label,
-                  style: TextStyle(
-                      color: context.secondaryTextColor, fontSize: 11.sp))),
-          Text(value,
+            child: Text(
+              label,
               style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 11.sp,
-                  color: context.primaryTextColor)),
+                color: context.secondaryTextColor,
+                fontSize: 11.sp,
+              ),
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontWeight: FontWeight.w900,
+              fontSize: 11.sp,
+              color: context.primaryTextColor,
+            ),
+          ),
         ],
       ),
     );

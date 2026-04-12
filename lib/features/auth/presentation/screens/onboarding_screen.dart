@@ -283,7 +283,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               Text(l10n.yourRole, style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, color: Colors.grey)),
               SizedBox(height: 8.h),
               DropdownButtonFormField<String>(
-                value: _selectedRoleKey,
+                initialValue: _selectedRoleKey,
                 dropdownColor: context.cardColor,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.w), borderSide: BorderSide(color: context.borderColor)),

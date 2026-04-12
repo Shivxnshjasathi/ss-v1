@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/properties/data/property_repository.dart';
 import 'package:sampatti_bazar/features/properties/domain/property_model.dart';
@@ -19,13 +21,19 @@ class PropertyFeedScreen extends ConsumerStatefulWidget {
 class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
   String _selectedCategory = 'All';
   final List<String> _categories = ['All', 'Sell', 'Rent/Lease'];
-  
+
   // Advanced Filter State
   String _selectedPropertyType = 'All';
   String _selectedBedrooms = 'Any';
   RangeValues _priceRange = const RangeValues(0, 100); // 0 to 100 on slider
-  
-  final List<String> _propertyTypes = ['All', 'Apartment', 'Villa', 'Penthouse', 'Studio'];
+
+  final List<String> _propertyTypes = [
+    'All',
+    'Apartment',
+    'Villa',
+    'Penthouse',
+    'Studio',
+  ];
   final List<String> _bedroomOptions = ['Any', '1+', '2+', '3+', '4+'];
   final TextEditingController _searchController = TextEditingController();
 
@@ -37,25 +45,39 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
 
   String _getLocalizedCategory(AppLocalizations l10n, String category) {
     switch (category) {
-      case 'All': return l10n.all;
-      case 'Sell': return l10n.sell;
-      case 'Rent/Lease': return l10n.rentLease;
-      default: return category;
+      case 'All':
+        return l10n.all;
+      case 'Sell':
+        return l10n.sell;
+      case 'Rent/Lease':
+        return l10n.rentLease;
+      default:
+        return category;
     }
   }
 
   String _getLocalizedPropertyType(AppLocalizations l10n, String type) {
     switch (type) {
-      case 'All': return l10n.all;
-      case 'Apartment': return l10n.apartment;
-      case 'Villa': return l10n.villa;
-      case 'Penthouse': return l10n.penthouse;
-      case 'Studio': return l10n.studio;
-      case 'House/Villa': return l10n.houseVilla;
-      case 'Plot': return l10n.plot;
-      case 'PG': return l10n.pg;
-      case 'Commercial': return l10n.commercial;
-      default: return type;
+      case 'All':
+        return l10n.all;
+      case 'Apartment':
+        return l10n.apartment;
+      case 'Villa':
+        return l10n.villa;
+      case 'Penthouse':
+        return l10n.penthouse;
+      case 'Studio':
+        return l10n.studio;
+      case 'House/Villa':
+        return l10n.houseVilla;
+      case 'Plot':
+        return l10n.plot;
+      case 'PG':
+        return l10n.pg;
+      case 'Commercial':
+        return l10n.commercial;
+      default:
+        return type;
     }
   }
 
@@ -70,12 +92,20 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
         backgroundColor: context.scaffoldColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: context.iconColor, size: 20.w),
+          icon: Icon(
+            LucideIcons.chevronLeft,
+            color: context.iconColor,
+            size: 20.w,
+          ),
           onPressed: () => context.pop(),
         ),
         title: Text(
-          l10n.propertiesTitle, 
-          style: TextStyle(fontWeight: FontWeight.bold, color: context.primaryTextColor, fontSize: 18.sp)
+          l10n.propertiesTitle,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: context.primaryTextColor,
+            fontSize: 18.sp,
+          ),
         ),
         centerTitle: true,
       ),
@@ -92,19 +122,26 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                     padding: EdgeInsets.symmetric(horizontal: 16.w),
                     decoration: BoxDecoration(
                       color: context.cardColor,
-                      border: Border.all(color: context.borderColor, width: 1.5.w),
+                      border: Border.all(
+                        color: context.borderColor,
+                        width: 1.5.w,
+                      ),
                       borderRadius: BorderRadius.circular(16.sp),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withValues(alpha: 0.03),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
-                        )
+                        ),
                       ],
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.search, color: context.iconColor),
+                        Icon(
+                          LucideIcons.search,
+                          color: context.iconColor.withValues(alpha: 0.5),
+                          size: 20.w,
+                        ),
                         SizedBox(width: 12.w),
                         Expanded(
                           child: TextField(
@@ -112,10 +149,18 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                             onChanged: (_) => setState(() {}),
                             decoration: InputDecoration(
                               hintText: l10n.searchPropertiesHint,
-                              hintStyle: TextStyle(color: context.secondaryTextColor.withValues(alpha: 0.5), fontSize: 13.sp),
+                              hintStyle: TextStyle(
+                                color: context.secondaryTextColor.withValues(
+                                  alpha: 0.5,
+                                ),
+                                fontSize: 13.sp,
+                              ),
                               border: InputBorder.none,
                             ),
-                            style: TextStyle(color: context.primaryTextColor, fontSize: 14.sp),
+                            style: TextStyle(
+                              color: context.primaryTextColor,
+                              fontSize: 14.sp,
+                            ),
                           ),
                         ),
                         GestureDetector(
@@ -123,10 +168,16 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                           child: Container(
                             padding: EdgeInsets.all(8.sp),
                             decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                              color: AppTheme.primaryBlue.withValues(
+                                alpha: 0.1,
+                              ),
                               borderRadius: BorderRadius.circular(12.sp),
                             ),
-                            child: Icon(Icons.tune, color: Theme.of(context).colorScheme.primary, size: 18.sp),
+                            child: Icon(
+                              LucideIcons.slidersHorizontal,
+                              color: AppTheme.primaryBlue,
+                              size: 18.sp,
+                            ),
                           ),
                         ),
                       ],
@@ -136,7 +187,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
               ],
             ),
           ),
-          
+
           // Categories
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -149,93 +200,146 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                   child: ChoiceChip(
                     label: Text(_getLocalizedCategory(l10n, category)),
                     selected: isSelected,
-                    onSelected: (_) => setState(() => _selectedCategory = category),
+                    onSelected: (_) =>
+                        setState(() => _selectedCategory = category),
                     labelStyle: TextStyle(
-                      color: isSelected ? Colors.white : context.primaryTextColor,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                      color: isSelected
+                          ? Colors.white
+                          : context.primaryTextColor,
+                      fontWeight: isSelected
+                          ? FontWeight.bold
+                          : FontWeight.w500,
                     ),
                     backgroundColor: context.cardColor,
                     selectedColor: Theme.of(context).colorScheme.primary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20.sp),
                       side: BorderSide(
-                        color: isSelected ? Theme.of(context).colorScheme.primary : context.borderColor,
+                        color: isSelected
+                            ? Theme.of(context).colorScheme.primary
+                            : context.borderColor,
                       ),
                     ),
-                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.w,
+                      vertical: 10.h,
+                    ),
                   ),
                 );
               }).toList(),
             ),
-          ),
-          
+          ).animate().fadeIn(delay: 200.ms).slideX(begin: 0.1, end: 0),
+
           // Header
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.0.w, vertical: 8.0.h),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                 Text(l10n.featuredCollections, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20.sp)),
+                Text(
+                  l10n.featuredCollections,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    fontSize: 20.sp,
+                  ),
+                ),
                 TextButton(
                   onPressed: () {},
                   child: Text(
-                    l10n.seeAll, 
-                    style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w900, fontSize: 14.sp)
+                    l10n.seeAll,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 14.sp,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-          
+
           // Property Cards
           Expanded(
             child: propertiesAsync.when(
               data: (properties) {
                 final filtered = properties.where((p) {
                   // Category Filter (Sell/Rent)
-                  if (_selectedCategory != 'All' && p.type != _selectedCategory) return false;
-                  
+                  if (_selectedCategory != 'All' &&
+                      p.type != _selectedCategory) {
+                    return false;
+                  }
+
                   // Property Type Filter
-                  if (_selectedPropertyType != 'All' && p.propertyType != _selectedPropertyType) return false;
-                  
+                  if (_selectedPropertyType != 'All' &&
+                      p.propertyType != _selectedPropertyType) {
+                    return false;
+                  }
+
                   // Bedrooms Filter
                   if (_selectedBedrooms != 'Any') {
-                    final requiredBeds = int.tryParse(_selectedBedrooms.replaceAll('+', '')) ?? 0;
-                    if (p.bedrooms < requiredBeds) return false;
+                    final requiredBeds =
+                        int.tryParse(_selectedBedrooms.replaceAll('+', '')) ??
+                        0;
+                    if (p.bedrooms < requiredBeds) {
+                      return false;
+                    }
                   }
-                  
+
                   // Price Filter logic
                   // 1 unit = 10 Lakhs = 1,000,000
                   final minPrice = _priceRange.start * 1000000;
                   final maxPrice = _priceRange.end * 1000000;
-                  
-                  if (p.price < minPrice) return false;
-                  if (_priceRange.end < 100 && p.price > maxPrice) return false;
+
+                  if (p.price < minPrice) {
+                    return false;
+                  }
+                  if (_priceRange.end < 100 && p.price > maxPrice) {
+                    return false;
+                  }
 
                   // Search Query Filter
                   if (_searchController.text.isNotEmpty) {
                     final query = _searchController.text.toLowerCase();
                     final matchesTitle = p.title.toLowerCase().contains(query);
-                    final matchesLocation = p.location.toLowerCase().contains(query);
+                    final matchesLocation = p.location.toLowerCase().contains(
+                      query,
+                    );
                     final matchesCity = p.city.toLowerCase().contains(query);
-                    if (!matchesTitle && !matchesLocation && !matchesCity) return false;
+                    if (!matchesTitle && !matchesLocation && !matchesCity) {
+                      return false;
+                    }
                   }
 
                   return true;
                 }).toList();
 
                 if (filtered.isEmpty) {
-                   return Center(child: Text(l10n.noPropertiesMatch, style: TextStyle(color: context.secondaryTextColor, fontSize: 14.sp)));
+                  return Center(
+                    child: Text(
+                      l10n.noPropertiesMatch,
+                      style: TextStyle(
+                        color: context.secondaryTextColor,
+                        fontSize: 14.sp,
+                      ),
+                    ),
+                  );
                 }
 
                 if (context.isMobile) {
                   return ListView.builder(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.w,
+                      vertical: 8.h,
+                    ),
                     itemCount: filtered.length,
                     itemBuilder: (context, index) {
                       return Padding(
                         padding: EdgeInsets.only(bottom: 24.h),
-                        child: _buildPropertyCard(context, filtered[index], l10n),
+                        child:
+                            _buildPropertyCard(context, filtered[index], l10n)
+                                .animate()
+                                .fadeIn(delay: (100 + index * 100).ms)
+                                .slideY(begin: 0.1, end: 0),
                       );
                     },
                   );
@@ -243,9 +347,12 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
 
                 final crossAxisCount = context.isTablet ? 2 : 3;
                 final itemHeight = 420.h;
-                
+
                 return GridView.builder(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16.w,
+                    vertical: 8.h,
+                  ),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: crossAxisCount,
                     crossAxisSpacing: 16.w,
@@ -254,7 +361,10 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                   ),
                   itemCount: filtered.length,
                   itemBuilder: (context, index) {
-                    return _buildPropertyCard(context, filtered[index], l10n);
+                    return _buildPropertyCard(context, filtered[index], l10n)
+                        .animate()
+                        .fadeIn(delay: (100 + index * 100).ms)
+                        .scale(begin: const Offset(0.95, 0.95));
                   },
                 );
               },
@@ -266,7 +376,12 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                   child: const PropertyCardSkeleton(),
                 ),
               ),
-              error: (err, stack) => Center(child: Text('Error: $err', style: const TextStyle(color: Colors.red))),
+              error: (err, stack) => Center(
+                child: Text(
+                  'Error: $err',
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
             ),
           ),
         ],
@@ -307,16 +422,31 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(l10n.filterProperties, style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w900, color: context.primaryTextColor)),
+                      Text(
+                        l10n.filterProperties,
+                        style: TextStyle(
+                          fontSize: 24.sp,
+                          fontWeight: FontWeight.w900,
+                          color: context.primaryTextColor,
+                        ),
+                      ),
                       IconButton(
-                        icon: Icon(Icons.close),
+                        icon: Icon(LucideIcons.x, size: 20.w),
                         onPressed: () => Navigator.pop(context),
                       ),
                     ],
                   ),
                   SizedBox(height: 32.h),
-                  
-                  Text(l10n.propertyType, style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1)),
+
+                  Text(
+                    l10n.propertyType,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.bold,
+                      color: context.secondaryTextColor,
+                      letterSpacing: 1,
+                    ),
+                  ),
                   SizedBox(height: 12.h),
                   Wrap(
                     spacing: 12.h,
@@ -332,15 +462,23 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                       );
                     }).toList(),
                   ),
-                  
+
                   SizedBox(height: 40.h),
-                  Text(l10n.priceRangeLabel, style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1)),
+                  Text(
+                    l10n.priceRangeLabel,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.bold,
+                      color: context.secondaryTextColor,
+                      letterSpacing: 1,
+                    ),
+                  ),
                   SizedBox(height: 12.h),
                   RangeSlider(
                     values: tempPriceRange,
                     min: 0,
                     max: 100, // 0 to 10 Cr+
-                    activeColor: Theme.of(context).colorScheme.primary,
+                    activeColor: AppTheme.primaryBlue,
                     inactiveColor: context.borderColor,
                     onChanged: (values) {
                       setModalState(() {
@@ -348,16 +486,38 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                       });
                     },
                   ),
-                   Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(_formatPrice(tempPriceRange.start), style: TextStyle(fontWeight: FontWeight.bold, color: context.primaryTextColor)),
-                      Text(tempPriceRange.end >= 100 ? '${_formatPrice(tempPriceRange.end)}+' : _formatPrice(tempPriceRange.end), style: TextStyle(fontWeight: FontWeight.bold, color: context.primaryTextColor)),
+                      Text(
+                        _formatPrice(tempPriceRange.start),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: context.primaryTextColor,
+                        ),
+                      ),
+                      Text(
+                        tempPriceRange.end >= 100
+                            ? '${_formatPrice(tempPriceRange.end)}+'
+                            : _formatPrice(tempPriceRange.end),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: context.primaryTextColor,
+                        ),
+                      ),
                     ],
                   ),
-                  
+
                   SizedBox(height: 40.h),
-                  Text(l10n.bedroomsLabel, style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 1)),
+                  Text(
+                    l10n.bedroomsLabel,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.bold,
+                      color: context.secondaryTextColor,
+                      letterSpacing: 1,
+                    ),
+                  ),
                   SizedBox(height: 12.h),
                   Wrap(
                     spacing: 12.h,
@@ -408,7 +568,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                 ],
               ),
             );
-          }
+          },
         );
       },
     );
@@ -428,18 +588,22 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
         fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
       ),
       backgroundColor: context.cardColor,
-      selectedColor: Theme.of(context).colorScheme.primary,
+      selectedColor: AppTheme.primaryBlue,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20.w),
         side: BorderSide(
-          color: isSelected ? Theme.of(context).colorScheme.primary : context.borderColor,
+          color: isSelected ? AppTheme.primaryBlue : context.borderColor,
         ),
       ),
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
     );
   }
 
-  Widget _buildPropertyCard(BuildContext context, PropertyModel property, AppLocalizations l10n) {
+  Widget _buildPropertyCard(
+    BuildContext context,
+    PropertyModel property,
+    AppLocalizations l10n,
+  ) {
     return GestureDetector(
       onTap: () => context.push('/properties/detail/${property.id}'),
       child: Container(
@@ -453,7 +617,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
               color: Colors.black.withValues(alpha: 0.08), // Softer, pro shadow
               blurRadius: 15,
               offset: const Offset(0, 8),
-            )
+            ),
           ],
         ),
         clipBehavior: Clip.antiAlias,
@@ -466,13 +630,17 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                 Hero(
                   tag: 'property_image_${property.id}',
                   child: CachedNetworkImage(
-                    imageUrl: property.imageUrls.isNotEmpty ? property.imageUrls.first : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
+                    imageUrl: property.imageUrls.isNotEmpty
+                        ? property.imageUrls.first
+                        : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80',
                     height: 240.h,
                     width: double.infinity,
                     fit: BoxFit.cover,
-                    memCacheHeight: 400.h.toInt(), // Performance: Limit memory cache size
+                    memCacheHeight: 400.h
+                        .toInt(), // Performance: Limit memory cache size
                     memCacheWidth: 600.w.toInt(), // Responsive cache width
-                    placeholder: (context, url) => Container(color: context.cardColor),
+                    placeholder: (context, url) =>
+                        Container(color: context.cardColor),
                   ),
                 ),
                 // Gradient Overlay for text readability
@@ -482,7 +650,10 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        colors: [Colors.transparent, Colors.black.withValues(alpha: 0.7)],
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withValues(alpha: 0.7),
+                        ],
                         stops: const [0.4, 1.0],
                       ),
                     ),
@@ -496,15 +667,25 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                     children: [
                       if (property.isZeroBrokerage)
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 10.w,
+                            vertical: 6.h,
+                          ),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.85),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.primary.withValues(alpha: 0.85),
                             borderRadius: BorderRadius.circular(8.sp),
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.star, color: Colors.white, size: 12.sp),
-                              SizedBox(width: 4.w),
+                              Icon(
+                                LucideIcons.star,
+                                color: Colors.white,
+                                size: 12.sp,
+                                fill: 1.0,
+                              ),
+                              SizedBox(width: 6.w),
                               Text(
                                 l10n.zeroBrokerageTag,
                                 style: TextStyle(
@@ -521,16 +702,25 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                         SizedBox(width: 8.w),
                       if (property.isVerified)
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 10.w,
+                            vertical: 6.h,
+                          ),
                           decoration: BoxDecoration(
-                            color: context.scaffoldColor.withValues(alpha: 0.95),
+                            color: context.scaffoldColor.withValues(
+                              alpha: 0.95,
+                            ),
                             borderRadius: BorderRadius.circular(8.sp),
                             border: Border.all(color: context.borderColor),
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.verified, color: Theme.of(context).colorScheme.primary, size: 12.sp),
-                              SizedBox(width: 4.w),
+                              Icon(
+                                LucideIcons.badgeCheck,
+                                color: AppTheme.primaryBlue,
+                                size: 12.sp,
+                              ),
+                              SizedBox(width: 6.w),
                               Text(
                                 l10n.verifiedTag,
                                 style: TextStyle(
@@ -551,25 +741,37 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                   bottom: 16.h,
                   left: 16.w,
                   child: Column(
-                     crossAxisAlignment: CrossAxisAlignment.start,
-                     children: [
-                       Text(
-                         property.title,
-                         style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20.sp),
-                       ),
-                       SizedBox(height: 4.h),
-                       Row(
-                         children: [
-                           Icon(Icons.location_on, color: Colors.white70, size: 16.sp),
-                           SizedBox(width: 4.w),
-                           Text(
-                             property.city,
-                             style: TextStyle(color: Colors.white, fontSize: 13.sp, fontWeight: FontWeight.w500),
-                           ),
-                         ],
-                       ),
-                     ],
-                   ),
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        property.title,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20.sp,
+                        ),
+                      ),
+                      SizedBox(height: 4.h),
+                      Row(
+                        children: [
+                          Icon(
+                            LucideIcons.mapPin,
+                            color: Colors.white70,
+                            size: 16.sp,
+                          ),
+                          SizedBox(width: 6.w),
+                          Text(
+                            property.city,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 13.sp,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -587,24 +789,42 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                           children: [
                             Text(
                               l10n.askingPrice,
-                              style: TextStyle(color: context.secondaryTextColor, fontSize: 10.sp, fontWeight: FontWeight.bold, letterSpacing: 1)
+                              style: TextStyle(
+                                color: context.secondaryTextColor,
+                                fontSize: 10.sp,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1,
+                              ),
                             ),
                             SizedBox(height: 4.h),
                             Text(
                               '₹${property.price.toInt()}',
-                              style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 22.sp, fontWeight: FontWeight.w900)
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontSize: 22.sp,
+                                fontWeight: FontWeight.w900,
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      _buildAmenity(Icons.king_bed_outlined, '${property.bedrooms} ${l10n.bed}'),
+                      _buildAmenity(
+                        LucideIcons.bed,
+                        '${property.bedrooms} ${l10n.bed}',
+                      ),
                       SizedBox(width: 16.w),
-                      _buildAmenity(Icons.bathtub_outlined, '${property.bathrooms} ${l10n.bath}'),
+                      _buildAmenity(
+                        LucideIcons.bath,
+                        '${property.bathrooms} ${l10n.bath}',
+                      ),
                       SizedBox(width: 16.w),
-                      _buildAmenity(Icons.square_foot_outlined, '${property.areaSqFt.toInt()} ${l10n.sqft}'),
+                      _buildAmenity(
+                        LucideIcons.maximize,
+                        '${property.areaSqFt.toInt()} ${l10n.sqft}',
+                      ),
                     ],
                   ),
-                   SizedBox(height: 20.h),
+                  SizedBox(height: 20.h),
                   Divider(height: 1.h, color: context.borderColor),
                   SizedBox(height: 16.h),
                   Row(
@@ -612,7 +832,9 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                       CircleAvatar(
                         radius: 16.w,
                         backgroundImage: ResizeImage(
-                          const CachedNetworkImageProvider('https://i.pravatar.cc/150?u=marcus'),
+                          const CachedNetworkImageProvider(
+                            'https://i.pravatar.cc/150?u=marcus',
+                          ),
                           width: 100.w.toInt(),
                         ),
                       ),
@@ -620,30 +842,53 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                           Text(
+                          Text(
                             l10n.listedBy,
-                            style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.bold, color: context.secondaryTextColor, letterSpacing: 0.5),
+                            style: TextStyle(
+                              fontSize: 9.sp,
+                              fontWeight: FontWeight.bold,
+                              color: context.secondaryTextColor,
+                              letterSpacing: 0.5,
+                            ),
                           ),
                           Text(
-                            property.ownerId.isNotEmpty ? 'Owner' : 'Unknown', // Owner/Unknown needs l10n?
-                            style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold, color: context.primaryTextColor),
+                            property.ownerId.isNotEmpty
+                                ? 'Owner'
+                                : 'Unknown', // Owner/Unknown needs l10n?
+                            style: TextStyle(
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.bold,
+                              color: context.primaryTextColor,
+                            ),
                           ),
                         ],
                       ),
                       const Spacer(),
                       ElevatedButton(
-                        onPressed: () => context.push('/properties/detail/${property.id}'),
+                        onPressed: () =>
+                            context.push('/properties/detail/${property.id}'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
-                          foregroundColor: Theme.of(context).colorScheme.primary,
-                          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 0.h),
+                          backgroundColor: AppTheme.primaryBlue.withValues(
+                            alpha: 0.1,
+                          ),
+                          foregroundColor: AppTheme.primaryBlue,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16.w,
+                            vertical: 0.h,
+                          ),
                           minimumSize: const Size(60, 36),
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8.w),
                           ),
                         ),
-                        child: Text(l10n.viewDetails, style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.bold)),
+                        child: Text(
+                          l10n.viewDetails,
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -663,7 +908,14 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
       children: [
         Icon(icon, size: 22.w, color: context.secondaryTextColor),
         SizedBox(height: 6.h),
-        Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13.sp, color: context.primaryTextColor)),
+        Text(
+          value,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 13.sp,
+            color: context.primaryTextColor,
+          ),
+        ),
       ],
     );
   }

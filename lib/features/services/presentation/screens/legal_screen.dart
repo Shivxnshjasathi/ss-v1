@@ -258,11 +258,15 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
                         final Uint8List? data = await signatureController.toPngBytes();
                         if (data != null) {
                           final String base64Signature = base64Encode(data);
-                          Navigator.pop(ctx);
-                          _signAgreementNatively(base64Signature);
+                          if (ctx.mounted) {
+                            Navigator.pop(ctx);
+                            _signAgreementNatively(base64Signature);
+                          }
                         }
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please draw your signature')));
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please draw your signature')));
+                        }
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -806,9 +810,13 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
                 height: 54.h,
                 child: ElevatedButton(
                   onPressed: () {
-                    if (_currentStep == 0) _nextStep();
-                    else if (_currentStep == 1) _generateAgreement();
-                    else if (_currentStep == 2) _showSignatureDialog();
+                    if (_currentStep == 0) {
+                      _nextStep();
+                    } else if (_currentStep == 1) {
+                      _generateAgreement();
+                    } else if (_currentStep == 2) {
+                      _showSignatureDialog();
+                    }
                   },
                   style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryBlue, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.sp)), elevation: 0),
                   child: Text(_currentStep == 0 ? l10n.nextVerification : (_currentStep == 1 ? l10n.generateAgreement : 'Self-Sign Natively'), style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
