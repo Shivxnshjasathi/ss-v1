@@ -59,7 +59,7 @@ class ServicesHubScreen extends StatelessWidget {
                 fontSize: 14.sp,
               ),
             ),
-            SizedBox(height: 24.h),
+            SizedBox(height: 32.h),
             GridView.count(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -130,19 +130,13 @@ class ServicesHubScreen extends StatelessWidget {
               l10n,
             ),
             SizedBox(height: 32.h),
-            _buildVerifiedBanner(
+            _buildOffersSection(
               context,
               l10n,
             ),
             SizedBox(height: 32.h),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push('/services/tracking'),
-        backgroundColor: AppTheme.primaryBlue,
-        icon: const Icon(LucideIcons.mapPin, color: Colors.white, size: 18),
-        label: Text(l10n.serviceTracking),
       ),
     );
   }
@@ -159,29 +153,36 @@ class ServicesHubScreen extends StatelessWidget {
     return GestureDetector(
       onTap: () => context.push(route),
       child: Container(
-        padding: EdgeInsets.all(16.sp),
+        padding: EdgeInsets.all(20.sp),
         decoration: BoxDecoration(
           color: context.cardColor,
-          borderRadius: BorderRadius.circular(16.sp),
+          borderRadius: BorderRadius.circular(20.sp),
           border: Border.all(color: context.borderColor),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: EdgeInsets.all(8.sp),
+                  padding: EdgeInsets.all(10.sp),
                   decoration: BoxDecoration(
                     color: context.surfaceColor,
-                    borderRadius: BorderRadius.circular(12.sp),
+                    borderRadius: BorderRadius.circular(14.sp),
+                    border: Border.all(color: context.borderColor),
                   ),
                   child: Icon(
                     icon,
                     color: context.primaryTextColor,
-                    size: 24.sp,
+                    size: 22.sp,
                   ),
                 ),
                 if (isHot && hotLabel != null)
@@ -191,32 +192,41 @@ class ServicesHubScreen extends StatelessWidget {
                       vertical: 4.h,
                     ),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary,
-                      borderRadius: BorderRadius.circular(12.sp),
+                      color: AppTheme.primaryBlue,
+                      borderRadius: BorderRadius.circular(10.sp),
                     ),
                     child: Text(
                       hotLabel,
                       style: TextStyle(
-                        color: Theme.of(context).scaffoldBackgroundColor,
-                        fontSize: 10.sp,
-                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 9.sp,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.5,
                       ),
                     ),
                   ),
               ],
             ),
-            const Spacer(),
+            SizedBox(height: 16.h),
             Text(
               title,
-              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp),
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                fontSize: 15.sp,
+                fontFamily: 'Poppins',
+                color: context.primaryTextColor,
+              ),
             ),
-            SizedBox(height: 4.h),
+            SizedBox(height: 2.h),
             Text(
               subtitle,
               style: TextStyle(
                 color: context.secondaryTextColor,
-                fontSize: 10.sp,
+                fontSize: 11.sp,
+                fontWeight: FontWeight.w500,
               ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),
@@ -227,6 +237,8 @@ class ServicesHubScreen extends StatelessWidget {
   Widget _buildToolsSupportList(BuildContext context, AppLocalizations l10n) {
     return Column(
       children: [
+        _buildTrackingSection(context, l10n),
+        SizedBox(height: 12.h),
         _buildListTile(
           context,
           l10n.emiCalculator,
@@ -246,6 +258,16 @@ class ServicesHubScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildTrackingSection(BuildContext context, AppLocalizations l10n) {
+    return _buildListTile(
+      context,
+      l10n.serviceTracking,
+      "Monitor your ongoing requests",
+      LucideIcons.mapPin,
+      () => context.push('/services/tracking'),
+    );
+  }
+
   Widget _buildListTile(
     BuildContext context,
     String title,
@@ -253,84 +275,141 @@ class ServicesHubScreen extends StatelessWidget {
     IconData icon,
     VoidCallback onTap,
   ) {
-    return Container(
-      decoration: BoxDecoration(
-        color: context.cardColor,
-        borderRadius: BorderRadius.circular(16.sp),
-        border: Border.all(color: context.borderColor),
-      ),
-      child: ListTile(
-        onTap: onTap,
-        leading: Container(
-          padding: EdgeInsets.all(8.sp),
-          decoration: BoxDecoration(
-            color: context.surfaceColor,
-            borderRadius: BorderRadius.circular(8.sp),
-          ),
-          child: Icon(icon, color: context.primaryTextColor, size: 24.sp),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        decoration: BoxDecoration(
+          color: context.cardColor,
+          borderRadius: BorderRadius.circular(20.sp),
+          border: Border.all(color: context.borderColor),
         ),
-        title: Text(
-          title,
-          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp),
-        ),
-        subtitle: Text(
-          subtitle,
-          style: TextStyle(color: context.secondaryTextColor, fontSize: 12.sp),
-        ),
-        trailing: Icon(
-          LucideIcons.chevronRight,
-          color: context.secondaryTextColor.withValues(alpha: 0.5),
-          size: 18.sp,
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(10.sp),
+              decoration: BoxDecoration(
+                color: context.surfaceColor,
+                borderRadius: BorderRadius.circular(12.sp),
+              ),
+              child: Icon(
+                icon,
+                color: context.primaryTextColor,
+                size: 20.sp,
+              ),
+            ),
+            SizedBox(width: 16.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 14.sp,
+                      fontFamily: 'Poppins',
+                      color: context.primaryTextColor,
+                    ),
+                  ),
+                  SizedBox(height: 2.h),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: context.secondaryTextColor,
+                      fontSize: 11.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              LucideIcons.chevronRight,
+              color: context.secondaryTextColor.withValues(alpha: 0.5),
+              size: 18.sp,
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildVerifiedBanner(BuildContext context, AppLocalizations l10n) {
-    return Container(
-      padding: EdgeInsets.all(24.sp),
-      decoration: BoxDecoration(
-        color: context.cardColor,
-        borderRadius: BorderRadius.circular(16.sp),
-        border: Border.all(color: context.borderColor),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.verified,
-                  style: TextStyle(
-                    color: AppTheme.cyanAccent,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 10.sp,
-                    letterSpacing: 1,
-                  ),
-                ),
-                SizedBox(height: 4.h),
-                Text(
-                  l10n.goldStandardProtection,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 16.sp,
-                  ),
-                ),
-                SizedBox(height: 4.h),
-                Text(
-                  l10n.strictlyVetted,
-                  style: TextStyle(
-                    color: context.secondaryTextColor,
-                    fontSize: 12.sp,
-                  ),
-                ),
-              ],
+  Widget _buildOffersSection(BuildContext context, AppLocalizations l10n) {
+    return GestureDetector(
+      onTap: () => context.push('/services/offers'),
+      child: Container(
+        padding: EdgeInsets.all(24.sp),
+        decoration: BoxDecoration(
+          color: context.cardColor,
+          borderRadius: BorderRadius.circular(24.sp),
+          border: Border.all(color: AppTheme.primaryBlue, width: 2),
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
             ),
-          ),
-          SizedBox(width: 16.w),
-          Icon(LucideIcons.zap, color: AppTheme.cyanAccent, size: 40.sp),
-        ],
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                    decoration: BoxDecoration(
+                      color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10.sp),
+                    ),
+                    child: Text(
+                      "LIMITED TIME",
+                      style: TextStyle(
+                        color: AppTheme.primaryBlue,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 9.sp,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 12.h),
+                  Text(
+                    "Exclusive Service Offers",
+                    style: TextStyle(
+                      color: context.primaryTextColor,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 20.sp,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                  Text(
+                    "Unlock premium benefits and discounts",
+                    style: TextStyle(
+                      color: context.secondaryTextColor,
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.all(12.sp),
+              decoration: BoxDecoration(
+                color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                LucideIcons.arrowRight,
+                color: AppTheme.primaryBlue,
+                size: 20.sp,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -428,37 +428,72 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
       appBar: AppBar(
         backgroundColor: context.scaffoldColor,
         elevation: 0,
-        leading: IconButton(
-          icon: Container(
-            padding: EdgeInsets.all(8.w),
+        automaticallyImplyLeading: false,
+        centerTitle: false,
+        title: Row(
+          children: [
+            GestureDetector(
+              onTap: () {
+                if (_selectedService == 'Rent Agreement' && _currentStep > 0) {
+                  _prevStep();
+                } else {
+                  context.pop();
+                }
+              },
+              child: Container(
+                padding: EdgeInsets.all(10.w),
+                decoration: BoxDecoration(
+                  color: context.cardColor,
+                  border: Border.all(color: context.borderColor),
+                  borderRadius: BorderRadius.circular(14.sp),
+                ),
+                child: Icon(
+                  Icons.arrow_back_ios_new,
+                  color: context.iconColor,
+                  size: 14.sp,
+                ),
+              ),
+            ),
+            SizedBox(width: 16.w),
+            Text(
+              l10n.legalHub,
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                color: context.primaryTextColor,
+                fontSize: 24.sp,
+                fontFamily: 'Poppins',
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          Container(
+            margin: EdgeInsets.only(right: 16.w),
             decoration: BoxDecoration(
               color: AppTheme.primaryBlue.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10.w),
+              borderRadius: BorderRadius.circular(12.w),
             ),
-            child: Icon(Icons.arrow_back_ios_new, color: context.iconColor, size: 14.w),
+            child: IconButton(
+              icon: Icon(Icons.help_outline, color: context.primaryTextColor, size: 20.sp),
+              onPressed: () {},
+            ),
           ),
-          onPressed: () {
-            if (_selectedService == 'Rent Agreement' && _currentStep > 0) {
-              _prevStep();
-            } else {
-              context.pop();
-            }
-          },
-        ),
-        title: Text(l10n.legalHub, style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 18.sp)),
-        centerTitle: true,
+        ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Service Selector Strip
+          SizedBox(height: 12.h),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.fromLTRB(24, 16, 24, 16),
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
             child: Row(
-              children: _services.map((service) => _buildServiceChip(service, l10n)).toList(),
+              children: _services
+                  .map((service) => _buildServiceChip(service, l10n))
+                  .toList(),
             ),
           ),
+          SizedBox(height: 24.h),
           
           if (_selectedService == 'Rent Agreement')
             Padding(
@@ -485,23 +520,34 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
       child: GestureDetector(
         onTap: () => setState(() {
           _selectedService = label;
+          _currentStep = 0;
         }),
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+          padding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 12.h),
           decoration: BoxDecoration(
-            color: isSelected ? context.colorScheme.primary : context.cardColor,
+            color: isSelected ? context.surfaceColor : context.cardColor,
             borderRadius: BorderRadius.circular(30.w),
-            border: Border.all(color: isSelected ? context.colorScheme.primary : context.borderColor),
-            boxShadow: isSelected 
-                ? [BoxShadow(color: context.colorScheme.primary.withValues(alpha: 0.3), blurRadius: 8, offset: const Offset(0, 3))] 
-                : [],
+            border: Border.all(
+              color: isSelected ? AppTheme.primaryBlue : context.borderColor,
+              width: isSelected ? 2 : 1,
+            ),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                : null,
           ),
           child: Text(
-            _getLocalizedServiceName(label, l10n),
+            label.toUpperCase(),
             style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 13.sp,
-              color: isSelected ? Colors.white : context.primaryTextColor,
+              fontWeight: FontWeight.w900,
+              fontSize: 11.sp,
+              fontFamily: 'Poppins',
+              color: isSelected ? AppTheme.primaryBlue : context.primaryTextColor,
             ),
           ),
         ),
@@ -509,14 +555,6 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
     );
   }
 
-  String _getLocalizedServiceName(String service, AppLocalizations l10n) {
-    switch (service) {
-      case 'Rent Agreement': return l10n.rentAgreement;
-      case 'Consult Lawyer': return l10n.consultLawyer;
-      case 'Property Verification': return l10n.propertyVerification;
-      default: return service;
-    }
-  }
 
   Widget _buildDynamicBody(AppLocalizations l10n) {
     switch (_selectedService) {
@@ -543,7 +581,13 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
       padding: EdgeInsets.fromLTRB(24, 16, 24, 32),
       decoration: BoxDecoration(
         color: context.scaffoldColor,
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 20, offset: const Offset(0, -10))],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 20,
+            offset: const Offset(0, -10),
+          )
+        ],
       ),
       child: SafeArea(
         top: false,
@@ -553,10 +597,21 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
             onPressed: _submitLawyerConsult,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.primaryBlue,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.w)),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16.sp),
+              ),
               elevation: 0,
             ),
-            child: Text(l10n.submitConsultRequest, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13.sp, color: Colors.white, letterSpacing: 0.5)),
+            child: Text(
+              l10n.submitConsultRequest.toUpperCase(),
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                fontSize: 14.sp,
+                letterSpacing: 1.5,
+                fontFamily: 'Poppins',
+              ),
+            ),
           ),
         ),
       ),
@@ -712,10 +767,10 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
         SizedBox(height: 24.h),
         Container(
           padding: EdgeInsets.all(16.sp),
-          decoration: BoxDecoration(color: AppTheme.cyanAccent.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(12.sp), border: Border.all(color: AppTheme.cyanAccent.withValues(alpha: 0.1))),
+          decoration: BoxDecoration(color: AppTheme.primaryBlue.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(12.sp), border: Border.all(color: AppTheme.primaryBlue.withValues(alpha: 0.1))),
           child: Row(
             children: [
-               Container(padding: EdgeInsets.all(8.sp), decoration: BoxDecoration(color: context.scaffoldColor, borderRadius: BorderRadius.circular(8.sp)), child: Icon(Icons.verified_user_outlined, color: AppTheme.cyanAccent, size: 20.sp)),
+               Container(padding: EdgeInsets.all(8.sp), decoration: BoxDecoration(color: context.scaffoldColor, borderRadius: BorderRadius.circular(8.sp)), child: Icon(Icons.verified_user_outlined, color: context.primaryTextColor, size: 20.sp)),
                SizedBox(width: 12.w),
                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                  Text(l10n.digitalVerification, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12.sp, letterSpacing: -0.2)),
@@ -1063,16 +1118,101 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(20.sp),
-        decoration: BoxDecoration(color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.05) : context.cardColor, border: Border.all(color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.1) : context.borderColor), borderRadius: BorderRadius.circular(16.sp)),
+        padding: EdgeInsets.all(18.sp),
+        decoration: BoxDecoration(
+          color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.08) : context.cardColor,
+          border: Border.all(
+            color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.2) : context.borderColor,
+          ),
+          borderRadius: BorderRadius.circular(20.sp),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
         child: Row(
           children: [
-            Container(padding: EdgeInsets.all(12.sp), decoration: BoxDecoration(color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.1) : context.scaffoldColor, borderRadius: BorderRadius.circular(12.sp)), child: Icon(isVerified ? Icons.verified : Icons.account_circle_outlined, color: isVerified ? AppTheme.primaryBlue : Colors.grey.shade400, size: 24.sp)),
+            Container(
+              padding: EdgeInsets.all(14.sp),
+              decoration: BoxDecoration(
+                color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.1) : context.scaffoldColor,
+                borderRadius: BorderRadius.circular(14.sp),
+              ),
+              child: Icon(
+                isVerified ? Icons.verified : Icons.account_circle_outlined,
+                color: isVerified ? AppTheme.primaryBlue : context.secondaryTextColor.withValues(alpha: 0.5),
+                size: 24.sp,
+              ),
+            ),
             SizedBox(width: 16.w),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(role.toUpperCase(), style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w900, color: Colors.grey[400], letterSpacing: 0.5)), SizedBox(height: 4.h), Text(name, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp, color: context.primaryTextColor, letterSpacing: -0.3), maxLines: 1, overflow: TextOverflow.ellipsis)])),
-            if (isVerified) Icon(Icons.check_circle, color: AppTheme.primaryBlue, size: 20.sp)
-            else if (onTap != null) Container(padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h), decoration: BoxDecoration(color: AppTheme.primaryBlue, borderRadius: BorderRadius.circular(8.sp)), child: Text('Verify', style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: 0.5)))
-            else Container(padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h), decoration: BoxDecoration(color: context.scaffoldColor, borderRadius: BorderRadius.circular(8.sp)), child: Text(l10n.pending, style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5))),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    role,
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      fontWeight: FontWeight.w900,
+                      color: AppTheme.primaryBlue,
+                      letterSpacing: 1.2,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                  Text(
+                    name,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 16.sp,
+                      color: context.primaryTextColor,
+                      fontFamily: 'Poppins',
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            if (isVerified)
+              Icon(Icons.check_circle, color: AppTheme.primaryBlue, size: 22.sp)
+            else if (onTap != null)
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryBlue,
+                  borderRadius: BorderRadius.circular(10.sp),
+                ),
+                child: Text(
+                  'Verify',
+                  style: TextStyle(
+                    fontSize: 11.sp,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+              )
+            else
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
+                decoration: BoxDecoration(
+                  color: context.scaffoldColor,
+                  borderRadius: BorderRadius.circular(10.sp),
+                ),
+                child: Text(
+                  l10n.pending,
+                  style: TextStyle(
+                    fontSize: 11.sp,
+                    fontWeight: FontWeight.w900,
+                    color: context.secondaryTextColor,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+              ),
           ],
         ),
       ),
@@ -1085,9 +1225,53 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(number, style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w900, color: Colors.grey)),
+          Container(
+            padding: EdgeInsets.all(8.w),
+            decoration: BoxDecoration(
+              color: context.cardColor,
+              borderRadius: BorderRadius.circular(8.sp),
+              border: Border.all(color: context.borderColor),
+            ),
+            child: Text(
+              number,
+              style: TextStyle(
+                fontSize: 10.sp,
+                fontWeight: FontWeight.w900,
+                color: AppTheme.primaryBlue,
+                fontFamily: 'Poppins',
+              ),
+            ),
+          ),
           SizedBox(width: 16.w),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13.sp, color: context.primaryTextColor, letterSpacing: -0.2)), SizedBox(height: 6.h), Text(body, style: TextStyle(color: context.secondaryTextColor, fontSize: 12.sp, height: 1.5.h, fontWeight: FontWeight.w500)), SizedBox(height: 16.h), Divider(height: 1.h, color: context.borderColor)])),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    fontSize: 14.sp,
+                    color: context.primaryTextColor,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+                SizedBox(height: 6.h),
+                Text(
+                  body,
+                  style: TextStyle(
+                    color: context.secondaryTextColor,
+                    fontSize: 12.sp,
+                    height: 1.5,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+                SizedBox(height: 16.h),
+                Divider(height: 1.h, color: context.borderColor),
+              ],
+            ),
+          ),
         ],
       ),
     );

@@ -91,33 +91,42 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
         backgroundColor: context.scaffoldColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(
-            LucideIcons.chevronLeft,
-            color: context.iconColor,
-            size: 20.w,
+          icon: Container(
+            padding: EdgeInsets.all(8.w),
+            decoration: BoxDecoration(
+              color: context.cardColor,
+              border: Border.all(color: context.borderColor),
+              borderRadius: BorderRadius.circular(12.sp),
+            ),
+            child: Icon(
+              LucideIcons.chevronLeft,
+              color: context.iconColor,
+              size: 16.w,
+            ),
           ),
           onPressed: () => context.pop(),
         ),
         title: Text(
           l10n.propertiesTitle,
           style: TextStyle(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w900,
             color: context.primaryTextColor,
-            fontSize: 18.sp,
+            fontSize: 20.sp,
+            fontFamily: 'Poppins',
           ),
         ),
-        centerTitle: true,
+        centerTitle: false,
       ),
       body: Column(
         children: [
           // Search Bar
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+            padding: EdgeInsets.fromLTRB(20.w, 8.h, 20.w, 16.h),
             child: Row(
               children: [
                 Expanded(
                   child: Container(
-                    height: 56.h,
+                    height: 54.h,
                     padding: EdgeInsets.symmetric(horizontal: 16.w),
                     decoration: BoxDecoration(
                       color: context.cardColor,
@@ -126,19 +135,12 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                         width: 1.5.w,
                       ),
                       borderRadius: BorderRadius.circular(16.sp),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.03),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
                     ),
                     child: Row(
                       children: [
                         Icon(
                           LucideIcons.search,
-                          color: context.iconColor.withValues(alpha: 0.5),
+                          color: AppTheme.primaryBlue,
                           size: 20.w,
                         ),
                         SizedBox(width: 12.w),
@@ -147,34 +149,39 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                             controller: _searchController,
                             onChanged: (_) => setState(() {}),
                             decoration: InputDecoration(
-                              hintText: l10n.searchPropertiesHint,
+                              hintText: 'Search by area or development...',
                               hintStyle: TextStyle(
-                                color: context.secondaryTextColor.withValues(
-                                  alpha: 0.5,
-                                ),
+                                color: context.secondaryTextColor.withValues(alpha: 0.5),
                                 fontSize: 13.sp,
+                                fontWeight: FontWeight.w500,
                               ),
                               border: InputBorder.none,
                             ),
                             style: TextStyle(
                               color: context.primaryTextColor,
                               fontSize: 14.sp,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
+                        if (_searchController.text.isNotEmpty)
+                          GestureDetector(
+                            onTap: () {
+                              _searchController.clear();
+                              setState(() {});
+                            },
+                            child: Icon(LucideIcons.x, color: context.secondaryTextColor, size: 16.sp),
+                          ),
+                        SizedBox(width: 8.w),
+                        VerticalDivider(width: 1, indent: 15, endIndent: 15, color: context.borderColor),
+                        SizedBox(width: 8.w),
                         GestureDetector(
                           onTap: () => _showFilterSheet(context, l10n),
                           child: Container(
                             padding: EdgeInsets.all(8.sp),
-                            decoration: BoxDecoration(
-                              color: AppTheme.primaryBlue.withValues(
-                                alpha: 0.1,
-                              ),
-                              borderRadius: BorderRadius.circular(12.sp),
-                            ),
                             child: Icon(
                               LucideIcons.slidersHorizontal,
-                              color: AppTheme.primaryBlue,
+                              color: context.primaryTextColor,
                               size: 18.sp,
                             ),
                           ),
@@ -187,47 +194,6 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
             ),
           ),
 
-          // Categories
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-            child: Row(
-              children: _categories.map((category) {
-                final isSelected = _selectedCategory == category;
-                return Padding(
-                  padding: EdgeInsets.only(right: 12.0.w),
-                  child: ChoiceChip(
-                    label: Text(_getLocalizedCategory(l10n, category)),
-                    selected: isSelected,
-                    onSelected: (_) =>
-                        setState(() => _selectedCategory = category),
-                    labelStyle: TextStyle(
-                      color: isSelected
-                          ? Colors.white
-                          : context.primaryTextColor,
-                      fontWeight: isSelected
-                          ? FontWeight.bold
-                          : FontWeight.w500,
-                    ),
-                    backgroundColor: context.cardColor,
-                    selectedColor: Theme.of(context).colorScheme.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.sp),
-                      side: BorderSide(
-                        color: isSelected
-                            ? Theme.of(context).colorScheme.primary
-                            : context.borderColor,
-                      ),
-                    ),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 16.w,
-                      vertical: 10.h,
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
 
           // Header
           Padding(
@@ -392,6 +358,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
 
   void _showFilterSheet(BuildContext context, AppLocalizations l10n) {
     // Local state for the modal until "Apply" is pressed
+    String tempCategory = _selectedCategory;
     String tempType = _selectedPropertyType;
     String tempBedrooms = _selectedBedrooms;
     RangeValues tempPriceRange = _priceRange;
@@ -430,7 +397,31 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                     ],
                   ),
                   SizedBox(height: 32.h),
-
+                  Text(
+                    l10n.categories,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.bold,
+                      color: context.secondaryTextColor,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                  SizedBox(height: 12.h),
+                  Wrap(
+                    spacing: 12.h,
+                    runSpacing: 12,
+                    children: _categories.map((cat) {
+                      final isSelected = tempCategory == cat;
+                      return _buildModalChoiceChip(
+                        label: _getLocalizedCategory(l10n, cat),
+                        isSelected: isSelected,
+                        onSelected: (val) {
+                          if (val) setModalState(() => tempCategory = cat);
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  SizedBox(height: 40.h),
                   Text(
                     l10n.propertyType,
                     style: TextStyle(
@@ -534,6 +525,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                     child: ElevatedButton(
                       onPressed: () {
                         setState(() {
+                          _selectedCategory = tempCategory;
                           _selectedPropertyType = tempType;
                           _selectedBedrooms = tempBedrooms;
                           _priceRange = tempPriceRange;

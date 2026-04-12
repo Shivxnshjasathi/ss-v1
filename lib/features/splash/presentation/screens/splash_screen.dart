@@ -6,6 +6,7 @@ import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/core/utils/routing_utils.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -67,10 +68,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             Center(
               child: Column(
                 children: [
-                  Image.asset(
-                    'assets/images/app_logo.png',
-                    width: 120.w,
-                    height: 120.w,
+                  Icon(
+                    LucideIcons.house,
+                    size: 84.w,
+                    color: Colors.white,
                   ),
                   SizedBox(height: 24.h),
                   Text(

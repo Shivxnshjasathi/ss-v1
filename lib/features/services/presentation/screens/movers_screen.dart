@@ -197,38 +197,58 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
       appBar: AppBar(
         backgroundColor: context.scaffoldColor,
         elevation: 0,
-        leadingWidth: 72,
-        leading: Padding(
-          padding: EdgeInsets.only(left: 16.0.w, top: 8.h, bottom: 8.h),
-          child: Container(
+        automaticallyImplyLeading: false,
+        centerTitle: false,
+        title: Row(
+          children: [
+            GestureDetector(
+              onTap: () => context.pop(),
+              child: Container(
+                padding: EdgeInsets.all(10.w),
+                decoration: BoxDecoration(
+                  color: context.cardColor,
+                  border: Border.all(color: context.borderColor),
+                  borderRadius: BorderRadius.circular(14.sp),
+                ),
+                child: Icon(
+                  Icons.arrow_back_ios_new,
+                  color: context.iconColor,
+                  size: 14.sp,
+                ),
+              ),
+            ),
+            SizedBox(width: 16.w),
+            Text(
+              l10n.packersAndMovers,
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                color: context.primaryTextColor,
+                fontSize: 24.sp,
+                fontFamily: 'Poppins',
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          Container(
+            margin: EdgeInsets.only(right: 16.w),
             decoration: BoxDecoration(
-              color: AppTheme.primaryBlue,
-              borderRadius: BorderRadius.circular(8.w),
+              color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12.w),
             ),
             child: IconButton(
-              icon: Icon(Icons.local_shipping, color: Colors.white, size: 20.w),
-              onPressed: () => context.pop(),
-              padding: EdgeInsets.zero,
+              icon: Icon(Icons.help_outline, color: context.primaryTextColor, size: 20.sp),
+              onPressed: () {},
             ),
           ),
-        ),
-        title: Text(
-          l10n.packersAndMovers,
-          style: TextStyle(
-            fontWeight: FontWeight.w900,
-            color: context.primaryTextColor,
-            fontSize: 18.sp,
-            letterSpacing: -0.5,
-          ),
-        ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(height: 1.h, color: context.borderColor),
             Padding(
-              padding: EdgeInsets.all(24.0.w),
+              padding: EdgeInsets.all(16.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -321,10 +341,22 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
                       onPressed: _confirmBooking,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.primaryBlue,
+                        foregroundColor: Colors.white,
                         elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.w)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16.sp),
+                        ),
+                        shadowColor: AppTheme.primaryBlue.withValues(alpha: 0.4),
                       ),
-                      child: Text(l10n.confirmBooking, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp, color: Colors.white)),
+                      child: Text(
+                        l10n.confirmBooking.toUpperCase(),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 14.sp,
+                          letterSpacing: 1.5,
+                          fontFamily: 'Poppins',
+                        ),
+                      ),
                     ),
                   ),
                   SizedBox(height: 40.h),
@@ -339,8 +371,14 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
 
   Widget _buildSectionLabel(String label) {
     return Text(
-      label,
-      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11.sp, letterSpacing: 0.5, color: context.primaryTextColor),
+      label.toUpperCase(),
+      style: TextStyle(
+        fontWeight: FontWeight.w900,
+        fontSize: 10.sp,
+        letterSpacing: 1.5,
+        fontFamily: 'Poppins',
+        color: AppTheme.primaryBlue,
+      ),
     );
   }
 
@@ -349,8 +387,15 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
         color: context.cardColor,
-        borderRadius: BorderRadius.circular(16.w),
+        borderRadius: BorderRadius.circular(20.sp),
         border: Border.all(color: context.borderColor),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Stack(
         children: [
@@ -359,8 +404,14 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
             top: 24.h,
             bottom: 24.h,
             child: Container(
-              width: 2.w,
-              color: Colors.grey.shade300,
+              width: 1.5.w,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppTheme.primaryBlue, AppTheme.primaryBlue.withValues(alpha: 0.8)],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
             ),
           ),
           Column(
@@ -374,15 +425,16 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
                     height: 24.h,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppTheme.primaryBlue, width: 2.w),
+                      color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                     ),
                     child: Center(
                       child: Container(
-                        width: 8.w,
-                        height: 8.h,
+                        width: 10.w,
+                        height: 10.h,
                         decoration: BoxDecoration(
                           color: AppTheme.primaryBlue,
                           shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2.w),
                         ),
                       ),
                     ),
@@ -392,11 +444,25 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(l10n.pickupLocation, style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)),
+                        Text(
+                          l10n.pickupLocation,
+                          style: TextStyle(
+                            fontSize: 10.sp,
+                            fontWeight: FontWeight.w900,
+                            color: AppTheme.primaryBlue,
+                            letterSpacing: 1,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
                         SizedBox(height: 2.h),
                         TextField(
                           controller: _pickupController,
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15.sp,
+                            fontFamily: 'Poppins',
+                            color: context.primaryTextColor,
+                          ),
                           decoration: InputDecoration(
                             isDense: true,
                             contentPadding: EdgeInsets.symmetric(vertical: 4.h),
@@ -408,28 +474,51 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 24.h),
+              SizedBox(height: 28.h),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(
+                  Container(
                     width: 24.w,
                     height: 24.h,
-                    child: Icon(Icons.location_on_rounded, color: Colors.black87, size: 24.w),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                    ),
+                    child: Icon(Icons.location_on_rounded, color: context.primaryTextColor, size: 16.w),
                   ),
                   SizedBox(width: 16.w),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(l10n.dropLocation, style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)),
+                        Text(
+                          l10n.dropLocation,
+                          style: TextStyle(
+                            fontSize: 10.sp,
+                            fontWeight: FontWeight.w900,
+                            color: AppTheme.primaryBlue,
+                            letterSpacing: 1,
+                            fontFamily: 'Poppins',
+                          ),
+                        ),
                         SizedBox(height: 2.h),
                         TextField(
                           controller: _dropController,
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15.sp,
+                            fontFamily: 'Poppins',
+                            color: context.primaryTextColor,
+                          ),
                           decoration: InputDecoration(
                             hintText: l10n.searchDestination,
-                            hintStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp, color: Colors.grey.shade500),
+                            hintStyle: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 15.sp,
+                              fontFamily: 'Poppins',
+                              color: context.secondaryTextColor.withValues(alpha: 0.4),
+                            ),
                             isDense: true,
                             contentPadding: EdgeInsets.symmetric(vertical: 4.h),
                             border: InputBorder.none,
@@ -567,11 +656,11 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                   decoration: BoxDecoration(
-                    color: AppTheme.cyanAccent.withValues(alpha: 0.1),
-                    border: Border.all(color: AppTheme.cyanAccent.withValues(alpha: 0.2)),
+                    color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                    border: Border.all(color: AppTheme.primaryBlue.withValues(alpha: 0.2)),
                     borderRadius: BorderRadius.circular(4.w),
                   ),
-                  child: Text(l10n.premiumCare, style: TextStyle(color: AppTheme.cyanAccent, fontSize: 9.sp, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
+                  child: Text(l10n.premiumCare, style: TextStyle(color: AppTheme.primaryBlue, fontSize: 9.sp, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
                 ),
               ],
             ),
@@ -609,7 +698,7 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.verified_outlined, color: AppTheme.primaryBlue, size: 18.w),
+                    Icon(Icons.verified_outlined, color: context.primaryTextColor, size: 18.w),
                     SizedBox(width: 8.w),
                     Text(l10n.estQuote, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12.sp, color: Colors.grey)),
                   ],

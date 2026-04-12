@@ -169,9 +169,7 @@ class ProfileScreen extends ConsumerWidget {
                       vertical: 8.h,
                     ),
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Colors.orange, Colors.deepOrange],
-                      ),
+                      color: Colors.orange,
                       borderRadius: BorderRadius.circular(20.w),
                       boxShadow: [
                         BoxShadow(

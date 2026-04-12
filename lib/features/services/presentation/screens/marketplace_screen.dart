@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/services/domain/cart_service.dart';
 import 'package:sampatti_bazar/features/services/domain/marketplace_data.dart';
@@ -168,71 +167,100 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
   Widget _buildSliverAppBar(AppLocalizations l10n) {
     return SliverAppBar(
       pinned: true,
-      expandedHeight: 100,
+      expandedHeight: 120.h,
       backgroundColor: context.scaffoldColor,
       elevation: 0,
-      leading: IconButton(
-        icon: Container(
-          padding: EdgeInsets.all(8.w),
-          decoration: BoxDecoration(
-            color: AppTheme.cyanAccent.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8.w),
-          ),
-          child: Icon(Icons.arrow_back_ios_new, color: context.iconColor, size: 16.w),
-        ),
-        onPressed: () => context.pop(),
-      ),
+      automaticallyImplyLeading: false,
+      leading: null,
       flexibleSpace: FlexibleSpaceBar(
-        titlePadding: EdgeInsets.only(left: 56.w, bottom: 16.h),
-        title: Text(l10n.marketplace, style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 18.sp)),
+        titlePadding: EdgeInsets.only(left: 16.w, bottom: 16.h),
+        centerTitle: false,
+        title: Row(
+          children: [
+            GestureDetector(
+              onTap: () => context.pop(),
+              child: Container(
+                padding: EdgeInsets.all(8.w),
+                decoration: BoxDecoration(
+                  color: context.cardColor,
+                  border: Border.all(color: context.borderColor),
+                  borderRadius: BorderRadius.circular(12.sp),
+                ),
+                child: Icon(
+                  Icons.arrow_back_ios_new,
+                  color: context.iconColor,
+                  size: 14.sp,
+                ),
+              ),
+            ),
+            SizedBox(width: 16.w),
+            Text(
+              l10n.marketplace,
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                color: context.primaryTextColor,
+                fontSize: 24.sp,
+                fontFamily: 'Poppins',
+              ),
+            ),
+          ],
+        ),
       ),
       actions: [
         ListenableBuilder(
           listenable: cart,
           builder: (context, _) {
-            return Stack(
-              alignment: Alignment.center,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.shopping_bag_outlined, color: context.iconColor),
-                  onPressed: () => context.push('/services/marketplace/cart'),
-                ),
-                if (cart.itemCount > 0)
-                  Positioned(
-                    right: 6.w,
-                    top: 6.h,
-                    child: Container(
-                      padding: EdgeInsets.all(4.w),
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Text(
-                        '${cart.itemCount}',
-                        style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
+            return Container(
+              margin: EdgeInsets.only(right: 16.w, top: 4.h, bottom: 4.h),
+              decoration: BoxDecoration(
+                color: context.cardColor,
+                border: Border.all(color: context.borderColor),
+                borderRadius: BorderRadius.circular(12.sp),
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.shopping_bag_outlined, color: context.iconColor, size: 20.sp),
+                    onPressed: () => context.push('/services/marketplace/cart'),
+                  ),
+                  if (cart.itemCount > 0)
+                    Positioned(
+                      right: 8.w,
+                      top: 8.h,
+                      child: Container(
+                        padding: EdgeInsets.all(4.w),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryBlue,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          '${cart.itemCount}',
+                          style: TextStyle(color: Colors.white, fontSize: 8.sp, fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             );
           },
         ),
-        SizedBox(width: 8.w),
       ],
     );
   }
 
   Widget _buildSearchBar(AppLocalizations l10n) {
     return Padding(
-      padding: EdgeInsets.all(16.0.w),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
       child: Container(
         decoration: BoxDecoration(
           color: context.cardColor,
-          borderRadius: BorderRadius.circular(16.w),
+          borderRadius: BorderRadius.circular(20.sp),
+          border: Border.all(color: context.borderColor),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 10,
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 15,
               offset: const Offset(0, 4),
             ),
           ],
@@ -240,10 +268,11 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
         child: TextField(
           controller: _searchController,
           onChanged: (val) => setState(() => _searchQuery = val),
+          style: TextStyle(fontWeight: FontWeight.w600, fontFamily: 'Poppins', fontSize: 14.sp),
           decoration: InputDecoration(
             hintText: "Search materials, brands...",
-            hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
-            prefixIcon: Icon(Icons.search, color: AppTheme.primaryBlue),
+            hintStyle: TextStyle(color: context.secondaryTextColor.withValues(alpha: 0.5), fontSize: 14.sp, fontFamily: 'Poppins'),
+            prefixIcon: Icon(Icons.search, color: context.primaryTextColor, size: 20.sp),
             suffixIcon: _searchQuery.isNotEmpty 
               ? IconButton(
                   icon: Icon(Icons.clear, size: 18.w),
@@ -295,15 +324,34 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                       Container(
                         padding: EdgeInsets.all(16.w),
                         decoration: BoxDecoration(
-                          color: isSelected ? AppTheme.primaryBlue : context.cardColor,
-                          borderRadius: BorderRadius.circular(20.w),
-                          boxShadow: isSelected ? [BoxShadow(color: AppTheme.primaryBlue.withValues(alpha: 0.3), blurRadius: 10, offset: const Offset(0, 4))] : [],
-                          border: Border.all(color: isSelected ? Colors.transparent : context.borderColor),
+                          color: isSelected ? context.surfaceColor : context.cardColor,
+                          borderRadius: BorderRadius.circular(20.sp),
+                          border: Border.all(
+                            color: isSelected ? AppTheme.primaryBlue : context.borderColor,
+                            width: isSelected ? 2 : 1,
+                          ),
+                          boxShadow: isSelected
+                              ? [
+                                  BoxShadow(
+                                    color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  )
+                                ]
+                              : null,
                         ),
-                        child: Icon(icon, color: isSelected ? Colors.white : context.iconColor, size: 24.w),
+                        child: Icon(icon, color: isSelected ? context.primaryTextColor : context.iconColor, size: 26.w),
                       ),
                       SizedBox(height: 8.h),
-                      Text(name, style: TextStyle(fontSize: 10.sp, fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500, color: isSelected ? AppTheme.primaryBlue : context.primaryTextColor)),
+                      Text(
+                        name,
+                        style: TextStyle(
+                          fontSize: 10.sp,
+                          fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
+                          fontFamily: 'Poppins',
+                          color: isSelected ? AppTheme.primaryBlue : context.secondaryTextColor,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -331,15 +379,28 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
           bool isSelected = _selectedSubcategory == sub;
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: 8.w),
-            child: ChoiceChip(
-              label: Text(_getLocalizedSubcategory(sub, l10n), style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.bold)),
-              selected: isSelected,
-              onSelected: (val) => setState(() => _selectedSubcategory = sub),
-              selectedColor: AppTheme.primaryBlue,
-              labelStyle: TextStyle(color: isSelected ? Colors.white : context.primaryTextColor),
-              backgroundColor: context.cardColor,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.w)),
-              side: BorderSide(color: isSelected ? Colors.transparent : context.borderColor),
+            child: GestureDetector(
+              onTap: () => setState(() => _selectedSubcategory = sub),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                decoration: BoxDecoration(
+                  color: isSelected ? context.surfaceColor : context.cardColor,
+                  borderRadius: BorderRadius.circular(20.w),
+                  border: Border.all(
+                    color: isSelected ? AppTheme.primaryBlue : context.borderColor,
+                    width: isSelected ? 2 : 1,
+                  ),
+                ),
+                child: Text(
+                  _getLocalizedSubcategory(sub, l10n),
+                  style: TextStyle(
+                    fontSize: 11.sp,
+                    fontWeight: isSelected ? FontWeight.w900 : FontWeight.bold,
+                    fontFamily: 'Poppins',
+                    color: isSelected ? AppTheme.primaryBlue : context.primaryTextColor,
+                  ),
+                ),
+              ),
             ),
           );
         },
@@ -353,21 +414,21 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text("Showing $count products", style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w600, color: Colors.grey)),
+          Text("Showing $count products", style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w600, color: context.secondaryTextColor, fontFamily: 'Poppins')),
           GestureDetector(
             onTap: () => _showFilterSheet(l10n),
             child: Container(
-              padding: EdgeInsets.all(8.w),
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
               decoration: BoxDecoration(
                 color: context.surfaceColor,
-                borderRadius: BorderRadius.circular(8.w),
+                borderRadius: BorderRadius.circular(12.w),
                 border: Border.all(color: context.borderColor),
               ),
               child: Row(
                 children: [
                   Icon(Icons.tune_rounded, size: 16.w, color: context.iconColor),
                   SizedBox(width: 4.w),
-                  Text("Filter", style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, color: context.iconColor)),
+                  Text("Filter", style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, color: context.iconColor, fontFamily: 'Poppins')),
                 ],
               ),
             ),
@@ -403,89 +464,129 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
     return Container(
       decoration: BoxDecoration(
         color: context.cardColor,
-        borderRadius: BorderRadius.circular(20.w),
+        borderRadius: BorderRadius.circular(22.sp),
         border: Border.all(color: context.borderColor),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
       ),
+      clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
-            flex: 10,
             child: Stack(
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: context.surfaceColor,
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(20.w)),
-                    image: DecorationImage(
-                      image: CachedNetworkImageProvider(product.image),
-                      fit: BoxFit.cover,
+                Positioned.fill(
+                  child: Image.asset(
+                    product.image,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Positioned(
+                  top: 8.w,
+                  right: 8.w,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.9),
+                      borderRadius: BorderRadius.circular(20.w),
+                    ),
+                    child: Text(
+                      product.subcategory.toUpperCase(),
+                      style: TextStyle(
+                        fontSize: 8.sp,
+                        fontWeight: FontWeight.w900,
+                        color: AppTheme.primaryBlue,
+                        letterSpacing: 0.5,
+                      ),
                     ),
                   ),
                 ),
-                if (product.brand != null)
-                  Positioned(
-                    top: 8.h,
-                    left: 8.w,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.6),
-                        borderRadius: BorderRadius.circular(8.w),
-                      ),
-                      child: Text(product.brand!, style: TextStyle(color: Colors.white, fontSize: 8.sp, fontWeight: FontWeight.bold)),
-                    ),
-                  ),
               ],
             ),
           ),
-          Expanded(
-            flex: 11,
-            child: Padding(
-              padding: EdgeInsets.all(12.0.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(product.subcategory.toUpperCase(), style: TextStyle(fontSize: 8.sp, fontWeight: FontWeight.w900, color: AppTheme.primaryBlue, letterSpacing: 0.5)),
-                      SizedBox(height: 4.h),
-                      Text(product.name, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13.sp, height: 1.2.h, color: context.primaryTextColor), maxLines: 2, overflow: TextOverflow.ellipsis),
-                    ],
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      Text(_formatCurrency(product.price), style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp, color: context.primaryTextColor)),
-                      SizedBox(width: 4.w),
-                      Flexible(child: Text('/ ${product.unit}', style: TextStyle(fontSize: 10.sp, color: context.secondaryTextColor), overflow: TextOverflow.ellipsis)),
-                    ],
-                  ),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 38.h,
-                    child: ElevatedButton(
-                      onPressed: () => _addToCart(product),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.primaryBlue,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.w)),
-                        elevation: 0,
-                      ),
-                      child: Text(l10n.addToCart, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12.sp, color: Colors.white)),
+          Padding(
+            padding: EdgeInsets.all(12.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (product.brand != null)
+                  Text(
+                    product.brand!.toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 8.sp,
+                      fontWeight: FontWeight.w900,
+                      color: AppTheme.primaryBlue.withValues(alpha: 0.6),
+                      letterSpacing: 0.5,
                     ),
                   ),
-                ],
-              ),
+                SizedBox(height: 2.h),
+                Text(
+                  product.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14.sp,
+                    color: context.primaryTextColor,
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+                SizedBox(height: 8.h),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    Text(
+                      _formatCurrency(product.price),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 16.sp,
+                        color: context.primaryTextColor,
+                      ),
+                    ),
+                    SizedBox(width: 4.w),
+                    Flexible(
+                      child: Text(
+                        '/ ${product.unit}',
+                        style: TextStyle(
+                          fontSize: 10.sp,
+                          color: context.secondaryTextColor,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 12.h),
+                SizedBox(
+                  width: double.infinity,
+                  height: 38.h,
+                  child: ElevatedButton(
+                    onPressed: () => _addToCart(product),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primaryBlue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.w),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      l10n.addToCart,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 12.sp,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

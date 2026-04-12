@@ -139,39 +139,54 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
       appBar: AppBar(
         backgroundColor: context.scaffoldColor,
         elevation: 0,
-        leading: IconButton(
-          icon: Container(
-            padding: EdgeInsets.all(8.w),
-            decoration: BoxDecoration(
-              color: AppTheme.primaryBlue.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10.w),
+        automaticallyImplyLeading: false,
+        centerTitle: false,
+        title: Row(
+          children: [
+            GestureDetector(
+              onTap: () => context.pop(),
+              child: Container(
+                padding: EdgeInsets.all(10.w),
+                decoration: BoxDecoration(
+                  color: context.cardColor,
+                  border: Border.all(color: context.borderColor),
+                  borderRadius: BorderRadius.circular(14.sp),
+                ),
+                child: Icon(
+                  Icons.arrow_back_ios_new,
+                  color: context.iconColor,
+                  size: 14.sp,
+                ),
+              ),
             ),
-            child: Icon(
-              Icons.arrow_back_ios_new,
-              color: context.iconColor,
-              size: 14.w,
+            SizedBox(width: 16.w),
+            Text(
+              l10n.homeLoans,
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                color: context.primaryTextColor,
+                fontSize: 24.sp,
+                fontFamily: 'Poppins',
+              ),
             ),
-          ),
-          onPressed: () => context.pop(),
-        ),
-        title: Text(
-          l10n.homeLoans,
-          style: TextStyle(
-            fontWeight: FontWeight.w900,
-            color: context.primaryTextColor,
-            fontSize: 18.sp,
-          ),
+          ],
         ),
         actions: [
-          IconButton(
-            icon: Icon(Icons.headset_mic_outlined, color: context.iconColor),
-            onPressed: () {},
+          Container(
+            margin: EdgeInsets.only(right: 16.w),
+            decoration: BoxDecoration(
+              color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12.w),
+            ),
+            child: IconButton(
+              icon: Icon(Icons.headset_mic_outlined, color: context.primaryTextColor, size: 20.sp),
+              onPressed: () {},
+            ),
           ),
-          SizedBox(width: 8.w),
         ],
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(24.0.w),
+        padding: EdgeInsets.all(16.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -192,7 +207,7 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
                 ],
               ),
             ),
-            SizedBox(height: 32.h),
+            SizedBox(height: 24.h),
             Form(
               key: _formKey,
               child: Column(
@@ -277,7 +292,7 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
                 color: const Color(0xFFF4FAFD),
                 borderRadius: BorderRadius.circular(16.w),
                 border: Border.all(
-                  color: AppTheme.cyanAccent.withValues(alpha: 0.1),
+                  color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                 ),
               ),
               child: Column(
@@ -333,34 +348,36 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
           ],
         ),
         child: SafeArea(
-          top: false,
           child: SizedBox(
+            width: double.infinity,
             height: 54.h,
             child: ElevatedButton(
               onPressed: _isLoading ? null : _submitApplication,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.primaryBlue,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.w),
-                ),
+                foregroundColor: Colors.white,
                 elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.sp),
+                ),
+                shadowColor: AppTheme.primaryBlue.withValues(alpha: 0.4),
               ),
               child: _isLoading
                   ? SizedBox(
-                      width: 24.w,
-                      height: 24.h,
-                      child: CircularProgressIndicator(
+                      width: 20.w,
+                      height: 20.w,
+                      child: const CircularProgressIndicator(
                         color: Colors.white,
                         strokeWidth: 2,
                       ),
                     )
                   : Text(
-                      l10n.submitApplication.toUpperCase(),
+                      'SUBMIT APPLICATION',
                       style: TextStyle(
                         fontWeight: FontWeight.w900,
-                        fontSize: 13.sp,
-                        color: Colors.white,
-                        letterSpacing: 1,
+                        fontSize: 14.sp,
+                        letterSpacing: 1.5,
+                        fontFamily: 'Poppins',
                       ),
                     ),
             ),
@@ -378,8 +395,8 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
           title,
           style: TextStyle(
             fontWeight: FontWeight.w900,
-            fontSize: 24.sp,
-            letterSpacing: -1.0,
+            fontSize: 22.sp,
+            fontFamily: 'Poppins',
             color: context.primaryTextColor,
           ),
         ),
@@ -387,39 +404,14 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
         Text(
           subtitle,
           style: TextStyle(
-            color: Colors.grey[600],
-            fontSize: 12.sp,
-            height: 1.5.h,
+            color: context.secondaryTextColor,
+            fontSize: 13.sp,
+            height: 1.4,
             fontWeight: FontWeight.w500,
+            fontFamily: 'Poppins',
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildServiceChip(String label, bool isSelected, VoidCallback onTap) {
-    return Padding(
-      padding: EdgeInsets.only(right: 12.0.w),
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-          decoration: BoxDecoration(
-            color: isSelected ? AppTheme.primaryBlue : context.cardColor,
-            borderRadius: BorderRadius.circular(30.w),
-            border: isSelected ? null : Border.all(color: context.borderColor),
-          ),
-          child: Text(
-            label.toUpperCase(),
-            style: TextStyle(
-              fontWeight: FontWeight.w900,
-              fontSize: 10.sp,
-              letterSpacing: 0.5,
-              color: isSelected ? Colors.white : context.primaryTextColor,
-            ),
-          ),
-        ),
-      ),
     );
   }
 
@@ -487,6 +479,44 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildServiceChip(String label, bool isSelected, VoidCallback onTap) {
+    return Padding(
+      padding: EdgeInsets.only(right: 12.w),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 12.h),
+          decoration: BoxDecoration(
+            color: isSelected ? context.surfaceColor : context.cardColor,
+            borderRadius: BorderRadius.circular(30.sp),
+            border: Border.all(
+              color: isSelected ? AppTheme.primaryBlue : context.borderColor,
+              width: isSelected ? 2 : 1,
+            ),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Text(
+            label.toUpperCase(),
+            style: TextStyle(
+              fontWeight: FontWeight.w900,
+              fontSize: 11.sp,
+              fontFamily: 'Poppins',
+              color: isSelected ? AppTheme.primaryBlue : context.primaryTextColor,
+            ),
+          ),
+        ),
+      ),
     );
   }
 

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
-import 'package:uuid/uuid.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
+import 'package:uuid/uuid.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/core/services/logger_service.dart';
 import 'package:sampatti_bazar/features/services/data/service_request_repository.dart';
@@ -25,7 +24,7 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
   String _selectedCategory = 'Electrical fitting & services';
   final List<String> _categories = [
     'Electrical fitting & services',
-    'Plumbing fitting & service',
+    'Plumbing services',
     'House painting',
     'House cleaning',
     'All',
@@ -137,8 +136,8 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
           title,
           style: TextStyle(
             fontWeight: FontWeight.w900,
-            fontSize: 24.sp,
-            letterSpacing: -1.0,
+            fontSize: 22.sp,
+            fontFamily: 'Poppins',
             color: context.primaryTextColor,
           ),
         ),
@@ -146,10 +145,11 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
         Text(
           subtitle,
           style: TextStyle(
-            color: Colors.grey[600],
-            fontSize: 12.sp,
-            height: 1.5.h,
+            color: context.secondaryTextColor,
+            fontSize: 13.sp,
+            height: 1.4,
             fontWeight: FontWeight.w500,
+            fontFamily: 'Poppins',
           ),
         ),
       ],
@@ -168,19 +168,21 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          labelText,
+          labelText.toUpperCase(),
           style: TextStyle(
             fontWeight: FontWeight.w900,
             fontSize: 10.sp,
-            color: context.primaryTextColor,
-            letterSpacing: 0.5,
+            color: AppTheme.primaryBlue,
+            letterSpacing: 1.5,
+            fontFamily: 'Poppins',
           ),
         ),
-        SizedBox(height: 8.h),
+        SizedBox(height: 10.h),
         Container(
           decoration: BoxDecoration(
             color: context.surfaceColor,
-            borderRadius: BorderRadius.circular(12.w),
+            borderRadius: BorderRadius.circular(16.sp),
+            border: Border.all(color: context.borderColor),
           ),
           child: TextField(
             controller: controller,
@@ -188,31 +190,21 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
             keyboardType: type,
             style: TextStyle(
               fontSize: 14.sp,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w700,
               color: context.primaryTextColor,
+              fontFamily: 'Poppins',
             ),
             decoration: InputDecoration(
               hintText: hintText,
               hintStyle: TextStyle(
-                color: Colors.grey.shade400,
+                color: context.secondaryTextColor.withValues(alpha: 0.5),
                 fontWeight: FontWeight.w500,
               ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.w),
-                borderSide: BorderSide.none,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.w),
-                borderSide: BorderSide(
-                  color: AppTheme.primaryBlue,
-                  width: 1.5.w,
-                ),
-              ),
+              border: InputBorder.none,
               contentPadding: EdgeInsets.symmetric(
-                horizontal: 16.w,
+                horizontal: 18.w,
                 vertical: 16.h,
               ),
-              isDense: true,
             ),
           ),
         ),
@@ -241,19 +233,31 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
       child: GestureDetector(
         onTap: () => setState(() => _selectedCategory = label),
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+          padding: EdgeInsets.symmetric(horizontal: 22.w, vertical: 12.h),
           decoration: BoxDecoration(
-            color: isSelected ? AppTheme.primaryBlue : context.cardColor,
+            color: isSelected ? context.surfaceColor : context.cardColor,
             borderRadius: BorderRadius.circular(30.w),
-            border: isSelected ? null : Border.all(color: context.borderColor),
+            border: Border.all(
+              color: isSelected ? AppTheme.primaryBlue : context.borderColor,
+              width: isSelected ? 2 : 1,
+            ),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                : null,
           ),
           child: Text(
-            displayLabel,
+            displayLabel.toUpperCase(),
             style: TextStyle(
               fontWeight: FontWeight.w900,
-              fontSize: 10.sp,
-              letterSpacing: 0.5,
-              color: isSelected ? Colors.white : context.primaryTextColor,
+              fontSize: 11.sp,
+              fontFamily: 'Poppins',
+              color: isSelected ? AppTheme.primaryBlue : context.primaryTextColor,
             ),
           ),
         ),
@@ -268,39 +272,50 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
       appBar: AppBar(
         backgroundColor: context.scaffoldColor,
         elevation: 0,
-        leading: IconButton(
-          icon: Container(
-            padding: EdgeInsets.all(8.w),
-            decoration: BoxDecoration(
-              color: AppTheme.primaryBlue.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10.w),
+        automaticallyImplyLeading: false,
+        centerTitle: false,
+        title: Row(
+          children: [
+            GestureDetector(
+              onTap: () => context.pop(),
+              child: Container(
+                padding: EdgeInsets.all(10.w),
+                decoration: BoxDecoration(
+                  color: context.cardColor,
+                  border: Border.all(color: context.borderColor),
+                  borderRadius: BorderRadius.circular(14.sp),
+                ),
+                child: Icon(
+                  Icons.arrow_back_ios_new,
+                  color: context.iconColor,
+                  size: 14.sp,
+                ),
+              ),
             ),
-            child: Icon(
-              LucideIcons.chevronLeft,
-              color: context.iconColor,
-              size: 18.w,
+            SizedBox(width: 16.w),
+            Text(
+              'Handyman Hub',
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                color: context.primaryTextColor,
+                fontSize: 24.sp,
+                fontFamily: 'Poppins',
+              ),
             ),
-          ),
-          onPressed: () => context.pop(),
-        ),
-        title: Text(
-          'Handyman Services',
-          style: TextStyle(
-            fontWeight: FontWeight.w900,
-            color: context.primaryTextColor,
-            fontSize: 18.sp,
-          ),
+          ],
         ),
         actions: [
-          IconButton(
-            icon: Icon(
-              LucideIcons.headphones,
-              color: context.iconColor,
-              size: 20.w,
+          Container(
+            margin: EdgeInsets.only(right: 16.w),
+            decoration: BoxDecoration(
+              color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12.w),
             ),
-            onPressed: () {},
+            child: IconButton(
+              icon: Icon(Icons.help_outline, color: AppTheme.primaryBlue, size: 20.sp),
+              onPressed: () {},
+            ),
           ),
-          SizedBox(width: 8.w),
         ],
       ),
       body: SingleChildScrollView(
@@ -384,9 +399,10 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
                 backgroundColor: AppTheme.primaryBlue,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.w),
+                  borderRadius: BorderRadius.circular(16.sp),
                 ),
                 elevation: 0,
+                shadowColor: AppTheme.primaryBlue.withValues(alpha: 0.4),
               ),
               child: _isLoading
                   ? SizedBox(
@@ -401,8 +417,9 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
                       'REQUEST PROFESSIONAL',
                       style: TextStyle(
                         fontWeight: FontWeight.w900,
-                        fontSize: 13.sp,
+                        fontSize: 14.sp,
                         letterSpacing: 1.5,
+                        fontFamily: 'Poppins',
                       ),
                     ),
             ),

@@ -50,28 +50,37 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
       appBar: AppBar(
         backgroundColor: context.scaffoldColor,
         elevation: 0,
-        leading: IconButton(
-          icon: Container(
-            padding: EdgeInsets.all(8.w),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1E60FF),
-              borderRadius: BorderRadius.circular(8.w),
+        automaticallyImplyLeading: false,
+        centerTitle: false,
+        title: Row(
+          children: [
+            GestureDetector(
+              onTap: () => context.pop(),
+              child: Container(
+                padding: EdgeInsets.all(10.w),
+                decoration: BoxDecoration(
+                  color: context.cardColor,
+                  border: Border.all(color: context.borderColor),
+                  borderRadius: BorderRadius.circular(14.sp),
+                ),
+                child: Icon(
+                  Icons.arrow_back_ios_new,
+                  color: context.iconColor,
+                  size: 14.sp,
+                ),
+              ),
             ),
-            child: Icon(
-              Icons.arrow_back_ios_new,
-              color: Colors.white,
-              size: 16.w,
+            SizedBox(width: 16.w),
+            Text(
+              l10n.emiCalculator,
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                color: context.primaryTextColor,
+                fontSize: 24.sp,
+                fontFamily: 'Poppins',
+              ),
             ),
-          ),
-          onPressed: () => context.pop(),
-        ),
-        title: Text(
-          l10n.emiCalculator,
-          style: TextStyle(
-            fontWeight: FontWeight.w900,
-            color: context.primaryTextColor,
-            fontSize: 18.sp,
-          ),
+          ],
         ),
       ),
       body: SingleChildScrollView(
@@ -81,18 +90,25 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
           children: [
             Text(
               l10n.emiCalculator,
-              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24.sp),
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                fontSize: 22.sp,
+                fontFamily: 'Poppins',
+                color: context.primaryTextColor,
+              ),
             ),
-            SizedBox(height: 8.h),
+            SizedBox(height: 6.h),
             Text(
               l10n.homeLoanSubtitle,
               style: TextStyle(
-                color: Colors.grey[700],
-                fontSize: 12.sp,
-                height: 1.5.h,
+                color: context.secondaryTextColor,
+                fontSize: 13.sp,
+                height: 1.4,
+                fontWeight: FontWeight.w500,
+                fontFamily: 'Poppins',
               ),
             ),
-            SizedBox(height: 32.h),
+            SizedBox(height: 24.h),
             _buildSliderCard(
               icon: Icons.attach_money,
               label: l10n.loanAmount,
@@ -152,22 +168,37 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
         color: context.cardColor,
-        borderRadius: BorderRadius.circular(8.w),
+        borderRadius: BorderRadius.circular(20.sp),
         border: Border.all(color: context.borderColor),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         children: [
           Row(
             children: [
-              Icon(icon, size: 16.w, color: Colors.black54),
+              Container(
+                padding: EdgeInsets.all(8.w),
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10.sp),
+                ),
+                child: Icon(icon, size: 16.w, color: context.primaryTextColor),
+              ),
               SizedBox(width: 12.w),
               Text(
-                label,
+                label.toUpperCase(),
                 style: TextStyle(
                   fontSize: 10.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey,
-                  letterSpacing: 0.5,
+                  fontWeight: FontWeight.w900,
+                  color: AppTheme.primaryBlue,
+                  letterSpacing: 1.2,
+                  fontFamily: 'Poppins',
                 ),
               ),
               const Spacer(),
@@ -175,21 +206,23 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
                 valueText,
                 style: TextStyle(
                   fontWeight: FontWeight.w900,
-                  fontSize: 14.sp,
+                  fontSize: 16.sp,
+                  fontFamily: 'Poppins',
+                  color: context.primaryTextColor,
                 ),
               ),
             ],
           ),
-          SizedBox(height: 16.h),
+          SizedBox(height: 12.h),
           SliderTheme(
             data: SliderThemeData(
-              trackHeight: 2,
-              activeTrackColor: const Color(0xFF1E60FF),
-              inactiveTrackColor: Colors.grey.shade200,
+              trackHeight: 3,
+              activeTrackColor: AppTheme.primaryBlue,
+              inactiveTrackColor: context.borderColor,
               thumbColor: Colors.white,
-              overlayColor: const Color(0xFF1E60FF).withValues(alpha: 0.1),
+              overlayColor: AppTheme.primaryBlue.withValues(alpha: 0.1),
               thumbShape: const RoundSliderThumbShape(
-                enabledThumbRadius: 8,
+                enabledThumbRadius: 10,
                 elevation: 4,
               ),
             ),
@@ -206,17 +239,19 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
               Text(
                 minLabel,
                 style: TextStyle(
-                  fontSize: 8.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey,
+                  fontSize: 9.sp,
+                  fontWeight: FontWeight.w600,
+                  color: context.secondaryTextColor,
+                  fontFamily: 'Poppins',
                 ),
               ),
               Text(
                 maxLabel,
                 style: TextStyle(
-                  fontSize: 8.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey,
+                  fontSize: 9.sp,
+                  fontWeight: FontWeight.w600,
+                  color: context.secondaryTextColor,
+                  fontFamily: 'Poppins',
                 ),
               ),
             ],
@@ -231,21 +266,23 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
       padding: EdgeInsets.all(24.w),
       decoration: BoxDecoration(
         color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(16.w),
+        borderRadius: BorderRadius.circular(24.sp),
+        border: Border.all(color: context.borderColor),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            l10n.estimatedMonthlyEmi,
+            l10n.estimatedMonthlyEmi.toUpperCase(),
             style: TextStyle(
-              color: Color(0xFF1E60FF),
-              fontSize: 10.sp,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0.5,
+              color: AppTheme.primaryBlue,
+              fontSize: 11.sp,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1.2,
+              fontFamily: 'Poppins',
             ),
           ),
-          SizedBox(height: 8.h),
+          SizedBox(height: 12.h),
           Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -253,24 +290,27 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
                 _formatCurrency(_emi),
                 style: TextStyle(
                   fontWeight: FontWeight.w900,
-                  fontSize: 32.sp,
+                  fontSize: 34.sp,
                   height: 1.h,
+                  fontFamily: 'Poppins',
+                  color: context.primaryTextColor,
                 ),
               ),
               SizedBox(width: 12.w),
               Container(
                 margin: EdgeInsets.only(bottom: 4.h),
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                 decoration: BoxDecoration(
-                  border: Border.all(color: const Color(0xFF1E60FF)),
-                  borderRadius: BorderRadius.circular(4.w),
+                  color: AppTheme.primaryBlue,
+                  borderRadius: BorderRadius.circular(8.sp),
                 ),
                 child: Text(
                   l10n.lowRate,
                   style: TextStyle(
-                    color: Color(0xFF1E60FF),
-                    fontSize: 8.sp,
-                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 10.sp,
+                    fontWeight: FontWeight.w900,
+                    fontFamily: 'Poppins',
                   ),
                 ),
               ),
@@ -287,16 +327,19 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
                       l10n.totalInterest,
                       style: TextStyle(
                         fontSize: 10.sp,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey,
+                        fontWeight: FontWeight.w700,
+                        color: context.secondaryTextColor,
+                        fontFamily: 'Poppins',
                       ),
                     ),
-                    SizedBox(height: 4.h),
+                    SizedBox(height: 6.h),
                     Text(
                       _formatCurrency(_totalInterest),
                       style: TextStyle(
                         fontWeight: FontWeight.w900,
-                        fontSize: 14.sp,
+                        fontSize: 16.sp,
+                        fontFamily: 'Poppins',
+                        color: context.primaryTextColor,
                       ),
                     ),
                   ],
@@ -310,16 +353,19 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
                       l10n.totalPayable,
                       style: TextStyle(
                         fontSize: 10.sp,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey,
+                        fontWeight: FontWeight.w700,
+                        color: context.secondaryTextColor,
+                        fontFamily: 'Poppins',
                       ),
                     ),
-                    SizedBox(height: 4.h),
+                    SizedBox(height: 6.h),
                     Text(
                       _formatCurrency(_totalPayable),
                       style: TextStyle(
                         fontWeight: FontWeight.w900,
-                        fontSize: 14.sp,
+                        fontSize: 16.sp,
+                        fontFamily: 'Poppins',
+                        color: context.primaryTextColor,
                       ),
                     ),
                   ],
@@ -329,32 +375,32 @@ class _EmiCalculatorScreenState extends State<EmiCalculatorScreen> {
           ),
           SizedBox(height: 32.h),
           Container(
-            padding: EdgeInsets.all(16.w),
+            padding: EdgeInsets.all(18.w),
             decoration: BoxDecoration(
               color: context.cardColor,
-              borderRadius: BorderRadius.circular(12.w),
-              border: Border.all(
-                color: const Color(0xFF1E60FF).withValues(alpha: 0.2),
-              ),
+              borderRadius: BorderRadius.circular(16.sp),
+              border: Border.all(color: context.borderColor),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
                   Icons.pie_chart_outline,
-                  size: 16.w,
-                  color: Color(0xFF1E60FF),
+                  size: 20.sp,
+                  color: AppTheme.primaryBlue,
                 ),
-                SizedBox(width: 8.w),
+                SizedBox(width: 12.w),
                 Text(
                   l10n.viewRepaymentSchedule,
                   style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 13.sp,
+                    fontFamily: 'Poppins',
+                    color: context.primaryTextColor,
                   ),
                 ),
                 const Spacer(),
-                Icon(Icons.chevron_right, size: 16.w, color: Colors.grey),
+                Icon(Icons.chevron_right, size: 20.sp, color: context.secondaryTextColor),
               ],
             ),
           ),

@@ -567,239 +567,157 @@ class PropertyDetailScreen extends ConsumerWidget {
                       ),
 
                       SizedBox(height: 32.h),
-
                       Container(
-                        padding: EdgeInsets.all(16.sp),
+                        padding: EdgeInsets.all(24.sp),
                         decoration: BoxDecoration(
                           color: context.cardColor,
-                          borderRadius: BorderRadius.circular(12.sp),
+                          borderRadius: BorderRadius.circular(28.sp),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.03),
-                              blurRadius: 10.sp,
-                              offset: Offset(0, 4.h),
+                              color: Colors.black.withValues(alpha: 0.04),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
                             ),
                           ],
                           border: Border.all(color: context.borderColor),
                         ),
                         child: ownerAsync.when(
-                          data: (owner) => Row(
+                          data: (owner) => Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Stack(
+                              Row(
                                 children: [
-                                  CircleAvatar(
-                                    radius: 26.sp,
-                                    backgroundColor: Theme.of(context)
-                                        .colorScheme
-                                        .primary
-                                        .withValues(alpha: 0.1),
-                                    backgroundImage:
-                                        (owner?.phoneNumber != null &&
-                                            owner!.phoneNumber.isNotEmpty)
-                                        ? NetworkImage(
-                                            'https://ui-avatars.com/api/?name=${Uri.encodeComponent(owner.name ?? 'User')}&background=random&size=128',
-                                          )
-                                        : const NetworkImage(
-                                            'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&q=80',
+                                  Stack(
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.all(3.w),
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: AppTheme.primaryBlue.withValues(alpha: 0.2),
+                                            width: 2,
                                           ),
-                                  ),
-                                  Positioned(
-                                    bottom: 2.h,
-                                    right: 2.w,
-                                    child: Container(
-                                      width: 12.w,
-                                      height: 12.w,
-                                      decoration: BoxDecoration(
-                                        color: Colors.greenAccent[400],
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: Colors.white,
-                                          width: 2.sp,
+                                        ),
+                                        child: CircleAvatar(
+                                          radius: 30.sp,
+                                          backgroundColor: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                                          backgroundImage: (owner?.phoneNumber != null && owner!.phoneNumber.isNotEmpty)
+                                              ? NetworkImage('https://ui-avatars.com/api/?name=${Uri.encodeComponent(owner.name ?? 'User')}&background=random&size=128')
+                                              : const NetworkImage('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80'),
                                         ),
                                       ),
+                                      Positioned(
+                                        bottom: 5.h,
+                                        right: 5.w,
+                                        child: Container(
+                                          width: 14.w,
+                                          height: 14.w,
+                                          decoration: BoxDecoration(
+                                            color: Colors.greenAccent[400],
+                                            shape: BoxShape.circle,
+                                            border: Border.all(color: context.cardColor, width: 2.5.sp),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(width: 20.w),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          owner?.name ?? 'Loading...',
+                                          style: TextStyle(
+                                            fontSize: 20.sp,
+                                            fontWeight: FontWeight.w900,
+                                            color: context.primaryTextColor,
+                                            fontFamily: 'Poppins',
+                                          ),
+                                        ),
+                                        Text(
+                                          '${owner?.role ?? l10n.ownerLabel} • ${owner?.location ?? 'Verified Agent'}',
+                                          style: TextStyle(
+                                            fontSize: 12.sp,
+                                            color: context.secondaryTextColor,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],
                               ),
-                              SizedBox(width: 16.w),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                              if (owner != null && (owner.trustScore ?? 0) > 0) ...[
+                                SizedBox(height: 16.h),
+                                Row(
                                   children: [
+                                    Icon(LucideIcons.star, color: Colors.amber, size: 16.sp, fill: 1.0),
+                                    SizedBox(width: 6.w),
                                     Text(
-                                      owner?.name ?? 'Loading...',
-                                      style: TextStyle(
-                                        fontSize: 16.sp,
-                                        fontWeight: FontWeight.w900,
-                                        color: context.primaryTextColor,
-                                      ),
+                                      '${owner.trustScore!.toStringAsFixed(1)} (${owner.ratingCount ?? 0})',
+                                      style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w800),
                                     ),
+                                    SizedBox(width: 12.w),
+                                    Container(width: 1, height: 12.h, color: context.borderColor),
+                                    SizedBox(width: 12.w),
                                     Text(
-                                      owner?.role ?? l10n.ownerLabel,
-                                      style: TextStyle(
-                                        fontSize: 12.sp,
-                                        color: context.secondaryTextColor,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                      '${owner.totalDeals ?? 0} clear deals',
+                                      style: TextStyle(fontSize: 12.sp, color: Colors.green, fontWeight: FontWeight.w800),
                                     ),
-                                    if (owner != null &&
-                                        (owner.trustScore ?? 0) > 0) ...[
-                                      SizedBox(height: 4.h),
-                                      Wrap(
-                                        spacing: 4.w,
-                                        runSpacing: 4.h,
-                                        crossAxisAlignment:
-                                            WrapCrossAlignment.center,
-                                        children: [
-                                          Icon(
-                                            LucideIcons.star,
-                                            color: Colors.amber,
-                                            size: 14.sp,
-                                            fill: 1.0,
-                                          ),
-                                          Text(
-                                            '${owner.trustScore!.toStringAsFixed(1)} (${owner.ratingCount ?? 0})',
-                                            style: TextStyle(
-                                              fontSize: 11.sp,
-                                              fontWeight: FontWeight.bold,
-                                              color: context.primaryTextColor,
-                                            ),
-                                          ),
-                                          Text(
-                                            '•',
-                                            style: TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 10.sp,
-                                            ),
-                                          ),
-                                          Text(
-                                            '${owner.totalDeals ?? 0} clear deals',
-                                            style: TextStyle(
-                                              fontSize: 10.sp,
-                                              color: Colors.green,
-                                              fontWeight: FontWeight.w800,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
                                   ],
                                 ),
-                              ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.primary.withValues(alpha: 0.1),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: IconButton(
-                                  icon: Icon(
-                                    LucideIcons.messageSquare,
-                                    size: 20.sp,
-                                    color: AppTheme.primaryBlue,
-                                  ),
-                                  onPressed: () async {
-                                    final currentUser = ref
-                                        .read(currentUserDataProvider)
-                                        .value;
-                                    if (currentUser == null) {
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        SnackBar(
-                                          content: Text(l10n.pleaseLoginToChat),
-                                        ),
-                                      );
-                                      return;
-                                    }
-
-                                    final chatId = await ref
-                                        .read(chatRepositoryProvider)
-                                        .startOrGetChat(
+                              ],
+                              SizedBox(height: 24.h),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _buildOwnerAction(
+                                      context,
+                                      'Chat',
+                                      LucideIcons.messageSquare,
+                                      AppTheme.primaryBlue,
+                                      () async {
+                                        final currentUser = ref.read(currentUserDataProvider).value;
+                                        if (currentUser == null) {
+                                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.pleaseLoginToChat)));
+                                          return;
+                                        }
+                                        final chatId = await ref.read(chatRepositoryProvider).startOrGetChat(
                                           currentUser.uid,
                                           property.ownerId,
                                           metadata: {'propertyId': property.id},
                                         );
-
-                                    if (context.mounted) {
-                                      context.push('/chats/$chatId');
-                                      LoggerService.trackEvent(
-                                        'property_chat_owner',
-                                        parameters: {
-                                          'property_id': property.id,
-                                          'owner_id': property.ownerId,
-                                        },
-                                      );
-                                    }
-                                  },
-                                  constraints: BoxConstraints(
-                                    minWidth: 40.w,
-                                    minHeight: 40.w,
+                                        if (context.mounted) context.push('/chats/$chatId');
+                                      },
+                                    ),
                                   ),
-                                  padding: EdgeInsets.zero,
-                                ),
-                              ),
-                              SizedBox(width: 12.w),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Theme.of(
+                                  SizedBox(width: 12.w),
+                                  Expanded(
+                                    child: _buildOwnerAction(
+                                      context,
+                                      'Call',
+                                      LucideIcons.phone,
+                                      Colors.green.shade600,
+                                      () {
+                                        if (owner?.phoneNumber != null) {
+                                          launchUrl(Uri.parse('tel:${owner!.phoneNumber}'));
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                  SizedBox(width: 12.w),
+                                  _buildOwnerIconAction(
                                     context,
-                                  ).colorScheme.primary.withValues(alpha: 0.1),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: IconButton(
-                                  icon: Icon(
-                                    LucideIcons.phone,
-                                    size: 20.sp,
-                                    color: AppTheme.primaryBlue,
-                                  ),
-                                  onPressed: () {
-                                    if (owner?.phoneNumber != null) {
-                                      launchUrl(
-                                        Uri.parse('tel:${owner!.phoneNumber}'),
-                                      );
-                                      LoggerService.trackEvent(
-                                        'property_call_owner',
-                                        parameters: {
-                                          'property_id': property.id,
-                                          'owner_id': property.ownerId,
-                                        },
-                                      );
-                                    }
-                                  },
-                                  constraints: BoxConstraints(
-                                    minWidth: 40.w,
-                                    minHeight: 40.w,
-                                  ),
-                                  padding: EdgeInsets.zero,
-                                ),
-                              ),
-                              SizedBox(width: 12.w),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.amber.withValues(alpha: 0.1),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: IconButton(
-                                  icon: Icon(
                                     Icons.star_rate_rounded,
-                                    size: 20.sp,
-                                    color: Colors.amber,
+                                    Colors.amber,
+                                    () => _showRatingDialog(context, ref, owner),
                                   ),
-                                  onPressed: () =>
-                                      _showRatingDialog(context, ref, owner),
-                                  constraints: BoxConstraints(
-                                    minWidth: 40.w,
-                                    minHeight: 40.w,
-                                  ),
-                                  padding: EdgeInsets.zero,
-                                ),
+                                ],
                               ),
                             ],
                           ),
-                          loading: () =>
-                              const Center(child: LinearProgressIndicator()),
+                          loading: () => const Center(child: LinearProgressIndicator()),
                           error: (e, st) => Text('Error loading owner info'),
                         ),
                       ),
@@ -1052,6 +970,61 @@ class PropertyDetailScreen extends ConsumerWidget {
         );
       }
     }
+  }
+
+  Widget _buildOwnerAction(
+    BuildContext context,
+    String label,
+    IconData icon,
+    Color color,
+    VoidCallback onTap,
+  ) {
+    return ElevatedButton.icon(
+      onPressed: onTap,
+      icon: Icon(icon, size: 18.sp),
+      label: Text(
+        label,
+        style: TextStyle(
+          fontSize: 13.sp,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 0.5,
+        ),
+      ),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color.withValues(alpha: 0.1),
+        foregroundColor: color,
+        elevation: 0,
+        padding: EdgeInsets.symmetric(vertical: 14.h),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.sp),
+          side: BorderSide(color: color.withValues(alpha: 0.2)),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOwnerIconAction(
+    BuildContext context,
+    IconData icon,
+    Color color,
+    VoidCallback onTap,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        shape: BoxShape.circle,
+        border: Border.all(color: color.withValues(alpha: 0.2)),
+      ),
+      child: IconButton(
+        icon: Icon(icon, size: 20.sp, color: color),
+        onPressed: onTap,
+        constraints: BoxConstraints(
+          minWidth: 48.w,
+          minHeight: 48.w,
+        ),
+        padding: EdgeInsets.zero,
+      ),
+    );
   }
 
   void _showRatingDialog(BuildContext context, WidgetRef ref, dynamic owner) {

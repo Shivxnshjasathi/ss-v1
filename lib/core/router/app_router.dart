@@ -39,6 +39,7 @@ import 'package:sampatti_bazar/features/services/presentation/screens/providers/
 import 'package:sampatti_bazar/features/services/presentation/screens/emi_calculator_screen.dart';
 import 'package:sampatti_bazar/features/chat/presentation/screens/chat_list_screen.dart';
 import 'package:sampatti_bazar/features/chat/presentation/screens/chat_detail_screen.dart';
+import 'package:sampatti_bazar/features/services/presentation/screens/offers_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -203,6 +204,10 @@ final goRouter = GoRouter(
     GoRoute(
       path: '/services/tracking',
       builder: (context, state) => const ServiceTrackingScreen(),
+    ),
+    GoRoute(
+      path: '/services/offers',
+      builder: (context, state) => const OffersScreen(),
     ),
     GoRoute(
       path: '/notifications',

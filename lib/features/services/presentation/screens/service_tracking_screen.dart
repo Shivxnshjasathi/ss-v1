@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/auth/domain/user_model.dart';
@@ -18,7 +20,27 @@ class ServiceTrackingScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserDataProvider).value;
     if (user == null) {
-      return const Scaffold(body: Center(child: Text('Please log in to track your services')));
+      return Scaffold(
+        backgroundColor: context.scaffoldColor,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(LucideIcons.userX, size: 64.sp, color: Colors.grey.withValues(alpha: 0.3)),
+              SizedBox(height: 16.h),
+              Text(
+                'Please log in to track your services',
+                style: TextStyle(
+                  color: context.secondaryTextColor,
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'Poppins',
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
     }
 
     final myBookingsAsync = ref.watch(userBookingsProvider(user.uid));
@@ -31,29 +53,75 @@ class ServiceTrackingScreen extends ConsumerWidget {
         appBar: AppBar(
           backgroundColor: context.scaffoldColor,
           elevation: 0,
-          leading: IconButton(
-            icon: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: const Color(0xFF00E5FF).withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
+          toolbarHeight: 80.h,
+          automaticallyImplyLeading: false,
+          title: Row(
+            children: [
+              GestureDetector(
+                onTap: () => context.pop(),
+                child: Container(
+                  padding: EdgeInsets.all(10.w),
+                  decoration: BoxDecoration(
+                    color: context.cardColor,
+                    border: Border.all(color: context.borderColor),
+                    borderRadius: BorderRadius.circular(14.sp),
+                  ),
+                  child: Icon(
+                    LucideIcons.arrowLeft,
+                    color: context.iconColor,
+                    size: 16.sp,
+                  ),
+                ),
               ),
-              child: Icon(Icons.arrow_back_ios_new, color: context.iconColor, size: 16),
-            ),
-            onPressed: () => context.pop(),
-          ),
-          title: Text('Tracking Hub', style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 18)),
-          bottom: TabBar(
-            dividerColor: Colors.transparent,
-            indicatorColor: AppTheme.primaryBlue,
-            labelColor: AppTheme.primaryBlue,
-            unselectedLabelColor: Colors.grey[500],
-            labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-            tabs: const [
-              Tab(text: 'MY BOOKINGS'),
-              Tab(text: 'MY VISITORS'),
-              Tab(text: 'MY SERVICES'),
+              SizedBox(width: 16.w),
+              Text(
+                'Tracking Hub',
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  color: context.primaryTextColor,
+                  fontSize: 24.sp,
+                  fontFamily: 'Poppins',
+                ),
+              ),
             ],
+          ),
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(48.h),
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 16.w),
+              decoration: BoxDecoration(
+                color: context.cardColor,
+                borderRadius: BorderRadius.circular(16.sp),
+                border: Border.all(color: context.borderColor),
+              ),
+              child: TabBar(
+                dividerColor: Colors.transparent,
+                indicatorSize: TabBarIndicatorSize.tab,
+                indicator: BoxDecoration(
+                  color: AppTheme.primaryBlue,
+                  borderRadius: BorderRadius.circular(12.sp),
+                ),
+                labelColor: Colors.white,
+                unselectedLabelColor: context.secondaryTextColor,
+                labelStyle: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 11.sp,
+                  fontFamily: 'Poppins',
+                  letterSpacing: 0.5,
+                ),
+                unselectedLabelStyle: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 11.sp,
+                  fontFamily: 'Poppins',
+                  letterSpacing: 0.5,
+                ),
+                tabs: const [
+                  Tab(text: 'BOOKINGS'),
+                  Tab(text: 'VISITORS'),
+                  Tab(text: 'SERVICES'),
+                ],
+              ),
+            ),
           ),
         ),
         body: TabBarView(
@@ -71,23 +139,16 @@ class ServiceTrackingScreen extends ConsumerWidget {
     return bookingsAsync.when(
       data: (bookings) {
         if (bookings.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.event_note_outlined, size: 64, color: Colors.grey[300]),
-                const SizedBox(height: 16),
-                Text(
-                  isOwner ? 'No one has scheduled a visit yet' : 'You haven\'t booked any visits',
-                  style: TextStyle(color: Colors.grey[500], fontWeight: FontWeight.w500),
-                ),
-              ],
-            ),
+          return _buildEmptyState(
+            context,
+            isOwner ? LucideIcons.users : LucideIcons.calendarCheck,
+            isOwner ? 'No visitors yet' : 'No bookings found',
+            isOwner ? 'No one has scheduled a visit yet' : 'You haven\'t booked any site visits yet',
           );
         }
 
         return ListView.builder(
-          padding: const EdgeInsets.only(top: 16),
+          padding: EdgeInsets.symmetric(vertical: 24.h),
           itemCount: bookings.length,
           itemBuilder: (context, index) {
             final booking = bookings[index];
@@ -95,99 +156,212 @@ class ServiceTrackingScreen extends ConsumerWidget {
           },
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue)),
       error: (e, st) => Center(child: Text('Error: $e')),
     );
   }
 
+  Widget _buildEmptyState(BuildContext context, IconData icon, String title, String subtitle) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: EdgeInsets.all(32.sp),
+            decoration: BoxDecoration(
+              color: context.cardColor,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, size: 48.sp, color: context.secondaryTextColor.withValues(alpha: 0.2)),
+          ),
+          SizedBox(height: 24.h),
+          Text(
+            title,
+            style: TextStyle(
+              fontWeight: FontWeight.w900,
+              fontSize: 18.sp,
+              color: context.primaryTextColor,
+              fontFamily: 'Poppins',
+            ),
+          ),
+          SizedBox(height: 8.h),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 48.w),
+            child: Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: context.secondaryTextColor,
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w500,
+                fontFamily: 'Poppins',
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildBookingCard(BuildContext context, WidgetRef ref, BookingModel booking, bool isOwner) {
-    final statusColor = _getStatusColor(booking.status);
-    final dateStr = DateFormat('EEE, MMM d • hh:mm a').format(booking.bookingDate);
+    final statusColor = _getBookingStatusColor(booking.status);
+    final dateStr = DateFormat('EEE, MMM d').format(booking.bookingDate);
+    final timeStr = DateFormat('hh:mm a').format(booking.bookingDate);
     final otherPartyId = isOwner ? booking.buyerId : booking.ownerId;
     final otherPartyAsync = ref.watch(userProfileProvider(otherPartyId));
 
     return Container(
-      margin: const EdgeInsets.only(left: 24, right: 24, bottom: 20),
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
       decoration: BoxDecoration(
         color: context.cardColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(24.sp),
         border: Border.all(color: context.borderColor),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 4)),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(20.sp),
             child: Row(
               children: [
-                if (booking.propertyImageUrl != null)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(booking.propertyImageUrl!, width: 50, height: 50, fit: BoxFit.cover),
-                  )
-                else
-                  Container(
-                    width: 50,
-                    height: 50,
-                    decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(8)),
-                    child: const Icon(Icons.home_work_outlined, color: Colors.grey),
+                Container(
+                  width: 64.w,
+                  height: 64.w,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16.sp),
+                    image: booking.propertyImageUrl != null 
+                        ? DecorationImage(image: NetworkImage(booking.propertyImageUrl!), fit: BoxFit.cover)
+                        : null,
+                    color: context.scaffoldColor,
                   ),
-                const SizedBox(width: 16),
+                  child: booking.propertyImageUrl == null 
+                      ? Icon(LucideIcons.house, color: context.secondaryTextColor.withValues(alpha: 0.3))
+                      : null,
+                ),
+                SizedBox(width: 16.w),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(booking.propertyTitle, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: context.primaryTextColor, letterSpacing: -0.3)),
-                      const SizedBox(height: 4),
-                      Text(dateStr, style: TextStyle(color: AppTheme.primaryBlue, fontSize: 12, fontWeight: FontWeight.bold)),
+                      Text(
+                        booking.propertyTitle,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 15.sp,
+                          color: context.primaryTextColor,
+                          fontFamily: 'Poppins',
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(height: 4.h),
+                      Row(
+                        children: [
+                          Icon(LucideIcons.calendar, size: 12.sp, color: AppTheme.primaryBlue),
+                          SizedBox(width: 4.w),
+                          Text(
+                            "$dateStr at $timeStr",
+                            style: TextStyle(
+                              color: AppTheme.primaryBlue,
+                              fontSize: 11.sp,
+                              fontWeight: FontWeight.w900,
+                              fontFamily: 'Poppins',
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(color: statusColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
-                  child: Text(booking.status.toUpperCase(), style: TextStyle(color: statusColor, fontSize: 9, fontWeight: FontWeight.bold)),
-                ),
+                _buildStatusChip(booking.status.toUpperCase(), statusColor),
               ],
             ),
           ),
-          Container(height: 1, color: context.borderColor),
-          Padding(
-            padding: const EdgeInsets.all(20),
+          
+          Container(
+            padding: EdgeInsets.all(20.sp),
+            decoration: BoxDecoration(
+              color: context.surfaceColor,
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(24.sp)),
+            ),
             child: Column(
               children: [
                 Row(
                   children: [
-                    Icon(Icons.location_on_outlined, size: 14, color: Colors.grey[600]),
-                    const SizedBox(width: 4),
-                    Expanded(child: Text(booking.propertyLocation, style: TextStyle(color: Colors.grey[700], fontSize: 12))),
+                    Icon(LucideIcons.mapPin, size: 14.sp, color: context.secondaryTextColor),
+                    SizedBox(width: 8.w),
+                    Expanded(
+                      child: Text(
+                        booking.propertyLocation,
+                        style: TextStyle(
+                          color: context.secondaryTextColor,
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'Poppins',
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 16.h),
                 otherPartyAsync.when(
                   data: (otherParty) => Row(
                     children: [
                       CircleAvatar(
-                        radius: 12,
-                        backgroundImage: NetworkImage('https://ui-avatars.com/api/?name=${Uri.encodeComponent(otherParty?.name ?? 'User')}&background=random'),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        isOwner ? 'Visitor: ${otherParty?.name ?? 'User'}' : 'Owner: ${otherParty?.name ?? 'User'}',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: context.primaryTextColor),
-                      ),
-                      if (otherParty?.phoneNumber != null) ...[
-                        const Spacer(),
-                        IconButton(
-                          icon: const Icon(Icons.phone, size: 16, color: AppTheme.primaryBlue),
-                          onPressed: () => launchUrl(Uri.parse('tel:${otherParty!.phoneNumber}')),
-                          constraints: const BoxConstraints(),
-                          padding: EdgeInsets.zero,
+                        radius: 18.sp,
+                        backgroundColor: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                        backgroundImage: NetworkImage(
+                          'https://ui-avatars.com/api/?name=${Uri.encodeComponent(otherParty?.name ?? 'User')}&background=006BFF&color=fff',
                         ),
-                      ],
+                      ),
+                      SizedBox(width: 12.w),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              isOwner ? 'VISITOR' : 'OWNER',
+                              style: TextStyle(
+                                fontSize: 8.sp,
+                                fontWeight: FontWeight.w900,
+                                color: AppTheme.primaryBlue,
+                                letterSpacing: 1,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                            Text(
+                              otherParty?.name ?? 'User',
+                              style: TextStyle(
+                                fontSize: 13.sp,
+                                fontWeight: FontWeight.w900,
+                                color: context.primaryTextColor,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (otherParty?.phoneNumber != null)
+                        _buildActionButton(
+                          context,
+                          LucideIcons.phone,
+                          () => launchUrl(Uri.parse('tel:${otherParty!.phoneNumber}')),
+                        ),
+                      SizedBox(width: 8.w),
+                      _buildActionButton(
+                        context,
+                        LucideIcons.messageSquare,
+                        () => context.push('/chats/$otherPartyId'),
+                      ),
                     ],
                   ),
                   loading: () => const LinearProgressIndicator(),
@@ -196,42 +370,119 @@ class ServiceTrackingScreen extends ConsumerWidget {
               ],
             ),
           ),
+          
           if (isOwner && booking.status == 'pending')
-             Padding(
-               padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-               child: Row(
-                 children: [
-                   Expanded(
-                     child: OutlinedButton(
-                       onPressed: () => ref.read(bookingRepositoryProvider).updateBookingStatus(booking.id, 'cancelled'),
-                       style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.red), foregroundColor: Colors.red),
-                       child: const Text('Decline'),
-                     ),
-                   ),
-                   const SizedBox(width: 12),
-                   Expanded(
-                     child: ElevatedButton(
-                       onPressed: () => ref.read(bookingRepositoryProvider).updateBookingStatus(booking.id, 'confirmed'),
-                       style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
-                       child: const Text('Confirm'),
-                     ),
-                   ),
-                 ],
-               ),
-             ),
+             _buildDecisionActions(ref, booking.id, isBooking: true),
+             
           if (!isOwner && (booking.status == 'confirmed' || booking.status == 'pending'))
             Padding(
-               padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-               child: SizedBox(
-                 width: double.infinity,
-                 child: OutlinedButton(
-                   onPressed: () => ref.read(bookingRepositoryProvider).updateBookingStatus(booking.id, 'cancelled'),
-                   style: OutlinedButton.styleFrom(side: BorderSide(color: Colors.grey.shade300), foregroundColor: Colors.grey[600]),
-                   child: const Text('Cancel Request'),
-                 ),
-               ),
+              padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 16.h),
+              child: SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  onPressed: () => ref.read(bookingRepositoryProvider).updateBookingStatus(booking.id, 'cancelled'),
+                  child: Text(
+                    'CANCEL REQUEST',
+                    style: TextStyle(
+                      color: AppTheme.primaryBlue,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 11.sp,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ),
+              ),
             ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildDecisionActions(WidgetRef ref, String id, {bool isBooking = true}) {
+    return Padding(
+      padding: EdgeInsets.all(16.w),
+      child: Row(
+        children: [
+          Expanded(
+            child: ElevatedButton(
+              onPressed: () {
+                if (isBooking) {
+                  ref.read(bookingRepositoryProvider).updateBookingStatus(id, 'cancelled');
+                } else {
+                  // handle service decline
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                foregroundColor: AppTheme.primaryBlue,
+                elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.sp)),
+              ),
+              child: Text('DECLINE', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11.sp)),
+            ),
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: ElevatedButton(
+              onPressed: () {
+                if (isBooking) {
+                  ref.read(bookingRepositoryProvider).updateBookingStatus(id, 'confirmed');
+                } else {
+                  // handle service confirm
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.sp)),
+              ),
+              child: Text('CONFIRM', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11.sp)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatusChip(String label, Color color) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(10.sp),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: color,
+          fontSize: 9.sp,
+          fontWeight: FontWeight.w900,
+          fontFamily: 'Poppins',
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionButton(BuildContext context, IconData icon, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(10.sp),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12.sp),
+          border: Border.all(color: Colors.grey.shade200),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Icon(icon, size: 16.sp, color: context.primaryTextColor),
       ),
     );
   }
@@ -242,23 +493,16 @@ class ServiceTrackingScreen extends ConsumerWidget {
     return servicesAsync.when(
       data: (requests) {
         if (requests.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.miscellaneous_services_outlined, size: 64, color: Colors.grey[300]),
-                const SizedBox(height: 16),
-                Text(
-                  'No service requests raised yet',
-                  style: TextStyle(color: Colors.grey[500], fontWeight: FontWeight.w500),
-                ),
-              ],
-            ),
+          return _buildEmptyState(
+            context,
+            LucideIcons.clipboardList,
+            'No service requests',
+            'You haven\'t raised any service requests yet. Start by exploring our hub!',
           );
         }
 
         return ListView.builder(
-          padding: const EdgeInsets.only(top: 16),
+          padding: EdgeInsets.symmetric(vertical: 24.h),
           itemCount: requests.length,
           itemBuilder: (context, index) {
             final request = requests[index];
@@ -266,7 +510,7 @@ class ServiceTrackingScreen extends ConsumerWidget {
           },
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue)),
       error: (e, st) => Center(child: Text('Error: $e')),
     );
   }
@@ -274,166 +518,183 @@ class ServiceTrackingScreen extends ConsumerWidget {
   Widget _buildServiceRequestCard(BuildContext context, WidgetRef ref, ServiceRequestModel request, String currentUserId) {
     final statusColor = _getServiceStatusColor(request.status);
     final dateStr = DateFormat('MMM d, yyyy').format(request.createdAt);
-    final isTenant = request.tenantId == currentUserId || request.tenantEmail == ref.read(currentUserDataProvider).value?.email;
-    final isLessor = request.userId == currentUserId;
     
     IconData categoryIcon;
     switch (request.category.toLowerCase()) {
       case 'legal': 
-      case 'rentagreement': categoryIcon = Icons.gavel; break;
-      case 'construction': categoryIcon = Icons.architecture; break;
-      case 'sitevisit': categoryIcon = Icons.location_on; break;
-      case 'movers': categoryIcon = Icons.local_shipping; break;
-      default: categoryIcon = Icons.miscellaneous_services;
+      case 'rentagreement': categoryIcon = LucideIcons.gavel; break;
+      case 'construction': categoryIcon = LucideIcons.pencilRuler; break;
+      case 'sitevisit': categoryIcon = LucideIcons.mapPin; break;
+      case 'movers': categoryIcon = LucideIcons.truck; break;
+      default: categoryIcon = LucideIcons.wrench;
     }
 
     return Container(
-      margin: const EdgeInsets.only(left: 24, right: 24, bottom: 20),
+      margin: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
       decoration: BoxDecoration(
         color: context.cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24.sp),
         border: Border.all(color: context.borderColor),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4)),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(20.sp),
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(12.sp),
                   decoration: BoxDecoration(
                     color: AppTheme.primaryBlue.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16.sp),
                   ),
-                  child: Icon(categoryIcon, color: AppTheme.primaryBlue, size: 24),
+                  child: Icon(categoryIcon, color: context.primaryTextColor, size: 24.sp),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16.w),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                        Text(
-                          request.category.toUpperCase(),
-                          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: AppTheme.primaryBlue, letterSpacing: 1),
+                      Text(
+                        request.category.toUpperCase(),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 10.sp,
+                          color: AppTheme.primaryBlue,
+                          letterSpacing: 1.5,
+                          fontFamily: 'Poppins',
                         ),
-                        if (request.category.toLowerCase() == 'rentagreement')
-                          Container(
-                            margin: const EdgeInsets.only(top: 4),
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: isTenant ? Colors.purple.withValues(alpha: 0.1) : (isLessor ? Colors.orange.withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.1)),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              isTenant ? 'TENANT ROLE' : (isLessor ? 'LANDLORD ROLE' : 'PARTICIPANT'),
-                              style: TextStyle(color: isTenant ? Colors.purple : (isLessor ? Colors.orange : Colors.grey), fontSize: 8, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        const SizedBox(height: 4),
+                      ),
                       Text(
                         request.category.toLowerCase() == 'movers' 
                             ? '${request.details['pickupLocation']} ➔ ${request.details['dropLocation']}'
-                            : (request.details['propertyAddress'] ?? request.details['requirement'] ?? 'Service Request'),
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: context.primaryTextColor),
+                            : (request.details['propertyAddress'] ?? request.details['requirement'] ?? 'Premium Service'),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 16.sp,
+                          color: context.primaryTextColor,
+                          fontFamily: 'Poppins',
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: statusColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    request.status.toUpperCase(),
-                    style: TextStyle(color: statusColor, fontSize: 10, fontWeight: FontWeight.w900),
-                  ),
-                ),
+                _buildStatusChip(request.status.toUpperCase(), statusColor),
               ],
             ),
           ),
+          
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
+            child: Column(
               children: [
-                Row(
-                  children: [
-                    Icon(Icons.calendar_today_outlined, size: 14, color: Colors.grey[500]),
-                    const SizedBox(width: 6),
-                    Text(dateStr, style: TextStyle(color: Colors.grey[600], fontSize: 12, fontWeight: FontWeight.bold)),
-                  ],
-                ),
-                if (request.location != null && request.category.toLowerCase() != 'movers')
-                  Row(
-                    children: [
-                      Icon(Icons.location_on_outlined, size: 14, color: Colors.grey[500]),
-                      const SizedBox(width: 4),
-                      Text(request.location!, style: TextStyle(color: Colors.grey[600], fontSize: 12, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
+                _buildTimelineStep(context, 'Request Raised', 'Order placed on $dateStr', true, true),
+                _buildTimelineStep(context, 'Partner Assigned', 'Verified service partner assigned', ['accepted', 'in progress', 'completed'].contains(request.status.toLowerCase()), true),
+                _buildTimelineStep(context, 'In Progress', 'Service is currently being fulfilled', ['in progress', 'completed'].contains(request.status.toLowerCase()), true),
+                _buildTimelineStep(context, 'Service Delivered', 'Request marked as finished', request.status.toLowerCase() == 'completed', false),
               ],
             ),
           ),
-          if (request.category.toLowerCase() == 'movers')
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-              child: Container(
-                padding: const EdgeInsets.all(12),
+          
+          if (request.category.toLowerCase() == 'movers' && (request.details['finalQuote'] != null || request.details['estimatedQuote'] != null))
+            Container(
+              margin: EdgeInsets.all(20.sp),
+              padding: EdgeInsets.all(16.sp),
+              decoration: BoxDecoration(
+                color: context.surfaceColor,
+                borderRadius: BorderRadius.circular(16.sp),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    request.details['finalQuote'] != null ? 'FINAL QUOTE' : 'ESTIMATED PRICE',
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      color: context.secondaryTextColor,
+                      fontWeight: FontWeight.w900,
+                      fontFamily: 'Poppins',
+                      letterSpacing: 1,
+                    ),
+                  ),
+                  Text(
+                    '₹${request.details['finalQuote'] ?? request.details['estimatedQuote']}',
+                    style: TextStyle(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w900,
+                      color: AppTheme.primaryBlue,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else 
+            SizedBox(height: 20.h),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimelineStep(BuildContext context, String title, String subtitle, bool isCompleted, bool showLine) {
+    return IntrinsicHeight(
+      child: Row(
+        children: [
+          Column(
+            children: [
+              Container(
+                width: 12.w,
+                height: 12.w,
                 decoration: BoxDecoration(
-                  color: request.details['finalQuote'] != null 
-                         ? Colors.green.withValues(alpha: 0.1) 
-                         : Colors.grey.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                     Row(
-                       children: [
-                         Icon(request.details['finalQuote'] != null ? Icons.verified : Icons.calculate, size: 16, color: request.details['finalQuote'] != null ? Colors.green[700] : Colors.grey[600]),
-                         const SizedBox(width: 6),
-                         Text(request.details['finalQuote'] != null ? 'Official Provider Quote' : 'Estimated Price', style: TextStyle(fontSize: 12, color: request.details['finalQuote'] != null ? Colors.green[700] : Colors.grey[600], fontWeight: FontWeight.bold)),
-                       ],
-                     ),
-                     Text('₹${request.details['finalQuote'] ?? request.details['estimatedQuote']}', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: request.details['finalQuote'] != null ? Colors.green[700] : Colors.grey[800])),
-                  ],
+                  color: isCompleted ? AppTheme.primaryBlue : context.borderColor,
+                  shape: BoxShape.circle,
+                  border: isCompleted ? Border.all(color: AppTheme.primaryBlue, width: 2) : null,
                 ),
               ),
-            ),
-          // Status Progress Bar
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+              if (showLine)
+                Expanded(
+                  child: Container(
+                    width: 2.w,
+                    margin: EdgeInsets.symmetric(vertical: 4.h),
+                    color: isCompleted ? AppTheme.primaryBlue : context.borderColor,
+                  ),
+                ),
+            ],
+          ),
+          SizedBox(width: 16.w),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _buildStatusStep('Raised', true),
-                    _buildStatusStep('Accepted', ['accepted', 'in progress', 'completed'].contains(request.status.toLowerCase())),
-                    _buildStatusStep('Active', ['in progress', 'completed'].contains(request.status.toLowerCase())),
-                    _buildStatusStep('Done', request.status.toLowerCase() == 'completed'),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: LinearProgressIndicator(
-                    value: _getStatusProgress(request.status),
-                    backgroundColor: Colors.grey[200],
-                    valueColor: AlwaysStoppedAnimation<Color>(statusColor),
-                    minHeight: 4,
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 13.sp,
+                    fontWeight: isCompleted ? FontWeight.w900 : FontWeight.w700,
+                    color: isCompleted ? context.primaryTextColor : context.secondaryTextColor,
+                    fontFamily: 'Poppins',
                   ),
                 ),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 11.sp,
+                    fontWeight: FontWeight.w500,
+                    color: context.secondaryTextColor.withValues(alpha: 0.6),
+                    fontFamily: 'Poppins',
+                  ),
+                ),
+                SizedBox(height: 16.h),
               ],
             ),
           ),
@@ -442,24 +703,12 @@ class ServiceTrackingScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatusStep(String label, bool isReached) {
-    return Text(
-      label,
-      style: TextStyle(
-        fontSize: 10,
-        fontWeight: FontWeight.w900,
-        color: isReached ? AppTheme.primaryBlue : Colors.grey[400],
-      ),
-    );
-  }
-
-  double _getStatusProgress(String status) {
+  Color _getBookingStatusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'pending': return 0.25;
-      case 'accepted': return 0.5;
-      case 'in progress': return 0.75;
-      case 'completed': return 1.0;
-      default: return 0.1;
+      case 'confirmed': return Colors.green;
+      case 'cancelled': return Colors.red;
+      case 'completed': return Colors.blue;
+      default: return Colors.orange;
     }
   }
 
@@ -469,15 +718,6 @@ class ServiceTrackingScreen extends ConsumerWidget {
       case 'in progress': return AppTheme.primaryBlue;
       case 'completed': return Colors.green;
       case 'cancelled': return Colors.red;
-      default: return Colors.orange;
-    }
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status.toLowerCase()) {
-      case 'confirmed': return Colors.green;
-      case 'cancelled': return Colors.red;
-      case 'completed': return Colors.blue;
       default: return Colors.orange;
     }
   }

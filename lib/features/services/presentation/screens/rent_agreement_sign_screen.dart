@@ -35,31 +35,56 @@ class _RentAgreementSignScreenState extends ConsumerState<RentAgreementSignScree
         child: Container(
           padding: EdgeInsets.all(24.w),
           decoration: BoxDecoration(
-            color: Theme.of(ctx).scaffoldBackgroundColor,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24.w)),
+            color: context.scaffoldColor,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(30.sp)),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('E-KYC Verification', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24.sp)),
+              Text(
+                'E-KYC Verification',
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 22.sp,
+                  fontFamily: 'Poppins',
+                  color: context.primaryTextColor,
+                ),
+              ),
               SizedBox(height: 8.h),
-              const Text('Enter your 12-digit Aadhaar to verify identity.', style: TextStyle(color: Colors.grey)),
+              Text(
+                'Enter your 12-digit Aadhaar to verify identity.',
+                style: TextStyle(
+                  color: context.secondaryTextColor,
+                  fontSize: 13.sp,
+                  fontFamily: 'Poppins',
+                ),
+              ),
               SizedBox(height: 24.h),
               TextField(
                 controller: _aadhaarController,
                 keyboardType: TextInputType.number,
                 maxLength: 12,
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w700,
+                  color: context.primaryTextColor,
+                ),
                 decoration: InputDecoration(
                   labelText: 'Aadhaar Number',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.w)),
-                  prefixIcon: Icon(Icons.fingerprint),
+                  labelStyle: TextStyle(fontFamily: 'Poppins', color: AppTheme.primaryBlue),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(16.sp)),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16.sp),
+                    borderSide: const BorderSide(color: AppTheme.primaryBlue, width: 2),
+                  ),
+                  prefixIcon: Icon(Icons.fingerprint, color: context.primaryTextColor),
                 ),
               ),
               SizedBox(height: 24.h),
               SizedBox(
                 width: double.infinity,
-                height: 50.h,
+                height: 52.h,
                 child: ElevatedButton(
                   onPressed: () {
                     if (_aadhaarController.text.length == 12) {
@@ -78,9 +103,19 @@ class _RentAgreementSignScreenState extends ConsumerState<RentAgreementSignScree
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primaryBlue,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.w)),
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.sp)),
                   ),
-                  child: const Text('Verify via OTP Mock', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  child: Text(
+                    'VERIFY VIA OTP',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 14.sp,
+                      fontFamily: 'Poppins',
+                      letterSpacing: 1.2,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -101,46 +136,82 @@ class _RentAgreementSignScreenState extends ConsumerState<RentAgreementSignScree
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        title: Text('Draw Your Signature', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18.sp)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.sp)),
+        title: Text(
+          'Draw Your Signature',
+          style: TextStyle(
+            fontWeight: FontWeight.w900,
+            fontSize: 20.sp,
+            fontFamily: 'Poppins',
+            color: context.primaryTextColor,
+          ),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               width: 300.w,
               height: 150.h,
-              decoration: BoxDecoration(border: Border.all(color: Colors.grey.shade300)),
-              child: Signature(
-                controller: signatureController,
-                backgroundColor: Colors.grey.shade100,
+              decoration: BoxDecoration(
+                border: Border.all(color: context.borderColor, width: 2),
+                borderRadius: BorderRadius.circular(16.sp),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(14.sp),
+                child: Signature(
+                  controller: signatureController,
+                  backgroundColor: context.scaffoldColor,
+                ),
               ),
             ),
-            SizedBox(height: 8.h),
+            SizedBox(height: 16.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TextButton(
                   onPressed: () => signatureController.clear(),
-                  child: const Text('Clear', style: TextStyle(color: Colors.red)),
+                  child: Text(
+                    'CLEAR',
+                    style: TextStyle(
+                      color: Colors.redAccent,
+                      fontWeight: FontWeight.w900,
+                      fontFamily: 'Poppins',
+                      fontSize: 12.sp,
+                    ),
+                  ),
                 ),
                 ElevatedButton(
-                    onPressed: () async {
-                      if (signatureController.isNotEmpty) {
-                        final Uint8List? data = await signatureController.toPngBytes();
-                        if (data != null) {
-                          final String base64Signature = base64Encode(data);
-                          if (ctx.mounted) {
-                            Navigator.pop(ctx);
-                            _signDocument(doc, base64Signature);
-                          }
-                        }
-                      } else {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please draw your signature')));
+                  onPressed: () async {
+                    if (signatureController.isNotEmpty) {
+                      final Uint8List? data = await signatureController.toPngBytes();
+                      if (data != null) {
+                        final String base64Signature = base64Encode(data);
+                        if (ctx.mounted) {
+                          Navigator.pop(ctx);
+                          _signDocument(doc, base64Signature);
                         }
                       }
-                    },
-                  style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryBlue),
-                  child: const Text('Confirm', style: TextStyle(color: Colors.white)),
+                    } else {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please draw your signature')));
+                      }
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primaryBlue,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.sp)),
+                    padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+                  ),
+                  child: Text(
+                    'CONFIRM',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 12.sp,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
                 ),
               ],
             )
