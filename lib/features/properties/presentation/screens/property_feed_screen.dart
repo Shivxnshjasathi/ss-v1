@@ -119,85 +119,97 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
       ),
       body: Column(
         children: [
-          // Search Bar
+          // Floating Search Bar
           Padding(
-            padding: EdgeInsets.fromLTRB(20.w, 8.h, 20.w, 16.h),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    height: 54.h,
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    decoration: BoxDecoration(
-                      color: context.cardColor,
-                      border: Border.all(
-                        color: context.borderColor,
-                        width: 1.5.w,
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+            child: Container(
+              height: 56.h,
+              decoration: BoxDecoration(
+                color: context.cardColor,
+                borderRadius: BorderRadius.circular(28.sp), // More rounded "flowing" design
+                border: Border.all(color: context.borderColor, width: 1.2.w),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  SizedBox(width: 20.w),
+                  Icon(
+                    LucideIcons.search,
+                    color: AppTheme.primaryBlue,
+                    size: 20.w,
+                  ),
+                  SizedBox(width: 12.w),
+                  Expanded(
+                    child: TextField(
+                      controller: _searchController,
+                      onChanged: (_) => setState(() {}),
+                      decoration: InputDecoration(
+                        hintText: 'Search properties...',
+                        hintStyle: TextStyle(
+                          color: context.secondaryTextColor.withValues(alpha: 0.4),
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.zero,
                       ),
-                      borderRadius: BorderRadius.circular(16.sp),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          LucideIcons.search,
-                          color: AppTheme.primaryBlue,
-                          size: 20.w,
-                        ),
-                        SizedBox(width: 12.w),
-                        Expanded(
-                          child: TextField(
-                            controller: _searchController,
-                            onChanged: (_) => setState(() {}),
-                            decoration: InputDecoration(
-                              hintText: 'Search by area or development...',
-                              hintStyle: TextStyle(
-                                color: context.secondaryTextColor.withValues(alpha: 0.5),
-                                fontSize: 13.sp,
-                                fontWeight: FontWeight.w500,
-                              ),
-                              border: InputBorder.none,
-                            ),
-                            style: TextStyle(
-                              color: context.primaryTextColor,
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        if (_searchController.text.isNotEmpty)
-                          GestureDetector(
-                            onTap: () {
-                              _searchController.clear();
-                              setState(() {});
-                            },
-                            child: Icon(LucideIcons.x, color: context.secondaryTextColor, size: 16.sp),
-                          ),
-                        SizedBox(width: 8.w),
-                        VerticalDivider(width: 1, indent: 15, endIndent: 15, color: context.borderColor),
-                        SizedBox(width: 8.w),
-                        GestureDetector(
-                          onTap: () => _showFilterSheet(context, l10n),
-                          child: Container(
-                            padding: EdgeInsets.all(8.sp),
-                            child: Icon(
-                              LucideIcons.slidersHorizontal,
-                              color: context.primaryTextColor,
-                              size: 18.sp,
-                            ),
-                          ),
-                        ),
-                      ],
+                      style: TextStyle(
+                        color: context.primaryTextColor,
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                  if (_searchController.text.isNotEmpty)
+                    Padding(
+                      padding: EdgeInsets.only(right: 8.w),
+                      child: GestureDetector(
+                        onTap: () {
+                          _searchController.clear();
+                          setState(() {});
+                        },
+                        child: Icon(LucideIcons.x, color: context.secondaryTextColor, size: 16.sp),
+                      ),
+                    ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12.h),
+                    child: VerticalDivider(
+                      width: 1.w,
+                      thickness: 1.w,
+                      color: context.borderColor,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => _showFilterSheet(context, l10n),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
+                      child: Icon(
+                        LucideIcons.slidersHorizontal,
+                        color: context.primaryTextColor,
+                        size: 18.sp,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
 
 
-          // Header
+          // Featured Header
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0.w, vertical: 8.0.h),
+            padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 4.h),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -205,7 +217,9 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                   l10n.featuredCollections,
                   style: TextStyle(
                     fontWeight: FontWeight.w900,
-                    fontSize: 20.sp,
+                    fontSize: 22.sp,
+                    color: context.primaryTextColor,
+                    letterSpacing: -0.5,
                   ),
                 ),
                 TextButton(
@@ -213,9 +227,10 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                   child: Text(
                     l10n.seeAll,
                     style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
+                      color: AppTheme.primaryBlue,
                       fontWeight: FontWeight.w900,
-                      fontSize: 14.sp,
+                      fontSize: 13.sp,
+                      letterSpacing: 0.5,
                     ),
                   ),
                 ),
@@ -853,18 +868,16 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                         onPressed: () =>
                             context.push('/properties/detail/${property.id}'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.primaryBlue.withValues(
-                            alpha: 0.1,
-                          ),
-                          foregroundColor: AppTheme.primaryBlue,
+                          backgroundColor: AppTheme.primaryBlue,
+                          foregroundColor: Colors.white,
                           padding: EdgeInsets.symmetric(
-                            horizontal: 16.w,
-                            vertical: 0.h,
+                            horizontal: 20.w,
+                            vertical: 10.h,
                           ),
-                          minimumSize: const Size(60, 36),
-                          elevation: 0,
+                          elevation: 2,
+                          shadowColor: AppTheme.primaryBlue.withValues(alpha: 0.3),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.w),
+                            borderRadius: BorderRadius.circular(12.w),
                           ),
                         ),
                         child: Text(

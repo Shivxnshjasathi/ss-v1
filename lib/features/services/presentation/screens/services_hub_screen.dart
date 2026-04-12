@@ -66,7 +66,7 @@ class ServicesHubScreen extends StatelessWidget {
                   crossAxisCount: 2,
                   mainAxisSpacing: 16,
                   crossAxisSpacing: 16,
-                  childAspectRatio: 1.2,
+                  childAspectRatio: context.screenWidth < 380 ? 1.0 : 1.15,
                   children: [
                     _buildServiceGridItem(
                       context,
@@ -208,26 +208,37 @@ class ServicesHubScreen extends StatelessWidget {
               ],
             ),
             SizedBox(height: 16.h),
-            Text(
-              title,
-              style: TextStyle(
-                fontWeight: FontWeight.w900,
-                fontSize: 15.sp,
-                fontFamily: 'Poppins',
-                color: context.primaryTextColor,
-              ),
-            ),
-            SizedBox(height: 2.h),
-            Text(
-              subtitle,
-              style: TextStyle(
-                color: context.secondaryTextColor,
-                fontSize: 11.sp,
-                fontWeight: FontWeight.w500,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 14.sp,
+                          fontFamily: 'Poppins',
+                          color: context.primaryTextColor,
+                          height: 1.2,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      SizedBox(height: 4.h),
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          color: context.secondaryTextColor,
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.w500,
+                          height: 1.3,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
           ],
         ),
       ),
