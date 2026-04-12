@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
@@ -62,7 +61,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                     icon: Container(
                       padding: EdgeInsets.all(8.sp),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.4),
+                        color: Colors.black.withValues(alpha: 0.4),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -261,12 +260,9 @@ class PropertyDetailScreen extends ConsumerWidget {
                                     fontWeight: FontWeight.w900,
                                     letterSpacing: -1.0,
                                   ),
-                                )
-                                .animate()
-                                .fadeIn(delay: 200.ms)
-                                .slideY(begin: 0.1, end: 0),
-                          ],
-                        ),
+                                  )
+                                ],
+                              ),
                       ),
                     ],
                   ),
@@ -291,9 +287,8 @@ class PropertyDetailScreen extends ConsumerWidget {
                           fontSize: 24.sp,
                           fontWeight: FontWeight.w900,
                           color: context.primaryTextColor,
-                          letterSpacing: -0.5,
                         ),
-                      ).animate().fadeIn(delay: 300.ms),
+                      ),
                       SizedBox(height: 8.h),
                       Row(
                         children: [
@@ -398,10 +393,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                                 ),
                               ],
                             ),
-                          )
-                          .animate()
-                          .fadeIn(delay: 400.ms)
-                          .slideY(begin: 0.1, end: 0),
+                          ),
 
                       SizedBox(height: 32.h),
                       Text(
@@ -418,7 +410,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                         context,
                         property,
                         l10n,
-                      ).animate().fadeIn(delay: 500.ms),
+                      ),
 
                       SizedBox(height: 32.h),
                       Text(
@@ -453,7 +445,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                           height: 1.6.h,
                           fontWeight: FontWeight.w400,
                         ),
-                      ).animate().fadeIn(delay: 600.ms),
+                      ),
                       SizedBox(height: 16.h),
                       Text(
                         l10n.readFullSpec,
@@ -490,8 +482,8 @@ class PropertyDetailScreen extends ConsumerWidget {
                                 Container(
                                   padding: EdgeInsets.all(12.w),
                                   decoration: BoxDecoration(
-                                    color: AppTheme.primaryBlue.withOpacity(
-                                      0.1,
+                                    color: AppTheme.primaryBlue.withValues(
+                                      alpha: 0.1,
                                     ),
                                     borderRadius: BorderRadius.circular(16.w),
                                   ),

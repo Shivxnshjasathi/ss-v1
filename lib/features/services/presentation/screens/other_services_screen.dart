@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_animate/flutter_animate.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:uuid/uuid.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
@@ -137,7 +135,7 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
       children: [
         Text(
           title,
-          style: GoogleFonts.inter(
+          style: TextStyle(
             fontWeight: FontWeight.w900,
             fontSize: 24.sp,
             letterSpacing: -1.0,
@@ -226,16 +224,17 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
     bool isSelected = _selectedCategory == label;
     // Map internal key to pretty label
     String displayLabel = label;
-    if (label == 'Electrical fitting & services')
+    if (label == 'Electrical fitting & services') {
       displayLabel = 'ELECTRICAL';
-    else if (label == 'Plumbing fitting & service')
+    } else if (label == 'Plumbing fitting & service') {
       displayLabel = 'PLUMBING';
-    else if (label == 'House painting')
+    } else if (label == 'House painting') {
       displayLabel = 'PAINTING';
-    else if (label == 'House cleaning')
+    } else if (label == 'House cleaning') {
       displayLabel = 'CLEANING';
-    else if (label == 'All')
+    } else if (label == 'All') {
       displayLabel = 'ALL SERVICES';
+    }
 
     return Padding(
       padding: EdgeInsets.only(right: 12.0.w),
@@ -319,10 +318,7 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
                     .asMap()
                     .entries
                     .map(
-                      (entry) => _buildCategoryChip(entry.value)
-                          .animate()
-                          .fadeIn(delay: (200 + entry.key * 50).ms)
-                          .slideX(begin: 0.2, end: 0),
+                      (entry) => _buildCategoryChip(entry.value),
                     )
                     .toList(),
               ),
@@ -339,7 +335,7 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
                   _buildSectionHeader(
                     'Service Details',
                     'Book certified professionals for all your home repair and maintenance needs. Fast, reliable, and verified.',
-                  ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1, end: 0),
+                  ),
                   SizedBox(height: 24.h),
 
                   _buildTextField(
@@ -347,7 +343,7 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
                     'e.g. 123 Main St, Apartment 4B',
                     TextInputType.text,
                     controller: _addressController,
-                  ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.1, end: 0),
+                  ),
 
                   SizedBox(height: 16.h),
 
@@ -357,7 +353,7 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
                     TextInputType.multiline,
                     maxLines: 5,
                     controller: _descriptionController,
-                  ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.1, end: 0),
+                  ),
 
                   SizedBox(height: 32.h),
                 ],
@@ -367,7 +363,7 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
         ),
       ),
       bottomNavigationBar: Container(
-        padding: EdgeInsets.fromLTRB(24, 16, 24, 32),
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
         decoration: BoxDecoration(
           color: context.scaffoldColor,
           boxShadow: [
@@ -380,41 +376,37 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
         ),
         child: SafeArea(
           top: false,
-          child:
-              SizedBox(
-                    height: 54.h,
-                    child: ElevatedButton(
-                      onPressed: _isLoading ? null : _submitRequest,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.primaryBlue,
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.w),
-                        ),
-                        elevation: 0,
+          child: SizedBox(
+            height: 54.h,
+            child: ElevatedButton(
+              onPressed: _isLoading ? null : _submitRequest,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primaryBlue,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.w),
+                ),
+                elevation: 0,
+              ),
+              child: _isLoading
+                  ? SizedBox(
+                      height: 20.h,
+                      width: 20.h,
+                      child: const CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
                       ),
-                      child: _isLoading
-                          ? SizedBox(
-                              height: 20.h,
-                              width: 20.h,
-                              child: const CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
-                              ),
-                            )
-                          : Text(
-                              'REQUEST PROFESSIONAL',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w900,
-                                fontSize: 13.sp,
-                                letterSpacing: 1.5,
-                              ),
-                            ),
+                    )
+                  : Text(
+                      'REQUEST PROFESSIONAL',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 13.sp,
+                        letterSpacing: 1.5,
+                      ),
                     ),
-                  )
-                  .animate()
-                  .fadeIn(delay: 800.ms)
-                  .scale(begin: const Offset(0.9, 0.9)),
+            ),
+          ),
         ),
       ),
     );

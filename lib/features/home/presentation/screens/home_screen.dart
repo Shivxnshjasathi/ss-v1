@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
@@ -28,7 +27,7 @@ class HomeScreen extends ConsumerWidget {
     final currentLocation = locationAsync.when(
       data: (city) => city,
       loading: () => 'Fetching...',
-      error: (_, __) => 'Location Error',
+      error: (_, _) => 'Location Error',
     );
 
     return Scaffold(
@@ -76,7 +75,7 @@ class HomeScreen extends ConsumerWidget {
               ],
             ),
           ],
-        ).animate().fadeIn(duration: 400.ms).slideX(begin: -0.1, end: 0),
+        ),
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 16.w),
@@ -147,7 +146,7 @@ class HomeScreen extends ConsumerWidget {
                     horizontal: 16.w,
                   ),
                 ),
-              ).animate().fadeIn(delay: 200.ms),
+              ),
             ),
 
             SizedBox(height: 24.h),
@@ -173,7 +172,7 @@ class HomeScreen extends ConsumerWidget {
                   context.push('/services/marketplace');
                 }),
               ]),
-            ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1, end: 0),
+            ),
 
             SizedBox(height: 16.h),
 
@@ -202,7 +201,7 @@ class HomeScreen extends ConsumerWidget {
                   () => context.push('/services/movers'),
                 ),
               ]),
-            ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.1, end: 0),
+            ),
 
             SizedBox(height: 32.h),
 
@@ -282,7 +281,7 @@ class HomeScreen extends ConsumerWidget {
                             ),
                           ),
                         ],
-                      ).animate().fadeIn(delay: 800.ms),
+                      ),
                     ),
                     SizedBox(height: 16.h),
                     SizedBox(
@@ -305,10 +304,7 @@ class HomeScreen extends ConsumerWidget {
                                           ? prop.imageUrls.first
                                           : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80',
                                       prop.id,
-                                    )
-                                    .animate()
-                                    .fadeIn(delay: (800 + index * 100).ms)
-                                    .slideX(begin: 0.2, end: 0),
+                                    ),
                           );
                         },
                       ),
@@ -330,10 +326,7 @@ class HomeScreen extends ConsumerWidget {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
                       child: Column(
-                        children: properties.take(5).toList().asMap().entries.map((
-                          entry,
-                        ) {
-                          final index = entry.key;
+                        children: properties.take(5).toList().asMap().entries.map((entry) {
                           final prop = entry.value;
                           return Padding(
                             padding: EdgeInsets.only(bottom: 12.h),
@@ -347,10 +340,7 @@ class HomeScreen extends ConsumerWidget {
                                           ? prop.imageUrls.first
                                           : 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=300&q=80',
                                       propertyId: prop.id,
-                                    )
-                                    .animate()
-                                    .fadeIn(delay: (1000 + index * 100).ms)
-                                    .slideY(begin: 0.1, end: 0),
+                                    ),
                           );
                         }).toList(),
                       ),
@@ -388,7 +378,7 @@ class HomeScreen extends ConsumerWidget {
         ),
         elevation: 10,
         child: Icon(LucideIcons.messageCircle, color: Colors.white, size: 24.w),
-      ).animate().scale(delay: 1200.ms, curve: Curves.elasticOut),
+      ),
     );
   }
 

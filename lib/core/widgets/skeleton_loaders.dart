@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
 
@@ -17,16 +16,13 @@ class SkeletonLoader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Shimmer.fromColors(
-      baseColor: context.isDarkMode ? Colors.grey[800]! : Colors.grey[300]!,
-      highlightColor: context.isDarkMode ? Colors.grey[700]! : Colors.grey[100]!,
-      child: Container(
-        width: width,
-        height: height,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: borderRadius ?? BorderRadius.circular(8.sp),
-        ),
+    final baseColor = context.isDarkMode ? Colors.grey[800]! : Colors.grey[300]!;
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: baseColor,
+        borderRadius: borderRadius ?? BorderRadius.circular(8.sp),
       ),
     );
   }

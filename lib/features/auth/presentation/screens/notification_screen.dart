@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -130,10 +129,7 @@ class _BookingsList extends ConsumerWidget {
           itemCount: bookings.length,
           itemBuilder: (context, index) {
             final booking = bookings[index];
-            return _BookingCard(booking: booking, isOwner: isOwner)
-                .animate()
-                .fadeIn(delay: (index * 100).ms)
-                .slideX(begin: 0.1, end: 0);
+            return _BookingCard(booking: booking, isOwner: isOwner);
           },
         );
       },

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/services/domain/cart_service.dart';
@@ -185,7 +184,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
       ),
       flexibleSpace: FlexibleSpaceBar(
         titlePadding: EdgeInsets.only(left: 56.w, bottom: 16.h),
-        title: Text(l10n.marketplace, style: GoogleFonts.inter(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 18.sp)),
+        title: Text(l10n.marketplace, style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 18.sp)),
       ),
       actions: [
         ListenableBuilder(
@@ -243,7 +242,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
           onChanged: (val) => setState(() => _searchQuery = val),
           decoration: InputDecoration(
             hintText: "Search materials, brands...",
-            hintStyle: GoogleFonts.inter(color: Colors.grey, fontSize: 14.sp),
+            hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
             prefixIcon: Icon(Icons.search, color: AppTheme.primaryBlue),
             suffixIcon: _searchQuery.isNotEmpty 
               ? IconButton(
@@ -268,7 +267,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
       children: [
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-          child: Text("Browse Categories", style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 14.sp, letterSpacing: 0.5)),
+          child: Text("Browse Categories", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp, letterSpacing: 0.5)),
         ),
         SizedBox(
           height: 100.h,
@@ -293,8 +292,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                   }),
                   child: Column(
                     children: [
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
+                      Container(
                         padding: EdgeInsets.all(16.w),
                         decoration: BoxDecoration(
                           color: isSelected ? AppTheme.primaryBlue : context.cardColor,
@@ -305,7 +303,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                         child: Icon(icon, color: isSelected ? Colors.white : context.iconColor, size: 24.w),
                       ),
                       SizedBox(height: 8.h),
-                      Text(name, style: GoogleFonts.inter(fontSize: 10.sp, fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500, color: isSelected ? AppTheme.primaryBlue : context.primaryTextColor)),
+                      Text(name, style: TextStyle(fontSize: 10.sp, fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500, color: isSelected ? AppTheme.primaryBlue : context.primaryTextColor)),
                     ],
                   ),
                 ),
@@ -334,7 +332,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
           return Padding(
             padding: EdgeInsets.symmetric(horizontal: 8.w),
             child: ChoiceChip(
-              label: Text(_getLocalizedSubcategory(sub, l10n), style: GoogleFonts.inter(fontSize: 11.sp, fontWeight: FontWeight.bold)),
+              label: Text(_getLocalizedSubcategory(sub, l10n), style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.bold)),
               selected: isSelected,
               onSelected: (val) => setState(() => _selectedSubcategory = sub),
               selectedColor: AppTheme.primaryBlue,
@@ -355,7 +353,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text("Showing $count products", style: GoogleFonts.inter(fontSize: 12.sp, fontWeight: FontWeight.w600, color: Colors.grey)),
+          Text("Showing $count products", style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w600, color: Colors.grey)),
           GestureDetector(
             onTap: () => _showFilterSheet(l10n),
             child: Container(
@@ -369,7 +367,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                 children: [
                   Icon(Icons.tune_rounded, size: 16.w, color: context.iconColor),
                   SizedBox(width: 4.w),
-                  Text("Filter", style: GoogleFonts.inter(fontSize: 10.sp, fontWeight: FontWeight.bold, color: context.iconColor)),
+                  Text("Filter", style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold, color: context.iconColor)),
                 ],
               ),
             ),
@@ -459,16 +457,16 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(product.subcategory.toUpperCase(), style: GoogleFonts.inter(fontSize: 8.sp, fontWeight: FontWeight.w900, color: AppTheme.primaryBlue, letterSpacing: 0.5)),
+                      Text(product.subcategory.toUpperCase(), style: TextStyle(fontSize: 8.sp, fontWeight: FontWeight.w900, color: AppTheme.primaryBlue, letterSpacing: 0.5)),
                       SizedBox(height: 4.h),
-                      Text(product.name, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 13.sp, height: 1.2.h, color: context.primaryTextColor), maxLines: 2, overflow: TextOverflow.ellipsis),
+                      Text(product.name, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13.sp, height: 1.2.h, color: context.primaryTextColor), maxLines: 2, overflow: TextOverflow.ellipsis),
                     ],
                   ),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.baseline,
                     textBaseline: TextBaseline.alphabetic,
                     children: [
-                      Text(_formatCurrency(product.price), style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 16.sp, color: context.primaryTextColor)),
+                      Text(_formatCurrency(product.price), style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp, color: context.primaryTextColor)),
                       SizedBox(width: 4.w),
                       Flexible(child: Text('/ ${product.unit}', style: TextStyle(fontSize: 10.sp, color: context.secondaryTextColor), overflow: TextOverflow.ellipsis)),
                     ],
@@ -483,7 +481,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.w)),
                         elevation: 0,
                       ),
-                      child: Text(l10n.addToCart, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12.sp, color: Colors.white)),
+                      child: Text(l10n.addToCart, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12.sp, color: Colors.white)),
                     ),
                   ),
                 ],
@@ -589,7 +587,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(l10n.sortBy, style: GoogleFonts.inter(fontSize: 20.sp, fontWeight: FontWeight.w900, color: context.primaryTextColor)),
+              Text(l10n.sortBy, style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.w900, color: context.primaryTextColor)),
               TextButton(
                 onPressed: () {
                   setState(() {
@@ -609,7 +607,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
           _buildSortOption(l10n.priceHighToLow, 'Price: High to Low'),
           
           SizedBox(height: 32.h),
-          Text(l10n.priceRangeLabel, style: GoogleFonts.inter(fontSize: 14.sp, fontWeight: FontWeight.w900, color: context.primaryTextColor)),
+          Text(l10n.priceRangeLabel, style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w900, color: context.primaryTextColor)),
           SizedBox(height: 8.h),
           RangeSlider(
             values: _tempPriceRange,
@@ -637,7 +635,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
           ),
 
           SizedBox(height: 32.h),
-          Text(l10n.brands, style: GoogleFonts.inter(fontSize: 14.sp, fontWeight: FontWeight.w900, color: context.primaryTextColor)),
+          Text(l10n.brands, style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w900, color: context.primaryTextColor)),
           SizedBox(height: 12.h),
           Wrap(
             spacing: 8.h,
@@ -645,7 +643,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
             children: widget.allBrands.map((brand) {
               final isSelected = _tempSelectedBrands.contains(brand);
               return FilterChip(
-                label: Text(brand, style: GoogleFonts.inter(fontSize: 12.sp, fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500)),
+                label: Text(brand, style: TextStyle(fontSize: 12.sp, fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500)),
                 selected: isSelected,
                 onSelected: (val) {
                   setState(() {
@@ -680,7 +678,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.w)),
                 elevation: 0,
               ),
-              child: Text(l10n.applyFilters, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 16.sp, color: Colors.white)),
+              child: Text(l10n.applyFilters, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16.sp, color: Colors.white)),
             ),
           ),
         ],
@@ -698,7 +696,7 @@ class _FilterBottomSheetState extends State<_FilterBottomSheet> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label, style: GoogleFonts.inter(fontSize: 14.sp, fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500, color: isSelected ? AppTheme.primaryBlue : context.primaryTextColor)),
+            Text(label, style: TextStyle(fontSize: 14.sp, fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500, color: isSelected ? AppTheme.primaryBlue : context.primaryTextColor)),
             if (isSelected) Icon(Icons.check_circle, color: AppTheme.primaryBlue, size: 20.w),
           ],
         ),

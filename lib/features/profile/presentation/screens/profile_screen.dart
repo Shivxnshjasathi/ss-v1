@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sampatti_bazar/core/providers/theme_provider.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
@@ -30,7 +29,7 @@ class ProfileScreen extends ConsumerWidget {
           icon: Container(
             padding: EdgeInsets.all(10.w),
             decoration: BoxDecoration(
-              color: AppTheme.primaryBlue.withOpacity(0.1),
+              color: AppTheme.primaryBlue.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12.w),
             ),
             child: Icon(
@@ -45,7 +44,7 @@ class ProfileScreen extends ConsumerWidget {
           l10n.myProfile,
           style: TextStyle(
             fontWeight: FontWeight.w900,
-            color: context.primaryTextColor,$
+            color: context.primaryTextColor,
             fontSize: 18.sp,
           ),
         ),
@@ -61,7 +60,7 @@ class ProfileScreen extends ConsumerWidget {
             onPressed: () {},
           ),
         ],
-      ).animate().fadeIn().slideY(begin: -0.1, end: 0),
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -119,20 +118,16 @@ class ProfileScreen extends ConsumerWidget {
                       ),
                     ],
                   ),
-                )
-                .animate()
-                .fadeIn(duration: 800.ms)
-                .scale(begin: const Offset(0.8, 0.8)),
+                ),
             Text(
               userAsync.value?.name ?? 'User',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: context.textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.w900,
                 fontSize: 24.sp,
                 letterSpacing: -0.5,
               ),
-            ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1, end: 0),
+            ),
             SizedBox(height: 4.h),
             Text(
               '${userAsync.value?.phoneNumber ?? '+91 XXXXX XXXXX'} • ${userAsync.value?.email ?? 'No email'}',
@@ -154,7 +149,7 @@ class ProfileScreen extends ConsumerWidget {
                     vertical: 8.h,
                   ),
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryBlue.withOpacity(0.1),
+                    color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20.w),
                   ),
                   child: Text(
@@ -163,10 +158,9 @@ class ProfileScreen extends ConsumerWidget {
                       color: AppTheme.primaryBlue,
                       fontWeight: FontWeight.w900,
                       fontSize: 10.sp,
-                      letterSpacing: 1.0,
                     ),
                   ),
-                ).animate().fadeIn(delay: 400.ms),
+                ),
                 if (userAsync.value?.isPreApproved == true) ...[
                   SizedBox(width: 8.w),
                   Container(
@@ -207,7 +201,7 @@ class ProfileScreen extends ConsumerWidget {
                         ),
                       ],
                     ),
-                  ).animate().fadeIn(delay: 600.ms).slideX(begin: 0.1, end: 0),
+                  ),
                 ],
               ],
             ),
@@ -291,7 +285,7 @@ class ProfileScreen extends ConsumerWidget {
                         () {},
                       ),
                     ],
-                  ).animate().fadeIn(delay: 700.ms).slideY(begin: 0.1, end: 0),
+                  ),
                   SizedBox(height: 32.h),
                   SizedBox(
                     width: double.infinity,
@@ -317,16 +311,15 @@ class ProfileScreen extends ConsumerWidget {
                       ),
                       style: OutlinedButton.styleFrom(
                         side: BorderSide(
-                          color: Colors.redAccent.withOpacity(0.3),
+                          color: Colors.redAccent.withValues(alpha: 0.3),
                           width: 1.5.w,
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16.w),
                         ),
-                        padding: EdgeInsets.symmetric(vertical: 16.h),
                       ),
                     ),
-                  ).animate().fadeIn(delay: 900.ms).slideY(begin: 0.1, end: 0),
+                  ),
                   SizedBox(height: 40.h),
                 ],
               ),
@@ -403,7 +396,7 @@ class ProfileScreen extends ConsumerWidget {
       trailing: Icon(
         LucideIcons.chevronRight,
         size: 16.w,
-        color: context.secondaryTextColor.withOpacity(0.5),
+        color: context.secondaryTextColor.withValues(alpha: 0.5),
       ),
       onTap: onTap,
     );

@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:signature/signature.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
@@ -43,7 +42,7 @@ class _RentAgreementSignScreenState extends ConsumerState<RentAgreementSignScree
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('E-KYC Verification', style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 24.sp)),
+              Text('E-KYC Verification', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24.sp)),
               SizedBox(height: 8.h),
               const Text('Enter your 12-digit Aadhaar to verify identity.', style: TextStyle(color: Colors.grey)),
               SizedBox(height: 24.h),
@@ -287,7 +286,7 @@ class _RentAgreementSignScreenState extends ConsumerState<RentAgreementSignScree
                       Container(padding: EdgeInsets.all(8.w), decoration: BoxDecoration(color: context.scaffoldColor, borderRadius: BorderRadius.circular(8.w)), child: Icon(Icons.verified_user_outlined, color: AppTheme.cyanAccent, size: 20.w)),
                       SizedBox(width: 12.w),
                       Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text('Digital Smart Contract', style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 12.sp, letterSpacing: -0.2)),
+                        Text('Digital Smart Contract', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12.sp, letterSpacing: -0.2)),
                         SizedBox(height: 2.h),
                         Text('E-Stamped Series • UID: ${doc.id}', style: TextStyle(fontSize: 9.sp, color: context.secondaryTextColor, fontWeight: FontWeight.w800, letterSpacing: 0.5))
                       ]),

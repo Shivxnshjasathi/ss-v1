@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/core/utils/routing_utils.dart';
@@ -72,7 +71,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                     'assets/images/app_logo.png',
                     width: 120.w,
                     height: 120.w,
-                  ).animate().fadeIn(duration: 800.ms).slideY(begin: 0.2, end: 0, curve: Curves.easeOutCirc),
+                  ),
                   SizedBox(height: 24.h),
                   Text(
                     'SAMPATTI',
@@ -82,7 +81,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                       fontWeight: FontWeight.w900,
                       letterSpacing: -1,
                     ),
-                  ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2, end: 0),
+                  ),
                   Text(
                     'BAZAR',
                     style: TextStyle(
@@ -91,7 +90,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                       fontWeight: FontWeight.w300,
                       letterSpacing: 2,
                     ),
-                  ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.2, end: 0),
+                  ),
                 ],
               ),
             ),
@@ -127,7 +126,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                   ),
                 ),
               ],
-            ).animate().fadeIn(delay: 800.ms),
+            ),
             SizedBox(height: 48.h),
             // Footer
             Padding(
@@ -141,7 +140,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                   letterSpacing: 1,
                 ),
               ),
-            ).animate().fadeIn(delay: 1.seconds),
+            ),
           ],
         ),
       ),

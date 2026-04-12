@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
@@ -200,7 +199,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
                   );
                   return _ContextCard(
                     metadata: chat.metadata,
-                  ).animate().fadeIn().slideY(begin: -0.1, end: 0);
+                  );
                 },
                 loading: () => const SizedBox.shrink(),
                 error: (_, st) => const SizedBox.shrink(),
@@ -391,10 +390,7 @@ class _MessageBubble extends StatelessWidget {
               ],
             ),
           ),
-        )
-        .animate()
-        .fadeIn(duration: 300.ms)
-        .slideY(begin: 0.1, end: 0, curve: Curves.easeOut);
+        );
   }
 }
 

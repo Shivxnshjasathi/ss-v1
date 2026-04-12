@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
@@ -34,8 +33,9 @@ class ChatListScreen extends ConsumerWidget {
       ),
       body: userAsync.when(
         data: (user) {
-          if (user == null)
+          if (user == null) {
             return Center(child: Text(l10n.pleaseLoginToViewMessages));
+          }
 
           final chatsAsync = ref.watch(userChatsProvider(user.uid));
 
@@ -159,10 +159,7 @@ class ChatListScreen extends ConsumerWidget {
                                   ],
                                 ),
                               ),
-                            )
-                            .animate()
-                            .fadeIn(delay: (index * 100).ms)
-                            .slideX(begin: 0.1, end: 0),
+                            ),
                     loading: () => const ListTile(
                       leading: CircleAvatar(),
                       title: Text('Loading...'),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
@@ -228,7 +227,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                 );
               }).toList(),
             ),
-          ).animate().fadeIn(delay: 200.ms).slideX(begin: 0.1, end: 0),
+          ),
 
           // Header
           Padding(
@@ -336,10 +335,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                       return Padding(
                         padding: EdgeInsets.only(bottom: 24.h),
                         child:
-                            _buildPropertyCard(context, filtered[index], l10n)
-                                .animate()
-                                .fadeIn(delay: (100 + index * 100).ms)
-                                .slideY(begin: 0.1, end: 0),
+                            _buildPropertyCard(context, filtered[index], l10n),
                       );
                     },
                   );
@@ -361,10 +357,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                   ),
                   itemCount: filtered.length,
                   itemBuilder: (context, index) {
-                    return _buildPropertyCard(context, filtered[index], l10n)
-                        .animate()
-                        .fadeIn(delay: (100 + index * 100).ms)
-                        .scale(begin: const Offset(0.95, 0.95));
+                    return _buildPropertyCard(context, filtered[index], l10n);
                   },
                 );
               },

@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -206,7 +205,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               borderRadius: BorderRadius.circular(20.w),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppTheme.primaryBlue.withOpacity(0.3),
+                                  color: AppTheme.primaryBlue.withValues(alpha: 0.3),
                                   blurRadius: 20,
                                   offset: const Offset(0, 10),
                                 ),
@@ -218,10 +217,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               height: 56.w,
                             ),
                           ),
-                        )
-                        .animate()
-                        .fadeIn(duration: 800.ms)
-                        .scale(begin: const Offset(0.8, 0.8)),
+                        ),
                     SizedBox(height: 48.h),
                     Text(
                           l10n.welcomeTo,
@@ -229,10 +225,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             fontSize: 28.sp,
                             height: 1.1,
                           ),
-                        )
-                        .animate()
-                        .fadeIn(delay: 200.ms)
-                        .slideX(begin: -0.1, end: 0),
+                        ),
                     Text(
                           l10n.sampattiBazar,
                           style: context.textTheme.displayMedium?.copyWith(
@@ -240,10 +233,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             color: AppTheme.primaryBlue,
                             height: 1.1,
                           ),
-                        )
-                        .animate()
-                        .fadeIn(delay: 400.ms)
-                        .slideX(begin: -0.1, end: 0),
+                        ),
                     SizedBox(height: 16.h),
                     Text(
                       _isEmailLogin ? l10n.emailLoginHint : l10n.phoneLoginHint,
@@ -252,7 +242,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         fontWeight: FontWeight.w500,
                         color: context.secondaryTextColor,
                       ),
-                    ).animate().fadeIn(delay: 600.ms),
+                    ),
                     SizedBox(height: 40.h),
 
                     if (!_isEmailLogin) ...[
@@ -295,8 +285,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 hintStyle: TextStyle(
                                   fontWeight: FontWeight.w900,
                                   fontSize: 24.sp,
-                                  color: context.secondaryTextColor.withOpacity(
-                                    0.2,
+                                  color: context.secondaryTextColor.withValues(
+                                    alpha: 0.2,
                                   ),
                                   letterSpacing: 2.0,
                                 ),
@@ -317,12 +307,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             : Colors.black12,
                         margin: EdgeInsets.only(top: 8.h),
                       ),
-                      // Animated indicator line
-                      Container(height: 2.h, color: AppTheme.primaryBlue)
-                          .animate(
-                            target: _phoneController.text.isNotEmpty ? 1 : 0,
-                          )
-                          .scaleX(alignment: Alignment.centerLeft),
+                      Container(height: 2.h, color: AppTheme.primaryBlue),
                     ] else ...[
                       Column(
                         children: [
@@ -344,7 +329,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                           ),
                         ],
-                      ).animate().fadeIn().slideY(begin: 0.1, end: 0),
+                      ),
                     ],
 
                     SizedBox(height: 48.h),
@@ -352,10 +337,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           text: _isEmailLogin ? l10n.continueText : l10n.getOtp,
                           isLoading: _isLoading,
                           onPressed: _isEmailLogin ? _onEmailLogin : _onGetOtp,
-                        )
-                        .animate()
-                        .fadeIn(delay: 800.ms)
-                        .scale(begin: const Offset(0.9, 0.9)),
+                        ),
 
                     SizedBox(height: 24.h),
                     Center(
@@ -406,7 +388,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                         textAlign: TextAlign.center,
                       ),
-                    ).animate().fadeIn(delay: 1.seconds),
+                    ),
                   ],
                 ),
               ),

@@ -469,10 +469,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
           Expanded(
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: 24.0.w),
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 300),
-                child: _buildDynamicBody(l10n),
-              ),
+              child: _buildDynamicBody(l10n),
             ),
           ),
         ],
@@ -489,8 +486,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
         onTap: () => setState(() {
           _selectedService = label;
         }),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
+        child: Container(
           padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
           decoration: BoxDecoration(
             color: isSelected ? context.colorScheme.primary : context.cardColor,

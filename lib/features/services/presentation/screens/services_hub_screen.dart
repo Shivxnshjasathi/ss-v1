@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/core/widgets/contact_bottom_sheet.dart';
@@ -51,7 +50,7 @@ class ServicesHubScreen extends StatelessWidget {
             Text(
               l10n.financialEcosystem,
               style: Theme.of(context).textTheme.displayMedium,
-            ).animate().fadeIn(delay: 200.ms).slideX(begin: -0.1, end: 0),
+            ),
             SizedBox(height: 8.h),
             Text(
               l10n.servicesSubtitle,
@@ -114,10 +113,7 @@ class ServicesHubScreen extends StatelessWidget {
                       '/services/other',
                     ),
                   ],
-                )
-                .animate()
-                .fadeIn(delay: 400.ms)
-                .scale(begin: const Offset(0.95, 0.95)),
+                ),
             SizedBox(height: 32.h),
             Text(
               l10n.toolsAndSupport,
@@ -132,12 +128,12 @@ class ServicesHubScreen extends StatelessWidget {
             _buildToolsSupportList(
               context,
               l10n,
-            ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.1, end: 0),
+            ),
             SizedBox(height: 32.h),
             _buildVerifiedBanner(
               context,
               l10n,
-            ).animate().fadeIn(delay: 800.ms).slideY(begin: 0.1, end: 0),
+            ),
             SizedBox(height: 32.h),
           ],
         ),
@@ -146,15 +142,8 @@ class ServicesHubScreen extends StatelessWidget {
         onPressed: () => context.push('/services/tracking'),
         backgroundColor: AppTheme.primaryBlue,
         icon: const Icon(LucideIcons.mapPin, color: Colors.white, size: 18),
-        label: Text(
-          l10n.serviceTracking,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1,
-          ),
-        ),
-      ).animate().scale(delay: 1000.ms, curve: Curves.elasticOut),
+        label: Text(l10n.serviceTracking),
+      ),
     );
   }
 

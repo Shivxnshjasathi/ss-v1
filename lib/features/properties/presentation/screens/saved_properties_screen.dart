@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
@@ -79,10 +78,7 @@ class SavedPropertiesScreen extends ConsumerWidget {
                 itemCount: properties.length,
                 itemBuilder: (context, index) {
                   final prop = properties[index];
-                  return _buildSavedCard(context, prop)
-                      .animate()
-                      .fadeIn(delay: (index * 100).ms)
-                      .slideX(begin: 0.1, end: 0);
+                  return _buildSavedCard(context, prop);
                 },
               );
             },

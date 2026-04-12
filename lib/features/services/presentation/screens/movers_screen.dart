@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
@@ -215,7 +214,7 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
         ),
         title: Text(
           l10n.packersAndMovers,
-          style: GoogleFonts.inter(
+          style: TextStyle(
             fontWeight: FontWeight.w900,
             color: context.primaryTextColor,
             fontSize: 18.sp,
@@ -341,7 +340,7 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
   Widget _buildSectionLabel(String label) {
     return Text(
       label,
-      style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 11.sp, letterSpacing: 0.5, color: context.primaryTextColor),
+      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11.sp, letterSpacing: 0.5, color: context.primaryTextColor),
     );
   }
 
@@ -564,7 +563,7 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(l10n.bookingSummary, style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 14.sp)),
+                Text(l10n.bookingSummary, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp)),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                   decoration: BoxDecoration(
@@ -572,7 +571,7 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
                     border: Border.all(color: AppTheme.cyanAccent.withValues(alpha: 0.2)),
                     borderRadius: BorderRadius.circular(4.w),
                   ),
-                  child: Text(l10n.premiumCare, style: GoogleFonts.inter(color: AppTheme.cyanAccent, fontSize: 9.sp, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
+                  child: Text(l10n.premiumCare, style: TextStyle(color: AppTheme.cyanAccent, fontSize: 9.sp, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
                 ),
               ],
             ),
@@ -615,7 +614,7 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
                     Text(l10n.estQuote, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12.sp, color: Colors.grey)),
                   ],
                 ),
-                Text(formatCurrency(totalQuote), style: GoogleFonts.inter(fontWeight: FontWeight.w900, fontSize: 24.sp, color: AppTheme.primaryBlue)),
+                Text(formatCurrency(totalQuote), style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24.sp, color: AppTheme.primaryBlue)),
               ],
             ),
           ),
