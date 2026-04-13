@@ -9,6 +9,7 @@ import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
 import 'package:sampatti_bazar/core/utils/validators.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
+import 'package:sampatti_bazar/core/services/location_service.dart';
 
 class ConstructionScreen extends ConsumerStatefulWidget {
   const ConstructionScreen({super.key});
@@ -30,6 +31,39 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
     'Consultation',
     'Borewell',
   ];
+
+  bool _isLocating = false;
+
+  Future<void> _fetchLocation() async {
+    setState(() => _isLocating = true);
+    try {
+      final position = await LocationService.getCurrentPosition();
+      if (position != null) {
+        final addressData = await LocationService.getAddressFromLatLng(position);
+        if (addressData != null) {
+          setState(() {
+            _locationController.text = addressData['address'] ?? '';
+          });
+          
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Location updated successfully'), backgroundColor: Colors.green),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error fetching location: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLocating = false);
+      }
+    }
+  }
 
   // Controllers for all forms
   final _plotSizeController = TextEditingController();
@@ -397,13 +431,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           validator: (val) => Validators.number(val, l10n.plotSize, l10n),
         ),
         SizedBox(height: 16.h),
-        _buildTextField(
-          l10n.exactLocation,
-          'e.g., Plot 42, Civil Lines',
-          TextInputType.text,
-          controller: _locationController,
-          validator: (val) => Validators.required(val, l10n.exactLocation, l10n),
-        ),
+        _buildLocationField(l10n.exactLocation, _locationController, l10n),
         SizedBox(height: 16.h),
         Row(
           children: [
@@ -631,12 +659,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           validator: (val) => Validators.required(val, l10n.consultationTopic, l10n),
         ),
         SizedBox(height: 16.h),
-        _buildTextField(
-          l10n.propertyAddress,
-          l10n.propertyAddressHint,
-          TextInputType.text,
-          controller: _locationController,
-        ),
+        _buildLocationField(l10n.propertyAddress, _locationController, l10n),
         SizedBox(height: 16.h),
         _buildTextField(
           l10n.detailedQuery,
@@ -699,12 +722,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           l10n.borewellSubtitle,
         ),
         SizedBox(height: 24.h),
-        _buildTextField(
-          l10n.exactLocationBorewell,
-          l10n.landmarkHint,
-          TextInputType.text,
-          controller: _locationController,
-        ),
+        _buildLocationField(l10n.exactLocationBorewell, _locationController, l10n),
         SizedBox(height: 16.h),
         Row(
           children: [
@@ -774,6 +792,65 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
             fontWeight: FontWeight.w500,
             fontFamily: 'Poppins',
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLocationField(String label, TextEditingController controller, AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              label.toUpperCase(),
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                fontSize: 10.sp,
+                color: AppTheme.primaryBlue,
+                letterSpacing: 1.5,
+              ),
+            ),
+            TextButton.icon(
+              onPressed: _isLocating ? null : _fetchLocation,
+              icon: _isLocating
+                  ? SizedBox(
+                      height: 14.sp,
+                      width: 14.sp,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppTheme.primaryBlue,
+                      ),
+                    )
+                  : Icon(Icons.my_location, size: 16.sp, color: AppTheme.primaryBlue),
+              label: Text(
+                'USE LIVE LOCATION',
+                style: TextStyle(
+                  fontSize: 10.sp,
+                  fontWeight: FontWeight.w900,
+                  color: AppTheme.primaryBlue,
+                  letterSpacing: 1.0,
+                ),
+              ),
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                backgroundColor: AppTheme.primaryBlue.withValues(alpha: 0.05),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.sp),
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 8.h),
+        _buildTextField(
+          '',
+          'e.g., Plot 42, Civil Lines',
+          TextInputType.text,
+          controller: controller,
+          validator: (val) => Validators.required(val, label, l10n),
         ),
       ],
     );

@@ -38,7 +38,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   void _onGetOtp() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
-    
+
     final phone = _phoneController.text.trim();
     if (phone.length == 10) {
       setState(() {
@@ -178,7 +178,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -190,246 +189,307 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 24.0.w, vertical: 32.0.h),
+                padding: EdgeInsets.symmetric(
+                  horizontal: 24.0.w,
+                  vertical: 32.0.h,
+                ),
                 child: Form(
                   key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                      child: Container(
-                        padding: EdgeInsets.all(16.w),
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryBlue,
-                          borderRadius: BorderRadius.circular(16.w),
+                    children: [
+                      Center(
+                        child: Container(
+                          padding: EdgeInsets.all(16.w),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryBlue,
+                            borderRadius: BorderRadius.circular(16.w),
+                          ),
+                          child: Icon(
+                            LucideIcons.house,
+                            color: Colors.white,
+                            size: 32.w,
+                          ),
                         ),
-                        child: Icon(
-                          LucideIcons.house,
-                          color: Colors.white,
-                          size: 32.w,
-                        ),
                       ),
-                    ),
-                    SizedBox(height: 32.h),
-                    Text(
-                      l10n.welcomeTo,
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 24.sp,
-                        fontWeight: FontWeight.w900,
-                        color: context.primaryTextColor,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                    Text(
-                      l10n.sampattiBazar,
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 26.sp,
-                        fontWeight: FontWeight.w900,
-                        color: AppTheme.primaryBlue,
-                        letterSpacing: -0.5,
-                        height: 1.2,
-                      ),
-                    ),
-                    SizedBox(height: 16.h),
-                    Text(
-                      _isEmailLogin ? l10n.emailLoginHint : 'Enter your phone number to get started',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w500,
-                        color: context.secondaryTextColor,
-                      ),
-                    ),
-                    SizedBox(height: 32.h),
-
-                    if (!_isEmailLogin) ...[
+                      SizedBox(height: 32.h),
                       Text(
-                        l10n.mobileNumber.toUpperCase(),
+                        l10n.welcomeTo,
                         style: TextStyle(
                           fontFamily: 'Poppins',
-                          fontSize: 10.sp,
+                          fontSize: 24.sp,
                           fontWeight: FontWeight.w900,
-                          color: Colors.grey.shade600,
-                          letterSpacing: 1.0,
+                          color: context.primaryTextColor,
+                          letterSpacing: -0.5,
                         ),
                       ),
-                      SizedBox(height: 8.h),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        textBaseline: TextBaseline.alphabetic,
-                        children: [
-                          Text(
-                            '+91',
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontWeight: FontWeight.w900,
-                              fontSize: 20.sp,
-                              color: context.primaryTextColor,
-                            ),
+                      Text(
+                        l10n.sampattiBazar,
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 26.sp,
+                          fontWeight: FontWeight.w900,
+                          color: AppTheme.primaryBlue,
+                          letterSpacing: -0.5,
+                          height: 1.2,
+                        ),
+                      ),
+                      SizedBox(height: 16.h),
+                      Text(
+                        _isEmailLogin
+                            ? l10n.emailLoginHint
+                            : 'Enter your phone number to get started',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w500,
+                          color: context.secondaryTextColor,
+                        ),
+                      ),
+                      SizedBox(height: 32.h),
+
+                      if (!_isEmailLogin) ...[
+                        Text(
+                          l10n.mobileNumber.toUpperCase(),
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 10.sp,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.grey.shade600,
+                            letterSpacing: 1.0,
                           ),
-                          SizedBox(width: 12.w),
-                          Expanded(
-                            child: TextFormField(
-                              controller: _phoneController,
-                              keyboardType: TextInputType.phone,
-                              cursorColor: AppTheme.primaryBlue,
+                        ),
+                        SizedBox(height: 8.h),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          textBaseline: TextBaseline.alphabetic,
+                          children: [
+                            Text(
+                              '+91',
                               style: TextStyle(
                                 fontFamily: 'Poppins',
                                 fontWeight: FontWeight.w900,
                                 fontSize: 20.sp,
-                                color: Colors.blue.shade900,
-                                letterSpacing: 2.0,
+                                color: context.primaryTextColor,
                               ),
-                              decoration: InputDecoration(
-                                hintText: '00000 00000',
-                                hintStyle: TextStyle(
+                            ),
+                            SizedBox(width: 12.w),
+                            Expanded(
+                              child: TextFormField(
+                                controller: _phoneController,
+                                keyboardType: TextInputType.phone,
+                                cursorColor: AppTheme.primaryBlue,
+                                style: TextStyle(
                                   fontFamily: 'Poppins',
                                   fontWeight: FontWeight.w900,
                                   fontSize: 20.sp,
-                                  color: Colors.grey.shade100,
+                                  color: Colors.blue.shade900,
                                   letterSpacing: 2.0,
                                 ),
-                                border: InputBorder.none,
-                                enabledBorder: InputBorder.none,
-                                focusedBorder: InputBorder.none,
-                                errorStyle: const TextStyle(height: 0, fontSize: 0), // Hide default error text
-                                isDense: true,
-                                contentPadding: EdgeInsets.zero,
-                                filled: false,
-                              ),
-                              validator: (val) => Validators.phone(val, l10n),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Container(
-                        height: 2.h,
-                        color: context.borderColor,
-                        margin: EdgeInsets.only(top: 8.h),
-                      ),
-                    ] else ...[
-                      // Flat style for Email Login fields
-                      Text(
-                        l10n.emailAddress.toUpperCase(),
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 10.sp,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.grey.shade600,
-                          letterSpacing: 1.0,
-                        ),
-                      ),
-                      TextFormField(
-                        controller: _emailController,
-                        keyboardType: TextInputType.emailAddress,
-                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16.sp),
-                        decoration: InputDecoration(
-                          hintText: 'e.g., example@domain.com',
-                          hintStyle: TextStyle(color: Colors.grey.shade400, fontWeight: FontWeight.w500, fontSize: 13.sp),
-                          border: UnderlineInputBorder(borderSide: BorderSide(color: Colors.black87, width: 2.h)),
-                          enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.black87, width: 2.h)),
-                          focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppTheme.primaryBlue, width: 2.h)),
-                          isDense: true,
-                          contentPadding: EdgeInsets.symmetric(vertical: 8.h),
-                          filled: false,
-                        ),
-                        validator: (val) => Validators.email(val, l10n),
-                      ),
-                      SizedBox(height: 24.h),
-                      Text(
-                        l10n.password.toUpperCase(),
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 10.sp,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.grey.shade600,
-                          letterSpacing: 1.0,
-                        ),
-                      ),
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: true,
-                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16.sp),
-                        decoration: InputDecoration(
-                          hintText: '••••••••',
-                          hintStyle: TextStyle(color: context.secondaryTextColor.withValues(alpha: 0.3), fontWeight: FontWeight.w500, fontSize: 13.sp),
-                          border: UnderlineInputBorder(borderSide: BorderSide(color: context.borderColor, width: 2.h)),
-                          enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: context.borderColor, width: 2.h)),
-                          focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppTheme.primaryBlue, width: 2.h)),
-                          isDense: true,
-                          contentPadding: EdgeInsets.symmetric(vertical: 8.h),
-                          filled: false,
-                        ),
-                        validator: (val) => Validators.required(val, l10n.password, l10n),
-                      ),
-                    ],
-
-                    SizedBox(height: 48.h),
-                    PrimaryButton(
-                      text: _isEmailLogin ? l10n.continueText : l10n.getOtp,
-                      isLoading: _isLoading,
-                      onPressed: _isEmailLogin ? _onEmailLogin : _onGetOtp,
-                    ),
-
-                    SizedBox(height: 16.h),
-                    Center(
-                      child: TextButton.icon(
-                        onPressed: () {
-                          setState(() {
-                            _isEmailLogin = !_isEmailLogin;
-                            _isLoading = false;
-                          });
-                        },
-                        icon: Icon(
-                          _isEmailLogin ? LucideIcons.phone : LucideIcons.mail,
-                          size: 14.w,
-                          color: context.secondaryTextColor,
-                        ),
-                        label: Text(
-                          _isEmailLogin ? l10n.usePhone : l10n.useEmail,
-                          style: TextStyle(fontWeight: FontWeight.w800, color: context.secondaryTextColor, fontSize: 12.sp),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 16.h),
-                    Center(
-                      child: Text.rich(
-                        TextSpan(
-                          text: '${l10n.agreementText}\n',
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 10.sp,
-                            color: context.secondaryTextColor,
-                            height: 1.5,
-                          ),
-                          children: [
-                            TextSpan(
-                              text: l10n.termsOfService,
-                              style: TextStyle(
-                                color: context.primaryTextColor,
-                                fontWeight: FontWeight.w800,
-                                decoration: TextDecoration.underline,
-                              ),
-                            ),
-                            const TextSpan(text: ' & '),
-                            TextSpan(
-                              text: l10n.privacyPolicy,
-                              style: TextStyle(
-                                color: context.primaryTextColor,
-                                fontWeight: FontWeight.w800,
-                                decoration: TextDecoration.underline,
+                                decoration: InputDecoration(
+                                  hintText: '00000 00000',
+                                  hintStyle: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 20.sp,
+                                    color: Colors.grey.shade100,
+                                    letterSpacing: 2.0,
+                                  ),
+                                  border: InputBorder.none,
+                                  enabledBorder: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
+                                  errorStyle: const TextStyle(
+                                    height: 0,
+                                    fontSize: 0,
+                                  ), // Hide default error text
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.zero,
+                                  filled: false,
+                                ),
+                                validator: (val) => Validators.phone(val, l10n),
                               ),
                             ),
                           ],
                         ),
-                        textAlign: TextAlign.center,
+                        Container(
+                          height: 2.h,
+                          color: context.borderColor,
+                          margin: EdgeInsets.only(top: 8.h),
+                        ),
+                      ] else ...[
+                        // Flat style for Email Login fields
+                        Text(
+                          l10n.emailAddress.toUpperCase(),
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 10.sp,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.grey.shade600,
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                        TextFormField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16.sp,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: 'e.g., example@domain.com',
+                            hintStyle: TextStyle(
+                              color: Colors.grey.shade400,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 13.sp,
+                            ),
+                            border: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.black87,
+                                width: 2.h,
+                              ),
+                            ),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Colors.black87,
+                                width: 2.h,
+                              ),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: AppTheme.primaryBlue,
+                                width: 2.h,
+                              ),
+                            ),
+                            isDense: true,
+                            contentPadding: EdgeInsets.symmetric(vertical: 8.h),
+                            filled: false,
+                          ),
+                          validator: (val) => Validators.email(val, l10n),
+                        ),
+                        SizedBox(height: 24.h),
+                        Text(
+                          l10n.password.toUpperCase(),
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 10.sp,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.grey.shade600,
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                        TextFormField(
+                          controller: _passwordController,
+                          obscureText: true,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16.sp,
+                          ),
+                          decoration: InputDecoration(
+                            hintText: '••••••••',
+                            hintStyle: TextStyle(
+                              color: context.secondaryTextColor.withValues(
+                                alpha: 0.3,
+                              ),
+                              fontWeight: FontWeight.w500,
+                              fontSize: 13.sp,
+                            ),
+                            border: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: context.borderColor,
+                                width: 2.h,
+                              ),
+                            ),
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: context.borderColor,
+                                width: 2.h,
+                              ),
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(
+                                color: AppTheme.primaryBlue,
+                                width: 2.h,
+                              ),
+                            ),
+                            isDense: true,
+                            contentPadding: EdgeInsets.symmetric(vertical: 8.h),
+                            filled: false,
+                          ),
+                          validator: (val) =>
+                              Validators.required(val, l10n.password, l10n),
+                        ),
+                      ],
+
+                      SizedBox(height: 48.h),
+                      PrimaryButton(
+                        text: _isEmailLogin ? l10n.continueText : l10n.getOtp,
+                        isLoading: _isLoading,
+                        onPressed: _isEmailLogin ? _onEmailLogin : _onGetOtp,
                       ),
-                    ),
-                  ],
+
+                      SizedBox(height: 16.h),
+                      Center(
+                        child: TextButton.icon(
+                          onPressed: () {
+                            setState(() {
+                              _isEmailLogin = !_isEmailLogin;
+                              _isLoading = false;
+                            });
+                          },
+                          icon: Icon(
+                            _isEmailLogin
+                                ? LucideIcons.phone
+                                : LucideIcons.mail,
+                            size: 14.w,
+                            color: context.secondaryTextColor,
+                          ),
+                          label: Text(
+                            _isEmailLogin ? l10n.usePhone : l10n.useEmail,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              color: context.secondaryTextColor,
+                              fontSize: 12.sp,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 16.h),
+                      Center(
+                        child: Text.rich(
+                          TextSpan(
+                            text: '${l10n.agreementText}\n',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 10.sp,
+                              color: context.secondaryTextColor,
+                              height: 1.5,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: l10n.termsOfService,
+                                style: TextStyle(
+                                  color: context.primaryTextColor,
+                                  fontWeight: FontWeight.w800,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                              const TextSpan(text: ' & '),
+                              TextSpan(
+                                text: l10n.privacyPolicy,
+                                style: TextStyle(
+                                  color: context.primaryTextColor,
+                                  fontWeight: FontWeight.w800,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            ],
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
               ),
             ),
           ],

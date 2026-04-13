@@ -294,17 +294,16 @@ class HomeScreen extends ConsumerWidget {
                           final prop = featured[index];
                           return Padding(
                             padding: EdgeInsets.only(right: 16.w),
-                            child:
-                                _buildFeaturedCard(
-                                      context,
-                                      prop.title,
-                                      '₹${prop.price.toInt()}',
-                                      prop.city,
-                                      prop.imageUrls.isNotEmpty
-                                          ? prop.imageUrls.first
-                                          : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80',
-                                      prop.id,
-                                    ),
+                            child: _buildFeaturedCard(
+                              context,
+                              prop.title,
+                              '₹${prop.price.toInt()}',
+                              prop.city,
+                              prop.imageUrls.isNotEmpty
+                                  ? prop.imageUrls.first
+                                  : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80',
+                              prop.id,
+                            ),
                           );
                         },
                       ),
@@ -326,21 +325,22 @@ class HomeScreen extends ConsumerWidget {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.w),
                       child: Column(
-                        children: properties.take(5).toList().asMap().entries.map((entry) {
+                        children: properties.take(5).toList().asMap().entries.map((
+                          entry,
+                        ) {
                           final prop = entry.value;
                           return Padding(
                             padding: EdgeInsets.only(bottom: 12.h),
-                            child:
-                                _buildNewlyAddedItem(
-                                      context: context,
-                                      title: prop.title,
-                                      price: '₹${prop.price.toInt()}',
-                                      type: prop.type,
-                                      image: prop.imageUrls.isNotEmpty
-                                          ? prop.imageUrls.first
-                                          : 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=300&q=80',
-                                      propertyId: prop.id,
-                                    ),
+                            child: _buildNewlyAddedItem(
+                              context: context,
+                              title: prop.title,
+                              price: '₹${prop.price.toInt()}',
+                              type: prop.type,
+                              image: prop.imageUrls.isNotEmpty
+                                  ? prop.imageUrls.first
+                                  : 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=300&q=80',
+                              propertyId: prop.id,
+                            ),
                           );
                         }).toList(),
                       ),

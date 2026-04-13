@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sampatti_bazar/l10n/app_localizations.dart';
-import 'package:sampatti_bazar/core/utils/validators.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
 import 'package:uuid/uuid.dart';
@@ -10,6 +8,7 @@ import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/core/services/logger_service.dart';
 import 'package:sampatti_bazar/features/services/data/service_request_repository.dart';
 import 'package:sampatti_bazar/features/services/domain/service_request_model.dart';
+import 'package:sampatti_bazar/core/services/location_service.dart';
 
 class OtherServicesScreen extends ConsumerStatefulWidget {
   const OtherServicesScreen({super.key});
@@ -22,21 +21,100 @@ class OtherServicesScreen extends ConsumerStatefulWidget {
 class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
   final _formKey = GlobalKey<FormState>();
   final _addressController = TextEditingController();
+  final _cityController = TextEditingController();
+  final _stateController = TextEditingController();
+  final _zipController = TextEditingController();
   final _descriptionController = TextEditingController();
 
   String _selectedCategory = 'Electrical fitting & services';
+  String? _selectedLaborType;
   final List<String> _categories = [
     'Electrical fitting & services',
     'Plumbing services',
     'House painting',
     'House cleaning',
+    'Labor',
     'All',
   ];
 
+  final List<String> _laborTypes = [
+    'General Help',
+    'Construction Labor',
+    'Loading & Unloading',
+    'Gardening/Landscaping',
+    'Cleaning Specialist',
+  ];
+
   bool _isLoading = false;
+  bool _isLocating = false;
+
+  Future<void> _fetchLocation() async {
+    setState(() => _isLocating = true);
+    try {
+      final position = await LocationService.getCurrentPosition();
+      if (position != null) {
+        final addressData = await LocationService.getAddressFromLatLng(
+          position,
+        );
+        if (addressData != null) {
+          setState(() {
+            _cityController.text = addressData['city'] ?? '';
+            _addressController.text = addressData['address'] ?? '';
+            // Note: LocationService.getAddressFromLatLng currently doesn't return state/zip separately
+            // but we can try to improve it or just pre-fill what we have.
+          });
+
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Location updated successfully'),
+                backgroundColor: Colors.green,
+              ),
+            );
+          }
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Could not fetch location. Please enable permissions.',
+              ),
+              backgroundColor: Colors.orange,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error fetching location: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLocating = false);
+      }
+    }
+  }
 
   Future<void> _submitRequest() async {
     if (!_formKey.currentState!.validate()) return;
+
+    if (_selectedCategory == 'Labor' && _selectedLaborType == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please select labor expertise'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return;
+    }
 
     setState(() => _isLoading = true);
 
@@ -65,9 +143,17 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
         category: _selectedCategory,
         status: 'pending',
         createdAt: DateTime.now(),
-        location: _addressController.text,
+        location: _cityController.text,
+        city: _cityController.text,
+        state: _stateController.text,
+        zipCode: _zipController.text,
+        fullAddress: _addressController.text,
         tenantEmail: user.email,
-        details: {'problemDescription': _descriptionController.text},
+        details: {
+          'problemDescription': _descriptionController.text,
+          if (_selectedCategory == 'Labor' && _selectedLaborType != null)
+            'laborExpertise': _selectedLaborType,
+        },
       );
 
       await ref.read(serviceRequestRepositoryProvider).addRequest(request);
@@ -120,36 +206,11 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
   @override
   void dispose() {
     _addressController.dispose();
+    _cityController.dispose();
+    _stateController.dispose();
+    _zipController.dispose();
     _descriptionController.dispose();
     super.dispose();
-  }
-
-  Widget _buildSectionHeader(String title, String subtitle) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontWeight: FontWeight.w900,
-            fontSize: 22.sp,
-            fontFamily: 'Poppins',
-            color: context.primaryTextColor,
-          ),
-        ),
-        SizedBox(height: 6.h),
-        Text(
-          subtitle,
-          style: TextStyle(
-            color: context.secondaryTextColor,
-            fontSize: 13.sp,
-            height: 1.4,
-            fontWeight: FontWeight.w500,
-            fontFamily: 'Poppins',
-          ),
-        ),
-      ],
-    );
   }
 
   Widget _buildTextFieldWidget(
@@ -167,7 +228,12 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
       children: [
         Text(
           label.toUpperCase(),
-          style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w900, color: AppTheme.primaryBlue, letterSpacing: 1.5),
+          style: TextStyle(
+            fontSize: 10.sp,
+            fontWeight: FontWeight.w900,
+            color: AppTheme.primaryBlue,
+            letterSpacing: 1.5,
+          ),
         ),
         SizedBox(height: 10.h),
         TextFormField(
@@ -176,17 +242,42 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
           maxLines: maxLines,
           maxLength: maxLength,
           validator: validator,
-          style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600, color: context.primaryTextColor),
+          style: TextStyle(
+            fontSize: 15.sp,
+            fontWeight: FontWeight.w600,
+            color: context.primaryTextColor,
+          ),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(color: context.secondaryTextColor.withValues(alpha: 0.3), fontSize: 13.sp),
-            prefixIcon: icon != null ? Icon(icon, color: AppTheme.primaryBlue.withValues(alpha: 0.4), size: 20.sp) : null,
+            hintStyle: TextStyle(
+              color: context.secondaryTextColor.withValues(alpha: 0.3),
+              fontSize: 13.sp,
+            ),
+            prefixIcon: icon != null
+                ? Icon(
+                    icon,
+                    color: AppTheme.primaryBlue.withValues(alpha: 0.4),
+                    size: 20.sp,
+                  )
+                : null,
             filled: true,
             fillColor: context.cardColor,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(16.sp), borderSide: BorderSide(color: context.borderColor)),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16.sp), borderSide: BorderSide(color: context.borderColor)),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16.sp), borderSide: BorderSide(color: AppTheme.primaryBlue, width: 1.5)),
-            contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 18.h),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16.sp),
+              borderSide: BorderSide(color: context.borderColor),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16.sp),
+              borderSide: BorderSide(color: context.borderColor),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16.sp),
+              borderSide: BorderSide(color: AppTheme.primaryBlue, width: 1.5),
+            ),
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 20.w,
+              vertical: 18.h,
+            ),
           ),
         ),
         SizedBox(height: 16.h),
@@ -205,6 +296,8 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
       displayLabel = 'PAINTING';
     } else if (label == 'House cleaning') {
       displayLabel = 'CLEANING';
+    } else if (label == 'Labor') {
+      displayLabel = 'LABOR';
     } else if (label == 'All') {
       displayLabel = 'ALL SERVICES';
     }
@@ -238,7 +331,9 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
               fontWeight: FontWeight.w900,
               fontSize: 11.sp,
               fontFamily: 'Poppins',
-              color: isSelected ? AppTheme.primaryBlue : context.primaryTextColor,
+              color: isSelected
+                  ? AppTheme.primaryBlue
+                  : context.primaryTextColor,
             ),
           ),
         ),
@@ -248,7 +343,6 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: context.scaffoldColor,
       appBar: AppBar(
@@ -294,7 +388,11 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
               borderRadius: BorderRadius.circular(12.w),
             ),
             child: IconButton(
-              icon: Icon(Icons.help_outline, color: AppTheme.primaryBlue, size: 20.sp),
+              icon: Icon(
+                Icons.help_outline,
+                color: AppTheme.primaryBlue,
+                size: 20.sp,
+              ),
               onPressed: () {},
             ),
           ),
@@ -312,12 +410,60 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
                 children: _categories
                     .asMap()
                     .entries
-                    .map(
-                      (entry) => _buildCategoryChip(entry.value),
-                    )
+                    .map((entry) => _buildCategoryChip(entry.value))
                     .toList(),
               ),
             ),
+            if (_selectedCategory == 'Labor') ...[
+              SizedBox(height: 32.h),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'LABOR EXPERTISE',
+                      style: TextStyle(
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.w900,
+                        color: AppTheme.primaryBlue,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                    SizedBox(height: 16.h),
+                    Wrap(
+                      spacing: 12.w,
+                      runSpacing: 12.h,
+                      children: _laborTypes.map((type) {
+                        bool isSelected = _selectedLaborType == type;
+                        return GestureDetector(
+                          onTap: () => setState(() => _selectedLaborType = type),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                            decoration: BoxDecoration(
+                              color: isSelected ? context.surfaceColor : context.cardColor,
+                              borderRadius: BorderRadius.circular(12.sp),
+                              border: Border.all(
+                                color: isSelected ? AppTheme.primaryBlue : context.borderColor,
+                                width: isSelected ? 1.5 : 1,
+                              ),
+                            ),
+                            child: Text(
+                              type,
+                              style: TextStyle(
+                                fontSize: 13.sp,
+                                fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
+                                color: isSelected ? AppTheme.primaryBlue : context.primaryTextColor,
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+              ),
+            ],
             SizedBox(height: 32.h),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 24.w),
@@ -327,6 +473,102 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
                 hint: 'Please describe in detail what needs to be fixed...',
                 keyboardType: TextInputType.multiline,
                 maxLines: 5,
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'SERVICE LOCATION',
+                        style: TextStyle(
+                          fontSize: 10.sp,
+                          fontWeight: FontWeight.w900,
+                          color: AppTheme.primaryBlue,
+                          letterSpacing: 1.5,
+                        ),
+                      ),
+                      TextButton.icon(
+                        onPressed: _isLocating ? null : _fetchLocation,
+                        icon: _isLocating
+                            ? SizedBox(
+                                height: 14.sp,
+                                width: 14.sp,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: AppTheme.primaryBlue,
+                                ),
+                              )
+                            : Icon(
+                                Icons.my_location,
+                                size: 16.sp,
+                                color: AppTheme.primaryBlue,
+                              ),
+                        label: Text(
+                          'USE LIVE LOCATION',
+                          style: TextStyle(
+                            fontSize: 10.sp,
+                            fontWeight: FontWeight.w900,
+                            color: AppTheme.primaryBlue,
+                            letterSpacing: 1.0,
+                          ),
+                        ),
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 12.w,
+                            vertical: 8.h,
+                          ),
+                          backgroundColor: AppTheme.primaryBlue.withValues(
+                            alpha: 0.05,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.sp),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 16.h),
+                  _buildTextFieldWidget(
+                    _addressController,
+                    'Full Address',
+                    hint: 'House No, Street, Area',
+                    icon: Icons.home_rounded,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildTextFieldWidget(
+                          _cityController,
+                          'City',
+                          hint: 'City',
+                          icon: Icons.location_city_rounded,
+                        ),
+                      ),
+                      SizedBox(width: 16.w),
+                      Expanded(
+                        child: _buildTextFieldWidget(
+                          _zipController,
+                          'Zip Code',
+                          hint: 'Postal Code',
+                          icon: Icons.local_post_office_rounded,
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                    ],
+                  ),
+                  _buildTextFieldWidget(
+                    _stateController,
+                    'State',
+                    hint: 'State / Province',
+                    icon: Icons.map_rounded,
+                  ),
+                  SizedBox(height: 32.h),
+                ],
               ),
             ),
           ],

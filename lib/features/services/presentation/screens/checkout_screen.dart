@@ -4,6 +4,7 @@ import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/services/domain/cart_service.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
+import 'package:sampatti_bazar/core/services/location_service.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -16,6 +17,38 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   final _addressController = TextEditingController(text: 'Flat 402, Skyline Heights, Bangalore');
   final _nameController = TextEditingController(text: 'Shivansh Jasathi');
   final _phoneController = TextEditingController(text: '+91 98765 43210');
+  bool _isLocating = false;
+
+  Future<void> _fetchLocation() async {
+    setState(() => _isLocating = true);
+    try {
+      final position = await LocationService.getCurrentPosition();
+      if (position != null) {
+        final addressData = await LocationService.getAddressFromLatLng(position);
+        if (addressData != null) {
+          setState(() {
+            _addressController.text = addressData['address'] ?? '';
+          });
+          
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Location updated successfully'), backgroundColor: Colors.green),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error fetching location: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLocating = false);
+      }
+    }
+  }
 
   String _formatCurrency(double amount) {
     String text = amount.toStringAsFixed(0);
@@ -159,7 +192,71 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             SizedBox(height: 16.h),
             _buildInputSection(l10n.phoneNumber, _phoneController, keyboardType: TextInputType.phone),
             SizedBox(height: 16.h),
-            _buildInputSection(l10n.deliveryAddress, _addressController),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  l10n.deliveryAddress.toUpperCase(),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    fontSize: 10.sp,
+                    fontFamily: 'Poppins',
+                    color: AppTheme.primaryBlue,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                TextButton.icon(
+                  onPressed: _isLocating ? null : _fetchLocation,
+                  icon: _isLocating
+                      ? SizedBox(
+                          height: 14.sp,
+                          width: 14.sp,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppTheme.primaryBlue,
+                          ),
+                        )
+                      : Icon(Icons.my_location, size: 16.sp, color: AppTheme.primaryBlue),
+                  label: Text(
+                    'USE LIVE LOCATION',
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      fontWeight: FontWeight.w900,
+                      color: AppTheme.primaryBlue,
+                      letterSpacing: 1.0,
+                    ),
+                  ),
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                    backgroundColor: AppTheme.primaryBlue.withValues(alpha: 0.05),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.sp),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 10.h),
+            Container(
+              decoration: BoxDecoration(
+                color: context.surfaceColor,
+                borderRadius: BorderRadius.circular(16.sp),
+                border: Border.all(color: context.borderColor),
+              ),
+              child: TextField(
+                controller: _addressController,
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: 'Poppins',
+                  color: context.primaryTextColor,
+                ),
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 16.h),
+                ),
+              ),
+            ),
             SizedBox(height: 32.h),
             Text(
               l10n.paymentMethod,

@@ -869,7 +869,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                                   : NetworkImage('https://ui-avatars.com/api/?name=${Uri.encodeComponent(owner?.name ?? 'User')}&background=random&size=128'),
                             ),
                             loading: () => CircleAvatar(radius: 16.w, backgroundColor: context.borderColor),
-                            error: (_, __) => CircleAvatar(radius: 16.w, backgroundImage: const NetworkImage('https://i.pravatar.cc/150?u=error')),
+                            error: (err, stack) => CircleAvatar(radius: 16.w, backgroundImage: const NetworkImage('https://i.pravatar.cc/150?u=error')),
                           );
                         },
                       ),
@@ -899,7 +899,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                                   ),
                                 ),
                                 loading: () => Container(width: 60.w, height: 10.h, color: context.borderColor),
-                                error: (_, __) => Text('Owner', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.sp)),
+                                error: (err, stack) => Text('Owner', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.sp)),
                               );
                             },
                           ),

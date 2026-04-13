@@ -67,58 +67,58 @@ class ProfileScreen extends ConsumerWidget {
             SizedBox(height: 24.h),
             // Avatar & Name Section
             Center(
-                  child: Stack(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: context.borderColor,
-                            width: 4.w,
-                          ),
-                        ),
-                        child: CircleAvatar(
-                          radius: 54.w,
-                          backgroundColor: context.isDarkMode
-                              ? Colors.grey[800]
-                              : Colors.grey[200],
-                          child: Text(
-                            (userAsync.value?.name ?? 'U')
-                                .substring(0, 1)
-                                .toUpperCase(),
-                            style: TextStyle(
-                              fontSize: 40.sp,
-                              fontWeight: FontWeight.w900,
-                              color: context.isDarkMode
-                                  ? Colors.white70
-                                  : Colors.black54,
-                            ),
-                          ),
+              child: Stack(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: context.borderColor,
+                        width: 4.w,
+                      ),
+                    ),
+                    child: CircleAvatar(
+                      radius: 54.w,
+                      backgroundColor: context.isDarkMode
+                          ? Colors.grey[800]
+                          : Colors.grey[200],
+                      child: Text(
+                        (userAsync.value?.name ?? 'U')
+                            .substring(0, 1)
+                            .toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 40.sp,
+                          fontWeight: FontWeight.w900,
+                          color: context.isDarkMode
+                              ? Colors.white70
+                              : Colors.black54,
                         ),
                       ),
-                      Positioned(
-                        bottom: 0.h,
-                        right: 8.w,
-                        child: Container(
-                          padding: EdgeInsets.all(6.w),
-                          decoration: BoxDecoration(
-                            color: AppTheme.primaryBlue,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: context.scaffoldColor,
-                              width: 3.w,
-                            ),
-                          ),
-                          child: Icon(
-                            LucideIcons.badgeCheck,
-                            color: Colors.white,
-                            size: 14.w,
-                          ),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                  Positioned(
+                    bottom: 0.h,
+                    right: 8.w,
+                    child: Container(
+                      padding: EdgeInsets.all(6.w),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryBlue,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: context.scaffoldColor,
+                          width: 3.w,
+                        ),
+                      ),
+                      child: Icon(
+                        LucideIcons.badgeCheck,
+                        color: Colors.white,
+                        size: 14.w,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             Text(
               userAsync.value?.name ?? 'User',
               maxLines: 1,

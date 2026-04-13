@@ -10,6 +10,10 @@ class ServiceRequestModel {
   final Map<String, dynamic> details; // JSON bag for dynamic form fields
   final DateTime createdAt;
   final String? location; // Optional city for filtering (e.g. for Builder Agents)
+  final String? city;
+  final String? state;
+  final String? zipCode;
+  final String? fullAddress;
   final String? targetProviderId; // Optional if targeting a specific agent/provider
   final String? tenantEmail; // NEW: To link the request to the tenant's email
   final String? tenantId; // NEW: To link to the tenant's UID if they already exist
@@ -24,6 +28,10 @@ class ServiceRequestModel {
     required this.details,
     required this.createdAt,
     this.location,
+    this.city,
+    this.state,
+    this.zipCode,
+    this.fullAddress,
     this.targetProviderId,
     this.tenantEmail,
     this.tenantId,
@@ -40,6 +48,10 @@ class ServiceRequestModel {
       'details': details,
       'createdAt': Timestamp.fromDate(createdAt),
       'location': location,
+      'city': city,
+      'state': state,
+      'zipCode': zipCode,
+      'fullAddress': fullAddress,
       'targetProviderId': targetProviderId,
       'tenantEmail': tenantEmail,
       'tenantId': tenantId,
@@ -59,6 +71,10 @@ class ServiceRequestModel {
           ? (map['createdAt'] as Timestamp).toDate() 
           : DateTime.now(),
       location: map['location'],
+      city: map['city'],
+      state: map['state'],
+      zipCode: map['zipCode'],
+      fullAddress: map['fullAddress'],
       targetProviderId: map['targetProviderId'],
       tenantEmail: map['tenantEmail'],
       tenantId: map['tenantId'],
@@ -80,6 +96,10 @@ class ServiceRequestModel {
       details: details,
       createdAt: createdAt,
       location: location,
+      city: city,
+      state: state,
+      zipCode: zipCode,
+      fullAddress: fullAddress,
       targetProviderId: targetProviderId,
       tenantEmail: tenantEmail ?? this.tenantEmail,
       tenantId: tenantId ?? this.tenantId,

@@ -13,6 +13,7 @@ import 'package:sampatti_bazar/features/services/domain/service_request_model.da
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:sampatti_bazar/core/services/location_service.dart';
 
 class LegalScreen extends ConsumerStatefulWidget {
   const LegalScreen({super.key});
@@ -42,6 +43,40 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
   
   bool _isLandlordVerified = false;
   String? _generatedAgreementId;
+  bool _isLocating = false;
+
+  Future<void> _fetchLocation() async {
+    setState(() => _isLocating = true);
+    try {
+      final position = await LocationService.getCurrentPosition();
+      if (position != null) {
+        final addressData = await LocationService.getAddressFromLatLng(position);
+        if (addressData != null) {
+          setState(() {
+            _addressController.text = addressData['address'] ?? '';
+            _propLocationController.text = addressData['city'] ?? '';
+            _cityController.text = addressData['city'] ?? '';
+          });
+          
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Location updated successfully'), backgroundColor: Colors.green),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error fetching location: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLocating = false);
+      }
+    }
+  }
 
   // Property Verification State
   final _propIdController = TextEditingController();
@@ -729,7 +764,51 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
         _buildTextFieldWidget(_lessorController, l10n.lessorName, hint: 'e.g., Rajesh Kumar', icon: Icons.person_outline, validator: (val) => Validators.required(val, l10n.lessorName, l10n)),
         _buildTextFieldWidget(_lesseeController, l10n.lesseeName, hint: 'e.g., Suresh Singh', icon: Icons.person_outline, validator: (val) => Validators.required(val, l10n.lesseeName, l10n)),
         _buildTextFieldWidget(_lesseeEmailController, 'Tenant Email Address', hint: 'e.g., suresh@example.com', icon: Icons.email_outlined, keyboardType: TextInputType.emailAddress, validator: (val) => Validators.email(val, l10n)),
-        _buildTextFieldWidget(_addressController, l10n.propertyAddress, hint: 'e.g., Plot No. 45, Vijay Nagar, Jabalpur', icon: Icons.location_on_outlined, maxLines: 3, validator: (val) => Validators.required(val, l10n.propertyAddress, l10n)),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              l10n.propertyAddress.toUpperCase(),
+              style: TextStyle(
+                fontSize: 10.sp,
+                fontWeight: FontWeight.w900,
+                color: AppTheme.primaryBlue,
+                letterSpacing: 1.5,
+              ),
+            ),
+            TextButton.icon(
+              onPressed: _isLocating ? null : _fetchLocation,
+              icon: _isLocating
+                  ? SizedBox(
+                      height: 14.sp,
+                      width: 14.sp,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppTheme.primaryBlue,
+                      ),
+                    )
+                  : Icon(Icons.my_location, size: 16.sp, color: AppTheme.primaryBlue),
+              label: Text(
+                'USE LIVE LOCATION',
+                style: TextStyle(
+                  fontSize: 10.sp,
+                  fontWeight: FontWeight.w900,
+                  color: AppTheme.primaryBlue,
+                  letterSpacing: 1.0,
+                ),
+              ),
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                backgroundColor: AppTheme.primaryBlue.withValues(alpha: 0.05),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.sp),
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 8.h),
+        _buildTextFieldWidget(_addressController, '', hint: 'e.g., Plot No. 45, Vijay Nagar, Jabalpur', icon: Icons.location_on_outlined, maxLines: 3, validator: (val) => Validators.required(val, l10n.propertyAddress, l10n)),
         Row(
           children: [
             Expanded(child: _buildTextFieldWidget(_rentController, l10n.monthlyRent, hint: 'e.g., 15000', keyboardType: TextInputType.number, icon: Icons.currency_rupee, validator: (val) => Validators.number(val, l10n.monthlyRent, l10n))),

@@ -19,7 +19,8 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
   final List<Map<String, dynamic>> _messages = [
     {
       'role': 'ai',
-      'text': 'Welcome to Sampatti Bazar!\nI\'m your digital assistant.\nHow can I help you\nstreamline your real estate\njourney today?',
+      'text':
+          'Welcome to Sampatti Bazar!\nI\'m your digital assistant.\nHow can I help you\nstreamline your real estate\njourney today?',
       'time': '09:00 AM',
     },
   ];
@@ -43,20 +44,18 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
     if (text.isEmpty) return;
 
     setState(() {
-      _messages.add({
-        'role': 'user',
-        'text': text,
-        'time': _getCurrentTime(),
-      });
+      _messages.add({'role': 'user', 'text': text, 'time': _getCurrentTime()});
       _messageController.clear();
       _isTyping = true;
     });
     _scrollToBottom();
 
     try {
-      final response = await ref.read(chatbotRepositoryProvider).getResponse(text);
+      final response = await ref
+          .read(chatbotRepositoryProvider)
+          .getResponse(text);
       if (!mounted) return;
-      
+
       setState(() {
         _isTyping = false;
         _messages.add({
@@ -72,7 +71,8 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
         _isTyping = false;
         _messages.add({
           'role': 'ai',
-          'text': "I'm sorry, I'm having bit of trouble connecting to our Sampatti systems. Please try again.",
+          'text':
+              "I'm sorry, I'm having bit of trouble connecting to our Sampatti systems. Please try again.",
           'time': _getCurrentTime(),
         });
       });
@@ -96,15 +96,33 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
         elevation: 0,
         backgroundColor: context.scaffoldColor,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: context.iconColor, size: 20.w),
+          icon: Icon(
+            Icons.arrow_back_ios_new,
+            color: context.iconColor,
+            size: 20.w,
+          ),
           onPressed: () => context.pop(),
         ),
-        title: Text('Sampatti Bot', style: TextStyle(color: context.primaryTextColor, fontWeight: FontWeight.w900, fontSize: 18.sp)),
+        title: Text(
+          'Sampatti Bot',
+          style: TextStyle(
+            color: context.primaryTextColor,
+            fontWeight: FontWeight.w900,
+            fontSize: 18.sp,
+          ),
+        ),
         actions: [
           Center(
             child: Padding(
               padding: EdgeInsets.only(right: 24.0.w),
-              child: Text('Online', style: TextStyle(color: context.primaryTextColor, fontWeight: FontWeight.w900, fontSize: 10.sp)),
+              child: Text(
+                'Online',
+                style: TextStyle(
+                  color: context.primaryTextColor,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 10.sp,
+                ),
+              ),
             ),
           ),
         ],
@@ -114,7 +132,10 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
-              padding: EdgeInsets.symmetric(horizontal: 24.0.w, vertical: 16.0.h),
+              padding: EdgeInsets.symmetric(
+                horizontal: 24.0.w,
+                vertical: 16.0.h,
+              ),
               itemCount: _messages.length + (_isTyping ? 1 : 0),
               itemBuilder: (context, index) {
                 if (index == 0) {
@@ -126,7 +147,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
                     ],
                   );
                 }
-                
+
                 if (index == _messages.length && _isTyping) {
                   return _buildTypingIndicator();
                 }
@@ -151,7 +172,12 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
       ),
       child: Text(
         'TODAY',
-        style: TextStyle(fontSize: 8.sp, fontWeight: FontWeight.w900, color: context.primaryTextColor, letterSpacing: 0.5),
+        style: TextStyle(
+          fontSize: 8.sp,
+          fontWeight: FontWeight.w900,
+          color: context.primaryTextColor,
+          letterSpacing: 0.5,
+        ),
       ),
     );
   }
@@ -161,7 +187,9 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
     return Padding(
       padding: EdgeInsets.only(bottom: 24.0.h),
       child: Row(
-        mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isUser
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           if (!isUser) ...[
@@ -171,13 +199,19 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
                 color: context.surfaceColor,
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.smart_toy, color: Color(0xFF1E60FF), size: 16.w),
+              child: Icon(
+                Icons.smart_toy,
+                color: Color(0xFF1E60FF),
+                size: 16.w,
+              ),
             ),
             SizedBox(width: 8.w),
           ],
           Flexible(
             child: Column(
-              crossAxisAlignment: isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              crossAxisAlignment: isUser
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.start,
               children: [
                 Container(
                   padding: EdgeInsets.all(16.0.w),
@@ -227,7 +261,12 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
           SizedBox(width: 8.w),
           Text(
             'SAMPATTI BOT IS THINKING....',
-            style: TextStyle(fontSize: 8.sp, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 1),
+            style: TextStyle(
+              fontSize: 8.sp,
+              fontWeight: FontWeight.w900,
+              color: Colors.grey,
+              letterSpacing: 1,
+            ),
           ),
         ],
       ),
@@ -246,7 +285,11 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
             children: [
               Text(
                 'QUICK ACTIONS',
-                style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w900, letterSpacing: 0.5),
+                style: TextStyle(
+                  fontSize: 10.sp,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 0.5,
+                ),
               ),
               Icon(Icons.auto_awesome, color: Color(0xFF00E5FF), size: 14.w),
             ],
@@ -289,7 +332,14 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
           children: [
             Icon(icon, size: 14.w, color: AppTheme.primaryBlue),
             SizedBox(width: 8.w),
-            Text(label, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11.sp, color: context.primaryTextColor)),
+            Text(
+              label,
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                fontSize: 11.sp,
+                color: context.primaryTextColor,
+              ),
+            ),
           ],
         ),
       ),
@@ -313,12 +363,22 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
                   Expanded(
                     child: TextField(
                       controller: _messageController,
-                      style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500, color: context.primaryTextColor),
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w500,
+                        color: context.primaryTextColor,
+                      ),
                       decoration: InputDecoration(
                         hintText: 'Ask me anything...',
-                        hintStyle: TextStyle(color: Colors.grey, fontSize: 14.sp),
+                        hintStyle: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 14.sp,
+                        ),
                         border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 16.w,
+                          vertical: 14.h,
+                        ),
                       ),
                       onSubmitted: (_) => _sendMessage(),
                     ),
@@ -332,7 +392,10 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
                     child: IconButton(
                       icon: Icon(Icons.send, color: Colors.white, size: 18.w),
                       onPressed: _sendMessage,
-                      constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+                      constraints: const BoxConstraints(
+                        minWidth: 40,
+                        minHeight: 40,
+                      ),
                       padding: EdgeInsets.zero,
                     ),
                   ),
@@ -342,7 +405,11 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
             SizedBox(height: 16.h),
             Text(
               'Gemini Powered Intelligence • Secure Encryption',
-              style: TextStyle(fontSize: 8.sp, fontWeight: FontWeight.w600, color: Colors.grey),
+              style: TextStyle(
+                fontSize: 8.sp,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey,
+              ),
             ),
           ],
         ),
