@@ -372,8 +372,6 @@ class _ServicesHubScreenState extends State<ServicesHubScreen> {
   Widget _buildToolsSupportList(BuildContext context, AppLocalizations l10n) {
     return Column(
       children: [
-        _buildTrackingSection(context, l10n),
-        SizedBox(height: 12.h),
         DescribedFeatureOverlay(
           featureId: 'hub_emi_id',
           tapTarget: Icon(LucideIcons.calculator, color: AppTheme.primaryBlue),
@@ -398,16 +396,6 @@ class _ServicesHubScreenState extends State<ServicesHubScreen> {
           () => ContactBottomSheet.show(context),
         ),
       ],
-    );
-  }
-
-  Widget _buildTrackingSection(BuildContext context, AppLocalizations l10n) {
-    return _buildListTile(
-      context,
-      l10n.serviceTracking,
-      "Monitor your ongoing requests",
-      LucideIcons.mapPin,
-      () => context.push('/services/tracking'),
     );
   }
 

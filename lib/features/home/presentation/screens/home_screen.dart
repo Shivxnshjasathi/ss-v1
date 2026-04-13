@@ -112,8 +112,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
         actions: [
+          IconButton(
+            onPressed: () => context.push('/saved'),
+            icon: Icon(
+              LucideIcons.heart,
+              color: context.isDarkMode ? Colors.white : Colors.black,
+              size: 22.sp,
+            ),
+          ),
           Padding(
-            padding: EdgeInsets.only(right: 16.w),
+            padding: EdgeInsets.only(right: 16.w, left: 8.w),
             child: GestureDetector(
               onTap: () => context.push('/profile'),
               child: Stack(

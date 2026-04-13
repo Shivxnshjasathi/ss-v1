@@ -104,8 +104,8 @@ final goRouter = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/saved',
-              builder: (context, state) => const SavedPropertiesScreen(),
+              path: '/services/tracking',
+              builder: (context, state) => const ServiceTrackingScreen(),
             ),
           ],
         ),
@@ -212,6 +212,10 @@ final goRouter = GoRouter(
     GoRoute(
       path: '/notifications',
       builder: (context, state) => const NotificationScreen(),
+    ),
+    GoRoute(
+      path: '/saved',
+      builder: (context, state) => const SavedPropertiesScreen(),
     ),
     GoRoute(
       path: '/provider/construction',

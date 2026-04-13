@@ -92,16 +92,16 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
                   ),
                 ),
                 GButton(
-                  icon: LucideIcons.heart,
-                  text: l10n.savedLabel,
+                  icon: LucideIcons.mapPin,
+                  text: 'Tracking',
                   leading: DescribedFeatureOverlay(
-                    featureId: 'nav_saved_id',
-                    tapTarget: Icon(LucideIcons.heart, color: AppTheme.primaryBlue),
-                    title: const Text('Saved Interest'),
-                    description: const Text('Quickly access properties you have marked as favorites.'),
+                    featureId: 'nav_tracking_id',
+                    tapTarget: Icon(LucideIcons.mapPin, color: AppTheme.primaryBlue),
+                    title: const Text('Service Tracking'),
+                    description: const Text('Monitor the real-time status of your service requests.'),
                     backgroundColor: AppTheme.primaryBlue,
                     targetColor: Colors.white,
-                    child: Icon(LucideIcons.heart, color: widget.navigationShell.currentIndex == 2 ? AppTheme.primaryBlue : (context.isDarkMode ? Colors.white54 : Colors.grey[600])),
+                    child: Icon(LucideIcons.mapPin, color: widget.navigationShell.currentIndex == 2 ? AppTheme.primaryBlue : (context.isDarkMode ? Colors.white54 : Colors.grey[600])),
                   ),
                 ),
                 GButton(

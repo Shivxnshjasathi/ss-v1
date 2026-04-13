@@ -53,37 +53,16 @@ class ServiceTrackingScreen extends ConsumerWidget {
         appBar: AppBar(
           backgroundColor: context.scaffoldColor,
           elevation: 0,
-          toolbarHeight: 80.h,
           automaticallyImplyLeading: false,
-          title: Row(
-            children: [
-              GestureDetector(
-                onTap: () => context.pop(),
-                child: Container(
-                  padding: EdgeInsets.all(10.w),
-                  decoration: BoxDecoration(
-                    color: context.cardColor,
-                    border: Border.all(color: context.borderColor),
-                    borderRadius: BorderRadius.circular(14.sp),
-                  ),
-                  child: Icon(
-                    LucideIcons.arrowLeft,
-                    color: context.iconColor,
-                    size: 16.sp,
-                  ),
-                ),
-              ),
-              SizedBox(width: 16.w),
-              Text(
-                'Tracking Hub',
-                style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  color: context.primaryTextColor,
-                  fontSize: 24.sp,
-                  fontFamily: 'Poppins',
-                ),
-              ),
-            ],
+          centerTitle: false,
+          title: Text(
+            'Tracking Hub',
+            style: TextStyle(
+              fontWeight: FontWeight.w900,
+              color: context.primaryTextColor,
+              fontSize: 20.sp,
+              fontFamily: 'Poppins',
+            ),
           ),
           bottom: PreferredSize(
             preferredSize: Size.fromHeight(48.h),
