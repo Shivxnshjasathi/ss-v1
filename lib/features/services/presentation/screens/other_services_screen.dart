@@ -9,6 +9,8 @@ import 'package:sampatti_bazar/core/services/logger_service.dart';
 import 'package:sampatti_bazar/features/services/data/service_request_repository.dart';
 import 'package:sampatti_bazar/features/services/domain/service_request_model.dart';
 import 'package:sampatti_bazar/core/services/location_service.dart';
+import 'package:feature_discovery/feature_discovery.dart';
+import 'package:flutter/scheduler.dart';
 
 class OtherServicesScreen extends ConsumerStatefulWidget {
   const OtherServicesScreen({super.key});
@@ -47,6 +49,19 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
 
   bool _isLoading = false;
   bool _isLocating = false;
+
+  @override
+  void initState() {
+    super.initState();
+    SchedulerBinding.instance.addPostFrameCallback((Duration duration) {
+      FeatureDiscovery.discoverFeatures(
+        context,
+        const <String>{
+          'category_selection_feature_id',
+        },
+      );
+    });
+  }
 
   Future<void> _fetchLocation() async {
     setState(() => _isLocating = true);
@@ -403,15 +418,23 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 8.h),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.symmetric(horizontal: 24.0.w),
-              child: Row(
-                children: _categories
-                    .asMap()
-                    .entries
-                    .map((entry) => _buildCategoryChip(entry.value))
-                    .toList(),
+            DescribedFeatureOverlay(
+              featureId: 'category_selection_feature_id',
+              tapTarget: Icon(Icons.category_rounded, color: AppTheme.primaryBlue),
+              title: const Text('Choose a Service'),
+              description: const Text('Select from Electrical, Plumbing, Painting, or our new Labor service.'),
+              backgroundColor: AppTheme.primaryBlue,
+              targetColor: Colors.white,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: EdgeInsets.symmetric(horizontal: 24.0.w),
+                child: Row(
+                  children: _categories
+                      .asMap()
+                      .entries
+                      .map((entry) => _buildCategoryChip(entry.value))
+                      .toList(),
+                ),
               ),
             ),
             if (_selectedCategory == 'Labor') ...[

@@ -5,9 +5,30 @@ import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/core/widgets/contact_bottom_sheet.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
+import 'package:feature_discovery/feature_discovery.dart';
+import 'package:flutter/scheduler.dart';
 
-class ServicesHubScreen extends StatelessWidget {
+class ServicesHubScreen extends StatefulWidget {
   const ServicesHubScreen({super.key});
+
+  @override
+  State<ServicesHubScreen> createState() => _ServicesHubScreenState();
+}
+
+class _ServicesHubScreenState extends State<ServicesHubScreen> {
+  @override
+  void initState() {
+    super.initState();
+    SchedulerBinding.instance.addPostFrameCallback((Duration duration) {
+      FeatureDiscovery.discoverFeatures(
+        context,
+        const <String>{
+          'hub_marketplace_id',
+          'hub_emi_id',
+        },
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,12 +119,20 @@ class ServicesHubScreen extends StatelessWidget {
                       l10n.verifiedLawyers,
                       '/services/legal',
                     ),
-                    _buildServiceGridItem(
-                      context,
-                      l10n.marketplace,
-                      LucideIcons.shoppingBag,
-                      l10n.materialsAndMore,
-                      '/services/marketplace',
+                    DescribedFeatureOverlay(
+                      featureId: 'hub_marketplace_id',
+                      tapTarget: Icon(LucideIcons.shoppingBag, color: AppTheme.primaryBlue),
+                      title: const Text('Service Marketplace'),
+                      description: const Text('Order construction materials, interior decor, and home essentials.'),
+                      backgroundColor: AppTheme.primaryBlue,
+                      targetColor: Colors.white,
+                      child: _buildServiceGridItem(
+                        context,
+                        l10n.marketplace,
+                        LucideIcons.shoppingBag,
+                        l10n.materialsAndMore,
+                        '/services/marketplace',
+                      ),
                     ),
                     _buildServiceGridItem(
                       context,
@@ -250,12 +279,20 @@ class ServicesHubScreen extends StatelessWidget {
       children: [
         _buildTrackingSection(context, l10n),
         SizedBox(height: 12.h),
-        _buildListTile(
-          context,
-          l10n.emiCalculator,
-          l10n.planYourFinances,
-          LucideIcons.calculator,
-          () => context.push('/services/emi-calculator'),
+        DescribedFeatureOverlay(
+          featureId: 'hub_emi_id',
+          tapTarget: Icon(LucideIcons.calculator, color: AppTheme.primaryBlue),
+          title: const Text('Planning Tools'),
+          description: const Text('Calculate loan installments and plan your property budget smarter.'),
+          backgroundColor: AppTheme.primaryBlue,
+          targetColor: Colors.white,
+          child: _buildListTile(
+            context,
+            l10n.emiCalculator,
+            l10n.planYourFinances,
+            LucideIcons.calculator,
+            () => context.push('/services/emi-calculator'),
+          ),
         ),
         SizedBox(height: 12.h),
         _buildListTile(

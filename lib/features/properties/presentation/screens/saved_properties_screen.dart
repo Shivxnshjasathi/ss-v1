@@ -10,6 +10,7 @@ import 'package:sampatti_bazar/features/properties/domain/property_model.dart';
 import 'package:sampatti_bazar/core/services/logger_service.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 class SavedPropertiesScreen extends ConsumerWidget {
   const SavedPropertiesScreen({super.key});
@@ -73,13 +74,22 @@ class SavedPropertiesScreen extends ConsumerWidget {
                 );
               }
 
-              return ListView.builder(
-                padding: EdgeInsets.all(16.w),
-                itemCount: properties.length,
-                itemBuilder: (context, index) {
-                  final prop = properties[index];
-                  return _buildSavedCard(context, prop);
+              return LiquidPullToRefresh(
+                onRefresh: () async {
+                  ref.invalidate(savedPropertiesProvider(user.uid));
+                  await ref.read(savedPropertiesProvider(user.uid).future);
                 },
+                color: AppTheme.primaryBlue,
+                backgroundColor: context.scaffoldColor,
+                showChildOpacityTransition: false,
+                child: ListView.builder(
+                  padding: EdgeInsets.all(16.w),
+                  itemCount: properties.length,
+                  itemBuilder: (context, index) {
+                    final prop = properties[index];
+                    return _buildSavedCard(context, prop);
+                  },
+                ),
               );
             },
             loading: () => const Center(child: CircularProgressIndicator()),

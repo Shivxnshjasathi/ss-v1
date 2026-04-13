@@ -13,6 +13,7 @@ import 'firebase_options.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:sampatti_bazar/core/providers/locale_provider.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
+import 'package:feature_discovery/feature_discovery.dart';
 
 void main() async {
   runZonedGuarded<Future<void>>(
@@ -61,24 +62,26 @@ class SampattiBazarApp extends ConsumerWidget {
         return OrientationBuilder(
           builder: (context, orientation) {
             Responsive().init(context);
-            return MaterialApp.router(
-              title: 'Sampatti Bazar',
-              theme: AppTheme.lightTheme,
-              darkTheme: AppTheme.darkTheme,
-              themeMode: ref.watch(themeProvider),
-              locale: ref.watch(localeProvider),
-              routerConfig: goRouter,
-              localizationsDelegates: const [
-                AppLocalizations.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-              ],
-              supportedLocales: const [
-                Locale('en', ''), // English
-                Locale('hi', ''), // Hindi
-              ],
-              debugShowCheckedModeBanner: false,
+            return FeatureDiscovery(
+              child: MaterialApp.router(
+                title: 'Sampatti Bazar',
+                theme: AppTheme.lightTheme,
+                darkTheme: AppTheme.darkTheme,
+                themeMode: ref.watch(themeProvider),
+                locale: ref.watch(localeProvider),
+                routerConfig: goRouter,
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                supportedLocales: const [
+                  Locale('en', ''), // English
+                  Locale('hi', ''), // Hindi
+                ],
+                debugShowCheckedModeBanner: false,
+              ),
             );
           },
         );

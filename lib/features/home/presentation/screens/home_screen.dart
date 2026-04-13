@@ -12,11 +12,35 @@ import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
 import 'package:sampatti_bazar/core/widgets/skeleton_loaders.dart';
 
-class HomeScreen extends ConsumerWidget {
+import 'package:sampatti_bazar/core/widgets/skeleton_loaders.dart';
+import 'package:feature_discovery/feature_discovery.dart';
+import 'package:flutter/scheduler.dart';
+
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    SchedulerBinding.instance.addPostFrameCallback((Duration duration) {
+      FeatureDiscovery.discoverFeatures(
+        context,
+        const <String>{
+          'home_profile_id',
+          'home_search_id',
+          'home_chatbot_id',
+        },
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final userAsync = ref.watch(currentUserDataProvider);
     final propertiesAsync = ref.watch(propertiesStreamProvider);
     final locationAsync = ref.watch(userLocationProvider);
@@ -36,46 +60,6 @@ class HomeScreen extends ConsumerWidget {
         backgroundColor: context.scaffoldColor,
         elevation: 0,
         centerTitle: false,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l10n.welcome,
-              style: TextStyle(
-                fontSize: 12.sp,
-                color: context.secondaryTextColor,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            Row(
-              children: [
-                Text(
-                  '$firstName!',
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.w900,
-                    color: context.primaryTextColor,
-                  ),
-                ),
-                SizedBox(width: 8.w),
-                Icon(
-                  LucideIcons.mapPin,
-                  size: 14.w,
-                  color: AppTheme.primaryBlue,
-                ),
-                SizedBox(width: 4.w),
-                Text(
-                  currentLocation,
-                  style: TextStyle(
-                    fontSize: 12.sp,
-                    color: context.secondaryTextColor,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 16.w),
@@ -109,41 +93,104 @@ class HomeScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Welcome Header
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 8.h),
+              child: DescribedFeatureOverlay(
+                featureId: 'home_profile_id',
+                tapTarget: Icon(LucideIcons.user, color: AppTheme.primaryBlue),
+                title: const Text('Welcome Dashboard'),
+                description: const Text('See your personalized greetings and current location-based data.'),
+                backgroundColor: AppTheme.primaryBlue,
+                targetColor: Colors.white,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.welcome,
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        color: context.secondaryTextColor,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          '$firstName!',
+                          style: TextStyle(
+                            fontSize: 22.sp,
+                            fontWeight: FontWeight.w900,
+                            color: context.primaryTextColor,
+                          ),
+                        ),
+                        SizedBox(width: 8.w),
+                        Icon(
+                          LucideIcons.mapPin,
+                          size: 16.w,
+                          color: AppTheme.primaryBlue,
+                        ),
+                        SizedBox(width: 4.w),
+                        Text(
+                          currentLocation,
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: context.secondaryTextColor,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            SizedBox(height: 16.h),
+
             // Search Bar
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-              child: TextField(
-                readOnly: true,
-                onTap: () => context.push('/properties'),
-                decoration: InputDecoration(
-                  hintText: l10n.searchProperties,
-                  hintStyle: TextStyle(
-                    color: Colors.grey[500],
-                    fontSize: 13.sp,
-                  ),
-                  prefixIcon: Icon(
-                    LucideIcons.search,
-                    color: Colors.grey,
-                    size: 18.sp,
-                  ),
-                  suffixIcon: Icon(
-                    LucideIcons.slidersHorizontal,
-                    color: Colors.grey,
-                    size: 18.sp,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.w),
-                    borderSide: BorderSide(color: context.borderColor),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16.w),
-                    borderSide: BorderSide(color: context.borderColor),
-                  ),
-                  filled: true,
-                  fillColor: context.surfaceColor,
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 0.h,
-                    horizontal: 16.w,
+              child: DescribedFeatureOverlay(
+                featureId: 'home_search_id',
+                tapTarget: Icon(LucideIcons.search, color: AppTheme.primaryBlue),
+                title: const Text('Find Properties'),
+                description: const Text('Jump straight into our property feed with advanced search and filters.'),
+                backgroundColor: AppTheme.primaryBlue,
+                targetColor: Colors.white,
+                child: TextField(
+                  readOnly: true,
+                  onTap: () => context.push('/properties'),
+                  decoration: InputDecoration(
+                    hintText: l10n.searchProperties,
+                    hintStyle: TextStyle(
+                      color: Colors.grey[500],
+                      fontSize: 13.sp,
+                    ),
+                    prefixIcon: Icon(
+                      LucideIcons.search,
+                      color: Colors.grey,
+                      size: 18.sp,
+                    ),
+                    suffixIcon: Icon(
+                      LucideIcons.slidersHorizontal,
+                      color: Colors.grey,
+                      size: 18.sp,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16.w),
+                      borderSide: BorderSide(color: context.borderColor),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16.w),
+                      borderSide: BorderSide(color: context.borderColor),
+                    ),
+                    filled: true,
+                    fillColor: context.surfaceColor,
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 0.h,
+                      horizontal: 16.w,
+                    ),
                   ),
                 ),
               ),
@@ -368,16 +415,24 @@ class HomeScreen extends ConsumerWidget {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          context.push('/chatbot');
-        },
+      floatingActionButton: DescribedFeatureOverlay(
+        featureId: 'home_chatbot_id',
+        tapTarget: Icon(LucideIcons.messageSquare, color: Colors.white),
+        title: const Text('AI Assistance'),
+        description: const Text('Have questions? Our AI Chatbot is here to help you navigate and find resources.'),
         backgroundColor: AppTheme.primaryBlue,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.w),
+        targetColor: Colors.white,
+        child: FloatingActionButton(
+          onPressed: () {
+            context.push('/chatbot');
+          },
+          backgroundColor: AppTheme.primaryBlue,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.w),
+          ),
+          elevation: 10,
+          child: Icon(LucideIcons.messageCircle, color: Colors.white, size: 24.w),
         ),
-        elevation: 10,
-        child: Icon(LucideIcons.messageCircle, color: Colors.white, size: 24.w),
       ),
     );
   }

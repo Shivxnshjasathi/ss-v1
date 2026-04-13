@@ -11,6 +11,9 @@ import 'package:sampatti_bazar/core/utils/responsive.dart';
 import 'package:sampatti_bazar/core/widgets/skeleton_loaders.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+import 'package:feature_discovery/feature_discovery.dart';
+import 'package:flutter/scheduler.dart';
 
 class PropertyFeedScreen extends ConsumerStatefulWidget {
   const PropertyFeedScreen({super.key});
@@ -39,9 +42,30 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
   final TextEditingController _searchController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    SchedulerBinding.instance.addPostFrameCallback((Duration duration) {
+      FeatureDiscovery.discoverFeatures(
+        context,
+        const <String>{
+          'search_feature_id',
+          'filter_feature_id',
+        },
+      );
+    });
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _handleRefresh() async {
+    // Refresh properties stream
+    ref.invalidate(propertiesStreamProvider);
+    // Wait for the next data event (optional but good for UX)
+    await ref.read(propertiesStreamProvider.future);
   }
 
   String _getLocalizedCategory(AppLocalizations l10n, String category) {
@@ -141,10 +165,18 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
               child: Row(
                 children: [
                   SizedBox(width: 20.w),
-                  Icon(
-                    LucideIcons.search,
-                    color: AppTheme.primaryBlue,
-                    size: 20.w,
+                  DescribedFeatureOverlay(
+                    featureId: 'search_feature_id',
+                    tapTarget: Icon(LucideIcons.search, color: AppTheme.primaryBlue),
+                    title: const Text('Search Properties'),
+                    description: const Text('Quickly find properties by location or locality name.'),
+                    backgroundColor: AppTheme.primaryBlue,
+                    targetColor: Colors.white,
+                    child: Icon(
+                      LucideIcons.search,
+                      color: AppTheme.primaryBlue,
+                      size: 20.w,
+                    ),
                   ),
                   SizedBox(width: 12.w),
                   Expanded(
@@ -194,12 +226,20 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                   ),
                   GestureDetector(
                     onTap: () => _showFilterSheet(context, l10n),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 16.w),
-                      child: Icon(
-                        LucideIcons.slidersHorizontal,
-                        color: context.primaryTextColor,
-                        size: 18.sp,
+                    child: DescribedFeatureOverlay(
+                      featureId: 'filter_feature_id',
+                      tapTarget: Icon(LucideIcons.slidersHorizontal, color: context.primaryTextColor),
+                      title: const Text('Refine Your Search'),
+                      description: const Text('Filter by property type, price range, and number of bedrooms.'),
+                      backgroundColor: AppTheme.primaryBlue,
+                      targetColor: Colors.white,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 16.w),
+                        child: Icon(
+                          LucideIcons.slidersHorizontal,
+                          color: context.primaryTextColor,
+                          size: 18.sp,
+                        ),
                       ),
                     ),
                   ),
@@ -308,40 +348,52 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                 }
 
                 if (context.isMobile) {
-                  return ListView.builder(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 16.w,
-                      vertical: 8.h,
+                  return LiquidPullToRefresh(
+                    onRefresh: _handleRefresh,
+                    color: AppTheme.primaryBlue,
+                    backgroundColor: context.scaffoldColor,
+                    showChildOpacityTransition: false,
+                    child: ListView.builder(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16.w,
+                        vertical: 8.h,
+                      ),
+                      itemCount: filtered.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: EdgeInsets.only(bottom: 24.h),
+                          child:
+                              _buildPropertyCard(context, filtered[index], l10n),
+                        );
+                      },
                     ),
-                    itemCount: filtered.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: EdgeInsets.only(bottom: 24.h),
-                        child:
-                            _buildPropertyCard(context, filtered[index], l10n),
-                      );
-                    },
                   );
                 }
 
                 final crossAxisCount = context.isTablet ? 2 : 3;
                 final itemHeight = 420.h;
 
-                return GridView.builder(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                    vertical: 8.h,
+                return LiquidPullToRefresh(
+                  onRefresh: _handleRefresh,
+                  color: AppTheme.primaryBlue,
+                  backgroundColor: context.scaffoldColor,
+                  showChildOpacityTransition: false,
+                  child: GridView.builder(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.w,
+                      vertical: 8.h,
+                    ),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: crossAxisCount,
+                      crossAxisSpacing: 16.w,
+                      mainAxisSpacing: 24.h,
+                      mainAxisExtent: itemHeight,
+                    ),
+                    itemCount: filtered.length,
+                    itemBuilder: (context, index) {
+                      return _buildPropertyCard(context, filtered[index], l10n);
+                    },
                   ),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: crossAxisCount,
-                    crossAxisSpacing: 16.w,
-                    mainAxisSpacing: 24.h,
-                    mainAxisExtent: itemHeight,
-                  ),
-                  itemCount: filtered.length,
-                  itemBuilder: (context, index) {
-                    return _buildPropertyCard(context, filtered[index], l10n);
-                  },
                 );
               },
               loading: () => ListView.builder(

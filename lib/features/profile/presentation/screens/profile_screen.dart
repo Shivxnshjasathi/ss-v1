@@ -9,11 +9,35 @@ import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
 
-class ProfileScreen extends ConsumerWidget {
+import 'package:sampatti_bazar/core/utils/responsive.dart';
+import 'package:feature_discovery/feature_discovery.dart';
+import 'package:flutter/scheduler.dart';
+
+class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    SchedulerBinding.instance.addPostFrameCallback((Duration duration) {
+      FeatureDiscovery.discoverFeatures(
+        context,
+        const <String>{
+          'profile_theme_id',
+          'profile_premium_id',
+          'profile_docs_id',
+        },
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final l10n = AppLocalizations.of(context)!;
@@ -49,12 +73,6 @@ class ProfileScreen extends ConsumerWidget {
           ),
         ),
         actions: [
-          IconButton(
-            icon: Icon(isDark ? LucideIcons.sun : LucideIcons.moon, size: 20.w),
-            onPressed: () {
-              ref.read(themeProvider.notifier).toggleTheme();
-            },
-          ),
           IconButton(
             icon: Icon(LucideIcons.bell, size: 20.w),
             onPressed: () {},
@@ -143,21 +161,54 @@ class ProfileScreen extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 16.w,
-                    vertical: 8.h,
+                DescribedFeatureOverlay(
+                  featureId: 'profile_premium_id',
+                  tapTarget: Icon(LucideIcons.award, color: AppTheme.primaryBlue),
+                  title: const Text('Membership Status'),
+                  description: const Text('Check your current account tier and unlocked benefits.'),
+                  backgroundColor: AppTheme.primaryBlue,
+                  targetColor: Colors.white,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.w,
+                      vertical: 8.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(20.w),
+                    ),
+                    child: Text(
+                      userAsync.value?.role?.toUpperCase() ?? l10n.premiumMember,
+                      style: TextStyle(
+                        color: AppTheme.primaryBlue,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 10.sp,
+                      ),
+                    ),
                   ),
-                  decoration: BoxDecoration(
-                    color: AppTheme.primaryBlue.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(20.w),
-                  ),
-                  child: Text(
-                    userAsync.value?.role?.toUpperCase() ?? l10n.premiumMember,
-                    style: TextStyle(
-                      color: AppTheme.primaryBlue,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 10.sp,
+                ),
+                SizedBox(width: 8.w),
+                DescribedFeatureOverlay(
+                  featureId: 'profile_theme_id',
+                  tapTarget: Icon(isDark ? LucideIcons.sun : LucideIcons.moon, color: AppTheme.primaryBlue),
+                  title: const Text('Theme Selection'),
+                  description: const Text('Switch between light and dark modes easily.'),
+                  backgroundColor: AppTheme.primaryBlue,
+                  targetColor: Colors.white,
+                  child: GestureDetector(
+                    onTap: () => ref.read(themeProvider.notifier).toggleTheme(),
+                    child: Container(
+                      padding: EdgeInsets.all(8.w),
+                      decoration: BoxDecoration(
+                        color: context.cardColor,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: context.borderColor),
+                      ),
+                      child: Icon(
+                        isDark ? LucideIcons.sun : LucideIcons.moon,
+                        size: 16.w,
+                        color: context.iconColor,
+                      ),
                     ),
                   ),
                 ),
@@ -238,12 +289,20 @@ class ProfileScreen extends ConsumerWidget {
                         Colors.pinkAccent,
                         () => context.go('/saved'),
                       ),
-                      _buildMenuItem(
-                        context,
-                        l10n.myDocuments,
-                        LucideIcons.fileText,
-                        Colors.orange,
-                        () => context.push('/profile/documents'),
+                      DescribedFeatureOverlay(
+                        featureId: 'profile_docs_id',
+                        tapTarget: Icon(LucideIcons.fileText, color: Colors.orange),
+                        title: const Text('Secure Vault'),
+                        description: const Text('Upload and manage your property deeds and identity documents.'),
+                        backgroundColor: AppTheme.primaryBlue,
+                        targetColor: Colors.white,
+                        child: _buildMenuItem(
+                          context,
+                          l10n.myDocuments,
+                          LucideIcons.fileText,
+                          Colors.orange,
+                          () => context.push('/profile/documents'),
+                        ),
                       ),
                     ],
                   ),
