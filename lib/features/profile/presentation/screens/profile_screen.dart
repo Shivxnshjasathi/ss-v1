@@ -8,10 +8,7 @@ import 'package:sampatti_bazar/features/auth/data/auth_repository.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
-
-import 'package:sampatti_bazar/core/utils/responsive.dart';
 import 'package:feature_discovery/feature_discovery.dart';
-import 'package:flutter/scheduler.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -24,16 +21,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    SchedulerBinding.instance.addPostFrameCallback((Duration duration) {
-      FeatureDiscovery.discoverFeatures(
-        context,
-        const <String>{
-          'profile_theme_id',
-          'profile_premium_id',
-          'profile_docs_id',
-        },
-      );
-    });
   }
 
   @override

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -6,7 +7,7 @@ import 'package:sampatti_bazar/core/widgets/contact_bottom_sheet.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:feature_discovery/feature_discovery.dart';
-import 'package:flutter/scheduler.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ServicesHubScreen extends StatefulWidget {
   const ServicesHubScreen({super.key});
@@ -19,15 +20,6 @@ class _ServicesHubScreenState extends State<ServicesHubScreen> {
   @override
   void initState() {
     super.initState();
-    SchedulerBinding.instance.addPostFrameCallback((Duration duration) {
-      FeatureDiscovery.discoverFeatures(
-        context,
-        const <String>{
-          'hub_marketplace_id',
-          'hub_emi_id',
-        },
-      );
-    });
   }
 
   @override
@@ -68,18 +60,7 @@ class _ServicesHubScreenState extends State<ServicesHubScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              l10n.financialEcosystem,
-              style: Theme.of(context).textTheme.displayMedium,
-            ),
-            SizedBox(height: 8.h),
-            Text(
-              l10n.servicesSubtitle,
-              style: TextStyle(
-                color: context.secondaryTextColor,
-                fontSize: 14.sp,
-              ),
-            ),
+            _buildOffersBanner(context, l10n),
             SizedBox(height: 32.h),
             GridView.count(
                   shrinkWrap: true,
@@ -159,13 +140,127 @@ class _ServicesHubScreenState extends State<ServicesHubScreen> {
               l10n,
             ),
             SizedBox(height: 32.h),
-            _buildOffersSection(
-              context,
-              l10n,
-            ),
-            SizedBox(height: 32.h),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildOffersBanner(BuildContext context, AppLocalizations l10n) {
+    return Container(
+      width: double.infinity,
+      height: 150.h, // Adjusted height slightly for better fit
+      decoration: BoxDecoration(
+        color: context.cardColor,
+        borderRadius: BorderRadius.circular(20.sp),
+        border: Border.all(color: context.borderColor),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Stack(
+        children: [
+          // Professional Property/Service Image
+          Positioned.fill(
+            child: CachedNetworkImage(
+              imageUrl: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80',
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Container(color: Colors.grey[300]),
+              errorWidget: (context, url, error) => Container(color: AppTheme.primaryBlue),
+            ),
+          ),
+          // Gradient Overlay
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.black.withValues(alpha: 0.8),
+                    Colors.black.withValues(alpha: 0.2),
+                    Colors.transparent,
+                  ],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  stops: const [0.0, 0.6, 1.0],
+                ),
+              ),
+            ),
+          ),
+          // Content
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryBlue,
+                    borderRadius: BorderRadius.circular(8.sp),
+                  ),
+                  child: Text(
+                    "BEST VALUE",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 8.sp,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10.h),
+                Text(
+                  "Up to 20% OFF",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 24.sp,
+                    fontFamily: 'Poppins',
+                    height: 1.1,
+                  ),
+                ),
+                SizedBox(height: 4.h),
+                Flexible(
+                  child: Text(
+                    "On Professional Home & Property Services",
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.9),
+                      fontSize: 11.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                SizedBox(height: 12.h),
+                GestureDetector(
+                  onTap: () => context.push('/services/offers'),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10.sp),
+                    ),
+                    child: Text(
+                      "Explore Deals",
+                      style: TextStyle(
+                        color: AppTheme.primaryBlue,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 10.sp,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -383,84 +478,6 @@ class _ServicesHubScreenState extends State<ServicesHubScreen> {
     );
   }
 
-  Widget _buildOffersSection(BuildContext context, AppLocalizations l10n) {
-    return GestureDetector(
-      onTap: () => context.push('/services/offers'),
-      child: Container(
-        padding: EdgeInsets.all(24.sp),
-        decoration: BoxDecoration(
-          color: context.cardColor,
-          borderRadius: BorderRadius.circular(24.sp),
-          border: Border.all(color: AppTheme.primaryBlue, width: 2),
-          boxShadow: [
-            BoxShadow(
-              color: AppTheme.primaryBlue.withValues(alpha: 0.1),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryBlue.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(10.sp),
-                    ),
-                    child: Text(
-                      "LIMITED TIME",
-                      style: TextStyle(
-                        color: AppTheme.primaryBlue,
-                        fontWeight: FontWeight.w900,
-                        fontSize: 9.sp,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 12.h),
-                  Text(
-                    "Exclusive Service Offers",
-                    style: TextStyle(
-                      color: context.primaryTextColor,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 20.sp,
-                      fontFamily: 'Poppins',
-                    ),
-                  ),
-                  SizedBox(height: 4.h),
-                  Text(
-                    "Unlock premium benefits and discounts",
-                    style: TextStyle(
-                      color: context.secondaryTextColor,
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              padding: EdgeInsets.all(12.sp),
-              decoration: BoxDecoration(
-                color: AppTheme.primaryBlue.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                LucideIcons.arrowRight,
-                color: AppTheme.primaryBlue,
-                size: 20.sp,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 class GlobalSearchDelegate extends SearchDelegate {

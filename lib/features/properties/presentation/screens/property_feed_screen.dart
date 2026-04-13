@@ -13,7 +13,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:feature_discovery/feature_discovery.dart';
-import 'package:flutter/scheduler.dart';
 
 class PropertyFeedScreen extends ConsumerStatefulWidget {
   const PropertyFeedScreen({super.key});
@@ -44,15 +43,6 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
   @override
   void initState() {
     super.initState();
-    SchedulerBinding.instance.addPostFrameCallback((Duration duration) {
-      FeatureDiscovery.discoverFeatures(
-        context,
-        const <String>{
-          'search_feature_id',
-          'filter_feature_id',
-        },
-      );
-    });
   }
 
   @override

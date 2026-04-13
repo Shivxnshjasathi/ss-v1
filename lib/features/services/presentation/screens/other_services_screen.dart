@@ -10,7 +10,6 @@ import 'package:sampatti_bazar/features/services/data/service_request_repository
 import 'package:sampatti_bazar/features/services/domain/service_request_model.dart';
 import 'package:sampatti_bazar/core/services/location_service.dart';
 import 'package:feature_discovery/feature_discovery.dart';
-import 'package:flutter/scheduler.dart';
 
 class OtherServicesScreen extends ConsumerStatefulWidget {
   const OtherServicesScreen({super.key});
@@ -53,14 +52,6 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
   @override
   void initState() {
     super.initState();
-    SchedulerBinding.instance.addPostFrameCallback((Duration duration) {
-      FeatureDiscovery.discoverFeatures(
-        context,
-        const <String>{
-          'category_selection_feature_id',
-        },
-      );
-    });
   }
 
   Future<void> _fetchLocation() async {

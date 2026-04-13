@@ -5,10 +5,7 @@ import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-
-import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:feature_discovery/feature_discovery.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MainLayoutScreen extends ConsumerStatefulWidget {
@@ -24,17 +21,6 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
   @override
   void initState() {
     super.initState();
-    SchedulerBinding.instance.addPostFrameCallback((Duration duration) {
-      FeatureDiscovery.discoverFeatures(
-        context,
-        const <String>{
-          'nav_home_id',
-          'nav_services_id',
-          'nav_saved_id',
-          'nav_chats_id',
-        },
-      );
-    });
   }
 
   @override

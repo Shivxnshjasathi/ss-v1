@@ -4,15 +4,14 @@ import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
+import 'package:sampatti_bazar/core/utils/responsive.dart';
+import 'package:sampatti_bazar/l10n/app_localizations.dart';
+import 'package:sampatti_bazar/core/widgets/skeleton_loaders.dart';
+import 'package:sampatti_bazar/core/providers/onboarding_provider.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/properties/data/property_repository.dart';
 import 'package:sampatti_bazar/core/services/location_provider.dart';
 import 'package:sampatti_bazar/core/services/logger_service.dart';
-import 'package:sampatti_bazar/l10n/app_localizations.dart';
-import 'package:sampatti_bazar/core/utils/responsive.dart';
-import 'package:sampatti_bazar/core/widgets/skeleton_loaders.dart';
-
-import 'package:sampatti_bazar/core/widgets/skeleton_loaders.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter/scheduler.dart';
 
@@ -28,14 +27,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void initState() {
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback((Duration duration) {
-      FeatureDiscovery.discoverFeatures(
-        context,
-        const <String>{
-          'home_profile_id',
-          'home_search_id',
-          'home_chatbot_id',
-        },
-      );
+      final hasCompleted = ref.read(onboardingTourProvider);
+      if (!hasCompleted) {
+        FeatureDiscovery.discoverFeatures(
+          context,
+          const <String>{
+            'home_profile_id',
+            'home_search_id',
+            'home_chatbot_id',
+          },
+        );
+        ref.read(onboardingTourProvider.notifier).completeTour();
+      }
     });
   }
 
@@ -60,6 +63,54 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         backgroundColor: context.scaffoldColor,
         elevation: 0,
         centerTitle: false,
+        title: DescribedFeatureOverlay(
+          featureId: 'home_profile_id',
+          tapTarget: Icon(LucideIcons.user, color: AppTheme.primaryBlue),
+          title: const Text('Welcome Dashboard'),
+          description: const Text('See your personalized greetings and location data.'),
+          backgroundColor: AppTheme.primaryBlue,
+          targetColor: Colors.white,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.welcome,
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  color: context.secondaryTextColor,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Row(
+                children: [
+                  Text(
+                    '$firstName!',
+                    style: TextStyle(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w900,
+                      color: context.primaryTextColor,
+                    ),
+                  ),
+                  SizedBox(width: 8.w),
+                  Icon(
+                    LucideIcons.mapPin,
+                    size: 14.w,
+                    color: AppTheme.primaryBlue,
+                  ),
+                  SizedBox(width: 4.w),
+                  Text(
+                    currentLocation,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: context.secondaryTextColor,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 16.w),
@@ -93,60 +144,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Welcome Header
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 8.h),
-              child: DescribedFeatureOverlay(
-                featureId: 'home_profile_id',
-                tapTarget: Icon(LucideIcons.user, color: AppTheme.primaryBlue),
-                title: const Text('Welcome Dashboard'),
-                description: const Text('See your personalized greetings and current location-based data.'),
-                backgroundColor: AppTheme.primaryBlue,
-                targetColor: Colors.white,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.welcome,
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        color: context.secondaryTextColor,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          '$firstName!',
-                          style: TextStyle(
-                            fontSize: 22.sp,
-                            fontWeight: FontWeight.w900,
-                            color: context.primaryTextColor,
-                          ),
-                        ),
-                        SizedBox(width: 8.w),
-                        Icon(
-                          LucideIcons.mapPin,
-                          size: 16.w,
-                          color: AppTheme.primaryBlue,
-                        ),
-                        SizedBox(width: 4.w),
-                        Text(
-                          currentLocation,
-                          style: TextStyle(
-                            fontSize: 14.sp,
-                            color: context.secondaryTextColor,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            SizedBox(height: 16.h),
 
             // Search Bar
             Padding(
