@@ -5,7 +5,6 @@ import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
-import 'package:feature_discovery/feature_discovery.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MainLayoutScreen extends ConsumerStatefulWidget {
@@ -68,53 +67,41 @@ class _MainLayoutScreenState extends ConsumerState<MainLayoutScreen> {
                 GButton(
                   icon: LucideIcons.house,
                   text: l10n.homeLabel,
-                  leading: DescribedFeatureOverlay(
-                    featureId: 'nav_home_id',
-                    tapTarget: Icon(LucideIcons.house, color: AppTheme.primaryBlue),
-                    title: const Text('Home Dashboard'),
-                    description: const Text('Find featured properties and quick service links.'),
-                    backgroundColor: AppTheme.primaryBlue,
-                    targetColor: Colors.white,
-                    child: Icon(LucideIcons.house, color: widget.navigationShell.currentIndex == 0 ? AppTheme.primaryBlue : (context.isDarkMode ? Colors.white54 : Colors.grey[600])),
+                  leading: Icon(
+                    LucideIcons.house,
+                    color: widget.navigationShell.currentIndex == 0
+                        ? AppTheme.primaryBlue
+                        : (context.isDarkMode ? Colors.white54 : Colors.grey[600]),
                   ),
                 ),
                 GButton(
                   icon: LucideIcons.layoutGrid,
                   text: l10n.servicesLabel,
-                  leading: DescribedFeatureOverlay(
-                    featureId: 'nav_services_id',
-                    tapTarget: Icon(LucideIcons.layoutGrid, color: AppTheme.primaryBlue),
-                    title: const Text('Services Hub'),
-                    description: const Text('Access Loans, Construction, Legal, and Handyman services.'),
-                    backgroundColor: AppTheme.primaryBlue,
-                    targetColor: Colors.white,
-                    child: Icon(LucideIcons.layoutGrid, color: widget.navigationShell.currentIndex == 1 ? AppTheme.primaryBlue : (context.isDarkMode ? Colors.white54 : Colors.grey[600])),
+                  leading: Icon(
+                    LucideIcons.layoutGrid,
+                    color: widget.navigationShell.currentIndex == 1
+                        ? AppTheme.primaryBlue
+                        : (context.isDarkMode ? Colors.white54 : Colors.grey[600]),
                   ),
                 ),
                 GButton(
                   icon: LucideIcons.mapPin,
-                  text: 'Tracking',
-                  leading: DescribedFeatureOverlay(
-                    featureId: 'nav_tracking_id',
-                    tapTarget: Icon(LucideIcons.mapPin, color: AppTheme.primaryBlue),
-                    title: const Text('Service Tracking'),
-                    description: const Text('Monitor the real-time status of your service requests.'),
-                    backgroundColor: AppTheme.primaryBlue,
-                    targetColor: Colors.white,
-                    child: Icon(LucideIcons.mapPin, color: widget.navigationShell.currentIndex == 2 ? AppTheme.primaryBlue : (context.isDarkMode ? Colors.white54 : Colors.grey[600])),
+                  text: l10n.trackingLabel,
+                  leading: Icon(
+                    LucideIcons.mapPin,
+                    color: widget.navigationShell.currentIndex == 2
+                        ? AppTheme.primaryBlue
+                        : (context.isDarkMode ? Colors.white54 : Colors.grey[600]),
                   ),
                 ),
                 GButton(
                   icon: LucideIcons.messageSquare,
                   text: l10n.messagesLabel,
-                  leading: DescribedFeatureOverlay(
-                    featureId: 'nav_chats_id',
-                    tapTarget: Icon(LucideIcons.messageSquare, color: AppTheme.primaryBlue),
-                    title: const Text('Chat & Messages'),
-                    description: const Text('Directly communicate with property owners and service providers.'),
-                    backgroundColor: AppTheme.primaryBlue,
-                    targetColor: Colors.white,
-                    child: Icon(LucideIcons.messageSquare, color: widget.navigationShell.currentIndex == 3 ? AppTheme.primaryBlue : (context.isDarkMode ? Colors.white54 : Colors.grey[600])),
+                  leading: Icon(
+                    LucideIcons.messageSquare,
+                    color: widget.navigationShell.currentIndex == 3
+                        ? AppTheme.primaryBlue
+                        : (context.isDarkMode ? Colors.white54 : Colors.grey[600]),
                   ),
                 ),
               ],

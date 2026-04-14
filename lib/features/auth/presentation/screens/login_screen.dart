@@ -25,6 +25,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _resetEmailController = TextEditingController();
   bool _isLoading = false;
   bool _isEmailLogin = false;
 
@@ -33,7 +34,149 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     _phoneController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _resetEmailController.dispose();
     super.dispose();
+  }
+
+  Future<void> _onForgotPassword() async {
+    final l10n = AppLocalizations.of(context)!;
+    _resetEmailController.text = _emailController.text.trim();
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(ctx).viewInsets.bottom,
+        ),
+        child: Container(
+          padding: EdgeInsets.all(24.0.w),
+          decoration: BoxDecoration(
+            color: context.scaffoldColor,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24.0.w)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.resetPassword,
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 22.0.sp,
+                  fontWeight: FontWeight.w900,
+                  color: context.primaryTextColor,
+                ),
+              ),
+              SizedBox(height: 8.0.h),
+              Text(
+                l10n.resetLinkMessage,
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 13.0.sp,
+                  color: context.secondaryTextColor,
+                  height: 1.5,
+                ),
+              ),
+              SizedBox(height: 24.0.h),
+              Text(
+                l10n.emailAddress.toUpperCase(),
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontSize: 10.0.sp,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.grey.shade600,
+                  letterSpacing: 1.0,
+                ),
+              ),
+              SizedBox(height: 8.0.h),
+              TextField(
+                controller: _resetEmailController,
+                keyboardType: TextInputType.emailAddress,
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16.0.sp,
+                  color: context.primaryTextColor,
+                ),
+                decoration: InputDecoration(
+                  hintText: 'e.g. rahul@example.com',
+                  hintStyle: TextStyle(
+                    fontFamily: 'Poppins',
+                    color: Colors.grey.shade400,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 13.0.sp,
+                  ),
+                  border: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black87, width: 2.0.h),
+                  ),
+                  enabledBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black87, width: 2.0.h),
+                  ),
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide:
+                        BorderSide(color: AppTheme.primaryBlue, width: 2.0.h),
+                  ),
+                  isDense: true,
+                  contentPadding: EdgeInsets.symmetric(vertical: 8.0.h),
+                  filled: false,
+                ),
+              ),
+              SizedBox(height: 32.0.h),
+              SizedBox(
+                width: double.infinity,
+                height: 56.0.h,
+                child: StatefulBuilder(
+                  builder: (ctx2, setModalState) => ElevatedButton(
+                    onPressed: () async {
+                      final email = _resetEmailController.text.trim();
+                      if (email.isEmpty || !email.contains('@')) return;
+                      setModalState(() {});
+                      try {
+                        await ref
+                            .read(authRepositoryProvider)
+                            .sendPasswordResetEmail(email);
+                        if (!mounted) return;
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(l10n.resetLinkSent),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                      } catch (e) {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(e.toString().replaceAll('Exception: ', '')),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primaryBlue,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0.w)),
+                    ),
+                    child: Text(
+                      l10n.sendResetLink,
+                      style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 16.0.h),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   void _onGetOtp() async {
@@ -367,8 +510,36 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           validator: (val) => Validators.email(val, l10n),
                         ),
                         SizedBox(height: 24.h),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              l10n.password.toUpperCase(),
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 10.sp,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.grey.shade600,
+                                letterSpacing: 1.0,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: _onForgotPassword,
+                              style: TextButton.styleFrom(padding: EdgeInsets.zero),
+                              child: Text(
+                                l10n.forgotPassword,
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 11.sp,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppTheme.primaryBlue,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                         Text(
-                          l10n.password.toUpperCase(),
+                          '', // spacer, label handled in Row above
                           style: TextStyle(
                             fontFamily: 'Poppins',
                             fontSize: 10.sp,

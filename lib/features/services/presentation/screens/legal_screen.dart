@@ -6,12 +6,14 @@ import 'package:go_router/go_router.dart';
 import 'package:signature/signature.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
+import 'package:sampatti_bazar/core/widgets/contact_bottom_sheet.dart';
 import 'package:sampatti_bazar/core/utils/validators.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/services/data/service_request_repository.dart';
 import 'package:sampatti_bazar/features/services/domain/service_request_model.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
+import 'package:sampatti_bazar/core/widgets/contact_bottom_sheet.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sampatti_bazar/core/services/location_service.dart';
 
@@ -106,6 +108,19 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
     _cityController.dispose();
     _consultDescriptionController.dispose();
     super.dispose();
+  }
+
+  String _getServiceLabel(String service, AppLocalizations l10n) {
+    switch (service) {
+      case 'Rent Agreement':
+        return l10n.rentAgreement;
+      case 'Consult Lawyer':
+        return l10n.legalCounsel;
+      case 'Property Verification':
+        return l10n.propertyAudit;
+      default:
+        return service;
+    }
   }
 
   void _nextStep() {
@@ -515,7 +530,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
             ),
             child: IconButton(
               icon: Icon(Icons.help_outline, color: context.primaryTextColor, size: 20.sp),
-              onPressed: () {},
+              onPressed: () => ContactBottomSheet.show(context),
             ),
           ),
         ],
@@ -583,7 +598,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
                 : null,
           ),
           child: Text(
-            label.toUpperCase(),
+            _getServiceLabel(label, l10n).toUpperCase(),
             style: TextStyle(
               fontWeight: FontWeight.w900,
               fontSize: 11.sp,
@@ -763,7 +778,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
         SizedBox(height: 32.h),
         _buildTextFieldWidget(_lessorController, l10n.lessorName, hint: 'e.g., Rajesh Kumar', icon: Icons.person_outline, validator: (val) => Validators.required(val, l10n.lessorName, l10n)),
         _buildTextFieldWidget(_lesseeController, l10n.lesseeName, hint: 'e.g., Suresh Singh', icon: Icons.person_outline, validator: (val) => Validators.required(val, l10n.lesseeName, l10n)),
-        _buildTextFieldWidget(_lesseeEmailController, 'Tenant Email Address', hint: 'e.g., suresh@example.com', icon: Icons.email_outlined, keyboardType: TextInputType.emailAddress, validator: (val) => Validators.email(val, l10n)),
+        _buildTextFieldWidget(_lesseeEmailController, l10n.tenantEmailAddress, hint: 'e.g., suresh@example.com', icon: Icons.email_outlined, keyboardType: TextInputType.emailAddress, validator: (val) => Validators.email(val, l10n)),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -789,7 +804,7 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
                     )
                   : Icon(Icons.my_location, size: 16.sp, color: AppTheme.primaryBlue),
               label: Text(
-                'USE LIVE LOCATION',
+                l10n.useLiveLocation.toUpperCase(),
                 style: TextStyle(
                   fontSize: 10.sp,
                   fontWeight: FontWeight.w900,

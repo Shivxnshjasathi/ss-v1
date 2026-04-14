@@ -125,7 +125,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               ),
             ),
             Text(
-              userAsync.value?.name ?? 'User',
+              userAsync.value?.name ?? l10n.userPlaceholder,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: context.textTheme.headlineMedium?.copyWith(
@@ -135,7 +135,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
             SizedBox(height: 4.h),
             Text(
-              '${userAsync.value?.phoneNumber ?? '+91 XXXXX XXXXX'} • ${userAsync.value?.email ?? 'No email'}',
+              '${userAsync.value?.phoneNumber ?? '+91 XXXXX XXXXX'} • ${userAsync.value?.email ?? l10n.noEmail}',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
@@ -150,11 +150,28 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               children: [
                 DescribedFeatureOverlay(
                   featureId: 'profile_premium_id',
-                  tapTarget: Icon(LucideIcons.award, color: AppTheme.primaryBlue),
-                  title: const Text('Membership Status'),
-                  description: const Text('Check your current account tier and unlocked benefits.'),
+                  tapTarget: Icon(LucideIcons.award, color: Colors.white),
+                  contentLocation: ContentLocation.below,
+                  title: Text(
+                    l10n.eliteStatus,
+                    style: TextStyle(
+                      fontSize: 20.sp,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  description: Text(
+                    l10n.eliteStatusDesc,
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: Colors.white.withValues(alpha: 0.95),
+                      height: 1.4,
+                    ),
+                  ),
                   backgroundColor: AppTheme.primaryBlue,
                   targetColor: Colors.white,
+                  textColor: Colors.white,
                   child: Container(
                     padding: EdgeInsets.symmetric(
                       horizontal: 16.w,
@@ -177,11 +194,28 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 SizedBox(width: 8.w),
                 DescribedFeatureOverlay(
                   featureId: 'profile_theme_id',
-                  tapTarget: Icon(isDark ? LucideIcons.sun : LucideIcons.moon, color: AppTheme.primaryBlue),
-                  title: const Text('Theme Selection'),
-                  description: const Text('Switch between light and dark modes easily.'),
+                  tapTarget: Icon(isDark ? LucideIcons.sun : LucideIcons.moon, color: Colors.white),
+                  contentLocation: ContentLocation.below,
+                  title: Text(
+                    l10n.visualAmbiance,
+                    style: TextStyle(
+                      fontSize: 20.sp,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.white,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  description: Text(
+                    l10n.visualAmbianceDesc,
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: Colors.white.withValues(alpha: 0.95),
+                      height: 1.4,
+                    ),
+                  ),
                   backgroundColor: AppTheme.primaryBlue,
                   targetColor: Colors.white,
+                  textColor: Colors.white,
                   child: GestureDetector(
                     onTap: () => ref.read(themeProvider.notifier).toggleTheme(),
                     child: Container(
@@ -227,7 +261,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         ),
                         SizedBox(width: 6.w),
                         Text(
-                          'PRE-APPROVED: ₹${(userAsync.value!.preApprovalAmount! / 100000).toStringAsFixed(1)} L',
+                          l10n.preApproved((userAsync.value!.preApprovalAmount! / 100000).toStringAsFixed(1)),
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w900,
@@ -271,6 +305,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ),
                       _buildMenuItem(
                         context,
+                        l10n.changePassword,
+                        LucideIcons.lock,
+                        Colors.deepPurple,
+                        () => _onResetPassword(),
+                      ),
+                      _buildMenuItem(
+                        context,
                         l10n.savedProperties,
                         LucideIcons.heart,
                         Colors.pinkAccent,
@@ -278,11 +319,28 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ),
                       DescribedFeatureOverlay(
                         featureId: 'profile_docs_id',
-                        tapTarget: Icon(LucideIcons.fileText, color: Colors.orange),
-                        title: const Text('Secure Vault'),
-                        description: const Text('Upload and manage your property deeds and identity documents.'),
+                        tapTarget: Icon(LucideIcons.fileText, color: Colors.white),
+                        contentLocation: ContentLocation.above,
+                        title: Text(
+                          'Document Fortress',
+                          style: TextStyle(
+                            fontSize: 20.sp,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                        description: Text(
+                          'Ultra-secure storage for your property agreements and identity documents.',
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: Colors.white.withValues(alpha: 0.95),
+                            height: 1.4,
+                          ),
+                        ),
                         backgroundColor: AppTheme.primaryBlue,
                         targetColor: Colors.white,
+                        textColor: Colors.white,
                         child: _buildMenuItem(
                           context,
                           l10n.myDocuments,
@@ -372,6 +430,43 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _onResetPassword() async {
+    final l10n = AppLocalizations.of(context)!;
+    final email = ref.read(authRepositoryProvider).currentUser?.email;
+
+    if (email == null || email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.authError)),
+      );
+      return;
+    }
+
+    try {
+      await ref.read(authRepositoryProvider).sendPasswordResetEmail(email);
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text(l10n.resetLinkSent),
+            content: Text(l10n.resetLinkMessage),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: Text(l10n.close),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+      }
+    }
   }
 
   Widget _buildMenuCard(BuildContext context, {required List<Widget> items}) {

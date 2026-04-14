@@ -21,6 +21,22 @@ class PropertyDetailScreen extends ConsumerWidget {
   final String propertyId;
 
   const PropertyDetailScreen({super.key, required this.propertyId});
+  
+  String _getLocalizedRole(String? roleKey, AppLocalizations l10n) {
+    if (roleKey == null) return l10n.ownerLabel;
+    
+    // Exact mapping from onboarding_screen.dart keys
+    switch (roleKey) {
+      case 'consumerBuyer': return l10n.consumerBuyer;
+      case 'builderAgent': return l10n.builderAgent;
+      case 'constructionPartner': return l10n.constructionPartner;
+      case 'legalAdvisor': return l10n.legalAdvisor;
+      case 'materialVendor': return l10n.materialVendor;
+      case 'loanExpert': return l10n.loanExpert;
+      case 'packersMovers': return l10n.packersMoversRole;
+      default: return roleKey; // Fallback to raw string if no match
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -118,8 +134,8 @@ class PropertyDetailScreen extends ConsumerWidget {
                     ),
                     onPressed: () {
                       Share.share(
-                        'Check out this property on Sampatti Bazar: ${property.title} in ${property.city} for ₹${property.price.toInt()}.', // Consider localizing this message too
-                        subject: 'Property Shared: ${property.title}',
+                        l10n.shareMessage(property.title, property.city, property.price.toInt().toString()),
+                        subject: l10n.shareSubject(property.title),
                       );
                       LoggerService.trackEvent(
                         'property_shared',
@@ -332,6 +348,13 @@ class PropertyDetailScreen extends ConsumerWidget {
                           color: context.cardColor,
                           borderRadius: BorderRadius.circular(28.sp),
                           border: Border.all(color: context.borderColor, width: 1.2),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.03),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -359,9 +382,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        property.city.isNotEmpty
-                                            ? property.city
-                                            : 'Location',
+                                        property.location.isNotEmpty ? property.location : l10n.loading,
                                         style: TextStyle(
                                           fontSize: 20.sp,
                                           fontWeight: FontWeight.w900,
@@ -370,7 +391,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                                       ),
                                       SizedBox(height: 4.h),
                                       Text(
-                                        property.location,
+                                        property.city.isNotEmpty ? property.city : l10n.locationPlaceholder,
                                         style: TextStyle(
                                           fontSize: 14.sp,
                                           color: context.secondaryTextColor,
@@ -406,22 +427,22 @@ class PropertyDetailScreen extends ConsumerWidget {
                                     await launchUrl(url);
                                   }
                                 },
-                                icon: Icon(LucideIcons.map, size: 18.sp),
+                                icon: Icon(LucideIcons.navigation, size: 18.sp),
                                 label: Text(
                                   l10n.getDirections.toUpperCase(),
                                   style: TextStyle(
                                     fontWeight: FontWeight.w900,
-                                    fontSize: 13.sp,
-                                    letterSpacing: 1.5,
+                                    fontSize: 14.sp,
+                                    letterSpacing: 1.2,
                                   ),
                                 ),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
+                                  backgroundColor: context.isDarkMode ? Colors.white.withValues(alpha: 0.1) : Colors.white,
                                   foregroundColor: AppTheme.primaryBlue,
                                   elevation: 0,
-                                  padding: EdgeInsets.symmetric(vertical: 18.h),
+                                  padding: EdgeInsets.symmetric(vertical: 20.h),
                                   shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16.sp),
+                                    borderRadius: BorderRadius.circular(20.sp),
                                     side: BorderSide(color: context.borderColor, width: 1.5),
                                   ),
                                 ),
@@ -430,6 +451,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                           ],
                         ),
                       ),
+                      SizedBox(height: 32.h),
 
                       SizedBox(height: 32.h),
                       Container(
@@ -444,7 +466,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                               offset: const Offset(0, 10),
                             ),
                           ],
-                          border: Border.all(color: context.borderColor),
+                          border: Border.all(color: context.borderColor, width: 1.2),
                         ),
                         child: ownerAsync.when(
                           data: (owner) => Column(
@@ -464,7 +486,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                                           ),
                                         ),
                                         child: CircleAvatar(
-                                          radius: 30.sp,
+                                          radius: 35.sp, // Slightly larger
                                           backgroundColor: AppTheme.primaryBlue.withValues(alpha: 0.1),
                                           backgroundImage: (owner?.profileImageUrl != null && owner!.profileImageUrl!.isNotEmpty)
                                               ? NetworkImage(owner.profileImageUrl!)
@@ -472,15 +494,15 @@ class PropertyDetailScreen extends ConsumerWidget {
                                         ),
                                       ),
                                       Positioned(
-                                        bottom: 5.h,
-                                        right: 5.w,
+                                        bottom: 8.h,
+                                        right: 8.w,
                                         child: Container(
-                                          width: 14.w,
-                                          height: 14.w,
+                                          width: 16.w,
+                                          height: 16.w,
                                           decoration: BoxDecoration(
                                             color: Colors.greenAccent[400],
                                             shape: BoxShape.circle,
-                                            border: Border.all(color: context.cardColor, width: 2.5.sp),
+                                            border: Border.all(color: context.cardColor, width: 3.w),
                                           ),
                                         ),
                                       ),
@@ -494,16 +516,16 @@ class PropertyDetailScreen extends ConsumerWidget {
                                         Text(
                                           owner?.name ?? 'Loading...',
                                           style: TextStyle(
-                                            fontSize: 20.sp,
+                                            fontSize: 22.sp,
                                             fontWeight: FontWeight.w900,
                                             color: context.primaryTextColor,
                                             fontFamily: 'Poppins',
                                           ),
                                         ),
                                         Text(
-                                          '${owner?.role ?? l10n.ownerLabel} • ${owner?.location ?? 'Verified Agent'}',
+                                          '${_getLocalizedRole(owner?.role, l10n)} • ${owner?.location ?? l10n.verifiedAgent}',
                                           style: TextStyle(
-                                            fontSize: 12.sp,
+                                            fontSize: 13.sp,
                                             color: context.secondaryTextColor,
                                             fontWeight: FontWeight.w600,
                                           ),
@@ -514,33 +536,33 @@ class PropertyDetailScreen extends ConsumerWidget {
                                 ],
                               ),
                               if (owner != null && (owner.trustScore ?? 0) > 0) ...[
-                                SizedBox(height: 16.h),
+                                SizedBox(height: 20.h),
                                 Row(
                                   children: [
                                     Icon(LucideIcons.star, color: Colors.amber, size: 16.sp, fill: 1.0),
-                                    SizedBox(width: 6.w),
+                                    SizedBox(width: 8.w),
                                     Text(
                                       '${owner.trustScore!.toStringAsFixed(1)} (${owner.ratingCount ?? 0})',
-                                      style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w800),
+                                      style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w800),
                                     ),
-                                    SizedBox(width: 12.w),
-                                    Container(width: 1, height: 12.h, color: context.borderColor),
-                                    SizedBox(width: 12.w),
+                                    SizedBox(width: 14.w),
+                                    Container(width: 1, height: 14.h, color: context.borderColor),
+                                    SizedBox(width: 14.w),
                                     Text(
-                                      '${owner.totalDeals ?? 0} clear deals',
-                                      style: TextStyle(fontSize: 12.sp, color: Colors.green, fontWeight: FontWeight.w800),
+                                      '${owner.totalDeals ?? 0} ${l10n.clearDeals}',
+                                      style: TextStyle(fontSize: 13.sp, color: Colors.green, fontWeight: FontWeight.w800),
                                     ),
                                   ],
                                 ),
                               ],
-                              SizedBox(height: 24.h),
+                              SizedBox(height: 32.h),
                               Row(
                                 children: [
                                   Expanded(
                                     child: _buildOwnerAction(
                                       context,
-                                      'Chat',
-                                      LucideIcons.messageSquare,
+                                      l10n.chatAction,
+                                      LucideIcons.messageCircle, // Slightly different icon for cleaner look
                                       AppTheme.primaryBlue,
                                       () async {
                                         final currentUser = ref.read(currentUserDataProvider).value;
@@ -561,8 +583,8 @@ class PropertyDetailScreen extends ConsumerWidget {
                                   Expanded(
                                     child: _buildOwnerAction(
                                       context,
-                                      'Call',
-                                      LucideIcons.phone,
+                                      l10n.callAction,
+                                      LucideIcons.phoneCall, // Cleaner icon
                                       Colors.green.shade600,
                                       () {
                                         if (owner?.phoneNumber != null) {
@@ -574,7 +596,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                                   SizedBox(width: 12.w),
                                   _buildOwnerIconAction(
                                     context,
-                                    Icons.star_rate_rounded,
+                                    Icons.star_outline_rounded, // Polishicon
                                     Colors.amber,
                                     () => _showRatingDialog(context, ref, owner),
                                   ),
@@ -583,9 +605,10 @@ class PropertyDetailScreen extends ConsumerWidget {
                             ],
                           ),
                           loading: () => const Center(child: LinearProgressIndicator()),
-                          error: (e, st) => Text('Error loading owner info'),
+                          error: (e, st) => Text(l10n.errorLoadingOwner),
                         ),
                       ),
+                      SizedBox(height: 48.h),
 
                     ],
                   ),

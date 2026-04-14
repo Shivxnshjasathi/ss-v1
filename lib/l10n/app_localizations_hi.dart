@@ -66,7 +66,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get list => 'लिस्ट करें';
 
   @override
-  String get services => 'सेवाएँ';
+  String get services => 'सेवाएं';
 
   @override
   String get loan => 'लोन';
@@ -1437,4 +1437,384 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get clearAll => 'सब साफ करें';
+
+  @override
+  String get forgotPassword => 'पासवर्ड भूल गए?';
+
+  @override
+  String get resetPassword => 'पासवर्ड रीसेट करें';
+
+  @override
+  String get sendResetLink => 'रीसेट लिंक भेजें';
+
+  @override
+  String get resetLinkSent => 'रीसेट लिंक भेज दिया गया!';
+
+  @override
+  String get resetLinkMessage =>
+      'आपके ईमेल पर एक पासवर्ड रीसेट लिंक भेजा गया है। कृपया अपना इनबॉक्स जांचें।';
+
+  @override
+  String get enterValidEmail => 'कृपया एक मान्य ईमेल दर्ज करें';
+
+  @override
+  String get namePlaceholder => 'जैसे: राहुल शर्मा';
+
+  @override
+  String get phonePlaceholder => 'जैसे: +91 9876543210';
+
+  @override
+  String get emailPlaceholder => 'जैसे: rahul@example.com';
+
+  @override
+  String get cityPlaceholder => 'जैसे: जबलपुर, मुंबई';
+
+  @override
+  String get useLiveLocation => 'लाइव स्थान का उपयोग करें';
+
+  @override
+  String get authError => 'प्रमाणीकरण त्रुटि';
+
+  @override
+  String get noActiveSession =>
+      'कोई सक्रिय सत्र नहीं मिला। कृपया फिर से लॉगिन करें।';
+
+  @override
+  String get goToLogin => 'लॉगिन पर जाएं';
+
+  @override
+  String get errorSavingProfile => 'प्रोफाइल सहेजने में त्रुटि';
+
+  @override
+  String get close => 'बंद करें';
+
+  @override
+  String get changePassword => 'पासवर्ड बदलें';
+
+  @override
+  String get currentPassword => 'वर्तमान पासवर्ड';
+
+  @override
+  String get newPassword => 'नया पासवर्ड';
+
+  @override
+  String get confirmNewPassword => 'नए पासवर्ड की पुष्टि करें';
+
+  @override
+  String get passwordChanged => 'पासवर्ड सफलतापूर्वक बदला गया!';
+
+  @override
+  String get passwordMismatch => 'पासवर्ड मेल नहीं खाते';
+
+  @override
+  String get invalidOtpOrError => 'अमान्य OTP या त्रुटि हुई';
+
+  @override
+  String instantApprovalDesc(String amount) {
+    return 'आपकी प्रोफाइल के आधार पर, आप ₹$amount तक के अनुमानित लोन के लिए पूर्व-अनुमोदित हैं। बैज आपकी प्रोफाइल में जोड़ दिया गया है।';
+  }
+
+  @override
+  String get lowCibilMsg =>
+      'आपकी प्रोफाइल कैप्चर हो गई है, लेकिन आपका CIBIL स्कोर वर्तमान में तत्काल पूर्व-अनुमोदन के लिए बहुत कम है। एक मानव एजेंट जल्द ही आपसे संपर्क करेगा।';
+
+  @override
+  String get eliteStatus => 'अभिजात वर्ग की स्थिति';
+
+  @override
+  String get eliteStatusDesc =>
+      'अपने सदस्यता स्तर को ट्रैक करें और विशेष प्रीमियम लाभों और संपत्तियों को अनलॉक करें।';
+
+  @override
+  String get visualAmbiance => 'दृश्य परिवेश';
+
+  @override
+  String get visualAmbianceDesc =>
+      'अपने वातावरण के अनुकूल प्रकाश और अंधेरे विषयों के बीच स्विच करें।';
+
+  @override
+  String preApproved(String amount) {
+    return 'पूर्व-अनुमोदित: ₹$amount L';
+  }
+
+  @override
+  String get noEmail => 'कोई ईमेल नहीं';
+
+  @override
+  String get userPlaceholder => 'उपयोगकर्ता';
+
+  @override
+  String get fetching => 'प्राप्त कर रहा है...';
+
+  @override
+  String get locationError => 'स्थान त्रुटि';
+
+  @override
+  String get personalizedExperience => 'व्यक्तिगत अनुभव';
+
+  @override
+  String get personalizedExperienceDesc =>
+      'एक सुरक्षित डैशबोर्ड में अपनी प्रोफाइल, प्राथमिकताओं और सत्यापित दस्तावेजों को प्रबंधित करें।';
+
+  @override
+  String get exploreNextHome => 'अपना अगला घर खोजें';
+
+  @override
+  String get exploreNextHomeDesc =>
+      'सटीक फिल्टर के साथ हजारों क्यूरेटेड, जीरो-ब्रोकरेज लिस्टिंग के माध्यम से खोजें।';
+
+  @override
+  String get aiConcierge => 'AI संपत्ति दरबान';
+
+  @override
+  String get aiConciergeDesc =>
+      'संपत्तियों, कानूनी मामलों और ऋण पात्रता पर 24/7 तत्काल विशेषज्ञ सलाह प्राप्त करें।';
+
+  @override
+  String get perMonth => '/ महीना';
+
+  @override
+  String get zeroBrokerage => 'जीरो ब्रोकरेज';
+
+  @override
+  String get searchHint => 'स्थान, मोहल्ले के आधार पर खोजें...';
+
+  @override
+  String get smartSearch => 'स्मार्ट संपत्ति खोज';
+
+  @override
+  String get smartSearchDesc =>
+      'इलाकों, स्थलों या शहरों की खोज करके तुरंत अपना सपनों का घर खोजें।';
+
+  @override
+  String get refineSearch => 'पूर्णता के लिए परिष्कृत करें';
+
+  @override
+  String get refineSearchDesc =>
+      'सही मैच खोजने के लिए कीमत, संपत्ति के प्रकार और BHK के अनुसार अपनी खोज को अनुकूलित करें।';
+
+  @override
+  String get lakhSuffix => ' लाख';
+
+  @override
+  String get croreSuffix => ' करोड़';
+
+  @override
+  String get any => 'कोई भी';
+
+  @override
+  String shareMessage(String title, String city, String price) {
+    return 'सम्पत्ति बाजार पर इस संपत्ति को देखें: $title, $city में, ₹$price के लिए।';
+  }
+
+  @override
+  String shareSubject(String title) {
+    return 'संपत्ति साझा की गई: $title';
+  }
+
+  @override
+  String get verifiedAgent => 'सत्यापित एजेंट';
+
+  @override
+  String get clearDeals => 'स्पष्ट सौदे';
+
+  @override
+  String get chatAction => 'चैट';
+
+  @override
+  String get callAction => 'कॉल';
+
+  @override
+  String get errorLoadingOwner => 'मालिक की जानकारी लोड करने में त्रुटि';
+
+  @override
+  String get locationPlaceholder => 'स्थान';
+
+  @override
+  String get loading => 'लोड हो रहा है...';
+
+  @override
+  String get handymanHub => 'हाथ बटाने वालो का हब';
+
+  @override
+  String get professionalAssistance => 'पेशेवर सहायता';
+
+  @override
+  String get professionalAssistanceDesc =>
+      'अपनी सेवा की आवश्यकताएं चुनें — बिजली, प्लंबिंग, पेंटिंग या सफाई — और हम बाकी को संभाल लेंगे।';
+
+  @override
+  String get laborExpertise => 'श्रम विशेषज्ञता';
+
+  @override
+  String get descriptionHint =>
+      'कृपया विस्तार से बताएं कि क्या ठीक करने की आवश्यकता है...';
+
+  @override
+  String get serviceLocation => 'SERVICE LOCATION';
+
+  @override
+  String get fullAddressLabel => 'पूरा पता';
+
+  @override
+  String get cityLabel => 'शहर';
+
+  @override
+  String get zipCodeLabel => 'पिन कोड';
+
+  @override
+  String get stateLabel => 'राज्य';
+
+  @override
+  String get requestProfessional => 'पेशेवर का अनुरोध करें';
+
+  @override
+  String get requestReceived => 'अनुरोध प्राप्त हुआ';
+
+  @override
+  String requestSentMsg(String category) {
+    return 'आपका $category अनुरोध सफलतापूर्वक भेज दिया गया है। एक प्रोफेशनल जल्द ही आपसे संपर्क करेगा।';
+  }
+
+  @override
+  String get trackingLabel => 'ट्रैकिंग';
+
+  @override
+  String get trackingHub => 'ट्रैकिंग हब';
+
+  @override
+  String get bookings => 'बुकिंग';
+
+  @override
+  String get visitors => 'विज़िटर्स';
+
+  @override
+  String get noVisitorsYet => 'अभी तक कोई विज़िटर नहीं';
+
+  @override
+  String get noVisitorsYetDesc => 'अभी तक किसी ने विज़िट शेड्यूल नहीं की है';
+
+  @override
+  String get noBookingsFound => 'कोई बुकिंग नहीं मिली';
+
+  @override
+  String get noBookingsFoundDesc =>
+      'आपने अभी तक कोई साइट विज़िट बुक नहीं की है';
+
+  @override
+  String get pleaseLoginToTrack =>
+      'अपनी सेवाओं को ट्रैक करने के लिए कृपया लॉगिन करें';
+
+  @override
+  String get visitorText => 'विज़िटर';
+
+  @override
+  String get ownerText => 'मालिक';
+
+  @override
+  String get cancelRequest => 'अनुरोध रद्द करें';
+
+  @override
+  String get decline => 'अस्वीकार करें';
+
+  @override
+  String get confirm => 'पुष्टि करें';
+
+  @override
+  String get noServiceRequests => 'कोई सेवा अनुरोध नहीं';
+
+  @override
+  String get noServiceRequestsDesc =>
+      'आपने अभी तक कोई सेवा अनुरोध नहीं किया है। हमारे हब को एक्सप्लोर करें!';
+
+  @override
+  String get requestRaised => 'अनुरोध उठाया गया';
+
+  @override
+  String requestRaisedDesc(String date) {
+    return '$date को अनुरोध किया गया';
+  }
+
+  @override
+  String get partnerAssigned => 'पार्टनर असाइन किया गया';
+
+  @override
+  String get partnerAssignedDesc => 'सत्यापित सेवा पार्टनर असाइन किया गया';
+
+  @override
+  String get inProgressStatus => 'प्रगति में';
+
+  @override
+  String get inProgressDesc => 'सेवा वर्तमान में पूरी की जा रही है';
+
+  @override
+  String get serviceDelivered => 'सेवा वितरित';
+
+  @override
+  String get serviceDeliveredDesc => 'अनुरोध समाप्त के रूप में चिह्नित';
+
+  @override
+  String get finalQuote => 'अंतिम उद्धरण';
+
+  @override
+  String get estimatedPrice => 'अनुमानित मूल्य';
+
+  @override
+  String get lifestyleMarketplace => 'लाइफस्टाइल मार्केटप्लेस';
+
+  @override
+  String get marketplaceDesc =>
+      'प्रीमियम निर्माण सामग्री, इंटीरियर डेकोर और घरेलू आवश्यक चीजें सीधे अपनी साइट पर ऑर्डर करें।';
+
+  @override
+  String get otherServicesLabel => 'अन्य सेवाएं';
+
+  @override
+  String get otherServicesDesc => 'प्लंबिंग, इलेक्ट्रिक, आदि';
+
+  @override
+  String get generalHelp => 'सामान्य सहायता';
+
+  @override
+  String get constructionLabor => 'निर्माण श्रमिक';
+
+  @override
+  String get loadingUnloading => 'लोडिंग और अनलोडिंग';
+
+  @override
+  String get gardeningLandscaping => 'बागवानी/लैंडस्केपिंग';
+
+  @override
+  String get cleaningSpecialist => 'सफाई विशेषज्ञ';
+
+  @override
+  String get painting => 'पेंटिंग';
+
+  @override
+  String get cleaning => 'सफाई';
+
+  @override
+  String get labor => 'मजदूर';
+
+  @override
+  String get allServices => 'सभी सेवाएं';
+
+  @override
+  String get liveSupportUpper => 'लाइव सपोर्ट';
+
+  @override
+  String get contactSampattiBazar => 'संपत्ति बाज़ार से संपर्क करें';
+
+  @override
+  String get ourOffice => 'हमारा कार्यालय';
+
+  @override
+  String get officeAddress =>
+      'शॉप नंबर 2, 481/1, बिलहरी, मांडला रोड, जबलपुर, म.प्र.';
+
+  @override
+  String get available247 => 'आपकी सहायता के लिए 24/7 उपलब्ध';
+
+  @override
+  String get tenantEmailAddress => 'किरायेदार का ईमेल पता';
 }

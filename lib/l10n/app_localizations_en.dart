@@ -66,7 +66,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get list => 'LIST';
 
   @override
-  String get services => 'SERVICES';
+  String get services => 'Services';
 
   @override
   String get loan => 'LOAN';
@@ -362,7 +362,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get propertyDetailsTitle => 'Property Details';
 
   @override
-  String get descriptionLabel => 'DESCRIPTION';
+  String get descriptionLabel => 'Description';
 
   @override
   String get chatWithOwner => 'Chat with Owner';
@@ -1432,4 +1432,381 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get clearAll => 'Clear All';
+
+  @override
+  String get forgotPassword => 'Forgot Password?';
+
+  @override
+  String get resetPassword => 'Reset Password';
+
+  @override
+  String get sendResetLink => 'Send Reset Link';
+
+  @override
+  String get resetLinkSent => 'Reset Link Sent!';
+
+  @override
+  String get resetLinkMessage =>
+      'A password reset link has been sent to your email. Please check your inbox.';
+
+  @override
+  String get enterValidEmail => 'Please enter a valid email';
+
+  @override
+  String get namePlaceholder => 'e.g. Rahul Sharma';
+
+  @override
+  String get phonePlaceholder => 'e.g. +91 9876543210';
+
+  @override
+  String get emailPlaceholder => 'e.g. rahul@example.com';
+
+  @override
+  String get cityPlaceholder => 'e.g. Jabalpur, Mumbai';
+
+  @override
+  String get useLiveLocation => 'USE LIVE LOCATION';
+
+  @override
+  String get authError => 'Authentication Error';
+
+  @override
+  String get noActiveSession => 'No active session found. Please log in again.';
+
+  @override
+  String get goToLogin => 'Go to Login';
+
+  @override
+  String get errorSavingProfile => 'Error Saving Profile';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get changePassword => 'Change Password';
+
+  @override
+  String get currentPassword => 'CURRENT PASSWORD';
+
+  @override
+  String get newPassword => 'NEW PASSWORD';
+
+  @override
+  String get confirmNewPassword => 'CONFIRM NEW PASSWORD';
+
+  @override
+  String get passwordChanged => 'Password changed successfully!';
+
+  @override
+  String get passwordMismatch => 'Passwords do not match';
+
+  @override
+  String get invalidOtpOrError => 'Invalid OTP or error occurred';
+
+  @override
+  String instantApprovalDesc(String amount) {
+    return 'Based on your profile, you are pre-approved for an estimated loan up to ₹$amount. The badge has been added to your profile.';
+  }
+
+  @override
+  String get lowCibilMsg =>
+      'Your profile has been captured, but your CIBIL score is currently too low for instant pre-approval. A human agent will contact you shortly.';
+
+  @override
+  String get eliteStatus => 'Elite Status';
+
+  @override
+  String get eliteStatusDesc =>
+      'Track your membership level and unlock exclusive premium benefits and properties.';
+
+  @override
+  String get visualAmbiance => 'Visual Ambiance';
+
+  @override
+  String get visualAmbianceDesc =>
+      'Switch between light and dark themes to suit your environment.';
+
+  @override
+  String preApproved(String amount) {
+    return 'PRE-APPROVED: ₹$amount L';
+  }
+
+  @override
+  String get noEmail => 'No email';
+
+  @override
+  String get userPlaceholder => 'User';
+
+  @override
+  String get fetching => 'Fetching...';
+
+  @override
+  String get locationError => 'Location Error';
+
+  @override
+  String get personalizedExperience => 'Personalized Experience';
+
+  @override
+  String get personalizedExperienceDesc =>
+      'Manage your profile, preferences, and verified documents in one secure dashboard.';
+
+  @override
+  String get exploreNextHome => 'Explore Your Next Home';
+
+  @override
+  String get exploreNextHomeDesc =>
+      'Search through thousands of curated, zero-brokerage listings with precision filters.';
+
+  @override
+  String get aiConcierge => 'AI Property Concierge';
+
+  @override
+  String get aiConciergeDesc =>
+      'Get instant expert advice on properties, legal matters, and loan eligibility, 24/7.';
+
+  @override
+  String get perMonth => '/ month';
+
+  @override
+  String get zeroBrokerage => 'Zero Brokerage';
+
+  @override
+  String get searchHint => 'Search by location, locality...';
+
+  @override
+  String get smartSearch => 'Smart Property Search';
+
+  @override
+  String get smartSearchDesc =>
+      'Locate your dream home instantly by searching for localities, landmarks, or cities.';
+
+  @override
+  String get refineSearch => 'Refine to Perfection';
+
+  @override
+  String get refineSearchDesc =>
+      'Tailor your search by price, property type, and BHK to find the perfect match.';
+
+  @override
+  String get lakhSuffix => 'L';
+
+  @override
+  String get croreSuffix => 'Cr';
+
+  @override
+  String get any => 'Any';
+
+  @override
+  String shareMessage(String title, String city, String price) {
+    return 'Check out this property on Sampatti Bazar: $title in $city for ₹$price.';
+  }
+
+  @override
+  String shareSubject(String title) {
+    return 'Property Shared: $title';
+  }
+
+  @override
+  String get verifiedAgent => 'Verified Agent';
+
+  @override
+  String get clearDeals => 'clear deals';
+
+  @override
+  String get chatAction => 'Chat';
+
+  @override
+  String get callAction => 'Call';
+
+  @override
+  String get errorLoadingOwner => 'Error loading owner info';
+
+  @override
+  String get locationPlaceholder => 'Location';
+
+  @override
+  String get loading => 'Loading...';
+
+  @override
+  String get handymanHub => 'Handyman Hub';
+
+  @override
+  String get professionalAssistance => 'Professional Assistance';
+
+  @override
+  String get professionalAssistanceDesc =>
+      'Select your service needs — Electrical, Plumbing, Painting, or Cleaning — and we’ll handle the rest.';
+
+  @override
+  String get laborExpertise => 'LABOR EXPERTISE';
+
+  @override
+  String get descriptionHint =>
+      'Please describe in detail what needs to be fixed...';
+
+  @override
+  String get serviceLocation => 'SERVICE LOCATION';
+
+  @override
+  String get fullAddressLabel => 'Full Address';
+
+  @override
+  String get cityLabel => 'City';
+
+  @override
+  String get zipCodeLabel => 'Zip Code';
+
+  @override
+  String get stateLabel => 'State';
+
+  @override
+  String get requestProfessional => 'REQUEST PROFESSIONAL';
+
+  @override
+  String get requestReceived => 'Request Received';
+
+  @override
+  String requestSentMsg(String category) {
+    return 'Your $category request has been sent successfully. A professional will contact you shortly.';
+  }
+
+  @override
+  String get trackingLabel => 'Tracking';
+
+  @override
+  String get trackingHub => 'Tracking Hub';
+
+  @override
+  String get bookings => 'Bookings';
+
+  @override
+  String get visitors => 'Visitors';
+
+  @override
+  String get noVisitorsYet => 'No visitors yet';
+
+  @override
+  String get noVisitorsYetDesc => 'No one has scheduled a visit yet';
+
+  @override
+  String get noBookingsFound => 'No bookings found';
+
+  @override
+  String get noBookingsFoundDesc => 'You haven\'t booked any site visits yet';
+
+  @override
+  String get pleaseLoginToTrack => 'Please log in to track your services';
+
+  @override
+  String get visitorText => 'VISITOR';
+
+  @override
+  String get ownerText => 'OWNER';
+
+  @override
+  String get cancelRequest => 'CANCEL REQUEST';
+
+  @override
+  String get decline => 'DECLINE';
+
+  @override
+  String get confirm => 'CONFIRM';
+
+  @override
+  String get noServiceRequests => 'No service requests';
+
+  @override
+  String get noServiceRequestsDesc =>
+      'You haven\'t raised any service requests yet. Start by exploring our hub!';
+
+  @override
+  String get requestRaised => 'Request Raised';
+
+  @override
+  String requestRaisedDesc(String date) {
+    return 'Order placed on $date';
+  }
+
+  @override
+  String get partnerAssigned => 'Partner Assigned';
+
+  @override
+  String get partnerAssignedDesc => 'Verified service partner assigned';
+
+  @override
+  String get inProgressStatus => 'In Progress';
+
+  @override
+  String get inProgressDesc => 'Service is currently being fulfilled';
+
+  @override
+  String get serviceDelivered => 'Service Delivered';
+
+  @override
+  String get serviceDeliveredDesc => 'Request marked as finished';
+
+  @override
+  String get finalQuote => 'FINAL QUOTE';
+
+  @override
+  String get estimatedPrice => 'ESTIMATED PRICE';
+
+  @override
+  String get lifestyleMarketplace => 'Lifestyle Marketplace';
+
+  @override
+  String get marketplaceDesc =>
+      'Order premium construction materials, interior decor, and home essentials directly to your site.';
+
+  @override
+  String get otherServicesLabel => 'Other Services';
+
+  @override
+  String get otherServicesDesc => 'Plumbing, Electric, etc.';
+
+  @override
+  String get generalHelp => 'General Help';
+
+  @override
+  String get constructionLabor => 'Construction Labor';
+
+  @override
+  String get loadingUnloading => 'Loading & Unloading';
+
+  @override
+  String get gardeningLandscaping => 'Gardening/Landscaping';
+
+  @override
+  String get cleaningSpecialist => 'Cleaning Specialist';
+
+  @override
+  String get painting => 'Painting';
+
+  @override
+  String get cleaning => 'Cleaning';
+
+  @override
+  String get labor => 'Labor';
+
+  @override
+  String get allServices => 'All Services';
+
+  @override
+  String get liveSupportUpper => 'LIVE SUPPORT';
+
+  @override
+  String get contactSampattiBazar => 'Contact Sampatti Bazar';
+
+  @override
+  String get ourOffice => 'Our Office';
+
+  @override
+  String get officeAddress =>
+      'Shop No 2, 481/1, Bilhari, Mandla Road, Jabalpur, M.P.';
+
+  @override
+  String get available247 => 'Available 24/7 for your assistance';
+
+  @override
+  String get tenantEmailAddress => 'Tenant Email Address';
 }

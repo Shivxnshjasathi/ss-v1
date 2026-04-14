@@ -215,7 +215,7 @@ abstract class AppLocalizations {
   /// No description provided for @services.
   ///
   /// In en, this message translates to:
-  /// **'SERVICES'**
+  /// **'Services'**
   String get services;
 
   /// No description provided for @loan.
@@ -803,7 +803,7 @@ abstract class AppLocalizations {
   /// No description provided for @descriptionLabel.
   ///
   /// In en, this message translates to:
-  /// **'DESCRIPTION'**
+  /// **'Description'**
   String get descriptionLabel;
 
   /// No description provided for @chatWithOwner.
@@ -2851,6 +2851,708 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Clear All'**
   String get clearAll;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot Password?'**
+  String get forgotPassword;
+
+  /// No description provided for @resetPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Password'**
+  String get resetPassword;
+
+  /// No description provided for @sendResetLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Reset Link'**
+  String get sendResetLink;
+
+  /// No description provided for @resetLinkSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Link Sent!'**
+  String get resetLinkSent;
+
+  /// No description provided for @resetLinkMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'A password reset link has been sent to your email. Please check your inbox.'**
+  String get resetLinkMessage;
+
+  /// No description provided for @enterValidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email'**
+  String get enterValidEmail;
+
+  /// No description provided for @namePlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Rahul Sharma'**
+  String get namePlaceholder;
+
+  /// No description provided for @phonePlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. +91 9876543210'**
+  String get phonePlaceholder;
+
+  /// No description provided for @emailPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. rahul@example.com'**
+  String get emailPlaceholder;
+
+  /// No description provided for @cityPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Jabalpur, Mumbai'**
+  String get cityPlaceholder;
+
+  /// No description provided for @useLiveLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'USE LIVE LOCATION'**
+  String get useLiveLocation;
+
+  /// No description provided for @authError.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication Error'**
+  String get authError;
+
+  /// No description provided for @noActiveSession.
+  ///
+  /// In en, this message translates to:
+  /// **'No active session found. Please log in again.'**
+  String get noActiveSession;
+
+  /// No description provided for @goToLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to Login'**
+  String get goToLogin;
+
+  /// No description provided for @errorSavingProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Error Saving Profile'**
+  String get errorSavingProfile;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @changePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get changePassword;
+
+  /// No description provided for @currentPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'CURRENT PASSWORD'**
+  String get currentPassword;
+
+  /// No description provided for @newPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'NEW PASSWORD'**
+  String get newPassword;
+
+  /// No description provided for @confirmNewPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'CONFIRM NEW PASSWORD'**
+  String get confirmNewPassword;
+
+  /// No description provided for @passwordChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Password changed successfully!'**
+  String get passwordChanged;
+
+  /// No description provided for @passwordMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get passwordMismatch;
+
+  /// No description provided for @invalidOtpOrError.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid OTP or error occurred'**
+  String get invalidOtpOrError;
+
+  /// No description provided for @instantApprovalDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Based on your profile, you are pre-approved for an estimated loan up to ₹{amount}. The badge has been added to your profile.'**
+  String instantApprovalDesc(String amount);
+
+  /// No description provided for @lowCibilMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Your profile has been captured, but your CIBIL score is currently too low for instant pre-approval. A human agent will contact you shortly.'**
+  String get lowCibilMsg;
+
+  /// No description provided for @eliteStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Elite Status'**
+  String get eliteStatus;
+
+  /// No description provided for @eliteStatusDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Track your membership level and unlock exclusive premium benefits and properties.'**
+  String get eliteStatusDesc;
+
+  /// No description provided for @visualAmbiance.
+  ///
+  /// In en, this message translates to:
+  /// **'Visual Ambiance'**
+  String get visualAmbiance;
+
+  /// No description provided for @visualAmbianceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch between light and dark themes to suit your environment.'**
+  String get visualAmbianceDesc;
+
+  /// No description provided for @preApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'PRE-APPROVED: ₹{amount} L'**
+  String preApproved(String amount);
+
+  /// No description provided for @noEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'No email'**
+  String get noEmail;
+
+  /// No description provided for @userPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'User'**
+  String get userPlaceholder;
+
+  /// No description provided for @fetching.
+  ///
+  /// In en, this message translates to:
+  /// **'Fetching...'**
+  String get fetching;
+
+  /// No description provided for @locationError.
+  ///
+  /// In en, this message translates to:
+  /// **'Location Error'**
+  String get locationError;
+
+  /// No description provided for @personalizedExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Personalized Experience'**
+  String get personalizedExperience;
+
+  /// No description provided for @personalizedExperienceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your profile, preferences, and verified documents in one secure dashboard.'**
+  String get personalizedExperienceDesc;
+
+  /// No description provided for @exploreNextHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore Your Next Home'**
+  String get exploreNextHome;
+
+  /// No description provided for @exploreNextHomeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Search through thousands of curated, zero-brokerage listings with precision filters.'**
+  String get exploreNextHomeDesc;
+
+  /// No description provided for @aiConcierge.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Property Concierge'**
+  String get aiConcierge;
+
+  /// No description provided for @aiConciergeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Get instant expert advice on properties, legal matters, and loan eligibility, 24/7.'**
+  String get aiConciergeDesc;
+
+  /// No description provided for @perMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'/ month'**
+  String get perMonth;
+
+  /// No description provided for @zeroBrokerage.
+  ///
+  /// In en, this message translates to:
+  /// **'Zero Brokerage'**
+  String get zeroBrokerage;
+
+  /// No description provided for @searchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by location, locality...'**
+  String get searchHint;
+
+  /// No description provided for @smartSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Property Search'**
+  String get smartSearch;
+
+  /// No description provided for @smartSearchDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Locate your dream home instantly by searching for localities, landmarks, or cities.'**
+  String get smartSearchDesc;
+
+  /// No description provided for @refineSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Refine to Perfection'**
+  String get refineSearch;
+
+  /// No description provided for @refineSearchDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tailor your search by price, property type, and BHK to find the perfect match.'**
+  String get refineSearchDesc;
+
+  /// No description provided for @lakhSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'L'**
+  String get lakhSuffix;
+
+  /// No description provided for @croreSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'Cr'**
+  String get croreSuffix;
+
+  /// No description provided for @any.
+  ///
+  /// In en, this message translates to:
+  /// **'Any'**
+  String get any;
+
+  /// No description provided for @shareMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Check out this property on Sampatti Bazar: {title} in {city} for ₹{price}.'**
+  String shareMessage(String title, String city, String price);
+
+  /// No description provided for @shareSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'Property Shared: {title}'**
+  String shareSubject(String title);
+
+  /// No description provided for @verifiedAgent.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified Agent'**
+  String get verifiedAgent;
+
+  /// No description provided for @clearDeals.
+  ///
+  /// In en, this message translates to:
+  /// **'clear deals'**
+  String get clearDeals;
+
+  /// No description provided for @chatAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat'**
+  String get chatAction;
+
+  /// No description provided for @callAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get callAction;
+
+  /// No description provided for @errorLoadingOwner.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading owner info'**
+  String get errorLoadingOwner;
+
+  /// No description provided for @locationPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get locationPlaceholder;
+
+  /// No description provided for @loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loading;
+
+  /// No description provided for @handymanHub.
+  ///
+  /// In en, this message translates to:
+  /// **'Handyman Hub'**
+  String get handymanHub;
+
+  /// No description provided for @professionalAssistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Professional Assistance'**
+  String get professionalAssistance;
+
+  /// No description provided for @professionalAssistanceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your service needs — Electrical, Plumbing, Painting, or Cleaning — and we’ll handle the rest.'**
+  String get professionalAssistanceDesc;
+
+  /// No description provided for @laborExpertise.
+  ///
+  /// In en, this message translates to:
+  /// **'LABOR EXPERTISE'**
+  String get laborExpertise;
+
+  /// No description provided for @descriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Please describe in detail what needs to be fixed...'**
+  String get descriptionHint;
+
+  /// No description provided for @serviceLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'SERVICE LOCATION'**
+  String get serviceLocation;
+
+  /// No description provided for @fullAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Address'**
+  String get fullAddressLabel;
+
+  /// No description provided for @cityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get cityLabel;
+
+  /// No description provided for @zipCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Zip Code'**
+  String get zipCodeLabel;
+
+  /// No description provided for @stateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'State'**
+  String get stateLabel;
+
+  /// No description provided for @requestProfessional.
+  ///
+  /// In en, this message translates to:
+  /// **'REQUEST PROFESSIONAL'**
+  String get requestProfessional;
+
+  /// No description provided for @requestReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Received'**
+  String get requestReceived;
+
+  /// No description provided for @requestSentMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Your {category} request has been sent successfully. A professional will contact you shortly.'**
+  String requestSentMsg(String category);
+
+  /// No description provided for @trackingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracking'**
+  String get trackingLabel;
+
+  /// No description provided for @trackingHub.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracking Hub'**
+  String get trackingHub;
+
+  /// No description provided for @bookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings'**
+  String get bookings;
+
+  /// No description provided for @visitors.
+  ///
+  /// In en, this message translates to:
+  /// **'Visitors'**
+  String get visitors;
+
+  /// No description provided for @noVisitorsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No visitors yet'**
+  String get noVisitorsYet;
+
+  /// No description provided for @noVisitorsYetDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'No one has scheduled a visit yet'**
+  String get noVisitorsYetDesc;
+
+  /// No description provided for @noBookingsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No bookings found'**
+  String get noBookingsFound;
+
+  /// No description provided for @noBookingsFoundDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t booked any site visits yet'**
+  String get noBookingsFoundDesc;
+
+  /// No description provided for @pleaseLoginToTrack.
+  ///
+  /// In en, this message translates to:
+  /// **'Please log in to track your services'**
+  String get pleaseLoginToTrack;
+
+  /// No description provided for @visitorText.
+  ///
+  /// In en, this message translates to:
+  /// **'VISITOR'**
+  String get visitorText;
+
+  /// No description provided for @ownerText.
+  ///
+  /// In en, this message translates to:
+  /// **'OWNER'**
+  String get ownerText;
+
+  /// No description provided for @cancelRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'CANCEL REQUEST'**
+  String get cancelRequest;
+
+  /// No description provided for @decline.
+  ///
+  /// In en, this message translates to:
+  /// **'DECLINE'**
+  String get decline;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'CONFIRM'**
+  String get confirm;
+
+  /// No description provided for @noServiceRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No service requests'**
+  String get noServiceRequests;
+
+  /// No description provided for @noServiceRequestsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t raised any service requests yet. Start by exploring our hub!'**
+  String get noServiceRequestsDesc;
+
+  /// No description provided for @requestRaised.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Raised'**
+  String get requestRaised;
+
+  /// No description provided for @requestRaisedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Order placed on {date}'**
+  String requestRaisedDesc(String date);
+
+  /// No description provided for @partnerAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Partner Assigned'**
+  String get partnerAssigned;
+
+  /// No description provided for @partnerAssignedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified service partner assigned'**
+  String get partnerAssignedDesc;
+
+  /// No description provided for @inProgressStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'In Progress'**
+  String get inProgressStatus;
+
+  /// No description provided for @inProgressDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Service is currently being fulfilled'**
+  String get inProgressDesc;
+
+  /// No description provided for @serviceDelivered.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Delivered'**
+  String get serviceDelivered;
+
+  /// No description provided for @serviceDeliveredDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Request marked as finished'**
+  String get serviceDeliveredDesc;
+
+  /// No description provided for @finalQuote.
+  ///
+  /// In en, this message translates to:
+  /// **'FINAL QUOTE'**
+  String get finalQuote;
+
+  /// No description provided for @estimatedPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'ESTIMATED PRICE'**
+  String get estimatedPrice;
+
+  /// No description provided for @lifestyleMarketplace.
+  ///
+  /// In en, this message translates to:
+  /// **'Lifestyle Marketplace'**
+  String get lifestyleMarketplace;
+
+  /// No description provided for @marketplaceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Order premium construction materials, interior decor, and home essentials directly to your site.'**
+  String get marketplaceDesc;
+
+  /// No description provided for @otherServicesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Other Services'**
+  String get otherServicesLabel;
+
+  /// No description provided for @otherServicesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Plumbing, Electric, etc.'**
+  String get otherServicesDesc;
+
+  /// No description provided for @generalHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'General Help'**
+  String get generalHelp;
+
+  /// No description provided for @constructionLabor.
+  ///
+  /// In en, this message translates to:
+  /// **'Construction Labor'**
+  String get constructionLabor;
+
+  /// No description provided for @loadingUnloading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading & Unloading'**
+  String get loadingUnloading;
+
+  /// No description provided for @gardeningLandscaping.
+  ///
+  /// In en, this message translates to:
+  /// **'Gardening/Landscaping'**
+  String get gardeningLandscaping;
+
+  /// No description provided for @cleaningSpecialist.
+  ///
+  /// In en, this message translates to:
+  /// **'Cleaning Specialist'**
+  String get cleaningSpecialist;
+
+  /// No description provided for @painting.
+  ///
+  /// In en, this message translates to:
+  /// **'Painting'**
+  String get painting;
+
+  /// No description provided for @cleaning.
+  ///
+  /// In en, this message translates to:
+  /// **'Cleaning'**
+  String get cleaning;
+
+  /// No description provided for @labor.
+  ///
+  /// In en, this message translates to:
+  /// **'Labor'**
+  String get labor;
+
+  /// No description provided for @allServices.
+  ///
+  /// In en, this message translates to:
+  /// **'All Services'**
+  String get allServices;
+
+  /// No description provided for @liveSupportUpper.
+  ///
+  /// In en, this message translates to:
+  /// **'LIVE SUPPORT'**
+  String get liveSupportUpper;
+
+  /// No description provided for @contactSampattiBazar.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Sampatti Bazar'**
+  String get contactSampattiBazar;
+
+  /// No description provided for @ourOffice.
+  ///
+  /// In en, this message translates to:
+  /// **'Our Office'**
+  String get ourOffice;
+
+  /// No description provided for @officeAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop No 2, 481/1, Bilhari, Mandla Road, Jabalpur, M.P.'**
+  String get officeAddress;
+
+  /// No description provided for @available247.
+  ///
+  /// In en, this message translates to:
+  /// **'Available 24/7 for your assistance'**
+  String get available247;
+
+  /// No description provided for @tenantEmailAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Tenant Email Address'**
+  String get tenantEmailAddress;
 }
 
 class _AppLocalizationsDelegate

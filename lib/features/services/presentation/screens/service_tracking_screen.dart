@@ -12,12 +12,14 @@ import 'package:sampatti_bazar/features/services/data/booking_repository.dart';
 import 'package:sampatti_bazar/features/services/domain/booking_model.dart';
 import 'package:sampatti_bazar/features/services/domain/service_request_model.dart';
 import 'package:sampatti_bazar/features/services/data/service_request_repository.dart';
+import 'package:sampatti_bazar/l10n/app_localizations.dart';
 
 class ServiceTrackingScreen extends ConsumerWidget {
   const ServiceTrackingScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final user = ref.watch(currentUserDataProvider).value;
     if (user == null) {
       return Scaffold(
@@ -29,7 +31,7 @@ class ServiceTrackingScreen extends ConsumerWidget {
               Icon(LucideIcons.userX, size: 64.sp, color: Colors.grey.withValues(alpha: 0.3)),
               SizedBox(height: 16.h),
               Text(
-                'Please log in to track your services',
+                l10n.pleaseLoginToTrack,
                 style: TextStyle(
                   color: context.secondaryTextColor,
                   fontSize: 16.sp,
@@ -56,7 +58,7 @@ class ServiceTrackingScreen extends ConsumerWidget {
           automaticallyImplyLeading: false,
           centerTitle: false,
           title: Text(
-            'Tracking Hub',
+            l10n.trackingHub,
             style: TextStyle(
               fontWeight: FontWeight.w900,
               color: context.primaryTextColor,
@@ -94,10 +96,10 @@ class ServiceTrackingScreen extends ConsumerWidget {
                   fontFamily: 'Poppins',
                   letterSpacing: 0.5,
                 ),
-                tabs: const [
-                  Tab(text: 'BOOKINGS'),
-                  Tab(text: 'VISITORS'),
-                  Tab(text: 'SERVICES'),
+                tabs: [
+                  Tab(text: l10n.bookings.toUpperCase()),
+                  Tab(text: l10n.visitors.toUpperCase()),
+                  Tab(text: l10n.services.toUpperCase()),
                 ],
               ),
             ),
@@ -115,14 +117,15 @@ class ServiceTrackingScreen extends ConsumerWidget {
   }
 
   Widget _buildBookingList(BuildContext context, WidgetRef ref, AsyncValue<List<BookingModel>> bookingsAsync, {required bool isOwner}) {
+    final l10n = AppLocalizations.of(context)!;
     return bookingsAsync.when(
       data: (bookings) {
         if (bookings.isEmpty) {
           return _buildEmptyState(
             context,
             isOwner ? LucideIcons.users : LucideIcons.calendarCheck,
-            isOwner ? 'No visitors yet' : 'No bookings found',
-            isOwner ? 'No one has scheduled a visit yet' : 'You haven\'t booked any site visits yet',
+            isOwner ? l10n.noVisitorsYet : l10n.noBookingsFound,
+            isOwner ? l10n.noVisitorsYetDesc : l10n.noBookingsFoundDesc,
           );
         }
 
@@ -183,6 +186,7 @@ class ServiceTrackingScreen extends ConsumerWidget {
   }
 
   Widget _buildBookingCard(BuildContext context, WidgetRef ref, BookingModel booking, bool isOwner) {
+    final l10n = AppLocalizations.of(context)!;
     final statusColor = _getBookingStatusColor(booking.status);
     final dateStr = DateFormat('EEE, MMM d').format(booking.bookingDate);
     final timeStr = DateFormat('hh:mm a').format(booking.bookingDate);
@@ -259,7 +263,7 @@ class ServiceTrackingScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
-                _buildStatusChip(booking.status.toUpperCase(), statusColor),
+                _buildStatusChip(context, booking.status.toUpperCase(), statusColor),
               ],
             ),
           ),
@@ -308,7 +312,7 @@ class ServiceTrackingScreen extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              isOwner ? 'VISITOR' : 'OWNER',
+                              isOwner ? l10n.visitorText : l10n.ownerText,
                               style: TextStyle(
                                 fontSize: 8.sp,
                                 fontWeight: FontWeight.w900,
@@ -351,7 +355,7 @@ class ServiceTrackingScreen extends ConsumerWidget {
           ),
           
           if (isOwner && booking.status == 'pending')
-             _buildDecisionActions(ref, booking.id, isBooking: true),
+             _buildDecisionActions(context, ref, booking.id, isBooking: true),
              
           if (!isOwner && (booking.status == 'confirmed' || booking.status == 'pending'))
             Padding(
@@ -361,7 +365,7 @@ class ServiceTrackingScreen extends ConsumerWidget {
                 child: TextButton(
                   onPressed: () => ref.read(bookingRepositoryProvider).updateBookingStatus(booking.id, 'cancelled'),
                   child: Text(
-                    'CANCEL REQUEST',
+                    l10n.cancelRequest,
                     style: TextStyle(
                       color: AppTheme.primaryBlue,
                       fontWeight: FontWeight.w900,
@@ -377,7 +381,8 @@ class ServiceTrackingScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildDecisionActions(WidgetRef ref, String id, {bool isBooking = true}) {
+  Widget _buildDecisionActions(BuildContext context, WidgetRef ref, String id, {bool isBooking = true}) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: EdgeInsets.all(16.w),
       child: Row(
@@ -397,7 +402,7 @@ class ServiceTrackingScreen extends ConsumerWidget {
                 elevation: 0,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.sp)),
               ),
-              child: Text('DECLINE', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11.sp)),
+              child: Text(l10n.decline, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11.sp)),
             ),
           ),
           SizedBox(width: 12.w),
@@ -416,7 +421,7 @@ class ServiceTrackingScreen extends ConsumerWidget {
                 elevation: 0,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14.sp)),
               ),
-              child: Text('CONFIRM', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11.sp)),
+              child: Text(l10n.confirm, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11.sp)),
             ),
           ),
         ],
@@ -424,7 +429,7 @@ class ServiceTrackingScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatusChip(String label, Color color) {
+  Widget _buildStatusChip(BuildContext context, String label, Color color) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
       decoration: BoxDecoration(
@@ -467,6 +472,7 @@ class ServiceTrackingScreen extends ConsumerWidget {
   }
 
   Widget _buildServiceRequestList(BuildContext context, WidgetRef ref, UserModel user) {
+    final l10n = AppLocalizations.of(context)!;
     final servicesAsync = ref.watch(userAllServicesProvider((userId: user.uid, email: user.email)));
 
     return servicesAsync.when(
@@ -475,8 +481,8 @@ class ServiceTrackingScreen extends ConsumerWidget {
           return _buildEmptyState(
             context,
             LucideIcons.clipboardList,
-            'No service requests',
-            'You haven\'t raised any service requests yet. Start by exploring our hub!',
+            l10n.noServiceRequests,
+            l10n.noServiceRequestsDesc,
           );
         }
 
@@ -495,6 +501,7 @@ class ServiceTrackingScreen extends ConsumerWidget {
   }
 
   Widget _buildServiceRequestCard(BuildContext context, WidgetRef ref, ServiceRequestModel request, String currentUserId) {
+    final l10n = AppLocalizations.of(context)!;
     final statusColor = _getServiceStatusColor(request.status);
     final dateStr = DateFormat('MMM d, yyyy').format(request.createdAt);
     
@@ -568,7 +575,7 @@ class ServiceTrackingScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
-                _buildStatusChip(request.status.toUpperCase(), statusColor),
+                _buildStatusChip(context, request.status.toUpperCase(), statusColor),
               ],
             ),
           ),
@@ -577,10 +584,10 @@ class ServiceTrackingScreen extends ConsumerWidget {
             padding: EdgeInsets.symmetric(horizontal: 20.w),
             child: Column(
               children: [
-                _buildTimelineStep(context, 'Request Raised', 'Order placed on $dateStr', true, true),
-                _buildTimelineStep(context, 'Partner Assigned', 'Verified service partner assigned', ['accepted', 'in progress', 'completed'].contains(request.status.toLowerCase()), true),
-                _buildTimelineStep(context, 'In Progress', 'Service is currently being fulfilled', ['in progress', 'completed'].contains(request.status.toLowerCase()), true),
-                _buildTimelineStep(context, 'Service Delivered', 'Request marked as finished', request.status.toLowerCase() == 'completed', false),
+                _buildTimelineStep(context, l10n.requestRaised, l10n.requestRaisedDesc(dateStr), true, true),
+                _buildTimelineStep(context, l10n.partnerAssigned, l10n.partnerAssignedDesc, ['accepted', 'in progress', 'completed'].contains(request.status.toLowerCase()), true),
+                _buildTimelineStep(context, l10n.inProgressStatus, l10n.inProgressDesc, ['in progress', 'completed'].contains(request.status.toLowerCase()), true),
+                _buildTimelineStep(context, l10n.serviceDelivered, l10n.serviceDeliveredDesc, request.status.toLowerCase() == 'completed', false),
               ],
             ),
           ),
@@ -597,7 +604,7 @@ class ServiceTrackingScreen extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    request.details['finalQuote'] != null ? 'FINAL QUOTE' : 'ESTIMATED PRICE',
+                    request.details['finalQuote'] != null ? l10n.finalQuote : l10n.estimatedPrice,
                     style: TextStyle(
                       fontSize: 10.sp,
                       color: context.secondaryTextColor,

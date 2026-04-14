@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
+import 'package:sampatti_bazar/l10n/app_localizations.dart';
 
 class ContactBottomSheet extends StatelessWidget {
   const ContactBottomSheet({super.key});
@@ -24,6 +25,7 @@ class ContactBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 32.h),
       decoration: BoxDecoration(
@@ -41,13 +43,22 @@ class ContactBottomSheet extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'LIVE SUPPORT',
-                    style: TextStyle(color: Color(0xFF00D1FF), fontWeight: FontWeight.bold, fontSize: 10.sp, letterSpacing: 1),
+                    l10n.liveSupportUpper,
+                    style: TextStyle(
+                      color: const Color(0xFF00D1FF),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 10.sp,
+                      letterSpacing: 1,
+                    ),
                   ),
                   SizedBox(height: 4.h),
                   Text(
-                    'Contact Sampatti Bazar',
-                    style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18.sp, color: context.primaryTextColor),
+                    l10n.contactSampattiBazar,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 18.sp,
+                      color: context.primaryTextColor,
+                    ),
                   ),
                 ],
               ),
@@ -61,15 +72,15 @@ class ContactBottomSheet extends StatelessWidget {
           _buildContactTile(
             context,
             icon: Icons.location_on_outlined,
-            title: 'Our Office',
-            subtitle: 'Shop No 2, 481/1, Bilhari, Mandla Road, Jabalpur, M.P.',
+            title: l10n.ourOffice,
+            subtitle: l10n.officeAddress,
             onTap: () => _launchUrl('https://www.google.com/maps/search/?api=1&query=Shop+No+2,+481/1,+Bilhari,+Mandla+Road,+Jabalpur,+M.P.'),
           ),
           SizedBox(height: 16.h),
           _buildContactTile(
             context,
             icon: Icons.call_outlined,
-            title: 'Phone',
+            title: l10n.phoneNumber,
             subtitle: '+91 766 685 0012',
             onTap: () => _launchUrl('tel:+917666850012'),
           ),
@@ -77,14 +88,14 @@ class ContactBottomSheet extends StatelessWidget {
           _buildContactTile(
             context,
             icon: Icons.email_outlined,
-            title: 'Email',
+            title: l10n.emailAddress,
             subtitle: 'info@sampattibazar.com',
             onTap: () => _launchUrl('mailto:info@sampattibazar.com'),
           ),
           SizedBox(height: 32.h),
           Center(
             child: Text(
-              'Available 24/7 for your assistance',
+              l10n.available247,
               style: TextStyle(color: Colors.grey, fontSize: 10.sp, fontWeight: FontWeight.bold),
             ),
           ),

@@ -8,6 +8,7 @@ import 'package:sampatti_bazar/features/services/domain/service_request_model.da
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
 import 'package:sampatti_bazar/core/utils/validators.dart';
+import 'package:sampatti_bazar/core/widgets/contact_bottom_sheet.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
 import 'package:sampatti_bazar/core/services/location_service.dart';
 
@@ -266,7 +267,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
             ),
             child: IconButton(
               icon: Icon(Icons.headset_mic_outlined, color: context.primaryTextColor, size: 20.sp),
-              onPressed: () {},
+              onPressed: () => ContactBottomSheet.show(context),
             ),
           ),
         ],

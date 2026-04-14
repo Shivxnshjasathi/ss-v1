@@ -9,6 +9,7 @@ import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/services/domain/service_request_model.dart';
 import 'package:sampatti_bazar/features/services/data/service_request_repository.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
+import 'package:sampatti_bazar/core/widgets/contact_bottom_sheet.dart';
 
 class MoversScreen extends ConsumerStatefulWidget {
   const MoversScreen({super.key});
@@ -238,7 +239,7 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
             ),
             child: IconButton(
               icon: Icon(Icons.help_outline, color: context.primaryTextColor, size: 20.sp),
-              onPressed: () {},
+              onPressed: () => ContactBottomSheet.show(context),
             ),
           ),
         ],

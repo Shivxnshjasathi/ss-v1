@@ -1,4 +1,4 @@
-import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
@@ -102,11 +102,28 @@ class _ServicesHubScreenState extends State<ServicesHubScreen> {
                     ),
                     DescribedFeatureOverlay(
                       featureId: 'hub_marketplace_id',
-                      tapTarget: Icon(LucideIcons.shoppingBag, color: AppTheme.primaryBlue),
-                      title: const Text('Service Marketplace'),
-                      description: const Text('Order construction materials, interior decor, and home essentials.'),
+                      tapTarget: Icon(LucideIcons.shoppingBag, color: Colors.white),
+                      contentLocation: ContentLocation.below,
+                      title: Text(
+                        l10n.lifestyleMarketplace,
+                        style: TextStyle(
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      description: Text(
+                        l10n.marketplaceDesc,
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: Colors.white.withValues(alpha: 0.95),
+                          height: 1.4,
+                        ),
+                      ),
                       backgroundColor: AppTheme.primaryBlue,
                       targetColor: Colors.white,
+                      textColor: Colors.white,
                       child: _buildServiceGridItem(
                         context,
                         l10n.marketplace,
@@ -117,9 +134,9 @@ class _ServicesHubScreenState extends State<ServicesHubScreen> {
                     ),
                     _buildServiceGridItem(
                       context,
-                      'Other Services',
+                      l10n.otherServicesLabel,
                       LucideIcons.wrench,
-                      'Plumbing, Electric, etc.',
+                      l10n.otherServicesDesc,
                       '/services/other',
                     ),
                   ],
@@ -374,11 +391,28 @@ class _ServicesHubScreenState extends State<ServicesHubScreen> {
       children: [
         DescribedFeatureOverlay(
           featureId: 'hub_emi_id',
-          tapTarget: Icon(LucideIcons.calculator, color: AppTheme.primaryBlue),
-          title: const Text('Planning Tools'),
-          description: const Text('Calculate loan installments and plan your property budget smarter.'),
+          tapTarget: Icon(LucideIcons.calculator, color: Colors.white),
+          contentLocation: ContentLocation.above,
+          title: Text(
+            'Financial Intelligence',
+            style: TextStyle(
+              fontSize: 20.sp,
+              fontWeight: FontWeight.w900,
+              color: Colors.white,
+              letterSpacing: -0.5,
+            ),
+          ),
+          description: Text(
+            'Plan your purchase with ease using our advanced EMI calculator and budget analysis tools.',
+            style: TextStyle(
+              fontSize: 14.sp,
+              color: Colors.white.withValues(alpha: 0.95),
+              height: 1.4,
+            ),
+          ),
           backgroundColor: AppTheme.primaryBlue,
           targetColor: Colors.white,
+          textColor: Colors.white,
           child: _buildListTile(
             context,
             l10n.emiCalculator,

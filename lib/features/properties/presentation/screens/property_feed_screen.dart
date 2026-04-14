@@ -157,11 +157,28 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                   SizedBox(width: 20.w),
                   DescribedFeatureOverlay(
                     featureId: 'search_feature_id',
-                    tapTarget: Icon(LucideIcons.search, color: AppTheme.primaryBlue),
-                    title: const Text('Search Properties'),
-                    description: const Text('Quickly find properties by location or locality name.'),
+                    tapTarget: Icon(LucideIcons.search, color: Colors.white),
+                    contentLocation: ContentLocation.below,
+                    title: Text(
+                      l10n.smartSearch,
+                      style: TextStyle(
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                    description: Text(
+                      l10n.smartSearchDesc,
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        color: Colors.white.withValues(alpha: 0.95),
+                        height: 1.4,
+                      ),
+                    ),
                     backgroundColor: AppTheme.primaryBlue,
                     targetColor: Colors.white,
+                    textColor: Colors.white,
                     child: Icon(
                       LucideIcons.search,
                       color: AppTheme.primaryBlue,
@@ -174,7 +191,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                       controller: _searchController,
                       onChanged: (_) => setState(() {}),
                       decoration: InputDecoration(
-                        hintText: 'Search by location, locality...',
+                        hintText: l10n.searchHint,
                         hintStyle: TextStyle(
                           color: context.secondaryTextColor.withValues(alpha: 0.4),
                           fontSize: 14.sp,
@@ -218,11 +235,28 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                     onTap: () => _showFilterSheet(context, l10n),
                     child: DescribedFeatureOverlay(
                       featureId: 'filter_feature_id',
-                      tapTarget: Icon(LucideIcons.slidersHorizontal, color: context.primaryTextColor),
-                      title: const Text('Refine Your Search'),
-                      description: const Text('Filter by property type, price range, and number of bedrooms.'),
+                      tapTarget: Icon(LucideIcons.slidersHorizontal, color: Colors.white),
+                      contentLocation: ContentLocation.below,
+                      title: Text(
+                        l10n.refineSearch,
+                        style: TextStyle(
+                          fontSize: 20.sp,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      description: Text(
+                        l10n.refineSearchDesc,
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: Colors.white.withValues(alpha: 0.95),
+                          height: 1.4,
+                        ),
+                      ),
                       backgroundColor: AppTheme.primaryBlue,
                       targetColor: Colors.white,
+                      textColor: Colors.white,
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 16.w),
                         child: Icon(
@@ -409,9 +443,9 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
 
   String _formatPrice(double value) {
     if (value >= 10) {
-      return '₹${(value / 10).toStringAsFixed(1)} Cr';
+      return '₹${(value / 10).toStringAsFixed(1)} ${AppLocalizations.of(context)!.croreSuffix}';
     } else {
-      return '₹${value.toInt() * 10} L';
+      return '₹${value.toInt() * 10} ${AppLocalizations.of(context)!.lakhSuffix}';
     }
   }
 
@@ -568,7 +602,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                     children: _bedroomOptions.map((beds) {
                       final isSelected = tempBedrooms == beds;
                       return _buildModalChoiceChip(
-                        label: beds,
+                        label: beds == 'Any' ? l10n.any : beds,
                         isSelected: isSelected,
                         onSelected: (val) {
                           if (val) setModalState(() => tempBedrooms = beds);

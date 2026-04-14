@@ -93,4 +93,15 @@ class AuthRepository {
     LoggerService.w('Auth: Signing out');
     await _auth.signOut();
   }
+
+  Future<void> sendPasswordResetEmail(String email) async {
+    LoggerService.i('Auth: Sending password reset email to $email');
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      LoggerService.i('Auth: Password reset email sent successfully');
+    } catch (e, st) {
+      LoggerService.e('Auth: Error sending password reset email', error: e, stack: st);
+      rethrow;
+    }
+  }
 }

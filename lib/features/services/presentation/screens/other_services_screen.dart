@@ -10,6 +10,8 @@ import 'package:sampatti_bazar/features/services/data/service_request_repository
 import 'package:sampatti_bazar/features/services/domain/service_request_model.dart';
 import 'package:sampatti_bazar/core/services/location_service.dart';
 import 'package:feature_discovery/feature_discovery.dart';
+import 'package:sampatti_bazar/l10n/app_localizations.dart';
+import 'package:sampatti_bazar/core/widgets/contact_bottom_sheet.dart';
 
 class OtherServicesScreen extends ConsumerStatefulWidget {
   const OtherServicesScreen({super.key});
@@ -55,6 +57,7 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
   }
 
   Future<void> _fetchLocation() async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => _isLocating = true);
     try {
       final position = await LocationService.getCurrentPosition();
@@ -66,14 +69,12 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
           setState(() {
             _cityController.text = addressData['city'] ?? '';
             _addressController.text = addressData['address'] ?? '';
-            // Note: LocationService.getAddressFromLatLng currently doesn't return state/zip separately
-            // but we can try to improve it or just pre-fill what we have.
           });
 
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Location updated successfully'),
+              SnackBar(
+                content: Text(l10n.locationUpdated),
                 backgroundColor: Colors.green,
               ),
             );
@@ -82,10 +83,8 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Could not fetch location. Please enable permissions.',
-              ),
+            SnackBar(
+              content: Text(l10n.couldNotFetchLocation),
               backgroundColor: Colors.orange,
             ),
           );
@@ -95,19 +94,18 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error fetching location: $e'),
+            content: Text('${l10n.locationError}: $e'),
             backgroundColor: Colors.red,
           ),
         );
       }
     } finally {
-      if (mounted) {
-        setState(() => _isLocating = false);
-      }
+      if (mounted) setState(() => _isLocating = false);
     }
   }
 
   Future<void> _submitRequest() async {
+    final topL10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
 
     if (_selectedCategory == 'Labor' && _selectedLaborType == null) {
@@ -129,10 +127,10 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
       if (user == null) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Text(
-                'Please login to request a service',
-                style: TextStyle(color: Colors.white),
+                topL10n.pleaseLoginToChat, // Reusing existing login hint
+                style: const TextStyle(color: Colors.white),
               ),
               backgroundColor: Colors.red,
             ),
@@ -169,14 +167,14 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
         parameters: {'category': _selectedCategory},
       );
 
-      if (mounted) {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (ctx) => AlertDialog(
-            title: const Text('Request Received'),
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => AlertDialog(
+            title: Text(topL10n.requestReceived),
             content: Text(
-              'Your $_selectedCategory request has been sent successfully. A professional will contact you shortly.',
+              topL10n.requestSentMsg(_selectedCategory),
             ),
             actions: [
               TextButton(
@@ -184,18 +182,17 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
                   Navigator.pop(ctx);
                   context.pop();
                 },
-                child: const Text('Done'),
+                child: Text(topL10n.close),
               ),
             ],
           ),
         );
-      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Failed to submit request: $e',
+              '${topL10n.authError}: $e',
               style: const TextStyle(color: Colors.white),
             ),
             backgroundColor: Colors.red,
@@ -292,20 +289,21 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
   }
 
   Widget _buildCategoryChip(String label) {
+    final l10n = AppLocalizations.of(context)!;
     bool isSelected = _selectedCategory == label;
     String displayLabel = label;
     if (label == 'Electrical fitting & services') {
-      displayLabel = 'ELECTRICAL';
+      displayLabel = l10n.electrical;
     } else if (label == 'Plumbing services') {
-      displayLabel = 'PLUMBING';
+      displayLabel = l10n.plumbing;
     } else if (label == 'House painting') {
-      displayLabel = 'PAINTING';
+      displayLabel = l10n.painting;
     } else if (label == 'House cleaning') {
-      displayLabel = 'CLEANING';
+      displayLabel = l10n.cleaning;
     } else if (label == 'Labor') {
-      displayLabel = 'LABOR';
+      displayLabel = l10n.labor;
     } else if (label == 'All') {
-      displayLabel = 'ALL SERVICES';
+      displayLabel = l10n.allServices;
     }
 
     return Padding(
@@ -349,6 +347,7 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: context.scaffoldColor,
       appBar: AppBar(
@@ -376,7 +375,7 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
             ),
             SizedBox(width: 16.w),
             Text(
-              'Handyman Hub',
+              l10n.handymanHub,
               style: TextStyle(
                 fontWeight: FontWeight.w900,
                 color: context.primaryTextColor,
@@ -399,7 +398,7 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
                 color: AppTheme.primaryBlue,
                 size: 20.sp,
               ),
-              onPressed: () {},
+              onPressed: () => ContactBottomSheet.show(context),
             ),
           ),
         ],
@@ -411,11 +410,28 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
             SizedBox(height: 8.h),
             DescribedFeatureOverlay(
               featureId: 'category_selection_feature_id',
-              tapTarget: Icon(Icons.category_rounded, color: AppTheme.primaryBlue),
-              title: const Text('Choose a Service'),
-              description: const Text('Select from Electrical, Plumbing, Painting, or our new Labor service.'),
+              tapTarget: Icon(Icons.category_rounded, color: Colors.white),
+              contentLocation: ContentLocation.below,
+              title: Text(
+                l10n.professionalAssistance,
+                style: TextStyle(
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              description: Text(
+                l10n.professionalAssistanceDesc,
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  color: Colors.white.withValues(alpha: 0.95),
+                  height: 1.4,
+                ),
+              ),
               backgroundColor: AppTheme.primaryBlue,
               targetColor: Colors.white,
+              textColor: Colors.white,
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 padding: EdgeInsets.symmetric(horizontal: 24.0.w),
@@ -436,7 +452,7 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'LABOR EXPERTISE',
+                      l10n.laborExpertise,
                       style: TextStyle(
                         fontSize: 10.sp,
                         fontWeight: FontWeight.w900,
@@ -450,24 +466,48 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
                       runSpacing: 12.h,
                       children: _laborTypes.map((type) {
                         bool isSelected = _selectedLaborType == type;
+                        String displayType = type;
+                        if (type == 'General Help') {
+                          displayType = l10n.generalHelp;
+                        } else if (type == 'Construction Labor') {
+                          displayType = l10n.constructionLabor;
+                        } else if (type == 'Loading & Unloading') {
+                          displayType = l10n.loadingUnloading;
+                        } else if (type == 'Gardening/Landscaping') {
+                          displayType = l10n.gardeningLandscaping;
+                        } else if (type == 'Cleaning Specialist') {
+                          displayType = l10n.cleaningSpecialist;
+                        }
+
                         return GestureDetector(
                           onTap: () => setState(() => _selectedLaborType = type),
                           child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 16.w,
+                              vertical: 10.h,
+                            ),
                             decoration: BoxDecoration(
-                              color: isSelected ? context.surfaceColor : context.cardColor,
+                              color: isSelected
+                                  ? context.surfaceColor
+                                  : context.cardColor,
                               borderRadius: BorderRadius.circular(12.sp),
                               border: Border.all(
-                                color: isSelected ? AppTheme.primaryBlue : context.borderColor,
+                                color: isSelected
+                                    ? AppTheme.primaryBlue
+                                    : context.borderColor,
                                 width: isSelected ? 1.5 : 1,
                               ),
                             ),
                             child: Text(
-                              type,
+                              displayType,
                               style: TextStyle(
                                 fontSize: 13.sp,
-                                fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
-                                color: isSelected ? AppTheme.primaryBlue : context.primaryTextColor,
+                                fontWeight: isSelected
+                                    ? FontWeight.w900
+                                    : FontWeight.w600,
+                                color: isSelected
+                                    ? AppTheme.primaryBlue
+                                    : context.primaryTextColor,
                               ),
                             ),
                           ),
@@ -483,8 +523,8 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
               padding: EdgeInsets.symmetric(horizontal: 24.w),
               child: _buildTextFieldWidget(
                 _descriptionController,
-                'Description',
-                hint: 'Please describe in detail what needs to be fixed...',
+                l10n.descriptionLabel,
+                hint: l10n.descriptionHint,
                 keyboardType: TextInputType.multiline,
                 maxLines: 5,
               ),
@@ -498,7 +538,7 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'SERVICE LOCATION',
+                        l10n.serviceLocation,
                         style: TextStyle(
                           fontSize: 10.sp,
                           fontWeight: FontWeight.w900,
@@ -523,7 +563,7 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
                                 color: AppTheme.primaryBlue,
                               ),
                         label: Text(
-                          'USE LIVE LOCATION',
+                          l10n.useLiveLocation,
                           style: TextStyle(
                             fontSize: 10.sp,
                             fontWeight: FontWeight.w900,
@@ -549,8 +589,8 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
                   SizedBox(height: 16.h),
                   _buildTextFieldWidget(
                     _addressController,
-                    'Full Address',
-                    hint: 'House No, Street, Area',
+                    l10n.fullAddressLabel,
+                    hint: l10n.locationPlaceholder,
                     icon: Icons.home_rounded,
                   ),
                   Row(
@@ -558,8 +598,8 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
                       Expanded(
                         child: _buildTextFieldWidget(
                           _cityController,
-                          'City',
-                          hint: 'City',
+                          l10n.cityLabel,
+                          hint: l10n.cityPlaceholder,
                           icon: Icons.location_city_rounded,
                         ),
                       ),
@@ -567,8 +607,8 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
                       Expanded(
                         child: _buildTextFieldWidget(
                           _zipController,
-                          'Zip Code',
-                          hint: 'Postal Code',
+                          l10n.zipCodeLabel,
+                          hint: l10n.zipCodeLabel,
                           icon: Icons.local_post_office_rounded,
                           keyboardType: TextInputType.number,
                         ),
@@ -577,8 +617,8 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
                   ),
                   _buildTextFieldWidget(
                     _stateController,
-                    'State',
-                    hint: 'State / Province',
+                    l10n.stateLabel,
+                    hint: l10n.stateLabel,
                     icon: Icons.map_rounded,
                   ),
                   SizedBox(height: 32.h),
@@ -625,7 +665,7 @@ class _OtherServicesScreenState extends ConsumerState<OtherServicesScreen> {
                       ),
                     )
                   : Text(
-                      'REQUEST PROFESSIONAL',
+                      l10n.requestProfessional,
                       style: TextStyle(
                         fontWeight: FontWeight.w900,
                         fontSize: 14.sp,

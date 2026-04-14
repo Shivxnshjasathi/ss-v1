@@ -32,9 +32,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         FeatureDiscovery.discoverFeatures(
           context,
           const <String>{
-            'home_profile_id',
             'home_search_id',
             'home_chatbot_id',
+            'home_profile_id',
           },
         );
         ref.read(onboardingTourProvider.notifier).completeTour();
@@ -53,8 +53,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final firstName = fullName.split(' ')[0];
     final currentLocation = locationAsync.when(
       data: (city) => city,
-      loading: () => 'Fetching...',
-      error: (_, _) => 'Location Error',
+      loading: () => l10n.fetching,
+      error: (_, _) => l10n.locationError,
     );
 
     return Scaffold(
@@ -63,53 +63,45 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         backgroundColor: context.scaffoldColor,
         elevation: 0,
         centerTitle: false,
-        title: DescribedFeatureOverlay(
-          featureId: 'home_profile_id',
-          tapTarget: Icon(LucideIcons.user, color: AppTheme.primaryBlue),
-          title: const Text('Welcome Dashboard'),
-          description: const Text('See your personalized greetings and location data.'),
-          backgroundColor: AppTheme.primaryBlue,
-          targetColor: Colors.white,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                l10n.welcome,
-                style: TextStyle(
-                  fontSize: 12.sp,
-                  color: context.secondaryTextColor,
-                  fontWeight: FontWeight.w500,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.welcome,
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: context.secondaryTextColor,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            Row(
+              children: [
+                Text(
+                  '$firstName!',
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.w900,
+                    color: context.primaryTextColor,
+                  ),
                 ),
-              ),
-              Row(
-                children: [
-                  Text(
-                    '$firstName!',
-                    style: TextStyle(
-                      fontSize: 18.sp,
-                      fontWeight: FontWeight.w900,
-                      color: context.primaryTextColor,
-                    ),
+                SizedBox(width: 8.w),
+                Icon(
+                  LucideIcons.mapPin,
+                  size: 14.w,
+                  color: AppTheme.primaryBlue,
+                ),
+                SizedBox(width: 4.w),
+                Text(
+                  currentLocation,
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: context.secondaryTextColor,
+                    fontWeight: FontWeight.w700,
                   ),
-                  SizedBox(width: 8.w),
-                  Icon(
-                    LucideIcons.mapPin,
-                    size: 14.w,
-                    color: AppTheme.primaryBlue,
-                  ),
-                  SizedBox(width: 4.w),
-                  Text(
-                    currentLocation,
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      color: context.secondaryTextColor,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+          ],
         ),
         actions: [
           IconButton(
@@ -122,27 +114,52 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
           Padding(
             padding: EdgeInsets.only(right: 16.w, left: 8.w),
-            child: GestureDetector(
-              onTap: () => context.push('/profile'),
-              child: Stack(
-                alignment: Alignment.bottomRight,
-                children: [
-                  CircleAvatar(
-                    backgroundImage: const CachedNetworkImageProvider(
-                      'https://i.pravatar.cc/150?u=a042581f4e29026704d',
+            child: DescribedFeatureOverlay(
+              featureId: 'home_profile_id',
+              tapTarget: Icon(LucideIcons.user, color: Colors.white),
+              contentLocation: ContentLocation.below,
+              title: Text(
+                l10n.personalizedExperience,
+                style: TextStyle(
+                  fontSize: 20.sp,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              description: Text(
+                l10n.personalizedExperienceDesc,
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  color: Colors.white.withValues(alpha: 0.95),
+                  height: 1.4,
+                ),
+              ),
+              backgroundColor: AppTheme.primaryBlue,
+              targetColor: Colors.white,
+              textColor: Colors.white,
+              child: GestureDetector(
+                onTap: () => context.push('/profile'),
+                child: Stack(
+                  alignment: Alignment.bottomRight,
+                  children: [
+                    CircleAvatar(
+                      backgroundImage: const CachedNetworkImageProvider(
+                        'https://i.pravatar.cc/150?u=a042581f4e29026704d',
+                      ),
+                      radius: 20.sp,
                     ),
-                    radius: 20.sp,
-                  ),
-                  Container(
-                    width: 12.w,
-                    height: 12.w,
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2.w),
+                    Container(
+                      width: 12.w,
+                      height: 12.w,
+                      decoration: BoxDecoration(
+                        color: Colors.green,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 2.w),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -158,11 +175,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
               child: DescribedFeatureOverlay(
                 featureId: 'home_search_id',
-                tapTarget: Icon(LucideIcons.search, color: AppTheme.primaryBlue),
-                title: const Text('Find Properties'),
-                description: const Text('Jump straight into our property feed with advanced search and filters.'),
+                tapTarget: Icon(LucideIcons.search, color: Colors.white),
+                contentLocation: ContentLocation.below,
+                title: Text(
+                  l10n.exploreNextHome,
+                  style: TextStyle(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                description: Text(
+                  l10n.exploreNextHomeDesc,
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    color: Colors.white.withValues(alpha: 0.95),
+                    height: 1.4,
+                  ),
+                ),
                 backgroundColor: AppTheme.primaryBlue,
                 targetColor: Colors.white,
+                textColor: Colors.white,
                 child: TextField(
                   readOnly: true,
                   onTap: () => context.push('/properties'),
@@ -355,6 +389,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   ? prop.imageUrls.first
                                   : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80',
                               prop.id,
+                              l10n,
                             ),
                           );
                         },
@@ -423,10 +458,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       floatingActionButton: DescribedFeatureOverlay(
         featureId: 'home_chatbot_id',
         tapTarget: Icon(LucideIcons.messageSquare, color: Colors.white),
-        title: const Text('AI Assistance'),
-        description: const Text('Have questions? Our AI Chatbot is here to help you navigate and find resources.'),
+        contentLocation: ContentLocation.above,
+        title: Text(
+          l10n.aiConcierge,
+          style: TextStyle(
+            fontSize: 20.sp,
+            fontWeight: FontWeight.w900,
+            color: Colors.white,
+            letterSpacing: -0.5,
+          ),
+        ),
+        description: Text(
+          l10n.aiConciergeDesc,
+          style: TextStyle(
+            fontSize: 14.sp,
+            color: Colors.white.withValues(alpha: 0.95),
+            height: 1.4,
+          ),
+        ),
         backgroundColor: AppTheme.primaryBlue,
         targetColor: Colors.white,
+        textColor: Colors.white,
         child: FloatingActionButton(
           onPressed: () {
             context.push('/chatbot');
@@ -532,19 +584,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     String location,
     String imageUrl,
     String propertyId,
+    AppLocalizations l10n,
   ) {
     return GestureDetector(
       onTap: () => context.push('/properties/detail/$propertyId'),
       child: Container(
-        width: 260.w, // Slightly wider for better visual impact
+        width: 260.w,
         decoration: BoxDecoration(
           color: context.cardColor,
-          borderRadius: BorderRadius.circular(
-            24.sp,
-          ), // Smoother rounded corners
+          borderRadius: BorderRadius.circular(24.sp),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08), // Softer shadow
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),
@@ -585,7 +636,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   borderRadius: BorderRadius.circular(20.sp),
                 ),
                 child: Text(
-                  'Zero Brokerage',
+                  l10n.zeroBrokerage,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 10.sp,
@@ -651,7 +702,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                       SizedBox(width: 4.w),
                       Text(
-                        '/ month',
+                        l10n.perMonth,
                         style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.7),
                           fontSize: 12.sp,

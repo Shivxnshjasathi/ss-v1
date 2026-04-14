@@ -5,6 +5,7 @@ import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
+import 'package:sampatti_bazar/core/widgets/contact_bottom_sheet.dart';
 
 class HomeLoanScreen extends ConsumerStatefulWidget {
   const HomeLoanScreen({super.key});
@@ -180,7 +181,7 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
             ),
             child: IconButton(
               icon: Icon(Icons.headset_mic_outlined, color: context.primaryTextColor, size: 20.sp),
-              onPressed: () {},
+              onPressed: () => ContactBottomSheet.show(context),
             ),
           ),
         ],

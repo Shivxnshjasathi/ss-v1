@@ -56,35 +56,31 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     try {
       final position = await LocationService.getCurrentPosition();
       if (position != null) {
-        final addressData = await LocationService.getAddressFromLatLng(
-          position,
-        );
+        final addressData = await LocationService.getAddressFromLatLng(position);
         if (addressData != null) {
           setState(() {
             _locationController.text = addressData['city'] ?? '';
           });
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Location updated successfully!')),
+              SnackBar(content: Text(AppLocalizations.of(context)!.locationUpdated)),
             );
           }
         }
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Could not fetch location. Please check permissions.',
-              ),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.couldNotFetchLocation),
             ),
           );
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error fetching location: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error fetching location: $e')),
+        );
       }
     } finally {
       if (mounted) setState(() => _isFetchingLocation = false);
@@ -133,17 +129,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             showDialog(
               context: context,
               builder: (ctx) => AlertDialog(
-                title: const Text('Authentication Error'),
-                content: const Text(
-                  'No active user session found. Please try logging in again.',
-                ),
+                title: Text(l10n.authError),
+                content: Text(l10n.noActiveSession),
                 actions: [
                   TextButton(
                     onPressed: () {
                       Navigator.of(ctx).pop();
                       context.go('/');
                     },
-                    child: const Text('Go to Login'),
+                    child: Text(l10n.goToLogin),
                   ),
                 ],
               ),
@@ -160,12 +154,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           showDialog(
             context: context,
             builder: (ctx) => AlertDialog(
-              title: const Text('Error Saving Profile'),
+              title: Text(l10n.errorSavingProfile),
               content: Text('Firebase Error: $e'),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(),
-                  child: const Text('Close'),
+                  child: Text(l10n.close),
                 ),
               ],
             ),
@@ -198,259 +192,364 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
     return Scaffold(
       backgroundColor: context.scaffoldColor,
-      appBar: AppBar(
-        backgroundColor: context.scaffoldColor,
-        elevation: 0,
-        title: Text(
-          l10n.completeProfile,
-          style: TextStyle(color: context.primaryTextColor),
+      body: SafeArea(
+        bottom: false,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(24.w, 24.h, 24.w, 120.h),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.welcomeToSampatti,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    fontSize: 32.sp,
+                    color: context.primaryTextColor,
+                    fontFamily: 'Poppins',
+                    letterSpacing: -1,
+                    height: 1.1,
+                  ),
+                ),
+                SizedBox(height: 12.h),
+                Text(
+                  l10n.onboardingSubtitle,
+                  style: TextStyle(
+                    color: context.secondaryTextColor.withValues(alpha: 0.7),
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w500,
+                    height: 1.4,
+                  ),
+                ),
+                SizedBox(height: 40.h),
+
+                _buildTextField(
+                  l10n.fullName,
+                  l10n.namePlaceholder,
+                  TextInputType.name,
+                  controller: _nameController,
+                  validator: (value) =>
+                      value == null || value.isEmpty ? l10n.enterName : null,
+                ),
+                SizedBox(height: 24.h),
+
+                _buildTextField(
+                  l10n.phoneNumber,
+                  l10n.phonePlaceholder,
+                  TextInputType.phone,
+                  controller: _phoneController,
+                  validator: (value) =>
+                      value == null || value.isEmpty ? l10n.enterPhone : null,
+                ),
+                SizedBox(height: 24.h),
+
+                _buildTextField(
+                  l10n.emailAddress,
+                  l10n.emailPlaceholder,
+                  TextInputType.emailAddress,
+                  controller: _emailController,
+                  validator: (value) =>
+                      (value == null || value.isEmpty || !value.contains('@'))
+                          ? l10n.enterValidEmail
+                          : null,
+                ),
+                SizedBox(height: 24.h),
+
+                _buildLocationField(l10n.cityLocation, _locationController, l10n),
+                SizedBox(height: 24.h),
+
+                _buildSelectionBox(
+                  l10n.yourRole,
+                  roles.firstWhere((r) => r['key'] == _selectedRoleKey)['label']!,
+                  roles.map((r) => r['label']!).toList(),
+                  (val) {
+                    final key = roles.firstWhere((r) => r['label'] == val)['key'];
+                    setState(() => _selectedRoleKey = key);
+                  },
+                ),
+              ],
+            ),
+          ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(24.0.w),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                l10n.welcomeToSampatti,
-                style: TextStyle(
-                  fontWeight: FontWeight.w900,
-                  fontSize: 24.sp,
-                  color: context.primaryTextColor,
+      bottomNavigationBar: Container(
+        padding: EdgeInsets.fromLTRB(24.w, 16.h, 24.w, 32.h),
+        decoration: BoxDecoration(
+          color: context.scaffoldColor,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.03),
+              blurRadius: 20,
+              offset: const Offset(0, -10),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          child: SizedBox(
+            width: double.infinity,
+            height: 56.h,
+            child: ElevatedButton(
+              onPressed: _isLoading ? null : _onCompleteSetup,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primaryBlue,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.sp),
                 ),
+                elevation: 0,
               ),
-              SizedBox(height: 8.h),
-              Text(
-                l10n.onboardingSubtitle,
-                style: TextStyle(
-                  color: context.secondaryTextColor,
-                  fontSize: 14.sp,
-                ),
-              ),
-              SizedBox(height: 32.h),
-
-              Text(
-                l10n.fullName,
-                style: TextStyle(
-                  fontSize: 10.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey,
-                ),
-              ),
-              SizedBox(height: 8.h),
-              TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  hintText: 'e.g. Rahul Sharma',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.w),
-                    borderSide: BorderSide(color: context.borderColor),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.w),
-                    borderSide: BorderSide(color: context.borderColor),
-                  ),
-                  filled: true,
-                  fillColor: context.cardColor,
-                ),
-                style: TextStyle(color: context.primaryTextColor),
-                validator: (value) =>
-                    value == null || value.isEmpty ? l10n.enterName : null,
-              ),
-              SizedBox(height: 24.h),
-
-              Text(
-                l10n.phoneNumber,
-                style: TextStyle(
-                  fontSize: 10.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey,
-                ),
-              ),
-              SizedBox(height: 8.h),
-              TextFormField(
-                controller: _phoneController,
-                keyboardType: TextInputType.phone,
-                decoration: InputDecoration(
-                  hintText: 'e.g. +91 9876543210',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.w),
-                    borderSide: BorderSide(color: context.borderColor),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.w),
-                    borderSide: BorderSide(color: context.borderColor),
-                  ),
-                  filled: true,
-                  fillColor: context.cardColor,
-                ),
-                style: TextStyle(color: context.primaryTextColor),
-                validator: (value) =>
-                    value == null || value.isEmpty ? l10n.enterPhone : null,
-              ),
-              SizedBox(height: 24.h),
-
-              Text(
-                l10n.emailAddress,
-                style: TextStyle(
-                  fontSize: 10.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey,
-                ),
-              ),
-              SizedBox(height: 8.h),
-              TextFormField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  hintText: 'e.g. rahul@example.com',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.w),
-                    borderSide: BorderSide(color: context.borderColor),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.w),
-                    borderSide: BorderSide(color: context.borderColor),
-                  ),
-                  filled: true,
-                  fillColor: context.cardColor,
-                ),
-                style: TextStyle(color: context.primaryTextColor),
-                validator: (value) =>
-                    (value == null || value.isEmpty || !value.contains('@'))
-                    ? 'Please enter a valid email'
-                    : null,
-              ),
-              SizedBox(height: 24.h),
-
-              Text(
-                l10n.cityLocation,
-                style: TextStyle(
-                  fontSize: 10.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey,
-                ),
-              ),
-              SizedBox(height: 8.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _locationController,
-                      decoration: InputDecoration(
-                        hintText: 'e.g. Jabalpur',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12.w),
-                          borderSide: BorderSide(color: context.borderColor),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12.w),
-                          borderSide: BorderSide(color: context.borderColor),
-                        ),
-                        filled: true,
-                        fillColor: context.cardColor,
-                      ),
-                      style: TextStyle(color: context.primaryTextColor),
-                      validator: (value) => value == null || value.isEmpty
-                          ? l10n.enterCity
-                          : null,
-                    ),
-                  ),
-                  SizedBox(width: 8.w),
-                  IconButton(
-                    onPressed: _isFetchingLocation ? null : _fetchLocation,
-                    icon: _isFetchingLocation
-                        ? SizedBox(
-                            width: 20.w,
-                            height: 20.h,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : Icon(Icons.my_location, color: Color(0xFF1E60FF)),
-                    tooltip: 'Fetch Current Location',
-                  ),
-                ],
-              ),
-              SizedBox(height: 24.h),
-
-              Text(
-                l10n.yourRole,
-                style: TextStyle(
-                  fontSize: 10.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey,
-                ),
-              ),
-              SizedBox(height: 8.h),
-              DropdownButtonFormField<String>(
-                initialValue: _selectedRoleKey,
-                dropdownColor: context.cardColor,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.w),
-                    borderSide: BorderSide(color: context.borderColor),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.w),
-                    borderSide: BorderSide(color: context.borderColor),
-                  ),
-                  filled: true,
-                  fillColor: context.cardColor,
-                ),
-                items: roles
-                    .map(
-                      (role) => DropdownMenuItem(
-                        value: role['key'],
-                        child: Text(
-                          role['label']!,
-                          style: TextStyle(color: context.primaryTextColor),
-                        ),
+              child: _isLoading
+                  ? SizedBox(
+                      width: 24.w,
+                      height: 24.h,
+                      child: const CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
                       ),
                     )
-                    .toList(),
-                onChanged: (val) {
-                  if (val != null) {
-                    setState(() {
-                      _selectedRoleKey = val;
-                    });
-                  }
-                },
-              ),
-              SizedBox(height: 48.h),
-
-              SizedBox(
-                width: double.infinity,
-                height: 56.h,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _onCompleteSetup,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF1E60FF),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.w),
+                  : Text(
+                      l10n.completeSetup.toUpperCase(),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 14.sp,
+                        letterSpacing: 1.5,
+                        fontFamily: 'Poppins',
+                      ),
                     ),
-                  ),
-                  child: _isLoading
-                      ? SizedBox(
-                          width: 24.w,
-                          height: 24.h,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : Text(
-                          l10n.completeSetup,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w900,
-                            fontSize: 16.sp,
-                            color: Colors.white,
-                          ),
-                        ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField(
+    String labelText,
+    String hintText,
+    TextInputType type, {
+    int maxLines = 1,
+    TextEditingController? controller,
+    String? Function(String?)? validator,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (labelText.isNotEmpty)
+          Text(
+            labelText.toUpperCase(),
+            style: TextStyle(
+              fontWeight: FontWeight.w900,
+              fontSize: 10.sp,
+              color: AppTheme.primaryBlue,
+              letterSpacing: 1.5,
+              fontFamily: 'Poppins',
+            ),
+          ),
+        if (labelText.isNotEmpty) SizedBox(height: 10.h),
+        Container(
+          decoration: BoxDecoration(
+            color: context.surfaceColor,
+            borderRadius: BorderRadius.circular(16.sp),
+            border: Border.all(color: context.borderColor),
+          ),
+          child: TextFormField(
+            controller: controller,
+            maxLines: maxLines,
+            keyboardType: type,
+            validator: validator,
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w700,
+              color: context.primaryTextColor,
+              fontFamily: 'Poppins',
+            ),
+            decoration: InputDecoration(
+              hintText: hintText,
+              hintStyle: TextStyle(
+                color: context.secondaryTextColor.withValues(alpha: 0.5),
+                fontWeight: FontWeight.w500,
+              ),
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 18.w,
+                vertical: 16.h,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLocationField(
+      String label, TextEditingController controller, AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              label.toUpperCase(),
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                fontSize: 10.sp,
+                color: AppTheme.primaryBlue,
+                letterSpacing: 1.5,
+                fontFamily: 'Poppins',
+              ),
+            ),
+            TextButton.icon(
+              onPressed: _isFetchingLocation ? null : _fetchLocation,
+              icon: _isFetchingLocation
+                  ? SizedBox(
+                      height: 14.sp,
+                      width: 14.sp,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppTheme.primaryBlue,
+                      ),
+                    )
+                  : Icon(Icons.my_location, size: 16.sp, color: AppTheme.primaryBlue),
+              label: Text(
+                l10n.useLiveLocation,
+                style: TextStyle(
+                  fontSize: 10.sp,
+                  fontWeight: FontWeight.w900,
+                  color: AppTheme.primaryBlue,
+                  letterSpacing: 1.0,
                 ),
               ),
-            ],
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                backgroundColor: AppTheme.primaryBlue.withValues(alpha: 0.05),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.sp),
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(height: 8.h),
+        _buildTextField(
+          '',
+          l10n.cityPlaceholder,
+          TextInputType.text,
+          controller: controller,
+          validator: (val) => val == null || val.isEmpty ? l10n.enterCity : null,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSelectionBox(
+    String label,
+    String value,
+    List<String> options,
+    Function(String) onChanged,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label.toUpperCase(),
+          style: TextStyle(
+            fontWeight: FontWeight.w900,
+            fontSize: 10.sp,
+            color: AppTheme.primaryBlue,
+            letterSpacing: 1.5,
+            fontFamily: 'Poppins',
           ),
+        ),
+        SizedBox(height: 10.h),
+        GestureDetector(
+          onTap: () => _showSelectionMenu(label, options, value, onChanged),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 16.h),
+            decoration: BoxDecoration(
+              color: context.surfaceColor,
+              borderRadius: BorderRadius.circular(16.sp),
+              border: Border.all(color: context.borderColor),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w700,
+                      color: context.primaryTextColor,
+                      fontFamily: 'Poppins',
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Icon(Icons.keyboard_arrow_down_rounded, color: AppTheme.primaryBlue),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showSelectionMenu(String title, List<String> options,
+      String currentValue, Function(String) onChanged) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: EdgeInsets.all(24.w),
+        decoration: BoxDecoration(
+          color: Theme.of(ctx).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24.w)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(title,
+                style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    fontSize: 18.sp,
+                    fontFamily: 'Poppins')),
+            SizedBox(height: 16.h),
+            Flexible(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: options.length,
+                itemBuilder: (context, index) {
+                  final option = options[index];
+                  final isSelected = option == currentValue;
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(
+                      option,
+                      style: TextStyle(
+                        fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.normal,
+                        fontFamily: 'Poppins',
+                        color: isSelected
+                            ? AppTheme.primaryBlue
+                            : context.primaryTextColor,
+                      ),
+                    ),
+                    trailing: isSelected
+                        ? Icon(Icons.check_circle, color: AppTheme.primaryBlue)
+                        : null,
+                    onTap: () {
+                      onChanged(option);
+                      Navigator.pop(ctx);
+                    },
+                  );
+                },
+              ),
+            ),
+            SizedBox(height: 16.h),
+          ],
         ),
       ),
     );
