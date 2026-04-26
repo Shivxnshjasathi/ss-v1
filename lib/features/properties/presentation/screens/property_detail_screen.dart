@@ -16,6 +16,7 @@ import 'package:sampatti_bazar/features/properties/domain/property_model.dart';
 import 'package:sampatti_bazar/features/chat/data/chat_repository.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
+import 'package:sampatti_bazar/core/widgets/google_map_widget.dart';
 
 class PropertyDetailScreen extends ConsumerWidget {
   final String propertyId;
@@ -405,7 +406,13 @@ class PropertyDetailScreen extends ConsumerWidget {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 32.h),
+                            SizedBox(height: 24.h),
+                            GoogleMapWidget(
+                              latitude: property.latitude,
+                              longitude: property.longitude,
+                              address: '${property.location}, ${property.city}',
+                            ),
+                            SizedBox(height: 24.h),
                             SizedBox(
                               width: double.infinity,
                               child: ElevatedButton.icon(

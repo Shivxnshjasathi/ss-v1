@@ -141,6 +141,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get resendIn => 'Resend in';
 
   @override
+  String get resendOTP => 'Resend OTP';
+
+  @override
+  String get otpVerifiedSuccessfully => 'OTP Verified Successfully';
+
+  @override
   String get completeProfile => 'Complete Your Profile';
 
   @override

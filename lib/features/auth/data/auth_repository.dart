@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sampatti_bazar/core/services/logger_service.dart';
 
@@ -101,6 +102,23 @@ class AuthRepository {
       LoggerService.i('Auth: Password reset email sent successfully');
     } catch (e, st) {
       LoggerService.e('Auth: Error sending password reset email', error: e, stack: st);
+      rethrow;
+    }
+  }
+
+  Future<UserCredential?> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount googleUser = await GoogleSignIn.instance.authenticate();
+      final googleAuth = googleUser.authentication;
+
+      final OAuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: null, // accessToken is not directly available in authentication getter in this version, usually null for ID token auth
+        idToken: googleAuth.idToken,
+      );
+
+      return await _auth.signInWithCredential(credential);
+    } catch (e, st) {
+      LoggerService.e('Auth: Error during Google sign in: $e', error: e, stack: st);
       rethrow;
     }
   }

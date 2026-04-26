@@ -38,6 +38,8 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
   int _currentStep = 1;
   bool _isSubmitting = false;
   bool _isFetchingLocation = false;
+  double? _latitude;
+  double? _longitude;
 
   final List<File> _selectedImages = [];
 
@@ -98,6 +100,8 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
         final addressData = await LocationService.getAddressFromLatLng(position);
         if (addressData != null) {
           setState(() {
+            _latitude = position.latitude;
+            _longitude = position.longitude;
             _cityController.text = addressData['city'] ?? '';
             _localityController.text = addressData['locality'] ?? '';
           });
@@ -184,6 +188,8 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
             createdAt: DateTime.now(),
             builtIn: int.tryParse(_builtInController.text),
             lotSizeSqFt: double.tryParse(_lotSizeController.text),
+            latitude: _latitude,
+            longitude: _longitude,
           );
 
           await ref.read(propertyRepositoryProvider).addProperty(property, _selectedImages);

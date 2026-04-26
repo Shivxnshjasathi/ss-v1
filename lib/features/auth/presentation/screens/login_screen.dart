@@ -321,6 +321,48 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
+  void _onGoogleSignIn() async {
+    setState(() {
+      _isLoading = true;
+    });
+    LoggerService.i('Attempting Google Sign In');
+    try {
+      final credential = await ref.read(authRepositoryProvider).signInWithGoogle();
+      if (credential != null && mounted) {
+        final userRepo = ref.read(userRepositoryProvider);
+        final userProfile = await userRepo.getUser(credential.user!.uid);
+        if (!mounted) return;
+
+        if (userProfile == null) {
+          LoggerService.i('Google User profile not found, navigating to onboarding');
+          context.go('/onboarding');
+        } else {
+          LoggerService.i('Google User profile found, navigating to home');
+          RoutingUtils.navigateByRole(context, userProfile.role);
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
+    } catch (e) {
+      LoggerService.e('Google Sign-In Error: $e', error: e);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Google Sign-In failed: $e')),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -621,6 +663,32 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               color: context.secondaryTextColor,
                               fontSize: 12.sp,
                             ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 16.h),
+                      Center(
+                        child: OutlinedButton.icon(
+                          onPressed: _isLoading ? null : _onGoogleSignIn,
+                          icon: Icon(
+                            Icons.g_mobiledata,
+                            size: 24.w,
+                            color: Colors.red,
+                          ),
+                          label: Text(
+                            'Sign in with Google',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              color: context.primaryTextColor,
+                              fontSize: 12.sp,
+                            ),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.w),
+                            ),
+                            side: BorderSide(color: context.borderColor),
                           ),
                         ),
                       ),

@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -21,6 +23,32 @@ class OtpScreen extends ConsumerStatefulWidget {
 class _OtpScreenState extends ConsumerState<OtpScreen> {
   String _otpCode = '';
   bool _isLoading = false;
+  int _timerSeconds = 45;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startTimer();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _startTimer() {
+    _timer?.cancel();
+    setState(() => _timerSeconds = 45);
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_timerSeconds == 0) {
+        setState(() => timer.cancel());
+      } else {
+        setState(() => _timerSeconds--);
+      }
+    });
+  }
 
   Future<void> _onVerify() async {
     LoggerService.i('Triggered OTP verification for: ${widget.phoneNumber}');
@@ -48,8 +76,6 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
             RoutingUtils.navigateByRole(context, userDoc.role);
           }
         }
-      } else {
-        LoggerService.e('UserCredential user is null after verification');
       }
     } catch (e, stackTrace) {
       LoggerService.e('Error during OTP verification', error: e, stack: stackTrace);
@@ -57,6 +83,38 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
         setState(() { _isLoading = false; });
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Invalid OTP or error occurred: $e')));
       }
+    }
+  }
+
+  Future<void> _onResend() async {
+    if (_timerSeconds > 0) return;
+    
+    setState(() => _isLoading = true);
+    try {
+      await ref.read(authRepositoryProvider).verifyPhoneNumber(
+        phoneNumber: '+91${widget.phoneNumber}',
+        verificationCompleted: (cred) async {
+           await FirebaseAuth.instance.signInWithCredential(cred);
+        },
+        verificationFailed: (e) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message ?? 'Resend failed')));
+          }
+        },
+        codeSent: (verificationId) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('OTP Resent Successfully')));
+            _startTimer();
+          }
+        },
+        codeAutoRetrievalTimeout: (id) {},
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -140,13 +198,24 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                   SizedBox(height: 32.h),
                   
                   Center(
-                    child: Text.rich(
-                      TextSpan(
-                        text: l10n.didntReceiveCode,
-                        style: TextStyle(fontSize: 12.sp, color: context.primaryTextColor.withValues(alpha: 0.6), fontWeight: FontWeight.bold),
-                        children: [
-                          TextSpan(text: '${l10n.resendIn} 00:45', style: const TextStyle(color: Color(0xFF1E60FF), fontWeight: FontWeight.bold)),
-                        ],
+                    child: GestureDetector(
+                      onTap: _timerSeconds == 0 ? _onResend : null,
+                      child: Text.rich(
+                        TextSpan(
+                          text: l10n.didntReceiveCode,
+                          style: TextStyle(fontSize: 12.sp, color: context.primaryTextColor.withValues(alpha: 0.6), fontWeight: FontWeight.bold),
+                          children: [
+                            TextSpan(
+                              text: _timerSeconds > 0 
+                                ? ' ${l10n.resendIn} 00:${_timerSeconds.toString().padLeft(2, '0')}'
+                                : ' ${l10n.resendOTP}', 
+                              style: TextStyle(
+                                color: _timerSeconds > 0 ? Colors.grey : const Color(0xFF1E60FF), 
+                                fontWeight: FontWeight.bold
+                              )
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -166,7 +235,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     String digit = hasValue ? _otpCode[index] : '';
 
     return Container(
-      width: 44.w, // Slightly smaller for better fit on narrow screens
+      width: 44.w, 
       height: 56.h,
       alignment: Alignment.center,
       decoration: BoxDecoration(

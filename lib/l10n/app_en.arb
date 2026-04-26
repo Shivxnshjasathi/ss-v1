@@ -47,6 +47,8 @@
   "otpEntryHint": "Enter the 6-digit code sent to",
   "didntReceiveCode": "Didn't receive code? ",
   "resendIn": "Resend in",
+  "resendOTP": "Resend OTP",
+  "otpVerifiedSuccessfully": "OTP Verified Successfully",
   "completeProfile": "Complete Your Profile",
   "welcomeToSampatti": "Welcome to Sampatti Bazar!",
   "onboardingSubtitle": "Tell us a bit about yourself to personalize your experience.",

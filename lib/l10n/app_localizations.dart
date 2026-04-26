@@ -362,6 +362,18 @@ abstract class AppLocalizations {
   /// **'Resend in'**
   String get resendIn;
 
+  /// No description provided for @resendOTP.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend OTP'**
+  String get resendOTP;
+
+  /// No description provided for @otpVerifiedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'OTP Verified Successfully'**
+  String get otpVerifiedSuccessfully;
+
   /// No description provided for @completeProfile.
   ///
   /// In en, this message translates to:

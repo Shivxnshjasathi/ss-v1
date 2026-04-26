@@ -12,7 +12,20 @@
           "package_name": "com.sampattibazar.sampatti_bazar"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "987957373561-gccdr2h7c9m863bgf5j7eii48e3s9554.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.sampattibazar.sampatti_bazar",
+            "certificate_hash": "fde8d465e4d90a48e2f15ca70538b675de543881"
+          }
+        },
+        {
+          "client_id": "987957373561-166rstgm0sr92vu36evpqe5j80qgdkuq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDxBbtJh5KO4cLgMTy652YU8cL-rRPbXB8"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "987957373561-166rstgm0sr92vu36evpqe5j80qgdkuq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "987957373561-sommhpi7fe13b1j6ufml078lvb4rq5mo.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.sampattibazar.sampattiBazar"
+              }
+            }
+          ]
         }
       }
     }

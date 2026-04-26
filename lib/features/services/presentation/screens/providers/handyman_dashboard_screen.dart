@@ -11,6 +11,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:sampatti_bazar/features/services/domain/service_request_model.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:sampatti_bazar/core/widgets/google_map_widget.dart';
 
 class HandymanDashboardScreen extends ConsumerStatefulWidget {
   const HandymanDashboardScreen({super.key});
@@ -83,8 +84,18 @@ class _HandymanDashboardScreenState extends ConsumerState<HandymanDashboardScree
                 );
               }),
               
-              if (lead.location != null && lead.location!.isNotEmpty)
+              if (lead.location != null && lead.location!.isNotEmpty) ...[
                 _buildReadOnlyForm(context, 'LOCATION', lead.location!),
+                SizedBox(height: 16.h),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16.sp),
+                  child: GoogleMapWidget(
+                    latitude: lead.latitude,
+                    longitude: lead.longitude,
+                    address: lead.location!,
+                  ),
+                ),
+              ],
                 
               SizedBox(height: 20.h),
               _buildStatusPicker(context, lead),

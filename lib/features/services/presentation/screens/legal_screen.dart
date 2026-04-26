@@ -13,7 +13,6 @@ import 'package:sampatti_bazar/features/services/data/service_request_repository
 import 'package:sampatti_bazar/features/services/domain/service_request_model.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
-import 'package:sampatti_bazar/core/widgets/contact_bottom_sheet.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sampatti_bazar/core/services/location_service.dart';
 
@@ -816,22 +815,21 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
                 padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
                 backgroundColor: AppTheme.primaryBlue.withValues(alpha: 0.05),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.sp),
+                  borderRadius: BorderRadius.circular(10.w),
                 ),
               ),
             ),
           ],
         ),
         SizedBox(height: 8.h),
-        _buildTextFieldWidget(_addressController, '', hint: 'e.g., Plot No. 45, Vijay Nagar, Jabalpur', icon: Icons.location_on_outlined, maxLines: 3, validator: (val) => Validators.required(val, l10n.propertyAddress, l10n)),
+        _buildTextFieldWidget(_addressController, '', hint: 'Flat No, Apartment Name, Area, City', icon: Icons.location_on_outlined, validator: (val) => Validators.required(val, l10n.propertyAddress, l10n)),
         Row(
           children: [
-            Expanded(child: _buildTextFieldWidget(_rentController, l10n.monthlyRent, hint: 'e.g., 15000', keyboardType: TextInputType.number, icon: Icons.currency_rupee, validator: (val) => Validators.number(val, l10n.monthlyRent, l10n))),
+            Expanded(child: _buildTextFieldWidget(_rentController, l10n.monthlyRent, hint: '5000', icon: Icons.currency_rupee, keyboardType: TextInputType.number, validator: (val) => Validators.required(val, l10n.monthlyRent, l10n))),
             SizedBox(width: 16.w),
-            Expanded(child: _buildTextFieldWidget(_depositController, l10n.depositLabel, hint: 'e.g., 30000', keyboardType: TextInputType.number, icon: Icons.account_balance_wallet_outlined, validator: (val) => Validators.number(val, l10n.depositLabel, l10n))),
+            Expanded(child: _buildTextFieldWidget(_depositController, l10n.depositLabel, hint: '15000', icon: Icons.security, keyboardType: TextInputType.number, validator: (val) => Validators.required(val, l10n.depositLabel, l10n))),
           ],
         ),
-        SizedBox(height: 32.h),
       ],
     );
   }
@@ -840,134 +838,203 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.ekycVerification, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 28.sp, letterSpacing: -1.0)),
+        Text(l10n.ekycVerification, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24.sp, letterSpacing: -0.5)),
         SizedBox(height: 8.h),
-        Text(l10n.verifyIdentitiesSubtitle, style: TextStyle(color: context.secondaryTextColor, fontSize: 13.sp, height: 1.5.h, fontWeight: FontWeight.w500)),
+        Text(l10n.verifyIdentitiesSubtitle, style: TextStyle(color: context.secondaryTextColor, fontSize: 13.sp, height: 1.5.h)),
         SizedBox(height: 32.h),
-        _buildVerificationCard(l10n.landlordKyc, _lessorController.text, _isLandlordVerified, l10n, onTap: () {
-          if (!_isLandlordVerified) _showEkycBottomSheet();
-        }),
+        _buildKycCard(l10n.landlordKyc, _isLandlordVerified, () => _showEkycBottomSheet()),
         SizedBox(height: 16.h),
-        _buildVerificationCard('${l10n.tenantKyc}\n(${_lesseeEmailController.text})', _lesseeController.text, false, l10n),
+        _buildKycCard(l10n.tenantKyc, false, null, isLocked: true),
+        SizedBox(height: 32.h),
+        Container(
+          padding: EdgeInsets.all(16.w),
+          decoration: BoxDecoration(color: Colors.amber.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12.w), border: Border.all(color: Colors.amber.withValues(alpha: 0.3))),
+          child: Row(
+            children: [
+              Icon(Icons.info_outline, color: Colors.amber.shade900, size: 20.sp),
+              SizedBox(width: 12.w),
+              Expanded(child: Text('Tenant KYC will be completed via the link sent to their email after you generate the draft.', style: TextStyle(fontSize: 12.sp, color: Colors.amber.shade900, fontWeight: FontWeight.bold))),
+            ],
+          ),
+        ),
       ],
     );
   }
 
   Widget _buildSignStep(AppLocalizations l10n) {
+    final user = ref.read(currentUserDataProvider).value;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.rentAgreement, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 28.sp, letterSpacing: -1.0)),
-        SizedBox(height: 4.h),
-        Text(l10n.leaseForProperty(_generatedAgreementId ?? 'AGR-DRAFT'), style: TextStyle(color: context.secondaryTextColor, fontSize: 12.sp, fontWeight: FontWeight.w600)),
-        SizedBox(height: 24.h),
-        Container(
-          padding: EdgeInsets.all(16.sp),
-          decoration: BoxDecoration(color: AppTheme.primaryBlue.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(12.sp), border: Border.all(color: AppTheme.primaryBlue.withValues(alpha: 0.1))),
-          child: Row(
-            children: [
-               Container(padding: EdgeInsets.all(8.sp), decoration: BoxDecoration(color: context.scaffoldColor, borderRadius: BorderRadius.circular(8.sp)), child: Icon(Icons.verified_user_outlined, color: context.primaryTextColor, size: 20.sp)),
-               SizedBox(width: 12.w),
-               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                 Text(l10n.digitalVerification, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12.sp, letterSpacing: -0.2)),
-                 SizedBox(height: 2.h),
-                 Text(l10n.estampedSeries, style: TextStyle(fontSize: 9.sp, color: context.secondaryTextColor, fontWeight: FontWeight.w800, letterSpacing: 0.5))
-               ]),
-            ],
-          ),
-        ),
-        SizedBox(height: 32.h),
         Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(l10n.lessorLabel, style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w900, color: context.secondaryTextColor, letterSpacing: 0.5)), 
-              SizedBox(height: 8.h), 
-              Text(_lessorController.text, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15.sp, letterSpacing: -0.3))
-            ])),
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(l10n.lesseeLabel, style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w900, color: context.secondaryTextColor, letterSpacing: 0.5)), 
-              SizedBox(height: 8.h), 
-              Text(_lesseeController.text, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15.sp, letterSpacing: -0.3))
-            ])),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l10n.digitalVerification, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24.sp, letterSpacing: -0.5)),
+                SizedBox(height: 4.h),
+                Text(l10n.estampedSeries, style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 11.sp, letterSpacing: 1)),
+              ],
+            ),
+            Container(padding: EdgeInsets.all(8.w), decoration: BoxDecoration(color: Colors.green.withValues(alpha: 0.1), shape: BoxShape.circle), child: Icon(Icons.verified_user, color: Colors.green, size: 24.sp)),
           ],
         ),
         SizedBox(height: 32.h),
-        _buildClause('01', l10n.premisesTerm, 'The Lessor hereby leases to the Lessee the residential apartment located at ${_addressController.text} for a period of 11 months starting June 1, 2024.'),
-        _buildClause('02', l10n.monthlyRentClause, 'The Lessee shall pay a monthly rent of ₹${_rentController.text} on or before the 5th of every calendar month via bank transfer.'),
-        _buildClause('03', l10n.securityDepositClause, 'An interest-free refundable security deposit of ₹${_depositController.text} has been paid. This shall be returned upon peaceful possession handover.'),
-        _buildClause('04', l10n.noticePeriod, 'Both parties agree to a mandatory 2-month notice period prior to early termination by either party.'),
-        Container(
-          padding: EdgeInsets.all(16.w),
-          decoration: BoxDecoration(color: context.cardColor, borderRadius: BorderRadius.circular(12.w), border: Border.all(color: context.borderColor)),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        _buildDocumentPreview(l10n),
+        SizedBox(height: 32.h),
+        _buildSignatoryRow(l10n.lessorLabel, user?.name ?? _lessorController.text, true),
+        SizedBox(height: 16.h),
+        _buildSignatoryRow(l10n.lesseeLabel, _lesseeController.text, false),
+      ],
+    );
+  }
+
+  Widget _buildDocumentPreview(AppLocalizations l10n) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(24.w),
+      decoration: BoxDecoration(color: context.cardColor, borderRadius: BorderRadius.circular(16.w), border: Border.all(color: context.borderColor), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 10, offset: const Offset(0, 4))]),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(Icons.info_outline, size: 16.w, color: Colors.grey),
-              SizedBox(width: 8.w),
-              Expanded(child: Text(l10n.legalDisclaimer, style: TextStyle(fontSize: 10.sp, color: context.secondaryTextColor, height: 1.5.h, fontWeight: FontWeight.w500))),
+              Text('RESIDENTIAL LEASE', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp, letterSpacing: 1)),
+              Icon(Icons.description_outlined, color: AppTheme.primaryBlue, size: 20.sp),
             ],
           ),
-        ),
-        SizedBox(height: 24.h),
-        Center(
-          child: TextButton.icon(
-            onPressed: () {},
-            icon: Icon(Icons.chevron_right, size: 16.sp, color: AppTheme.primaryBlue),
-            label: Text(l10n.viewDocumentDetails, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13.sp, color: AppTheme.primaryBlue)),
+          Divider(height: 32.h),
+          _buildPreviewRow(l10n.lessorLabel, _lessorController.text),
+          _buildPreviewRow(l10n.lesseeLabel, _lesseeController.text),
+          _buildPreviewRow(l10n.monthlyRent, '₹${_rentController.text}'),
+          _buildPreviewRow(l10n.securityDeposit, '₹${_depositController.text}'),
+          SizedBox(height: 16.h),
+          Text(l10n.legalDisclaimer, style: TextStyle(fontSize: 10.sp, color: context.secondaryTextColor, fontStyle: FontStyle.italic)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPreviewRow(String label, String value) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 12.h),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: TextStyle(color: context.secondaryTextColor, fontSize: 12.sp, fontWeight: FontWeight.bold)),
+          Text(value, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12.sp)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSignatoryRow(String role, String name, bool isUser) {
+    return Container(
+      padding: EdgeInsets.all(16.w),
+      decoration: BoxDecoration(color: context.cardColor, borderRadius: BorderRadius.circular(12.w), border: Border.all(color: context.borderColor)),
+      child: Row(
+        children: [
+          Container(width: 40.w, height: 40.w, decoration: BoxDecoration(color: AppTheme.primaryBlue.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8.w)), child: Icon(Icons.person, color: AppTheme.primaryBlue, size: 20.sp)),
+          SizedBox(width: 16.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(role.toUpperCase(), style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.w900, color: AppTheme.primaryBlue, letterSpacing: 1)),
+                Text(name, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp)),
+              ],
+            ),
           ),
+          if (isUser)
+            TextButton(
+              onPressed: () => _showSignatureDialog(),
+              child: Text('SIGN NOW', style: TextStyle(fontWeight: FontWeight.w900, color: AppTheme.primaryBlue, fontSize: 12.sp)),
+            )
+          else
+            Container(padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h), decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(4.w)), child: Text('PENDING', style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.w900, color: Colors.grey))),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildKycCard(String title, bool isVerified, VoidCallback? onTap, {bool isLocked = false}) {
+    return GestureDetector(
+      onTap: isLocked ? null : onTap,
+      child: Container(
+        padding: EdgeInsets.all(20.w),
+        decoration: BoxDecoration(color: context.cardColor, borderRadius: BorderRadius.circular(16.w), border: Border.all(color: isVerified ? Colors.green.withValues(alpha: 0.5) : context.borderColor, width: isVerified ? 2 : 1)),
+        child: Row(
+          children: [
+            Container(width: 48.w, height: 48.w, decoration: BoxDecoration(color: isVerified ? Colors.green.withValues(alpha: 0.1) : (isLocked ? Colors.grey.withValues(alpha: 0.1) : AppTheme.primaryBlue.withValues(alpha: 0.1)), shape: BoxShape.circle), child: Icon(isVerified ? Icons.check : (isLocked ? Icons.lock_outline : Icons.fingerprint), color: isVerified ? Colors.green : (isLocked ? Colors.grey : AppTheme.primaryBlue), size: 24.sp)),
+            SizedBox(width: 16.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 15.sp)),
+                  Text(isVerified ? 'Identity Verified' : (isLocked ? 'Pending Action' : 'Tap to Verify Identity'), style: TextStyle(color: isVerified ? Colors.green : context.secondaryTextColor, fontSize: 12.sp, fontWeight: FontWeight.bold)),
+                ],
+              ),
+            ),
+            if (!isVerified && !isLocked) Icon(Icons.arrow_forward_ios, size: 14.sp, color: Colors.grey),
+          ],
         ),
-        SizedBox(height: 32.h),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildTextFieldWidget(TextEditingController controller, String label, {String? hint, IconData? icon, TextInputType keyboardType = TextInputType.text, String? Function(String?)? validator}) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 20.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (label.isNotEmpty) ...[
+            Text(label.toUpperCase(), style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w900, color: context.secondaryTextColor.withValues(alpha: 0.6), letterSpacing: 1.5)),
+            SizedBox(height: 8.h),
+          ],
+          Container(
+            decoration: BoxDecoration(color: context.cardColor, borderRadius: BorderRadius.circular(12.w), border: Border.all(color: context.borderColor)),
+            child: TextFormField(
+              controller: controller,
+              keyboardType: keyboardType,
+              validator: validator,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
+              decoration: InputDecoration(hintText: hint, hintStyle: TextStyle(color: Colors.grey.shade400, fontWeight: FontWeight.normal), prefixIcon: icon != null ? Icon(icon, color: AppTheme.primaryBlue, size: 20.sp) : null, border: InputBorder.none, contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h)),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildRentAgreementNav(AppLocalizations l10n) {
     return Container(
       padding: EdgeInsets.fromLTRB(24.w, 16.h, 24.w, 32.h),
-      decoration: BoxDecoration(
-        color: context.scaffoldColor, 
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 20, offset: const Offset(0, -10))],
-      ),
+      decoration: BoxDecoration(color: context.scaffoldColor, boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 20, offset: const Offset(0, -10))]),
       child: SafeArea(
         top: false,
         child: Row(
           children: [
-            if (_currentStep == 2)
+            if (_currentStep > 0) ...[
               Expanded(
                 flex: 1,
-                child: SizedBox(
-                  height: 54.h,
-                  child: OutlinedButton.icon(
-                    onPressed: () {
-                      if (_generatedAgreementId != null) {
-                        final link = 'https://sampatti.app/services/legal/sign/$_generatedAgreementId';
-                        Share.share('Please sign our Rent Agreement via this secure link: $link');
-                      }
-                    },
-                    icon: Icon(Icons.ios_share, size: 18.sp, color: context.primaryTextColor),
-                    label: Text('Share Link', style: TextStyle(color: context.primaryTextColor, fontSize: 13.sp, fontWeight: FontWeight.w900)),
-                    style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.sp)), side: BorderSide(color: context.borderColor)),
-                  ),
+                child: OutlinedButton(
+                  onPressed: _prevStep,
+                  style: OutlinedButton.styleFrom(padding: EdgeInsets.symmetric(vertical: 16.h), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.w)), side: BorderSide(color: context.borderColor)),
+                  child: Text(l10n.back.toUpperCase(), style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 13.sp, letterSpacing: 1)),
                 ),
               ),
-            if (_currentStep == 2) SizedBox(width: 16.w),
+              SizedBox(width: 16.w),
+            ],
             Expanded(
               flex: 2,
-              child: SizedBox(
-                height: 54.h,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_currentStep == 0) {
-                      _nextStep();
-                    } else if (_currentStep == 1) {
-                      _generateAgreement();
-                    } else if (_currentStep == 2) {
-                      _showSignatureDialog();
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryBlue, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.sp)), elevation: 0),
-                  child: Text(_currentStep == 0 ? l10n.nextVerification : (_currentStep == 1 ? l10n.generateAgreement : 'Self-Sign Natively'), style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
-                ),
+              child: ElevatedButton(
+                onPressed: _currentStep == 1 ? (_isLandlordVerified ? _generateAgreement : null) : _nextStep,
+                style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryBlue, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.w)), elevation: 0, padding: EdgeInsets.symmetric(vertical: 16.h)),
+                child: Text((_currentStep == 1 ? l10n.generateAgreement : l10n.continueText).toUpperCase(), style: TextStyle(fontWeight: FontWeight.w900, color: Colors.white, fontSize: 13.sp, letterSpacing: 1)),
               ),
             ),
           ],
@@ -982,53 +1049,17 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
       key: const ValueKey('consult_lawyer'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.legalCounsel, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 28.sp, letterSpacing: -1.0)),
+        Text(l10n.legalCounsel, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24.sp, letterSpacing: -0.5)),
         SizedBox(height: 8.h),
-        Text(l10n.legalCounselSubtitle, style: TextStyle(color: context.secondaryTextColor, fontSize: 13.sp, height: 1.5.h, fontWeight: FontWeight.w500)),
+        Text(l10n.legalCounselSubtitle, style: TextStyle(color: context.secondaryTextColor, fontSize: 13.sp, height: 1.5.h)),
         SizedBox(height: 32.h),
-        
-        Container(
-          padding: EdgeInsets.all(16.w),
-          decoration: BoxDecoration(color: Colors.red.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(12.w), border: Border.all(color: Colors.red.withValues(alpha: 0.2))),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(Icons.warning_amber_rounded, color: Colors.red, size: 20.w),
-              SizedBox(width: 12.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(l10n.disclaimer, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11.sp, color: Colors.red, letterSpacing: 0.5)),
-                    SizedBox(height: 4.h),
-                    Text(l10n.attorneyDisclaimer, style: TextStyle(fontSize: 10.sp, color: context.primaryTextColor, height: 1.5.h, fontWeight: FontWeight.w500)),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(height: 32.h),
-
-        _buildTextFieldWidget(_fullNameController, l10n.fullName, hint: 'e.g., Rajesh Kumar', icon: Icons.person_outline, validator: (val) => Validators.required(val, l10n.fullName, l10n)),
-        _buildTextFieldWidget(_phoneController, l10n.phoneNumber, hint: '98XXXXXXXX', keyboardType: TextInputType.phone, icon: Icons.phone_outlined, validator: (val) => Validators.phone(val, l10n)),
-        _buildTextFieldWidget(_cityController, l10n.cityRegion, hint: 'e.g., Jabalpur, MP', icon: Icons.location_city_outlined, validator: (val) => Validators.required(val, l10n.cityRegion, l10n)),
-        _buildTextFieldWidget(_propIdController, l10n.propertyIdAny, hint: 'e.g., SB-1234 (If any)', icon: Icons.home_work_outlined),
-        _buildDropdownField(l10n.legalRequirement, _legalReq, [l10n.buyingProperty, l10n.legalDispute, l10n.propertyVerification, l10n.other], (val) => setState(() => _legalReq = val)),
-        TextFormField(
-          controller: _consultDescriptionController,
-          maxLines: 5,
-          decoration: InputDecoration(
-            hintText: 'e.g., I need assistance with property title verification and document review...',
-            hintStyle: TextStyle(color: context.secondaryTextColor.withValues(alpha: 0.5), fontSize: 13.sp),
-            filled: true,
-            fillColor: AppTheme.primaryBlue.withValues(alpha: 0.05),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.w), borderSide: BorderSide.none),
-            contentPadding: EdgeInsets.all(16.w),
-          ),
-          validator: (val) => Validators.required(val, l10n.expertsSubtitle, l10n),
-        ),
-        SizedBox(height: 32.h),
+        _buildTextFieldWidget(_fullNameController, l10n.fullName, hint: 'e.g., Rajesh Kumar', icon: Icons.person_outline),
+        _buildTextFieldWidget(_phoneController, l10n.phoneNumber, hint: '+91 98765 43210', icon: Icons.phone_android, keyboardType: TextInputType.phone),
+        _buildTextFieldWidget(_cityController, l10n.cityRegion, hint: 'e.g., Jabalpur, MP', icon: Icons.map_outlined),
+        _buildDropdownWidget(l10n.legalRequirement, _legalReq, ['Buying Property', 'Property Dispute', 'Rental Issue', 'Other'], (val) => setState(() => _legalReq = val!)),
+        _buildTextFieldWidget(_consultDescriptionController, l10n.detailedQuery, hint: l10n.queryHint, icon: Icons.chat_bubble_outline),
+        SizedBox(height: 16.h),
+        _buildInfoBox(l10n.disclaimer, l10n.attorneyDisclaimer),
       ],
     );
   }
@@ -1039,347 +1070,61 @@ class _LegalScreenState extends ConsumerState<LegalScreen> {
       key: const ValueKey('property_verification'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(l10n.propertyAudit, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 28.sp, letterSpacing: -1.0)),
-            Container(
-              padding: EdgeInsets.all(8.sp),
-              decoration: BoxDecoration(color: AppTheme.primaryBlue.withValues(alpha: 0.1), shape: BoxShape.circle),
-              child: Icon(Icons.verified_user_outlined, color: AppTheme.primaryBlue, size: 20.sp),
-            )
-          ],
-        ),
+        Text(l10n.propertyAudit, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24.sp, letterSpacing: -0.5)),
         SizedBox(height: 8.h),
-        Text(l10n.propertyAuditSubtitle, style: TextStyle(color: context.secondaryTextColor, fontSize: 13.sp, height: 1.5.h, fontWeight: FontWeight.w500)),
+        Text(l10n.propertyAuditSubtitle, style: TextStyle(color: context.secondaryTextColor, fontSize: 13.sp, height: 1.5.h)),
         SizedBox(height: 32.h),
-
-        Container(
-          padding: EdgeInsets.all(16.w),
-          decoration: BoxDecoration(color: context.cardColor, borderRadius: BorderRadius.circular(12.w), border: Border.all(color: context.borderColor)),
-          child: Row(
-            children: [
-               Icon(Icons.shield, color: AppTheme.primaryBlue, size: 18.w),
-               SizedBox(width: 12.w),
-               Expanded(child: Text(l10n.verificationEnsures, style: TextStyle(color: context.primaryTextColor, fontSize: 11.sp, fontWeight: FontWeight.w600, height: 1.5.h))),
-            ],
-          ),
-        ),
-        SizedBox(height: 32.h),
-
-        _buildTextFieldWidget(_propIdController, l10n.propertyIdOptional, hint: 'e.g., MP-14-1234', icon: Icons.home_work_outlined),
-        _buildTextFieldWidget(_propLocationController, l10n.exactLocality, hint: 'e.g., Flat 4B, Emerald Heights', icon: Icons.location_on_outlined, validator: (val) => Validators.required(val, l10n.exactLocality, l10n)),
-        _buildDropdownField(l10n.typeOfAsset, _assetType, [l10n.apartment, l10n.villaRowHouse, l10n.commercialOffice, 'Plot / Land'], (val) => setState(() => _assetType = val)),
-        SizedBox(height: 24.h),
-        
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.symmetric(vertical: 24.h, horizontal: 16.w),
-          decoration: BoxDecoration(
-             color: context.cardColor,
-             border: Border.all(color: context.borderColor),
-             borderRadius: BorderRadius.circular(12.sp),
-          ),
-          child: Column(
-            children: [
-              Container(padding: EdgeInsets.all(12.sp), decoration: BoxDecoration(color: context.scaffoldColor, shape: BoxShape.circle, border: Border.all(color: context.borderColor)), child: Icon(Icons.cloud_upload_outlined, color: AppTheme.primaryBlue, size: 24.sp)),
-              SizedBox(height: 16.h),
-              Text(l10n.attachDocs, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp)),
-              SizedBox(height: 6.h),
-              Text(l10n.attachDocsSubtitle, textAlign: TextAlign.center, style: TextStyle(fontSize: 11.sp, color: context.secondaryTextColor, fontWeight: FontWeight.w500)),
-            ],
-          ),
-        ),
-        SizedBox(height: 32.h),
-      ],
-    );
-  }
-
-  // --- Core Shared Builders ---
-
-  Widget _buildTextFieldWidget(
-    TextEditingController controller,
-    String label, {
-    String? hint,
-    IconData? icon,
-    String? Function(String?)? validator,
-    TextInputType? keyboardType,
-    int maxLines = 1,
-    int? maxLength,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label.toUpperCase(),
-          style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w900, color: context.secondaryTextColor, letterSpacing: 1.0),
-        ),
-        SizedBox(height: 8.h),
-        TextFormField(
-          controller: controller,
-          keyboardType: keyboardType,
-          maxLines: maxLines,
-          maxLength: maxLength,
-          validator: validator,
-          style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600, color: context.primaryTextColor),
-          decoration: InputDecoration(
-            hintText: hint,
-            hintStyle: TextStyle(color: context.secondaryTextColor.withValues(alpha: 0.3), fontSize: 13.sp),
-            prefixIcon: icon != null ? Icon(icon, color: AppTheme.primaryBlue.withValues(alpha: 0.4), size: 20.sp) : null,
-            filled: true,
-            fillColor: context.cardColor,
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12.sp), borderSide: BorderSide(color: context.borderColor)),
-            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12.sp), borderSide: BorderSide(color: context.borderColor)),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12.sp), borderSide: BorderSide(color: AppTheme.primaryBlue, width: 1.5)),
-            contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-          ),
-        ),
+        _buildTextFieldWidget(_propIdController, l10n.propertyIdOptional, hint: 'e.g., RERA-123456', icon: Icons.tag),
+        _buildTextFieldWidget(_propLocationController, l10n.exactLocality, hint: 'e.g., Vijay Nagar, Jabalpur', icon: Icons.location_on_outlined),
+        _buildDropdownWidget(l10n.typeOfAsset, _assetType, ['Apartment', 'Villa / Row House', 'Plot', 'Commercial Office'], (val) => setState(() => _assetType = val!)),
         SizedBox(height: 16.h),
+        _buildInfoBox(l10n.verificationEnsures, l10n.verificationEnsures),
       ],
     );
   }
 
-  Widget _buildDropdownField(String label, String value, List<String> options, Function(String) onChanged) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11.sp, color: context.secondaryTextColor, letterSpacing: 0.5)),
-        SizedBox(height: 8.h),
-        GestureDetector(
-          onTap: () => _showSelectionMenu(label, options, value, onChanged),
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-            decoration: BoxDecoration(
-              color: context.cardColor,
-              borderRadius: BorderRadius.circular(12.sp),
-              border: Border.all(color: context.borderColor),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.02),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(child: Text(value, style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w600, color: context.primaryTextColor), overflow: TextOverflow.ellipsis)),
-                Icon(Icons.arrow_drop_down, color: Colors.grey, size: 24.sp),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  void _showSelectionMenu(String title, List<String> options, String currentValue, Function(String) onChanged) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) => Container(
-        padding: EdgeInsets.all(24.w),
-        decoration: BoxDecoration(
-          color: Theme.of(ctx).scaffoldBackgroundColor,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24.w)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18.sp)),
-            SizedBox(height: 16.h),
-            Flexible(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: options.length,
-                itemBuilder: (context, index) {
-                  final option = options[index];
-                  bool isSelected = option == currentValue;
-                  return ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(
-                      option,
-                      style: TextStyle(
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                        color: isSelected ? AppTheme.primaryBlue : context.primaryTextColor,
-                      ),
-                    ),
-                    trailing: isSelected ? Icon(Icons.check_circle, color: AppTheme.primaryBlue) : null,
-                    onTap: () {
-                      onChanged(option);
-                      Navigator.pop(ctx);
-                    },
-                  );
-                },
-              ),
-            ),
-            SizedBox(height: 16.h),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildVerificationCard(String role, String name, bool isVerified, AppLocalizations l10n, {VoidCallback? onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.all(18.sp),
-        decoration: BoxDecoration(
-          color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.08) : context.cardColor,
-          border: Border.all(
-            color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.2) : context.borderColor,
-          ),
-          borderRadius: BorderRadius.circular(20.sp),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: EdgeInsets.all(14.sp),
-              decoration: BoxDecoration(
-                color: isVerified ? AppTheme.primaryBlue.withValues(alpha: 0.1) : context.scaffoldColor,
-                borderRadius: BorderRadius.circular(14.sp),
-              ),
-              child: Icon(
-                isVerified ? Icons.verified : Icons.account_circle_outlined,
-                color: isVerified ? AppTheme.primaryBlue : context.secondaryTextColor.withValues(alpha: 0.5),
-                size: 24.sp,
-              ),
-            ),
-            SizedBox(width: 16.w),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    role,
-                    style: TextStyle(
-                      fontSize: 10.sp,
-                      fontWeight: FontWeight.w900,
-                      color: AppTheme.primaryBlue,
-                      letterSpacing: 1.2,
-                      fontFamily: 'Poppins',
-                    ),
-                  ),
-                  SizedBox(height: 4.h),
-                  Text(
-                    name,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 16.sp,
-                      color: context.primaryTextColor,
-                      fontFamily: 'Poppins',
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-            if (isVerified)
-              Icon(Icons.check_circle, color: AppTheme.primaryBlue, size: 22.sp)
-            else if (onTap != null)
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
-                decoration: BoxDecoration(
-                  color: AppTheme.primaryBlue,
-                  borderRadius: BorderRadius.circular(10.sp),
-                ),
-                child: Text(
-                  'Verify',
-                  style: TextStyle(
-                    fontSize: 11.sp,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
-                    fontFamily: 'Poppins',
-                  ),
-                ),
-              )
-            else
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
-                decoration: BoxDecoration(
-                  color: context.scaffoldColor,
-                  borderRadius: BorderRadius.circular(10.sp),
-                ),
-                child: Text(
-                  l10n.pending,
-                  style: TextStyle(
-                    fontSize: 11.sp,
-                    fontWeight: FontWeight.w900,
-                    color: context.secondaryTextColor,
-                    fontFamily: 'Poppins',
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildClause(String number, String title, String body) {
+  Widget _buildDropdownWidget(String label, String value, List<String> items, Function(String?) onChanged) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 24.0.h),
-      child: Row(
+      padding: EdgeInsets.only(bottom: 20.h),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Text(label.toUpperCase(), style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.w900, color: context.secondaryTextColor.withValues(alpha: 0.6), letterSpacing: 1.5)),
+          SizedBox(height: 8.h),
           Container(
-            padding: EdgeInsets.all(8.w),
-            decoration: BoxDecoration(
-              color: context.cardColor,
-              borderRadius: BorderRadius.circular(8.sp),
-              border: Border.all(color: context.borderColor),
-            ),
-            child: Text(
-              number,
-              style: TextStyle(
-                fontSize: 10.sp,
-                fontWeight: FontWeight.w900,
-                color: AppTheme.primaryBlue,
-                fontFamily: 'Poppins',
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            decoration: BoxDecoration(color: context.cardColor, borderRadius: BorderRadius.circular(12.w), border: Border.all(color: context.borderColor)),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: value,
+                isExpanded: true,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp, color: context.primaryTextColor),
+                items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+                onChanged: onChanged,
               ),
             ),
           ),
-          SizedBox(width: 16.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 14.sp,
-                    color: context.primaryTextColor,
-                    fontFamily: 'Poppins',
-                  ),
-                ),
-                SizedBox(height: 6.h),
-                Text(
-                  body,
-                  style: TextStyle(
-                    color: context.secondaryTextColor,
-                    fontSize: 12.sp,
-                    height: 1.5,
-                    fontWeight: FontWeight.w500,
-                    fontFamily: 'Poppins',
-                  ),
-                ),
-                SizedBox(height: 16.h),
-                Divider(height: 1.h, color: context.borderColor),
-              ],
-            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoBox(String title, String content) {
+    return Container(
+      padding: EdgeInsets.all(16.w),
+      decoration: BoxDecoration(color: AppTheme.primaryBlue.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(12.w), border: Border.all(color: AppTheme.primaryBlue.withValues(alpha: 0.1))),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.gavel_outlined, color: AppTheme.primaryBlue, size: 16.sp),
+              SizedBox(width: 8.w),
+              Text(title, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12.sp, color: AppTheme.primaryBlue)),
+            ],
           ),
+          SizedBox(height: 8.h),
+          Text(content, style: TextStyle(fontSize: 11.sp, color: context.secondaryTextColor, height: 1.4)),
         ],
       ),
     );

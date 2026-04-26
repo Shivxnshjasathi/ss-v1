@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/auth_repository.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
@@ -25,6 +27,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   String? _selectedRoleKey;
+  File? _imageFile;
   bool _isLoading = false;
   bool _isFetchingLocation = false;
 
@@ -87,6 +90,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
   }
 
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        _imageFile = File(image.path);
+      });
+    }
+  }
+
   Future<void> _onCompleteSetup() async {
     LoggerService.i('Tapped Complete Setup');
     final l10n = AppLocalizations.of(context)!;
@@ -108,6 +121,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             'loanExpert': l10n.loanExpert,
           };
 
+          String? imageUrl;
+          final userRepo = ref.read(userRepositoryProvider);
+          if (_imageFile != null) {
+            imageUrl = await userRepo.uploadProfileImage(_imageFile!, user.uid);
+          }
+
           final userModel = UserModel(
             uid: user.uid,
             phoneNumber: _phoneController.text.trim().isNotEmpty
@@ -119,9 +138,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             name: _nameController.text.trim(),
             location: _locationController.text.trim(),
             role: roleMap[_selectedRoleKey ?? 'consumerBuyer']!,
+            profileImageUrl: imageUrl,
             createdAt: DateTime.now(),
           );
-          await ref.read(userRepositoryProvider).saveUser(userModel);
+          await userRepo.saveUser(userModel);
           await LoggerService.setUserId(user.uid);
           if (mounted) RoutingUtils.navigateByRole(context, userModel.role);
         } else {
@@ -220,6 +240,47 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w500,
                     height: 1.4,
+                  ),
+                ),
+                SizedBox(height: 32.h),
+                
+                // Profile Image Picker
+                Center(
+                  child: Stack(
+                    children: [
+                      GestureDetector(
+                        onTap: _pickImage,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: context.borderColor, width: 4.w),
+                          ),
+                          child: CircleAvatar(
+                            radius: 54.w,
+                            backgroundColor: context.surfaceColor,
+                            backgroundImage: _imageFile != null ? FileImage(_imageFile!) : null,
+                            child: _imageFile == null
+                                ? Icon(Icons.person, size: 54.w, color: context.secondaryTextColor.withValues(alpha: 0.3))
+                                : null,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 8.w,
+                        child: GestureDetector(
+                          onTap: _pickImage,
+                          child: Container(
+                            padding: EdgeInsets.all(8.w),
+                            decoration: BoxDecoration(
+                              color: AppTheme.primaryBlue,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(Icons.camera_alt, color: Colors.white, size: 16.w),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 SizedBox(height: 40.h),

@@ -138,7 +138,13 @@ class AppLocalizationsHi extends AppLocalizations {
   String get didntReceiveCode => 'कोड नहीं मिला? ';
 
   @override
-  String get resendIn => 'पुनः भेजें';
+  String get resendIn => 'में पुनः भेजें';
+
+  @override
+  String get resendOTP => 'ओटीपी पुनः भेजें';
+
+  @override
+  String get otpVerifiedSuccessfully => 'ओटीपी सफलतापूर्वक सत्यापित';
 
   @override
   String get completeProfile => 'अपनी प्रोफ़ाइल पूरी करें';

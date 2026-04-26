@@ -5,6 +5,7 @@ import 'package:sampatti_bazar/features/services/domain/cart_service.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
 import 'package:sampatti_bazar/core/services/location_service.dart';
+import 'package:sampatti_bazar/core/widgets/google_map_widget.dart';
 
 class CheckoutScreen extends StatefulWidget {
   const CheckoutScreen({super.key});
@@ -18,6 +19,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   final _nameController = TextEditingController(text: 'Shivansh Jasathi');
   final _phoneController = TextEditingController(text: '+91 98765 43210');
   bool _isLocating = false;
+  double? _latitude;
+  double? _longitude;
 
   Future<void> _fetchLocation() async {
     setState(() => _isLocating = true);
@@ -28,6 +31,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         if (addressData != null) {
           setState(() {
             _addressController.text = addressData['address'] ?? '';
+            _latitude = position.latitude;
+            _longitude = position.longitude;
           });
           
           if (mounted) {
@@ -257,6 +262,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ),
               ),
             ),
+            if (_latitude != null && _longitude != null) ...[
+              SizedBox(height: 16.h),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(16.sp),
+                child: GoogleMapWidget(
+                  latitude: _latitude,
+                  longitude: _longitude,
+                  address: _addressController.text,
+                ),
+              ),
+            ],
             SizedBox(height: 32.h),
             Text(
               l10n.paymentMethod,

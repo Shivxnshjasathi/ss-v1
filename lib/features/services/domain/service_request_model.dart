@@ -17,6 +17,8 @@ class ServiceRequestModel {
   final String? targetProviderId; // Optional if targeting a specific agent/provider
   final String? tenantEmail; // NEW: To link the request to the tenant's email
   final String? tenantId; // NEW: To link to the tenant's UID if they already exist
+  final double? latitude;
+  final double? longitude;
 
   ServiceRequestModel({
     required this.id,
@@ -35,6 +37,8 @@ class ServiceRequestModel {
     this.targetProviderId,
     this.tenantEmail,
     this.tenantId,
+    this.latitude,
+    this.longitude,
   });
 
   Map<String, dynamic> toMap() {
@@ -55,6 +59,8 @@ class ServiceRequestModel {
       'targetProviderId': targetProviderId,
       'tenantEmail': tenantEmail,
       'tenantId': tenantId,
+      'latitude': latitude,
+      'longitude': longitude,
     };
   }
 
@@ -78,6 +84,8 @@ class ServiceRequestModel {
       targetProviderId: map['targetProviderId'],
       tenantEmail: map['tenantEmail'],
       tenantId: map['tenantId'],
+      latitude: map['latitude'] != null ? (map['latitude'] as num).toDouble() : null,
+      longitude: map['longitude'] != null ? (map['longitude'] as num).toDouble() : null,
     );
   }
 
@@ -85,6 +93,8 @@ class ServiceRequestModel {
     String? status,
     String? tenantId,
     String? tenantEmail,
+    double? latitude,
+    double? longitude,
   }) {
     return ServiceRequestModel(
       id: id,
@@ -103,6 +113,8 @@ class ServiceRequestModel {
       targetProviderId: targetProviderId,
       tenantEmail: tenantEmail ?? this.tenantEmail,
       tenantId: tenantId ?? this.tenantId,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
     );
   }
 }

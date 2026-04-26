@@ -1,13 +1,15 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter/foundation.dart';
 import 'dart:convert';
+import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../domain/user_model.dart';
 import 'auth_repository.dart';
 
 final userRepositoryProvider = Provider<UserRepository>((ref) {
-  return UserRepository(FirebaseFirestore.instance);
+  return UserRepository(FirebaseFirestore.instance, FirebaseStorage.instance);
 });
 
 final currentUserDataProvider = FutureProvider<UserModel?>((ref) async {
@@ -25,9 +27,24 @@ final userProfileProvider = FutureProvider.family<UserModel?, String>((ref, uid)
 
 class UserRepository {
   final FirebaseFirestore _firestore;
+  final FirebaseStorage _storage;
   static const String _userCacheKey = 'cached_user_profile';
 
-  UserRepository(this._firestore);
+  UserRepository(this._firestore, this._storage);
+
+  Future<String> uploadProfileImage(File imageFile, String uid) async {
+    debugPrint('📤 [UserRepository] Uploading profile image for UID: $uid');
+    try {
+      final ref = _storage.ref().child('users/$uid/profile_pic.jpg');
+      final uploadTask = await ref.putFile(imageFile);
+      final url = await uploadTask.ref.getDownloadURL();
+      debugPrint('✅ [UserRepository] Profile image uploaded: $url');
+      return url;
+    } catch (e, st) {
+      debugPrint('❌ [UserRepository] Error uploading profile image: $e\n$st');
+      rethrow;
+    }
+  }
 
   Future<void> saveUser(UserModel user) async {
     debugPrint('💾 [UserRepository] Saving user profile for UID: ${user.uid}');
