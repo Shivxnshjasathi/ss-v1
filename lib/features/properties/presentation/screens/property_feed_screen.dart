@@ -10,7 +10,6 @@ import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
 import 'package:sampatti_bazar/core/widgets/skeleton_loaders.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:feature_discovery/feature_discovery.dart';
 import 'package:sampatti_bazar/features/properties/presentation/widgets/property_map_view.dart';
@@ -916,117 +915,47 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              l10n.askingPrice,
+                              l10n.askingPrice.toUpperCase(),
                               style: TextStyle(
                                 color: context.secondaryTextColor,
-                                fontSize: 10.sp,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1,
+                                fontSize: 9.sp,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1.2,
                               ),
                             ),
-                            SizedBox(height: 4.h),
+                            SizedBox(height: 2.h),
                             Text(
-                              '₹${property.price.toInt()}',
+                              _formatPrice(property.price / 10), // Assuming price is in Lakhs for calculation here or already formatted
                               style: TextStyle(
-                                color: Theme.of(context).colorScheme.primary,
+                                color: AppTheme.primaryBlue,
                                 fontSize: 22.sp,
                                 fontWeight: FontWeight.w900,
+                                letterSpacing: -0.5,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      _buildAmenity(
-                        LucideIcons.bed,
-                        '${property.bedrooms} ${l10n.bed}',
-                      ),
-                      SizedBox(width: 16.w),
-                      _buildAmenity(
-                        LucideIcons.bath,
-                        '${property.bathrooms} ${l10n.bath}',
-                      ),
-                      SizedBox(width: 16.w),
-                      _buildAmenity(
-                        LucideIcons.maximize,
-                        '${property.areaSqFt.toInt()} ${l10n.sqft}',
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 20.h),
-                  Divider(height: 1.h, color: context.borderColor),
-                  SizedBox(height: 16.h),
-                  Row(
-                    children: [
-                      Consumer(
-                        builder: (context, ref, child) {
-                          final ownerAsync = ref.watch(userProfileProvider(property.ownerId));
-                          return ownerAsync.when(
-                            data: (owner) => CircleAvatar(
-                              radius: 16.w,
-                              backgroundColor: AppTheme.primaryBlue.withValues(alpha: 0.1),
-                              backgroundImage: (owner?.profileImageUrl != null && owner!.profileImageUrl!.isNotEmpty)
-                                  ? NetworkImage(owner.profileImageUrl!)
-                                  : NetworkImage('https://ui-avatars.com/api/?name=${Uri.encodeComponent(owner?.name ?? 'User')}&background=random&size=128'),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryBlue,
+                          borderRadius: BorderRadius.circular(14.sp),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.primaryBlue.withValues(alpha: 0.3),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
                             ),
-                            loading: () => CircleAvatar(radius: 16.w, backgroundColor: context.borderColor),
-                            error: (err, stack) => CircleAvatar(radius: 16.w, backgroundImage: const NetworkImage('https://i.pravatar.cc/150?u=error')),
-                          );
-                        },
-                      ),
-                      SizedBox(width: 12.w),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.listedBy.toUpperCase(),
-                            style: TextStyle(
-                              fontSize: 9.sp,
-                              fontWeight: FontWeight.w800,
-                              color: context.secondaryTextColor,
-                              letterSpacing: 0.8,
-                            ),
-                          ),
-                          Consumer(
-                            builder: (context, ref, child) {
-                              final ownerAsync = ref.watch(userProfileProvider(property.ownerId));
-                              return ownerAsync.when(
-                                data: (owner) => Text(
-                                  owner?.name ?? 'Owner',
-                                  style: TextStyle(
-                                    fontSize: 12.sp,
-                                    fontWeight: FontWeight.bold,
-                                    color: context.primaryTextColor,
-                                  ),
-                                ),
-                                loading: () => Container(width: 60.w, height: 10.h, color: context.borderColor),
-                                error: (err, stack) => Text('Owner', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.sp)),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                      const Spacer(),
-                      ElevatedButton(
-                        onPressed: () =>
-                            context.push('/properties/detail/${property.id}'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.primaryBlue,
-                          foregroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 20.w,
-                            vertical: 10.h,
-                          ),
-                          elevation: 2,
-                          shadowColor: AppTheme.primaryBlue.withValues(alpha: 0.3),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12.w),
-                          ),
+                          ],
                         ),
                         child: Text(
-                          l10n.viewDetails,
+                          l10n.viewDetails.toUpperCase(),
                           style: TextStyle(
+                            color: Colors.white,
                             fontSize: 12.sp,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.1,
                           ),
                         ),
                       ),
@@ -1038,25 +967,6 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildAmenity(IconData icon, String value) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Icon(icon, size: 22.w, color: context.secondaryTextColor),
-        SizedBox(height: 6.h),
-        Text(
-          value,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 13.sp,
-            color: context.primaryTextColor,
-          ),
-        ),
-      ],
     );
   }
 }

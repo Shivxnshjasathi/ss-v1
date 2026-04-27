@@ -149,6 +149,52 @@ class PropertyDetailScreen extends ConsumerWidget {
                       minimumSize: const Size(40, 40),
                     ),
                   ),
+                  if (currentUser?.uid == property.ownerId) ...[
+                    SizedBox(width: 8.w),
+                    IconButton(
+                      icon: Icon(
+                        LucideIcons.trash2,
+                        color: Colors.redAccent,
+                        size: 20.w,
+                      ),
+                      onPressed: () async {
+                        final confirm = await showDialog<bool>(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Delete Property'),
+                            content: const Text('Are you sure you want to delete this property? This action cannot be undone.'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, false),
+                                child: const Text('CANCEL'),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, true),
+                                child: const Text('DELETE', style: TextStyle(color: Colors.red)),
+                              ),
+                            ],
+                          ),
+                        );
+                        if (confirm == true) {
+                          try {
+                            await ref.read(propertyRepositoryProvider).deleteProperty(property.id);
+                            if (context.mounted) {
+                              context.pop();
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Property deleted')));
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to delete property')));
+                            }
+                          }
+                        }
+                      },
+                      style: IconButton.styleFrom(
+                        backgroundColor: Colors.black.withValues(alpha: 0.3),
+                        minimumSize: const Size(40, 40),
+                      ),
+                    ),
+                  ],
                   SizedBox(width: 16.w),
                 ],
                 flexibleSpace: FlexibleSpaceBar(
@@ -296,7 +342,6 @@ class PropertyDetailScreen extends ConsumerWidget {
                       ),
 
                       SizedBox(height: 32.h),
-                      _buildMediaWalkthroughSection(context, property),
                       _buildSectionHeader(l10n.amenities.toUpperCase()),
                       SizedBox(height: 16.h),
                       _buildAmenities(context, property.amenities, l10n),
@@ -628,30 +673,115 @@ class PropertyDetailScreen extends ConsumerWidget {
             ),
             padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 20.h),
             child: SafeArea(
-              child: SizedBox(
-                width: double.infinity,
-                height: 60.h,
-                child: ElevatedButton(
-                  onPressed: () => _scheduleTour(context, ref, property, l10n),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryBlue,
-                    foregroundColor: Colors.white,
-                    elevation: 5,
-                    shadowColor: AppTheme.primaryBlue.withValues(alpha: 0.4),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16.sp),
-                    ),
+              child: currentUser?.uid == property.ownerId
+                ? Row(
+                    children: [
+                      Icon(LucideIcons.shieldCheck, color: AppTheme.primaryBlue, size: 20.sp),
+                      SizedBox(width: 12.w),
+                      Expanded(
+                        child: Text(
+                          'This is your listing',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w900,
+                            fontSize: 14.sp,
+                            color: context.secondaryTextColor,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 48.h,
+                        child: OutlinedButton.icon(
+                          onPressed: () async {
+                            final confirm = await showDialog<bool>(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                title: const Text('Delete Property', style: TextStyle(fontWeight: FontWeight.w900)),
+                                content: const Text('Are you sure you want to permanently delete this listing?'),
+                                actions: [
+                                  TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('CANCEL')),
+                                  TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('DELETE', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold))),
+                                ],
+                              ),
+                            );
+                            if (confirm == true) {
+                              try {
+                                await ref.read(propertyRepositoryProvider).deleteProperty(property.id);
+                                if (context.mounted) {
+                                  context.pop();
+                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Property deleted')));
+                                }
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to delete')));
+                                }
+                              }
+                            }
+                          },
+                          icon: Icon(LucideIcons.trash2, size: 16.sp, color: Colors.redAccent),
+                          label: Text('DELETE', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12.sp, color: Colors.redAccent)),
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: Colors.redAccent.withValues(alpha: 0.3)),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.sp)),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : Row(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(16.sp),
+                        ),
+                        child: IconButton(
+                          onPressed: () async {
+                            if (currentUser == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(l10n.pleaseLoginToChat)),
+                              );
+                              return;
+                            }
+                            final chatId = await ref.read(chatRepositoryProvider).startOrGetChat(
+                              currentUser.uid,
+                              property.ownerId,
+                              metadata: {'propertyId': property.id},
+                            );
+                            if (context.mounted) context.push('/chats/$chatId');
+                          },
+                          icon: Icon(LucideIcons.messageSquare, color: AppTheme.primaryBlue),
+                          padding: EdgeInsets.all(16.w),
+                        ),
+                      ),
+                      SizedBox(width: 16.w),
+                      Expanded(
+                        child: SizedBox(
+                          height: 56.h,
+                          child: ElevatedButton.icon(
+                            onPressed: () => _scheduleTour(context, ref, property, l10n),
+                            icon: Icon(LucideIcons.calendarCheck, size: 18.sp),
+                            label: Text(
+                              l10n.bookVisit.toUpperCase(),
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppTheme.primaryBlue,
+                              foregroundColor: Colors.white,
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16.sp),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  child: Text(
-                    l10n.bookVisit,
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1.2,
-                    ),
-                  ),
-                ),
-              ),
             ),
           ),
         );
@@ -661,6 +791,8 @@ class PropertyDetailScreen extends ConsumerWidget {
       error: (e, st) => Scaffold(body: Center(child: Text('Error: $e'))),
     );
   }
+
+
 
   Future<void> _scheduleTour(
     BuildContext context,
@@ -836,113 +968,6 @@ class PropertyDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildMediaWalkthroughSection(BuildContext context, PropertyModel property) {
-    if (property.videoUrl == null && property.panoramaUrl == null) {
-      return const SizedBox.shrink();
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildSectionHeader('VIRTUAL TOURS & MEDIA'),
-        SizedBox(height: 16.h),
-        if (property.panoramaUrl != null)
-          _buildMediaCard(
-            context,
-            '360° Virtual Tour',
-            'Step inside and look around',
-            LucideIcons.view,
-            Colors.purple,
-            () {
-              context.push('/properties/media?type=panorama&url=${Uri.encodeComponent(property.panoramaUrl!)}');
-            },
-          ),
-        if (property.videoUrl != null)
-          _buildMediaCard(
-            context,
-            'Video Walkthrough',
-            'Watch the property video',
-            LucideIcons.video,
-            Colors.redAccent,
-            () {
-              context.push('/properties/media?type=video&url=${Uri.encodeComponent(property.videoUrl!)}');
-            },
-          ),
-        SizedBox(height: 32.h),
-      ],
-    );
-  }
-
-  Widget _buildMediaCard(
-    BuildContext context,
-    String title,
-    String subtitle,
-    IconData icon,
-    Color color,
-    VoidCallback onTap,
-  ) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 12.h),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20.sp),
-        child: Container(
-          padding: EdgeInsets.all(20.w),
-          decoration: BoxDecoration(
-            color: context.cardColor,
-            borderRadius: BorderRadius.circular(20.sp),
-            border: Border.all(color: context.borderColor, width: 1.2),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.03),
-                blurRadius: 15,
-                offset: const Offset(0, 5),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: EdgeInsets.all(14.w),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(icon, color: color, size: 24.sp),
-              ),
-              SizedBox(width: 16.w),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w800,
-                        color: context.primaryTextColor,
-                      ),
-                    ),
-                    SizedBox(height: 4.h),
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                        color: context.secondaryTextColor,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(LucideIcons.chevronRight, color: context.secondaryTextColor, size: 20.sp),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildSectionHeader(String title) {
     return Padding(
       padding: EdgeInsets.only(bottom: 16.h),
@@ -1107,6 +1132,7 @@ class PropertyDetailScreen extends ConsumerWidget {
           .toList(),
     );
   }
+
 }
 
 // ==============================

@@ -369,8 +369,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     return Scaffold(
       backgroundColor: context.scaffoldColor,
-      body: SafeArea(
-        child: Column(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: context.isDarkMode 
+              ? [Colors.black, Colors.grey.shade900]
+              : [Colors.white, Colors.blue.shade50.withValues(alpha: 0.3)],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
           children: [
             Expanded(
               child: SingleChildScrollView(
@@ -734,6 +744,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

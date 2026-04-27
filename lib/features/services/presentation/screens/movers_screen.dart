@@ -312,22 +312,22 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
                     width: double.infinity,
                     height: 54.h,
                     child: OutlinedButton.icon(
-                      icon: Icon(_includePacking ? Icons.check_box : Icons.check_box_outline_blank, color: _includePacking ? AppTheme.primaryBlue : Colors.grey),
+                      icon: Icon(_includePacking ? Icons.check_box : Icons.check_box_outline_blank, color: _includePacking ? AppTheme.primaryBlue : context.secondaryTextColor),
                       onPressed: () {
                         setState(() {
                           _includePacking = !_includePacking;
                         });
                       },
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: _includePacking ? AppTheme.primaryBlue : Colors.grey.shade300, width: 2.w),
+                        side: BorderSide(color: _includePacking ? AppTheme.primaryBlue : context.borderColor, width: 2.w),
                         backgroundColor: _includePacking ? AppTheme.primaryBlue.withValues(alpha: 0.05) : Colors.transparent,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.w)),
                       ),
                       label: Row(
                         children: [
-                          Text(' ${l10n.professionalPacking}', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.black, fontSize: 13.sp)),
+                          Text(' ${l10n.professionalPacking}', style: TextStyle(fontWeight: FontWeight.w900, color: context.primaryTextColor, fontSize: 13.sp)),
                           const Spacer(),
-                          Text('+₹999', style: TextStyle(fontWeight: FontWeight.w900, color: Colors.grey.shade600, fontSize: 13.sp)),
+                          Text('+₹999', style: TextStyle(fontWeight: FontWeight.w900, color: context.secondaryTextColor, fontSize: 13.sp)),
                         ],
                       ),
                     ),
@@ -613,8 +613,8 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
               decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: Colors.grey.shade300),
+                color: context.cardColor,
+                border: Border.all(color: context.borderColor),
                 borderRadius: BorderRadius.circular(12.w),
               ),
               child: Row(
@@ -666,22 +666,22 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
               ],
             ),
           ),
-          Divider(height: 1.h, color: Colors.grey.shade200),
+          Divider(height: 1.h, color: context.borderColor),
           Padding(
             padding: EdgeInsets.all(20.0.w),
             child: Column(
               children: [
                 Row(
                   children: [
-                    Expanded(child: _buildSummaryItem(l10n.inventory.toUpperCase(), _selectedSize)),
-                    Expanded(child: _buildSummaryItem(l10n.packing.toUpperCase(), _includePacking ? l10n.included : l10n.none)),
+                    Expanded(child: _buildSummaryItem(context, l10n.inventory.toUpperCase(), _selectedSize)),
+                    Expanded(child: _buildSummaryItem(context, l10n.packing.toUpperCase(), _includePacking ? l10n.included : l10n.none)),
                   ],
                 ),
                 SizedBox(height: 24.h),
                 Row(
                   children: [
-                    Expanded(child: _buildSummaryItem(l10n.distance.toUpperCase(), '${_distanceKm.round()} km')),
-                    Expanded(child: _buildSummaryItem(l10n.insurance.toUpperCase(), l10n.standardInsurance)),
+                    Expanded(child: _buildSummaryItem(context, l10n.distance.toUpperCase(), '${_distanceKm.round()} km')),
+                    Expanded(child: _buildSummaryItem(context, l10n.insurance.toUpperCase(), l10n.standardInsurance)),
                   ],
                 ),
               ],
@@ -701,7 +701,7 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
                   children: [
                     Icon(Icons.verified_outlined, color: context.primaryTextColor, size: 18.w),
                     SizedBox(width: 8.w),
-                    Text(l10n.estQuote, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12.sp, color: Colors.grey)),
+                    Text(l10n.estQuote, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12.sp, color: context.secondaryTextColor)),
                   ],
                 ),
                 Text(formatCurrency(totalQuote), style: TextStyle(fontWeight: FontWeight.w900, fontSize: 24.sp, color: AppTheme.primaryBlue)),
@@ -713,11 +713,11 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
     );
   }
 
-  Widget _buildSummaryItem(String label, String value) {
+  Widget _buildSummaryItem(BuildContext context, String label, String value) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.w900, color: Colors.black54, letterSpacing: 0.5)),
+        Text(label, style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.w900, color: context.secondaryTextColor, letterSpacing: 0.5)),
         SizedBox(height: 6.h),
         Text(value, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13.sp, color: context.primaryTextColor)),
       ],

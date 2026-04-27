@@ -13,6 +13,7 @@ import 'package:sampatti_bazar/core/services/google_cloud_service.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:sampatti_bazar/core/utils/validators.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
+import 'package:sampatti_bazar/shared/widgets/primary_button.dart';
 
 class AddPropertyScreen extends ConsumerStatefulWidget {
   const AddPropertyScreen({super.key});
@@ -140,16 +141,6 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
     if (images.isNotEmpty) {
       setState(() {
         _selectedImages.addAll(images.map((img) => File(img.path)));
-      });
-    }
-  }
-
-  Future<void> _pickVideo() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? video = await picker.pickVideo(source: ImageSource.gallery);
-    if (video != null) {
-      setState(() {
-        _selectedVideo = File(video.path);
       });
     }
   }
@@ -343,26 +334,10 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
                   if (_currentStep > 1) SizedBox(width: 16.w),
                   Expanded(
                     flex: 2,
-                    child: ElevatedButton(
-                      onPressed: _isSubmitting ? null : () => _nextStep(l10n),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(vertical: 16.h),
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.w),
-                        ),
-                      ),
-                      child: _isSubmitting 
-                        ? SizedBox(width: 24.w, height: 24.h, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                        : Text(
-                            _currentStep < 3 ? l10n.continueButton : l10n.postListing,
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                    child: PrimaryButton(
+                      text: _currentStep < 3 ? l10n.continueButton : l10n.postListing,
+                      isLoading: _isSubmitting,
+                      onPressed: () => _nextStep(l10n),
                     ),
                   ),
                 ],
@@ -841,52 +816,6 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
           ),
         ),
 
-        SizedBox(height: 24.h),
-        _buildLabel('Video Walkthrough'),
-        SizedBox(height: 12.h),
-        GestureDetector(
-          onTap: _pickVideo,
-          child: Container(
-            padding: EdgeInsets.all(16.w),
-            decoration: BoxDecoration(
-              color: context.surfaceColor,
-              borderRadius: BorderRadius.circular(12.w),
-              border: Border.all(color: context.borderColor),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.video_library_outlined, color: AppTheme.primaryBlue),
-                SizedBox(width: 12.w),
-                Expanded(
-                  child: Text(
-                    _selectedVideo != null 
-                        ? 'Video selected: ${_selectedVideo!.path.split('/').last}'
-                        : 'Upload Video Walkthrough',
-                    style: TextStyle(
-                      color: _selectedVideo != null ? context.primaryTextColor : Colors.grey,
-                      fontSize: 14.sp,
-                    ),
-                  ),
-                ),
-                if (_selectedVideo != null)
-                  IconButton(
-                    icon: Icon(Icons.close, size: 20.w),
-                    onPressed: () => setState(() => _selectedVideo = null),
-                  ),
-              ],
-            ),
-          ),
-        ),
-
-        SizedBox(height: 24.h),
-        _buildLabel('360° Virtual Tour URL (Optional)'),
-        SizedBox(height: 8.h),
-        _buildTextField(
-          l10n,
-          'e.g., https://kuula.co/share/...',
-          Icons.view_in_ar,
-          controller: _panoramaUrlController,
-        ),
       ],
     );
   }

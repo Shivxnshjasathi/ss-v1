@@ -482,9 +482,30 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
             child: Stack(
               children: [
                 Positioned.fill(
-                  child: Image.asset(
+                  child: Image.network(
                     product.image,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      color: context.surfaceColor,
+                      child: Center(
+                        child: Icon(Icons.image_not_supported_outlined, size: 32.w, color: context.secondaryTextColor.withValues(alpha: 0.3)),
+                      ),
+                    ),
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        color: context.surfaceColor,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppTheme.primaryBlue,
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
                 Positioned(

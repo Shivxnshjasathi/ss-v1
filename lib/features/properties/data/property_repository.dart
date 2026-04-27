@@ -114,6 +114,17 @@ class PropertyRepository {
     }
   }
 
+  Future<void> deleteProperty(String propertyId) async {
+    LoggerService.i('Property: Deleting property $propertyId');
+    try {
+      await _firestore.collection('properties').doc(propertyId).delete();
+      LoggerService.i('Property: Successfully deleted property $propertyId');
+    } catch (e, st) {
+      LoggerService.e('Property: Failed to delete property $propertyId', error: e, stack: st);
+      rethrow;
+    }
+  }
+
   Stream<List<PropertyModel>> streamProperties({String? city, String? type}) {
     LoggerService.i('Property: Streaming properties (Filters: City=$city, Type=$type)');
     

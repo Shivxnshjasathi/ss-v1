@@ -312,6 +312,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       ),
                       _buildMenuItem(
                         context,
+                        'My Properties',
+                        LucideIcons.building2,
+                        Colors.blue,
+                        () => context.push('/properties/my'),
+                      ),
+                      _buildMenuItem(
+                        context,
                         l10n.savedProperties,
                         LucideIcons.heart,
                         Colors.pinkAccent,

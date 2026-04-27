@@ -213,6 +213,7 @@ class ServiceTrackingScreen extends ConsumerWidget {
           Padding(
             padding: EdgeInsets.all(20.sp),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
                   width: 64.w,
@@ -233,29 +234,41 @@ class ServiceTrackingScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        booking.propertyTitle,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w900,
-                          fontSize: 15.sp,
-                          color: context.primaryTextColor,
-                          fontFamily: 'Poppins',
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              booking.propertyTitle,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w900,
+                                fontSize: 15.sp,
+                                color: context.primaryTextColor,
+                                fontFamily: 'Poppins',
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          SizedBox(width: 8.w),
+                          _buildStatusChip(context, booking.status.toUpperCase(), statusColor),
+                        ],
                       ),
-                      SizedBox(height: 4.h),
+                      SizedBox(height: 6.h),
                       Row(
                         children: [
                           Icon(LucideIcons.calendar, size: 12.sp, color: AppTheme.primaryBlue),
                           SizedBox(width: 4.w),
-                          Text(
-                            "$dateStr at $timeStr",
-                            style: TextStyle(
-                              color: AppTheme.primaryBlue,
-                              fontSize: 11.sp,
-                              fontWeight: FontWeight.w900,
-                              fontFamily: 'Poppins',
+                          Flexible(
+                            child: Text(
+                              "$dateStr at $timeStr",
+                              style: TextStyle(
+                                color: AppTheme.primaryBlue,
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.w900,
+                                fontFamily: 'Poppins',
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
@@ -263,7 +276,6 @@ class ServiceTrackingScreen extends ConsumerWidget {
                     ],
                   ),
                 ),
-                _buildStatusChip(context, booking.status.toUpperCase(), statusColor),
               ],
             ),
           ),
@@ -455,9 +467,9 @@ class ServiceTrackingScreen extends ConsumerWidget {
       child: Container(
         padding: EdgeInsets.all(10.sp),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.cardColor,
           borderRadius: BorderRadius.circular(12.sp),
-          border: Border.all(color: Colors.grey.shade200),
+          border: Border.all(color: context.borderColor),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.02),
