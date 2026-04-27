@@ -8,12 +8,20 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'firebase_options.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:sampatti_bazar/core/providers/locale_provider.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
 import 'package:feature_discovery/feature_discovery.dart';
+import 'package:sampatti_bazar/core/services/logger_service.dart';
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  debugPrint("Handling a background message: ${message.messageId}");
+}
 
 void main() async {
   runZonedGuarded<Future<void>>(
@@ -40,6 +48,17 @@ void main() async {
 
       // Ensure analytics is enabled
       await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
+
+      // Initialize FCM
+      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+      await FirebaseMessaging.instance.requestPermission();
+      
+      try {
+        await FirebaseMessaging.instance.getToken();
+        LoggerService.i('Startup: FCM Token initialized');
+      } catch (e) {
+        LoggerService.e('Startup: Could not get FCM token', error: e);
+      }
 
       runApp(const ProviderScope(child: SampattiBazarApp()));
     },

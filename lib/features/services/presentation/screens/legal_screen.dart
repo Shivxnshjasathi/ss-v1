@@ -13,7 +13,6 @@ import 'package:sampatti_bazar/features/services/data/service_request_repository
 import 'package:sampatti_bazar/features/services/domain/service_request_model.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:uuid/uuid.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:sampatti_bazar/core/services/location_service.dart';
 
 class LegalScreen extends ConsumerStatefulWidget {

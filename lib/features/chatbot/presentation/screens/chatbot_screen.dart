@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
+import 'package:sampatti_bazar/core/services/google_cloud_service.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sampatti_bazar/features/chatbot/data/chatbot_repository.dart';
@@ -26,6 +27,10 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
   ];
 
   bool _isTyping = false;
+
+  // Track translated messages: index -> translated text
+  final Map<int, String> _translatedMessages = {};
+  final Map<int, bool> _showTranslation = {};
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -75,6 +80,29 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
               "I'm sorry, I'm having bit of trouble connecting to our Sampatti systems. Please try again.",
           'time': _getCurrentTime(),
         });
+      });
+    }
+  }
+
+  Future<void> _translateMessage(int index) async {
+    if (_translatedMessages.containsKey(index)) {
+      // Already translated, just toggle visibility
+      setState(() {
+        _showTranslation[index] = !(_showTranslation[index] ?? false);
+      });
+      return;
+    }
+
+    final originalText = _messages[index]['text'] ?? '';
+    // Detect: if it looks like Hindi (has Devanagari chars), translate to English. Otherwise translate to Hindi.
+    final bool hasHindi = RegExp(r'[\u0900-\u097F]').hasMatch(originalText);
+    final targetLang = hasHindi ? 'en' : 'hi';
+
+    final translated = await GoogleCloudService.translateText(originalText, targetLang);
+    if (mounted) {
+      setState(() {
+        _translatedMessages[index] = translated;
+        _showTranslation[index] = true;
       });
     }
   }
@@ -143,7 +171,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
                     children: [
                       _buildDateBadge(),
                       SizedBox(height: 24.h),
-                      _buildChatBubble(_messages[index]),
+                      _buildChatBubble(_messages[index], index),
                     ],
                   );
                 }
@@ -152,7 +180,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
                   return _buildTypingIndicator();
                 }
 
-                return _buildChatBubble(_messages[index]);
+                return _buildChatBubble(_messages[index], index);
               },
             ),
           ),
@@ -182,8 +210,13 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
     );
   }
 
-  Widget _buildChatBubble(Map<String, dynamic> msg) {
+  Widget _buildChatBubble(Map<String, dynamic> msg, int index) {
     final isUser = msg['role'] == 'user';
+    final bool isTranslated = _showTranslation[index] ?? false;
+    final String displayText = isTranslated
+        ? (_translatedMessages[index] ?? msg['text'] ?? '')
+        : (msg['text'] ?? '');
+
     return Padding(
       padding: EdgeInsets.only(bottom: 24.0.h),
       child: Row(
@@ -224,24 +257,94 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
                       bottomRight: Radius.circular(isUser ? 4 : 16),
                     ),
                   ),
-                  child: Text(
-                    msg['text'] ?? '',
-                    style: TextStyle(
-                      color: isUser ? Colors.white : context.primaryTextColor,
-                      fontSize: 13.sp,
-                      height: 1.5.h,
-                      fontWeight: isUser ? FontWeight.w600 : FontWeight.w500,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        displayText,
+                        style: TextStyle(
+                          color: isUser ? Colors.white : context.primaryTextColor,
+                          fontSize: 13.sp,
+                          height: 1.5.h,
+                          fontWeight: isUser ? FontWeight.w600 : FontWeight.w500,
+                        ),
+                      ),
+                      if (isTranslated)
+                        Padding(
+                          padding: EdgeInsets.only(top: 8.h),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.translate,
+                                size: 10.w,
+                                color: isUser ? Colors.white70 : Colors.grey,
+                              ),
+                              SizedBox(width: 4.w),
+                              Text(
+                                'Translated',
+                                style: TextStyle(
+                                  fontSize: 9.sp,
+                                  fontStyle: FontStyle.italic,
+                                  color: isUser ? Colors.white70 : Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
                   ),
                 ),
                 SizedBox(height: 6.h),
-                Text(
-                  msg['time'] ?? '',
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 9.sp,
-                    fontWeight: FontWeight.w900,
-                  ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      msg['time'] ?? '',
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 9.sp,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    SizedBox(width: 8.w),
+                    // Translate button for every message
+                    GestureDetector(
+                      onTap: () => _translateMessage(index),
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                        decoration: BoxDecoration(
+                          color: isTranslated
+                              ? AppTheme.primaryBlue.withValues(alpha: 0.1)
+                              : context.surfaceColor,
+                          borderRadius: BorderRadius.circular(4.w),
+                          border: Border.all(
+                            color: isTranslated ? AppTheme.primaryBlue : context.borderColor,
+                            width: 0.5,
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.translate,
+                              size: 10.w,
+                              color: isTranslated ? AppTheme.primaryBlue : Colors.grey,
+                            ),
+                            SizedBox(width: 3.w),
+                            Text(
+                              isTranslated ? 'Original' : 'Translate',
+                              style: TextStyle(
+                                fontSize: 8.sp,
+                                fontWeight: FontWeight.w700,
+                                color: isTranslated ? AppTheme.primaryBlue : Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -404,7 +507,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
             ),
             SizedBox(height: 16.h),
             Text(
-              'Gemini Powered Intelligence • Secure Encryption',
+              'Gemini Powered Intelligence • Cloud Translation • Secure Encryption',
               style: TextStyle(
                 fontSize: 8.sp,
                 fontWeight: FontWeight.w600,

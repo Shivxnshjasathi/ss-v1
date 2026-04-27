@@ -154,16 +154,9 @@ class PropertyDetailScreen extends ConsumerWidget {
                   SizedBox(width: 16.w),
                 ],
                 flexibleSpace: FlexibleSpaceBar(
-                  background: Hero(
-                    tag: 'property_image_${property.id}',
-                    child: CachedNetworkImage(
-                      imageUrl: property.imageUrls.isNotEmpty
-                          ? property.imageUrls.first
-                          : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80',
-                      fit: BoxFit.cover,
-                      memCacheHeight: 1000,
-                      memCacheWidth: 1000,
-                    ),
+                  background: _PropertyImageGallery(
+                    propertyId: property.id,
+                    imageUrls: property.imageUrls,
                   ),
                 ),
               ),
@@ -1075,6 +1068,148 @@ class PropertyDetailScreen extends ConsumerWidget {
             ),
           )
           .toList(),
+    );
+  }
+}
+
+// ==============================
+// Swipeable Image Gallery Widget
+// ==============================
+class _PropertyImageGallery extends StatefulWidget {
+  final String propertyId;
+  final List<String> imageUrls;
+
+  const _PropertyImageGallery({
+    required this.propertyId,
+    required this.imageUrls,
+  });
+
+  @override
+  State<_PropertyImageGallery> createState() => _PropertyImageGalleryState();
+}
+
+class _PropertyImageGalleryState extends State<_PropertyImageGallery> {
+  int _currentPage = 0;
+  late final PageController _pageController;
+
+  List<String> get _images => widget.imageUrls.isNotEmpty
+      ? widget.imageUrls
+      : [
+          'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80'
+        ];
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        // Swipeable images
+        PageView.builder(
+          controller: _pageController,
+          itemCount: _images.length,
+          onPageChanged: (index) {
+            setState(() => _currentPage = index);
+          },
+          itemBuilder: (context, index) {
+            final url = _images[index];
+            // Keep Hero only on the first image for smooth transition from list
+            if (index == 0) {
+              return Hero(
+                tag: 'property_image_${widget.propertyId}',
+                child: CachedNetworkImage(
+                  imageUrl: url,
+                  fit: BoxFit.cover,
+                  memCacheHeight: 1000,
+                  memCacheWidth: 1000,
+                  placeholder: (_, _) => Container(color: Colors.grey[300]),
+                  errorWidget: (_, _, _) => Container(
+                    color: Colors.grey[300],
+                    child: const Icon(Icons.broken_image, size: 48, color: Colors.grey),
+                  ),
+                ),
+              );
+            }
+            return CachedNetworkImage(
+              imageUrl: url,
+              fit: BoxFit.cover,
+              memCacheHeight: 1000,
+              memCacheWidth: 1000,
+              placeholder: (_, _) => Container(color: Colors.grey[300]),
+              errorWidget: (_, _, _) => Container(
+                color: Colors.grey[300],
+                child: const Icon(Icons.broken_image, size: 48, color: Colors.grey),
+              ),
+            );
+          },
+        ),
+
+        // Photo counter badge (top-right area, below action buttons)
+        if (_images.length > 1)
+          Positioned(
+            bottom: 16,
+            right: 16,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.6),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.photo_library, color: Colors.white, size: 14),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${_currentPage + 1} / ${_images.length}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+        // Dot indicators
+        if (_images.length > 1)
+          Positioned(
+            bottom: 16,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(_images.length, (index) {
+                final isActive = index == _currentPage;
+                return AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  margin: const EdgeInsets.symmetric(horizontal: 3),
+                  width: isActive ? 20 : 6,
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: isActive
+                        ? Colors.white
+                        : Colors.white.withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                );
+              }),
+            ),
+          ),
+      ],
     );
   }
 }

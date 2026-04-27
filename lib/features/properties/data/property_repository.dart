@@ -79,6 +79,8 @@ class PropertyRepository {
         isZeroBrokerage: property.isZeroBrokerage,
         builtIn: property.builtIn,
         lotSizeSqFt: property.lotSizeSqFt,
+        latitude: property.latitude,
+        longitude: property.longitude,
       );
 
       // 3. Save to Firestore
@@ -91,8 +93,8 @@ class PropertyRepository {
   }
 
   Stream<List<PropertyModel>> streamProperties({String? city, String? type}) {
-    // If we have filters, we CANNOT use orderBy without a composite index.
-    // So we perform filtering on Firestore and sorting in memory.
+    LoggerService.i('Property: Streaming properties (Filters: City=$city, Type=$type)');
+    
     Query query = _firestore.collection('properties');
     
     if (city != null && city.isNotEmpty) {
@@ -103,6 +105,7 @@ class PropertyRepository {
     }
 
     return query.snapshots().map((snapshot) {
+      LoggerService.i('Property: Received ${snapshot.docs.length} docs from Firestore');
       final properties = snapshot.docs.map((doc) {
         return PropertyModel.fromMap(doc.data() as Map<String, dynamic>, doc.id);
       }).toList();
@@ -130,18 +133,26 @@ class PropertyRepository {
   }
 
   Future<void> toggleSaveProperty(String userId, String propertyId) async {
-    final docId = '${userId}_$propertyId';
-    final doc = _firestore.collection('saved_properties').doc(docId);
-    final existing = await doc.get();
-    
-    if (existing.exists) {
-      await doc.delete();
-    } else {
-      await doc.set({
-        'userId': userId,
-        'propertyId': propertyId,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
+    LoggerService.i('Property: Toggling save for user $userId on property $propertyId');
+    try {
+      final docId = '${userId}_$propertyId';
+      final doc = _firestore.collection('saved_properties').doc(docId);
+      final existing = await doc.get();
+      
+      if (existing.exists) {
+        LoggerService.i('Property: Removing from saved list');
+        await doc.delete();
+      } else {
+        LoggerService.i('Property: Adding to saved list');
+        await doc.set({
+          'userId': userId,
+          'propertyId': propertyId,
+          'timestamp': FieldValue.serverTimestamp(),
+        });
+      }
+    } catch (e, st) {
+      LoggerService.e('Property: Failed to toggle save', error: e, stack: st);
+      rethrow;
     }
   }
 
@@ -151,6 +162,7 @@ class PropertyRepository {
   }
 
   Stream<List<PropertyModel>> streamSavedProperties(String userId) {
+    LoggerService.i('Property: Streaming saved properties for user $userId');
     return _firestore
         .collection('saved_properties')
         .where('userId', isEqualTo: userId)
@@ -164,9 +176,6 @@ class PropertyRepository {
       final properties = await Future.wait(propertyFutures);
       final result = properties.whereType<PropertyModel>().toList();
       
-      // Sort in memory by matching the order of propertyIds (which we can't easily rely on without native order)
-      // Or just sort by title for now if we don't have a reliable timestamp in the property itself
-      // Actually, we can fetch the timestamp from the snapshot docs
       final idToTimestamp = {
         for (var doc in snapshot.docs) doc['propertyId'] as String: doc['timestamp'] as Timestamp?
       };

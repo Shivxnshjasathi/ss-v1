@@ -28,6 +28,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final TextEditingController _emailController = TextEditingController();
   String? _selectedRoleKey;
   File? _imageFile;
+  String? _networkImageUrl;
   bool _isLoading = false;
   bool _isFetchingLocation = false;
 
@@ -41,6 +42,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       }
       if (user?.email != null && user!.email!.isNotEmpty) {
         _emailController.text = user.email!;
+      }
+      if (user?.displayName != null && user!.displayName!.isNotEmpty) {
+        _nameController.text = user.displayName!;
+      }
+      if (user?.photoURL != null && user!.photoURL!.isNotEmpty) {
+        setState(() {
+          _networkImageUrl = user.photoURL!;
+        });
       }
     });
   }
@@ -121,7 +130,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             'loanExpert': l10n.loanExpert,
           };
 
-          String? imageUrl;
+          String? imageUrl = _networkImageUrl;
           final userRepo = ref.read(userRepositoryProvider);
           if (_imageFile != null) {
             imageUrl = await userRepo.uploadProfileImage(_imageFile!, user.uid);
@@ -258,8 +267,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                           child: CircleAvatar(
                             radius: 54.w,
                             backgroundColor: context.surfaceColor,
-                            backgroundImage: _imageFile != null ? FileImage(_imageFile!) : null,
-                            child: _imageFile == null
+                            backgroundImage: _imageFile != null 
+                                ? FileImage(_imageFile!) as ImageProvider
+                                : (_networkImageUrl != null ? NetworkImage(_networkImageUrl!) : null),
+                            child: (_imageFile == null && _networkImageUrl == null)
                                 ? Icon(Icons.person, size: 54.w, color: context.secondaryTextColor.withValues(alpha: 0.3))
                                 : null,
                           ),

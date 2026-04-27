@@ -9,6 +9,7 @@ import 'package:sampatti_bazar/features/properties/domain/property_model.dart';
 import 'package:sampatti_bazar/features/auth/data/auth_repository.dart';
 import 'package:uuid/uuid.dart';
 import 'package:sampatti_bazar/core/services/location_service.dart';
+import 'package:sampatti_bazar/core/services/google_cloud_service.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:sampatti_bazar/core/utils/validators.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
@@ -40,6 +41,8 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
   bool _isFetchingLocation = false;
   double? _latitude;
   double? _longitude;
+  List<Map<String, dynamic>> _placePredictions = [];
+  bool _showPredictions = false;
 
   final List<File> _selectedImages = [];
 
@@ -441,13 +444,124 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
           ),
         ),
         SizedBox(height: 24.h),
-        _buildLabel('City'), // Localize to "City" if needed
+        _buildLabel('City'),
         SizedBox(height: 8.h),
-        _buildTextField(
-          l10n,
-          'e.g., Jabalpur',
-          Icons.location_city_outlined,
-          controller: _cityController,
+        Column(
+          children: [
+            TextFormField(
+              controller: _cityController,
+              decoration: InputDecoration(
+                hintText: 'Search city...',
+                hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14.sp),
+                prefixIcon: Icon(Icons.location_city_outlined, color: Colors.grey),
+                suffixIcon: _cityController.text.isNotEmpty
+                    ? IconButton(
+                        icon: Icon(Icons.clear, size: 18.w),
+                        onPressed: () {
+                          _cityController.clear();
+                          setState(() {
+                            _placePredictions = [];
+                            _showPredictions = false;
+                          });
+                        },
+                      )
+                    : Icon(Icons.search, color: Colors.grey),
+                filled: true,
+                fillColor: context.surfaceColor,
+                contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.w),
+                  borderSide: BorderSide(color: context.borderColor),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.w),
+                  borderSide: BorderSide(color: context.borderColor),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.w),
+                  borderSide: BorderSide(color: Theme.of(context).colorScheme.primary),
+                ),
+              ),
+              onChanged: (value) async {
+                if (value.length >= 2) {
+                  final predictions = await GoogleCloudService.getPlacePredictions(value);
+                  setState(() {
+                    _placePredictions = predictions;
+                    _showPredictions = predictions.isNotEmpty;
+                  });
+                } else {
+                  setState(() {
+                    _placePredictions = [];
+                    _showPredictions = false;
+                  });
+                }
+              },
+              validator: (value) {
+                if (value == null || value.isEmpty) return l10n.fieldRequired;
+                return null;
+              },
+            ),
+            if (_showPredictions && _placePredictions.isNotEmpty)
+              Container(
+                margin: EdgeInsets.only(top: 4.h),
+                decoration: BoxDecoration(
+                  color: context.cardColor,
+                  borderRadius: BorderRadius.circular(12.w),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.08),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                constraints: BoxConstraints(maxHeight: 200.h),
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.zero,
+                  itemCount: _placePredictions.length,
+                  separatorBuilder: (_, _) => Divider(height: 1, color: context.borderColor),
+                  itemBuilder: (context, index) {
+                    final prediction = _placePredictions[index];
+                    return ListTile(
+                      dense: true,
+                      leading: Icon(Icons.place, color: Theme.of(context).colorScheme.primary, size: 20.w),
+                      title: Text(
+                        prediction['description'] ?? '',
+                        style: TextStyle(fontSize: 13.sp),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      onTap: () async {
+                        final placeId = prediction['place_id'];
+                        _cityController.text = (prediction['description'] ?? '').split(',').first.trim();
+                        setState(() {
+                          _showPredictions = false;
+                          _placePredictions = [];
+                        });
+
+                        // Get accurate lat/lng and address details from Place Details API
+                        if (placeId != null) {
+                          final details = await GoogleCloudService.getPlaceDetails(placeId);
+                          if (details != null && mounted) {
+                            setState(() {
+                              _latitude = details['latitude'] as double?;
+                              _longitude = details['longitude'] as double?;
+                              if ((details['city'] as String).isNotEmpty) {
+                                _cityController.text = details['city'] as String;
+                              }
+                              if ((details['locality'] as String).isNotEmpty) {
+                                _localityController.text = details['locality'] as String;
+                              }
+                            });
+                          }
+                        }
+                      },
+                    );
+                  },
+                ),
+              ),
+          ],
         ),
 
         SizedBox(height: 16.h),
