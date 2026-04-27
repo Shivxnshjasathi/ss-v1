@@ -49,14 +49,33 @@ class PropertyRepository {
     }
   }
 
-  Future<void> addProperty(PropertyModel property, List<File> imageFiles) async {
+  Future<String?> uploadVideo(File videoFile, String propertyId) async {
+    LoggerService.i('Property: Uploading video for property $propertyId');
+    try {
+      final ref = _storage.ref().child('properties/$propertyId/video.mp4');
+      final uploadTask = await ref.putFile(videoFile);
+      final url = await uploadTask.ref.getDownloadURL();
+      LoggerService.i('Property: Successfully uploaded video');
+      return url;
+    } catch (e, st) {
+      LoggerService.e('Property: Video upload failed', error: e, stack: st);
+      return null;
+    }
+  }
+
+  Future<void> addProperty(PropertyModel property, List<File> imageFiles, {File? videoFile}) async {
     LoggerService.i('Property: Starting addProperty workflow for ${property.title}');
     try {
       List<String> imageUrls = [];
       
-      // 1. Upload images if any
+      // 1. Upload images and video if any
       if (imageFiles.isNotEmpty) {
         imageUrls = await uploadImages(imageFiles, property.id);
+      }
+      
+      String? finalVideoUrl = property.videoUrl;
+      if (videoFile != null) {
+        finalVideoUrl = await uploadVideo(videoFile, property.id);
       }
 
       // 2. update property with images
@@ -81,6 +100,9 @@ class PropertyRepository {
         lotSizeSqFt: property.lotSizeSqFt,
         latitude: property.latitude,
         longitude: property.longitude,
+        videoUrl: finalVideoUrl,
+        panoramaUrl: property.panoramaUrl,
+        amenities: property.amenities,
       );
 
       // 3. Save to Firestore

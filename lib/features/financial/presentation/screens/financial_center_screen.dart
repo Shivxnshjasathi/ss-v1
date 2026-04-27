@@ -71,7 +71,7 @@ class _FinancialCenterScreenState extends ConsumerState<FinancialCenterScreen> w
     
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.services ?? 'Financial Center', style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(l10n.services, style: const TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         bottom: TabBar(
           controller: _tabController,
@@ -208,14 +208,14 @@ class _FinancialCenterScreenState extends ConsumerState<FinancialCenterScreen> w
       padding: EdgeInsets.all(24.w),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [color.withOpacity(0.8), color],
+          colors: [color.withValues(alpha: 0.8), color],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20.w),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.3),
+            color: color.withValues(alpha: 0.3),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -233,7 +233,7 @@ class _FinancialCenterScreenState extends ConsumerState<FinancialCenterScreen> w
           Container(
             padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(20.w),
             ),
             child: Text(subtext, style: TextStyle(color: Colors.white, fontSize: 12.sp)),
@@ -269,7 +269,7 @@ class _FinancialCenterScreenState extends ConsumerState<FinancialCenterScreen> w
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8.w),
                 ),
                 child: Text(
@@ -288,9 +288,9 @@ class _FinancialCenterScreenState extends ConsumerState<FinancialCenterScreen> w
             data: SliderTheme.of(context).copyWith(
               trackHeight: 6,
               activeTrackColor: Theme.of(context).colorScheme.primary,
-              inactiveTrackColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              inactiveTrackColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
               thumbColor: Theme.of(context).colorScheme.primary,
-              overlayColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+              overlayColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
               valueIndicatorColor: Theme.of(context).colorScheme.primary,
             ),
             child: Slider(

@@ -5,7 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sampatti_bazar/core/services/logger_service.dart';
 
 class GoogleCloudService {
-  static const String _apiKey = 'AIzaSyDxBbtJh5KO4cLgMTy652YU8cL-rRPbXB8';
+  static const String _apiKey = 'AIzaSyBXkFyaP5w0g89EfUleyCFmhhMTQ_IVsnY';
   
   // ==========================================
   // PLACES API - Autocomplete

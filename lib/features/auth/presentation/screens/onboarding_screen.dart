@@ -12,6 +12,7 @@ import 'package:sampatti_bazar/core/services/location_service.dart';
 import 'package:sampatti_bazar/core/services/logger_service.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
+import 'package:sampatti_bazar/shared/widgets/primary_button.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -358,38 +359,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           ],
         ),
         child: SafeArea(
-          child: SizedBox(
-            width: double.infinity,
-            height: 56.h,
-            child: ElevatedButton(
-              onPressed: _isLoading ? null : _onCompleteSetup,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryBlue,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16.sp),
-                ),
-                elevation: 0,
-              ),
-              child: _isLoading
-                  ? SizedBox(
-                      width: 24.w,
-                      height: 24.h,
-                      child: const CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
-                      ),
-                    )
-                  : Text(
-                      l10n.completeSetup.toUpperCase(),
-                      style: TextStyle(
-                        fontWeight: FontWeight.w900,
-                        fontSize: 14.sp,
-                        letterSpacing: 1.5,
-                        fontFamily: 'Poppins',
-                      ),
-                    ),
-            ),
+          child: PrimaryButton(
+            text: l10n.completeSetup.toUpperCase(),
+            isLoading: _isLoading,
+            onPressed: _onCompleteSetup,
           ),
         ),
       ),

@@ -12,6 +12,7 @@ import 'package:sampatti_bazar/features/properties/presentation/screens/add_prop
 import 'package:sampatti_bazar/features/properties/presentation/screens/property_detail_screen.dart';
 import 'package:sampatti_bazar/features/properties/presentation/screens/property_feed_screen.dart';
 import 'package:sampatti_bazar/features/properties/presentation/screens/saved_properties_screen.dart';
+import 'package:sampatti_bazar/features/properties/presentation/screens/media_viewer_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/construction_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/home_loan_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/legal_screen.dart';
@@ -150,6 +151,14 @@ final goRouter = GoRouter(
           builder: (context, state) {
              final id = state.pathParameters['id'] ?? '';
              return PropertyDetailScreen(propertyId: id);
+          },
+        ),
+        GoRoute(
+          path: 'media',
+          builder: (context, state) {
+            final url = state.uri.queryParameters['url'] ?? '';
+            final type = state.uri.queryParameters['type'] ?? 'video';
+            return MediaViewerScreen(url: url, mediaType: type);
           },
         ),
       ]

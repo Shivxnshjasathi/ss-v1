@@ -5,18 +5,16 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:uuid/uuid.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:sampatti_bazar/features/properties/data/property_repository.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/core/services/logger_service.dart';
-import 'package:sampatti_bazar/features/services/data/booking_repository.dart';
-import 'package:sampatti_bazar/features/services/domain/booking_model.dart';
 import 'package:sampatti_bazar/features/properties/domain/property_model.dart';
 import 'package:sampatti_bazar/features/chat/data/chat_repository.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
 import 'package:sampatti_bazar/core/widgets/google_map_widget.dart';
+import 'package:sampatti_bazar/features/services/presentation/widgets/booking_bottom_sheet.dart';
 
 class PropertyDetailScreen extends ConsumerWidget {
   final String propertyId;
@@ -298,6 +296,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                       ),
 
                       SizedBox(height: 32.h),
+                      _buildMediaWalkthroughSection(context, property),
                       _buildSectionHeader(l10n.amenities.toUpperCase()),
                       SizedBox(height: 16.h),
                       _buildAmenities(context, property.amenities, l10n),
@@ -666,99 +665,29 @@ class PropertyDetailScreen extends ConsumerWidget {
   Future<void> _scheduleTour(
     BuildContext context,
     WidgetRef ref,
-    dynamic property,
+    PropertyModel property,
     AppLocalizations l10n,
   ) async {
-    final date = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now().add(const Duration(days: 1)),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 30)),
-    );
-    if (date == null) return;
-    if (!context.mounted) return;
-
-    final time = await showTimePicker(
-      context: context,
-      initialTime: const TimeOfDay(hour: 10, minute: 0),
-    );
-    if (time == null) return;
-    if (!context.mounted) return;
-
-    final bookingDateTime = DateTime(
-      date.year,
-      date.month,
-      date.day,
-      time.hour,
-      time.minute,
-    );
-
-    try {
-      final user = ref.read(currentUserDataProvider).value;
-      if (user == null) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(l10n.pleaseLoginToChat)));
-        }
-        return;
-      }
-
-      final booking = BookingModel(
-        id: const Uuid().v4(),
-        propertyId: property.id,
-        propertyTitle: property.title,
-        propertyLocation: property.location,
-        propertyImageUrl: property.imageUrls.isNotEmpty
-            ? property.imageUrls.first
-            : null,
-        buyerId: user.uid,
-        ownerId: property.ownerId,
-        bookingDate: bookingDateTime,
-        status: 'pending',
-        createdAt: DateTime.now(),
+    final user = ref.read(currentUserDataProvider).value;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.pleaseLoginToChat)),
       );
-
-      await ref.read(bookingRepositoryProvider).addBooking(booking);
-
-      LoggerService.trackEvent(
-        'property_book_visit',
-        parameters: {
-          'property_id': property.id,
-          'booking_id': booking.id,
-          'booking_date': bookingDateTime.toIso8601String(),
-        },
-      );
-
-      if (context.mounted) {
-        showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(l10n.visitScheduled),
-            content: Text(
-              l10n.visitScheduledMsg(
-                property.title,
-                '${date.day}/${date.month}',
-                time.format(context),
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: Text(l10n.great),
-              ),
-            ],
-          ),
-        );
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.failedToSchedule(e.toString()))),
-        );
-      }
+      return;
     }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => BookingBottomSheet(
+        property: property,
+        buyerId: user.uid,
+      ),
+    );
   }
+
+
 
   Widget _buildOwnerAction(
     BuildContext context,
@@ -906,6 +835,114 @@ class PropertyDetailScreen extends ConsumerWidget {
       ),
     );
   }
+
+  Widget _buildMediaWalkthroughSection(BuildContext context, PropertyModel property) {
+    if (property.videoUrl == null && property.panoramaUrl == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader('VIRTUAL TOURS & MEDIA'),
+        SizedBox(height: 16.h),
+        if (property.panoramaUrl != null)
+          _buildMediaCard(
+            context,
+            '360° Virtual Tour',
+            'Step inside and look around',
+            LucideIcons.view,
+            Colors.purple,
+            () {
+              context.push('/properties/media?type=panorama&url=${Uri.encodeComponent(property.panoramaUrl!)}');
+            },
+          ),
+        if (property.videoUrl != null)
+          _buildMediaCard(
+            context,
+            'Video Walkthrough',
+            'Watch the property video',
+            LucideIcons.video,
+            Colors.redAccent,
+            () {
+              context.push('/properties/media?type=video&url=${Uri.encodeComponent(property.videoUrl!)}');
+            },
+          ),
+        SizedBox(height: 32.h),
+      ],
+    );
+  }
+
+  Widget _buildMediaCard(
+    BuildContext context,
+    String title,
+    String subtitle,
+    IconData icon,
+    Color color,
+    VoidCallback onTap,
+  ) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 12.h),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20.sp),
+        child: Container(
+          padding: EdgeInsets.all(20.w),
+          decoration: BoxDecoration(
+            color: context.cardColor,
+            borderRadius: BorderRadius.circular(20.sp),
+            border: Border.all(color: context.borderColor, width: 1.2),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 15,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(14.w),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: color, size: 24.sp),
+              ),
+              SizedBox(width: 16.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w800,
+                        color: context.primaryTextColor,
+                      ),
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: context.secondaryTextColor,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(LucideIcons.chevronRight, color: context.secondaryTextColor, size: 20.sp),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildSectionHeader(String title) {
     return Padding(
       padding: EdgeInsets.only(bottom: 16.h),

@@ -22,6 +22,8 @@ class PropertyModel {
   final double? longitude;
   final String? street;
   final String? areaName;
+  final String? videoUrl;
+  final String? panoramaUrl;
 
   PropertyModel({
     required this.id,
@@ -47,6 +49,8 @@ class PropertyModel {
     this.longitude,
     this.street,
     this.areaName,
+    this.videoUrl,
+    this.panoramaUrl,
   });
 
   Map<String, dynamic> toMap() {
@@ -74,6 +78,8 @@ class PropertyModel {
       'longitude': longitude,
       'street': street,
       'areaName': areaName,
+      'videoUrl': videoUrl,
+      'panoramaUrl': panoramaUrl,
     };
   }
 
@@ -102,6 +108,8 @@ class PropertyModel {
       longitude: (map['longitude'] as num?)?.toDouble(),
       street: map['street'],
       areaName: map['areaName'],
+      videoUrl: map['videoUrl'],
+      panoramaUrl: map['panoramaUrl'],
     );
   }
 }

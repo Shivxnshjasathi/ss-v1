@@ -32,6 +32,8 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
   final TextEditingController _depositController = TextEditingController();
   final TextEditingController _builtInController = TextEditingController();
   final TextEditingController _lotSizeController = TextEditingController();
+  final TextEditingController _panoramaUrlController = TextEditingController();
+  File? _selectedVideo;
   String _propertyType = 'Apartment';
   String _listingType = 'Sell';
   String _furnishingStatus = 'Semi-Furnished';
@@ -142,6 +144,16 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
     }
   }
 
+  Future<void> _pickVideo() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? video = await picker.pickVideo(source: ImageSource.gallery);
+    if (video != null) {
+      setState(() {
+        _selectedVideo = File(video.path);
+      });
+    }
+  }
+
   @override
   void dispose() {
     _cityController.dispose();
@@ -153,6 +165,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
     _depositController.dispose();
     _builtInController.dispose();
     _lotSizeController.dispose();
+    _panoramaUrlController.dispose();
     super.dispose();
   }
 
@@ -193,9 +206,17 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
             lotSizeSqFt: double.tryParse(_lotSizeController.text),
             latitude: _latitude,
             longitude: _longitude,
+            panoramaUrl: _panoramaUrlController.text.isNotEmpty ? _panoramaUrlController.text : null,
+            amenities: [],
+            isVerified: false,
+            isZeroBrokerage: false,
           );
-
-          await ref.read(propertyRepositoryProvider).addProperty(property, _selectedImages);
+          
+          await ref.read(propertyRepositoryProvider).addProperty(
+            property, 
+            _selectedImages,
+            videoFile: _selectedVideo,
+          );
 
           if (mounted) {
              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Property listed successfully!')));
@@ -818,6 +839,53 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
                   },
                 ),
           ),
+        ),
+
+        SizedBox(height: 24.h),
+        _buildLabel('Video Walkthrough'),
+        SizedBox(height: 12.h),
+        GestureDetector(
+          onTap: _pickVideo,
+          child: Container(
+            padding: EdgeInsets.all(16.w),
+            decoration: BoxDecoration(
+              color: context.surfaceColor,
+              borderRadius: BorderRadius.circular(12.w),
+              border: Border.all(color: context.borderColor),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.video_library_outlined, color: AppTheme.primaryBlue),
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: Text(
+                    _selectedVideo != null 
+                        ? 'Video selected: ${_selectedVideo!.path.split('/').last}'
+                        : 'Upload Video Walkthrough',
+                    style: TextStyle(
+                      color: _selectedVideo != null ? context.primaryTextColor : Colors.grey,
+                      fontSize: 14.sp,
+                    ),
+                  ),
+                ),
+                if (_selectedVideo != null)
+                  IconButton(
+                    icon: Icon(Icons.close, size: 20.w),
+                    onPressed: () => setState(() => _selectedVideo = null),
+                  ),
+              ],
+            ),
+          ),
+        ),
+
+        SizedBox(height: 24.h),
+        _buildLabel('360° Virtual Tour URL (Optional)'),
+        SizedBox(height: 8.h),
+        _buildTextField(
+          l10n,
+          'e.g., https://kuula.co/share/...',
+          Icons.view_in_ar,
+          controller: _panoramaUrlController,
         ),
       ],
     );

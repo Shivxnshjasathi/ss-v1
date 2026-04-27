@@ -13,6 +13,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:feature_discovery/feature_discovery.dart';
+import 'package:sampatti_bazar/features/properties/presentation/widgets/property_map_view.dart';
 
 class PropertyFeedScreen extends ConsumerStatefulWidget {
   const PropertyFeedScreen({super.key});
@@ -22,6 +23,7 @@ class PropertyFeedScreen extends ConsumerStatefulWidget {
 }
 
 class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
+  bool _showMapMode = false;
   String _selectedCategory = 'All';
   final List<String> _categories = ['All', 'Sell', 'Rent/Lease'];
 
@@ -132,6 +134,23 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
           ),
         ),
         centerTitle: false,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          setState(() {
+            _showMapMode = !_showMapMode;
+          });
+        },
+        backgroundColor: AppTheme.primaryBlue,
+        icon: Icon(
+          _showMapMode ? LucideIcons.list : LucideIcons.map,
+          color: Colors.white,
+        ),
+        label: Text(
+          _showMapMode ? 'List View' : 'Map View',
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
       ),
       body: Column(
         children: [
@@ -274,35 +293,36 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
 
 
           // Featured Header
-          Padding(
-            padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 4.h),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  l10n.featuredCollections,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 22.sp,
-                    color: context.primaryTextColor,
-                    letterSpacing: -0.5,
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    l10n.seeAll,
+          if (!_showMapMode)
+            Padding(
+              padding: EdgeInsets.fromLTRB(16.w, 8.h, 16.w, 4.h),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    l10n.featuredCollections,
                     style: TextStyle(
-                      color: AppTheme.primaryBlue,
                       fontWeight: FontWeight.w900,
-                      fontSize: 13.sp,
-                      letterSpacing: 0.5,
+                      fontSize: 22.sp,
+                      color: context.primaryTextColor,
+                      letterSpacing: -0.5,
                     ),
                   ),
-                ),
-              ],
+                  TextButton(
+                    onPressed: () {},
+                    child: Text(
+                      l10n.seeAll,
+                      style: TextStyle(
+                        color: AppTheme.primaryBlue,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 13.sp,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
 
           // Property Cards
           Expanded(
@@ -369,6 +389,10 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                       ),
                     ),
                   );
+                }
+
+                if (_showMapMode) {
+                  return PropertyMapView(properties: filtered);
                 }
 
                 if (context.isMobile) {
