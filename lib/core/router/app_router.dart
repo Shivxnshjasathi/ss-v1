@@ -36,7 +36,7 @@ import 'package:sampatti_bazar/features/services/presentation/screens/providers/
 import 'package:sampatti_bazar/features/services/presentation/screens/providers/finance_dashboard_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/providers/movers_dashboard_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/providers/handyman_dashboard_screen.dart';
-import 'package:sampatti_bazar/features/services/presentation/screens/emi_calculator_screen.dart';
+import 'package:sampatti_bazar/features/financial/presentation/screens/financial_center_screen.dart';
 import 'package:sampatti_bazar/features/chat/presentation/screens/chat_list_screen.dart';
 import 'package:sampatti_bazar/features/chat/presentation/screens/chat_detail_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/offers_screen.dart';
@@ -160,7 +160,7 @@ final goRouter = GoRouter(
     ),
     GoRoute(
       path: '/services/emi-calculator',
-      builder: (context, state) => const EmiCalculatorScreen(),
+      builder: (context, state) => const FinancialCenterScreen(),
     ),
     GoRoute(
       path: '/services/movers',

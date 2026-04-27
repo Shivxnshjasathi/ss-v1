@@ -415,7 +415,7 @@ class _ServicesHubScreenState extends State<ServicesHubScreen> {
           textColor: Colors.white,
           child: _buildListTile(
             context,
-            l10n.emiCalculator,
+            'Financial Center',
             l10n.planYourFinances,
             LucideIcons.calculator,
             () => context.push('/services/emi-calculator'),
