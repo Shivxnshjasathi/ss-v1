@@ -85,7 +85,7 @@ class ChatbotRepository {
 
     if (myProperties != null && myProperties.isNotEmpty) {
       context['properties'] = myProperties.take(5).map((p) => {
-        'title': p.title ?? "Property",
+        'title': p.title,
         'price': _formatPrice(p.price),
       }).toList();
     }

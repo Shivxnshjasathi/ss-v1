@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/core/services/google_cloud_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -110,7 +111,12 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
 
     setState(() {
       _messages.add({'role': 'user', 'text': text, 'time': _getCurrentTime()});
-      _messageController.clear();
+      FirebaseAnalytics.instance.logEvent(
+      name: 'chatbot_message_sent',
+      parameters: {'message_length': text.length},
+    );
+
+    _messageController.clear();
       _isTyping = true;
     });
     _scrollToBottom();
@@ -155,6 +161,11 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
   }
 
   Future<void> _translateMessage(int index) async {
+    FirebaseAnalytics.instance.logEvent(
+      name: 'chatbot_translate_message',
+      parameters: {'message_index': index},
+    );
+
     if (_translatedMessages.containsKey(index)) {
       // Already translated, just toggle visibility
       setState(() {
@@ -406,6 +417,23 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
     );
   }
 
+  String _formatPrice(dynamic price) {
+    if (price == null) {
+      return 'Contact for price';
+    }
+    double p = 0;
+    if (price is String) {
+      p = double.tryParse(price) ?? 0;
+    } else if (price is num) {
+      p = price.toDouble();
+    }
+    
+    if (p >= 10000000) return '${(p / 10000000).toStringAsFixed(1)} Cr';
+    if (p >= 100000) return '${(p / 100000).toStringAsFixed(1)} L';
+    if (p >= 1000) return '${(p / 1000).toStringAsFixed(1)} K';
+    return p.toStringAsFixed(0);
+  }
+
   Widget _buildTranslateButton(int index, bool isTranslated) {
     return GestureDetector(
       onTap: () => _translateMessage(index),
@@ -457,7 +485,13 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
                       height: 80.h,
                       width: double.infinity,
                       color: AppTheme.primaryBlue.withValues(alpha: 0.1),
-                      child: Icon(Icons.home_outlined, color: AppTheme.primaryBlue, size: 30.w),
+                      child: item['images'] != null && (item['images'] as List).isNotEmpty
+                          ? Image.network(
+                              (item['images'] as List).first,
+                              fit: BoxFit.cover,
+                              errorBuilder: (c, e, s) => Icon(Icons.home_outlined, color: AppTheme.primaryBlue, size: 30.w),
+                            )
+                          : Icon(Icons.home_outlined, color: AppTheme.primaryBlue, size: 30.w),
                     ),
                   ),
                   Padding(
@@ -477,21 +511,35 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
                             ),
                             SizedBox(height: 4.h),
                             Text(
-                              '₹${item['price'] ?? 'Contact for price'}',
+                              '₹${_formatPrice(item['price'])}',
                               style: TextStyle(fontSize: 10.sp, color: AppTheme.primaryBlue, fontWeight: FontWeight.w700),
                             ),
                           ],
                         ),
                         SizedBox(height: 8.h),
-                        Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.symmetric(vertical: 4.h),
-                          decoration: BoxDecoration(
-                            color: AppTheme.primaryBlue,
-                            borderRadius: BorderRadius.circular(8.w),
+                        GestureDetector(
+                          onTap: () {
+                            if (item['id'] != null) {
+                              FirebaseAnalytics.instance.logEvent(
+                                name: 'chatbot_property_viewed',
+                                parameters: {
+                                  'property_id': item['id'],
+                                  'property_title': item['title'] ?? 'Unknown',
+                                },
+                              );
+                              context.push('/properties/detail/${item['id']}');
+                            }
+                          },
+                          child: Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.symmetric(vertical: 4.h),
+                            decoration: BoxDecoration(
+                              color: AppTheme.primaryBlue,
+                              borderRadius: BorderRadius.circular(8.w),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text('VIEW', style: TextStyle(color: Colors.white, fontSize: 8.sp, fontWeight: FontWeight.w800)),
                           ),
-                          alignment: Alignment.center,
-                          child: Text('VIEW', style: TextStyle(color: Colors.white, fontSize: 8.sp, fontWeight: FontWeight.w800)),
                         ),
                       ],
                     ),
@@ -666,6 +714,10 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
           children: chips.map((c) {
             return GestureDetector(
               onTap: () {
+                FirebaseAnalytics.instance.logEvent(
+                  name: 'chatbot_quick_action_clicked',
+                  parameters: {'action_label': c.$2},
+                );
                 _messageController.text = c.$2;
                 _sendMessage();
               },

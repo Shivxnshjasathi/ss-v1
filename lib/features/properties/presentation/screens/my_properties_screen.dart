@@ -8,6 +8,7 @@ import 'package:sampatti_bazar/features/auth/data/auth_repository.dart';
 import 'package:sampatti_bazar/features/properties/data/property_repository.dart';
 import 'package:sampatti_bazar/features/properties/domain/property_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 class MyPropertiesScreen extends ConsumerWidget {
   const MyPropertiesScreen({super.key});
@@ -104,11 +105,9 @@ class _MyPropertyCard extends ConsumerWidget {
   const _MyPropertyCard({required this.property});
 
   String _formatPrice(double amount) {
-    if (amount >= 10000000) {
-      return '₹${(amount / 10000000).toStringAsFixed(2)} Cr';
-    } else if (amount >= 100000) {
-      return '₹${(amount / 100000).toStringAsFixed(2)} L';
-    }
+    if (amount >= 10000000) return '₹${(amount / 10000000).toStringAsFixed(1)} Cr';
+    if (amount >= 100000) return '₹${(amount / 100000).toStringAsFixed(1)} L';
+    if (amount >= 1000) return '₹${(amount / 1000).toStringAsFixed(1)} K';
     return '₹${amount.toStringAsFixed(0)}';
   }
 
@@ -208,7 +207,13 @@ class _MyPropertyCard extends ConsumerWidget {
                     width: double.infinity,
                     height: 42.h,
                     child: ElevatedButton.icon(
-                      onPressed: () => context.push('/properties/manage/${property.id}'),
+                      onPressed: () {
+                        FirebaseAnalytics.instance.logEvent(
+                          name: 'property_manage_click',
+                          parameters: {'property_id': property.id, 'title': property.title},
+                        );
+                        context.push('/properties/manage/${property.id}');
+                      },
                       icon: Icon(LucideIcons.shieldCheck, size: 16.sp, color: Colors.white),
                       label: Text(
                         'MANAGE PROPERTY',
@@ -231,7 +236,13 @@ class _MyPropertyCard extends ConsumerWidget {
                     width: double.infinity,
                     height: 42.h,
                     child: OutlinedButton.icon(
-                      onPressed: () => _confirmDelete(context, ref),
+                      onPressed: () {
+                        FirebaseAnalytics.instance.logEvent(
+                          name: 'property_delete_click',
+                          parameters: {'property_id': property.id, 'title': property.title},
+                        );
+                        _confirmDelete(context, ref);
+                      },
                       icon: Icon(LucideIcons.trash2, size: 16.sp, color: Colors.redAccent),
                       label: Text(
                         'DELETE LISTING',
