@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
@@ -10,6 +12,9 @@ import 'package:sampatti_bazar/features/services/domain/service_request_model.da
 import 'package:sampatti_bazar/features/services/data/service_request_repository.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
 import 'package:sampatti_bazar/core/widgets/contact_bottom_sheet.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 
 class MoversScreen extends ConsumerStatefulWidget {
   const MoversScreen({super.key});
@@ -18,16 +23,231 @@ class MoversScreen extends ConsumerStatefulWidget {
   ConsumerState<MoversScreen> createState() => _MoversScreenState();
 }
 
+// Google Maps API key (same as in AndroidManifest)
+const _kMapsApiKey = 'AIzaSyBXkFyaP5w0g89EfUleyCFmhhMTQ_IVsnY';
+
 class _MoversScreenState extends ConsumerState<MoversScreen> {
   final TextEditingController _pickupController = TextEditingController(text: 'Prestige Falcon City, Bangalore');
   final TextEditingController _dropController = TextEditingController();
-  
+  final FocusNode _dropFocusNode = FocusNode();
+
   String _selectedSize = '2 BHK';
   DateTime _selectedDate = DateTime.now().add(const Duration(days: 3));
   TimeOfDay _selectedTime = const TimeOfDay(hour: 10, minute: 0);
-  
+
   bool _includePacking = false;
-  double _distanceKm = 10.0;
+  double _distanceKm = 0.0;
+  bool _isCalculatingDistance = false;
+
+  // Places autocomplete
+  List<Map<String, dynamic>> _suggestions = [];
+  bool _showSuggestions = false;
+  bool _isFetchingSuggestions = false;
+
+  GoogleMapController? _mapController;
+  LatLng? _pickupLatLng;
+  LatLng? _dropLatLng;
+  final Set<Marker> _markers = {};
+  final Set<Polyline> _polylines = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentLocation();
+    _dropController.addListener(_onDropTextChanged);
+  }
+
+  @override
+  void dispose() {
+    _dropController.removeListener(_onDropTextChanged);
+    _dropController.dispose();
+    _dropFocusNode.dispose();
+    super.dispose();
+  }
+
+  // ── Places Autocomplete ─────────────────────────────────────────────────────
+
+  void _onDropTextChanged() {
+    final query = _dropController.text.trim();
+    if (query.length < 3) {
+      setState(() { _suggestions = []; _showSuggestions = false; });
+      return;
+    }
+    _fetchPlacesSuggestions(query);
+  }
+
+  Future<void> _fetchPlacesSuggestions(String input) async {
+    setState(() => _isFetchingSuggestions = true);
+    try {
+      final uri = Uri.parse(
+        'https://maps.googleapis.com/maps/api/place/autocomplete/json'
+        '?input=${Uri.encodeComponent(input)}'
+        '&key=$_kMapsApiKey'
+        '&language=en'
+        '&components=country:in',
+      );
+      final response = await http.get(uri);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['status'] == 'OK') {
+          final predictions = data['predictions'] as List;
+          setState(() {
+            _suggestions = predictions.map<Map<String, dynamic>>((p) => {
+              'description': p['description'],
+              'place_id': p['place_id'],
+            }).toList();
+            _showSuggestions = _suggestions.isNotEmpty;
+          });
+        } else {
+          setState(() { _suggestions = []; _showSuggestions = false; });
+        }
+      }
+    } catch (_) {
+      setState(() { _suggestions = []; _showSuggestions = false; });
+    } finally {
+      setState(() => _isFetchingSuggestions = false);
+    }
+  }
+
+  Future<void> _selectSuggestion(Map<String, dynamic> suggestion) async {
+    final description = suggestion['description'] as String;
+    _dropController.removeListener(_onDropTextChanged);
+    _dropController.text = description;
+    _dropController.addListener(_onDropTextChanged);
+    setState(() { _suggestions = []; _showSuggestions = false; });
+    _dropFocusNode.unfocus();
+    await _geocodeAndCalculate(description);
+  }
+
+  /// Called on keyboard Done / search icon tap
+  Future<void> _onDropSubmitted() async {
+    final text = _dropController.text.trim();
+    if (text.isEmpty) return;
+    setState(() { _suggestions = []; _showSuggestions = false; });
+    _dropFocusNode.unfocus();
+    await _geocodeAndCalculate(text);
+  }
+
+  Future<void> _geocodeAndCalculate(String address) async {
+    setState(() => _isCalculatingDistance = true);
+    try {
+      List<Location> locations = await locationFromAddress(address);
+      if (locations.isEmpty) return;
+      final loc = locations.first;
+      final dropLatLng = LatLng(loc.latitude, loc.longitude);
+
+      setState(() {
+        _dropLatLng = dropLatLng;
+        _markers.removeWhere((m) => m.markerId.value == 'drop');
+        _markers.add(Marker(
+          markerId: const MarkerId('drop'),
+          position: dropLatLng,
+          infoWindow: InfoWindow(title: address),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+        ));
+      });
+
+      _calculateDistanceAndRoute();
+
+      // Zoom to fit both markers
+      if (_pickupLatLng != null) {
+        final bounds = LatLngBounds(
+          southwest: LatLng(
+            _pickupLatLng!.latitude < dropLatLng.latitude ? _pickupLatLng!.latitude : dropLatLng.latitude,
+            _pickupLatLng!.longitude < dropLatLng.longitude ? _pickupLatLng!.longitude : dropLatLng.longitude,
+          ),
+          northeast: LatLng(
+            _pickupLatLng!.latitude > dropLatLng.latitude ? _pickupLatLng!.latitude : dropLatLng.latitude,
+            _pickupLatLng!.longitude > dropLatLng.longitude ? _pickupLatLng!.longitude : dropLatLng.longitude,
+          ),
+        );
+        _mapController?.animateCamera(CameraUpdate.newLatLngBounds(bounds, 60));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not find location: $address'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isCalculatingDistance = false);
+    }
+  }
+
+  Future<void> _getCurrentLocation() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition();
+      setState(() {
+        _pickupLatLng = LatLng(position.latitude, position.longitude);
+        _markers.add(Marker(
+          markerId: const MarkerId('pickup'),
+          position: _pickupLatLng!,
+          infoWindow: const InfoWindow(title: 'Pickup Location'),
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+        ));
+      });
+      _updateAddressFromLatLng(_pickupLatLng!, isPickup: true);
+      _mapController?.animateCamera(CameraUpdate.newLatLngZoom(_pickupLatLng!, 14));
+    } catch (e) {
+      debugPrint('Error getting location: $e');
+    }
+  }
+
+  Future<void> _updateAddressFromLatLng(LatLng latLng, {required bool isPickup}) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(latLng.latitude, latLng.longitude);
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks[0];
+        String address = '${place.name}, ${place.locality}, ${place.administrativeArea}';
+        setState(() {
+          if (isPickup) {
+            _pickupController.text = address;
+          } else {
+            _dropController.text = address;
+          }
+        });
+      }
+    } catch (e) {
+      debugPrint('Error updating address: $e');
+    }
+  }
+
+  Future<void> _onMapTap(LatLng latLng) async {
+    setState(() {
+      _dropLatLng = latLng;
+      _markers.removeWhere((m) => m.markerId.value == 'drop');
+      _markers.add(Marker(
+        markerId: const MarkerId('drop'),
+        position: _dropLatLng!,
+        infoWindow: const InfoWindow(title: 'Drop Location'),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+      ));
+    });
+    _updateAddressFromLatLng(latLng, isPickup: false);
+    _calculateDistanceAndRoute();
+  }
+
+  void _calculateDistanceAndRoute() {
+    if (_pickupLatLng == null || _dropLatLng == null) return;
+
+    final distanceInMeters = Geolocator.distanceBetween(
+      _pickupLatLng!.latitude, _pickupLatLng!.longitude,
+      _dropLatLng!.latitude, _dropLatLng!.longitude,
+    );
+
+    setState(() {
+      _distanceKm = distanceInMeters / 1000;
+      _polylines
+        ..removeWhere((p) => p.polylineId.value == 'route')
+        ..add(Polyline(
+          polylineId: const PolylineId('route'),
+          points: [_pickupLatLng!, _dropLatLng!],
+          color: AppTheme.primaryBlue,
+          width: 4,
+          patterns: [PatternItem.dash(20), PatternItem.gap(10)],
+        ));
+    });
+  }
   
   int _calculateBasePrice() {
     switch (_selectedSize) {
@@ -230,29 +450,63 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
             ),
           ],
         ),
-        actions: [
-          Container(
-            margin: EdgeInsets.only(right: 16.w),
-            decoration: BoxDecoration(
-              color: AppTheme.primaryBlue.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12.w),
-            ),
-            child: IconButton(
-              icon: Icon(Icons.help_outline, color: context.primaryTextColor, size: 20.sp),
-              onPressed: () => ContactBottomSheet.show(context),
+      ),
+      body: Stack(
+        children: [
+          // Background Map
+          Positioned.fill(
+            bottom: 0.35.h * MediaQuery.of(context).size.height,
+            child: GoogleMap(
+              initialCameraPosition: CameraPosition(
+                target: _pickupLatLng ?? const LatLng(22.7196, 75.8577),
+                zoom: 12,
+              ),
+              markers: _markers,
+              polylines: _polylines,
+              myLocationEnabled: true,
+              myLocationButtonEnabled: false,
+              onMapCreated: (controller) => _mapController = controller,
+              onTap: _onMapTap,
+              padding: EdgeInsets.only(top: 60.h),
+              zoomControlsEnabled: false,
             ),
           ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.all(16.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+          
+          // Selection Panel
+          DraggableScrollableSheet(
+            initialChildSize: 0.55,
+            minChildSize: 0.45,
+            maxChildSize: 0.95,
+            builder: (context, scrollController) {
+              return Container(
+                decoration: BoxDecoration(
+                  color: context.scaffoldColor,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(32.sp)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 20,
+                      offset: const Offset(0, -5),
+                    ),
+                  ],
+                ),
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  padding: EdgeInsets.all(24.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 40.w,
+                          height: 4.h,
+                          margin: EdgeInsets.only(bottom: 24.h),
+                          decoration: BoxDecoration(
+                            color: context.borderColor,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                      ),
                   _buildSectionLabel(l10n.transitRoute),
                   SizedBox(height: 16.h),
                   _buildTransitRouteCard(l10n),
@@ -265,27 +519,57 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
                   
                   SizedBox(height: 32.h),
 
-                  _buildSectionLabel(l10n.approxDistance),
-                  SizedBox(height: 16.h),
-                  Row(
-                    children: [
-                      Text('${_distanceKm.round()} km', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp)),
-                      Expanded(
-                        child: Slider(
-                          value: _distanceKm,
-                          min: 1,
-                          max: 500,
-                          divisions: 499,
-                          activeColor: AppTheme.primaryBlue,
-                          onChanged: (val) {
-                            setState(() {
-                              _distanceKm = val;
-                            });
-                          },
-                        ),
+                  // Distance chip — auto-calculated, no manual slider
+                  if (_distanceKm > 0)
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryBlue.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(12.w),
+                        border: Border.all(color: AppTheme.primaryBlue.withValues(alpha: 0.25)),
                       ),
-                    ],
-                  ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.route_outlined, color: AppTheme.primaryBlue, size: 20.sp),
+                              SizedBox(width: 10.w),
+                              Text('Calculated Distance', style: TextStyle(color: AppTheme.primaryBlue, fontWeight: FontWeight.w700, fontSize: 13.sp)),
+                            ],
+                          ),
+                          Text('${_distanceKm.toStringAsFixed(1)} km', style: TextStyle(color: AppTheme.primaryBlue, fontWeight: FontWeight.w900, fontSize: 16.sp)),
+                        ],
+                      ),
+                    )
+                  else if (_isCalculatingDistance)
+                    Center(child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8.h),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(width: 16.w, height: 16.w, child: const CircularProgressIndicator(strokeWidth: 2, color: AppTheme.primaryBlue)),
+                          SizedBox(width: 10.w),
+                          Text('Calculating distance...', style: TextStyle(color: AppTheme.primaryBlue, fontSize: 12.sp)),
+                        ],
+                      ),
+                    ))
+                  else
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                      decoration: BoxDecoration(
+                        color: context.cardColor,
+                        borderRadius: BorderRadius.circular(12.w),
+                        border: Border.all(color: context.borderColor),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.info_outline, color: Colors.grey, size: 18.sp),
+                          SizedBox(width: 10.w),
+                          Text('Enter drop location to calculate distance', style: TextStyle(color: Colors.grey, fontSize: 12.sp)),
+                        ],
+                      ),
+                    ),
 
                   SizedBox(height: 32.h),
                   
@@ -339,7 +623,7 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
                     width: double.infinity,
                     height: 54.h,
                     child: ElevatedButton(
-                      onPressed: _confirmBooking,
+                      onPressed: _distanceKm > 0 ? _confirmBooking : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.primaryBlue,
                         foregroundColor: Colors.white,
@@ -347,15 +631,16 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16.sp),
                         ),
-                        shadowColor: AppTheme.primaryBlue.withValues(alpha: 0.4),
+                        disabledBackgroundColor: Colors.grey.shade300,
                       ),
                       child: Text(
-                        l10n.confirmBooking.toUpperCase(),
+                        _distanceKm > 0 
+                            ? l10n.confirmBooking.toUpperCase() 
+                            : 'SEARCH DROP LOCATION FIRST',
                         style: TextStyle(
                           fontWeight: FontWeight.w900,
                           fontSize: 14.sp,
                           letterSpacing: 1.5,
-                          fontFamily: 'Poppins',
                         ),
                       ),
                     ),
@@ -364,11 +649,25 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
                 ],
               ),
             ),
-          ],
+          );
+        },
+      ),
+      
+      // Floating Help Button
+      Positioned(
+        top: 16.h,
+        right: 16.w,
+        child: FloatingActionButton.small(
+          onPressed: () => ContactBottomSheet.show(context),
+          backgroundColor: context.cardColor,
+          elevation: 4,
+          child: Icon(Icons.help_outline, color: context.primaryTextColor),
         ),
       ),
-    );
-  }
+    ],
+  ),
+);
+}
 
   Widget _buildSectionLabel(String label) {
     return Text(
@@ -504,26 +803,97 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
                           ),
                         ),
                         SizedBox(height: 2.h),
-                        TextField(
-                          controller: _dropController,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15.sp,
-                            fontFamily: 'Poppins',
-                            color: context.primaryTextColor,
-                          ),
-                          decoration: InputDecoration(
-                            hintText: l10n.searchDestination,
-                            hintStyle: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 15.sp,
-                              fontFamily: 'Poppins',
-                              color: context.secondaryTextColor.withValues(alpha: 0.4),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextField(
+                              controller: _dropController,
+                              focusNode: _dropFocusNode,
+                              textInputAction: TextInputAction.search,
+                              onSubmitted: (_) => _onDropSubmitted(),
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 15.sp,
+                                fontFamily: 'Poppins',
+                                color: context.primaryTextColor,
+                              ),
+                              decoration: InputDecoration(
+                                hintText: l10n.searchDestination,
+                                hintStyle: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 15.sp,
+                                  fontFamily: 'Poppins',
+                                  color: context.secondaryTextColor.withValues(alpha: 0.4),
+                                ),
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(vertical: 4.h),
+                                border: InputBorder.none,
+                                suffixIcon: _isFetchingSuggestions
+                                    ? Padding(
+                                        padding: EdgeInsets.all(10.w),
+                                        child: SizedBox(
+                                          width: 16.w, height: 16.w,
+                                          child: const CircularProgressIndicator(strokeWidth: 2, color: AppTheme.primaryBlue),
+                                        ),
+                                      )
+                                    : GestureDetector(
+                                        onTap: _onDropSubmitted,
+                                        child: Icon(Icons.search_rounded, color: AppTheme.primaryBlue, size: 22.sp),
+                                      ),
+                              ),
                             ),
-                            isDense: true,
-                            contentPadding: EdgeInsets.symmetric(vertical: 4.h),
-                            border: InputBorder.none,
-                          ),
+                            // ── Autocomplete Suggestions Dropdown ──
+                            if (_showSuggestions && _suggestions.isNotEmpty)
+                              Container(
+                                margin: EdgeInsets.only(top: 4.h),
+                                decoration: BoxDecoration(
+                                  color: context.cardColor,
+                                  borderRadius: BorderRadius.circular(12.sp),
+                                  border: Border.all(color: AppTheme.primaryBlue.withValues(alpha: 0.2)),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(alpha: 0.08),
+                                      blurRadius: 12,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: ListView.separated(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: _suggestions.length > 5 ? 5 : _suggestions.length,
+                                  separatorBuilder: (_, __) => Divider(height: 1, color: context.borderColor),
+                                  itemBuilder: (context, i) {
+                                    final s = _suggestions[i];
+                                    return InkWell(
+                                      onTap: () => _selectSuggestion(s),
+                                      borderRadius: i == 0
+                                          ? BorderRadius.vertical(top: Radius.circular(12.sp))
+                                          : (i == (_suggestions.length > 5 ? 4 : _suggestions.length - 1)
+                                              ? BorderRadius.vertical(bottom: Radius.circular(12.sp))
+                                              : BorderRadius.zero),
+                                      child: Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+                                        child: Row(
+                                          children: [
+                                            Icon(Icons.location_on_outlined, color: AppTheme.primaryBlue, size: 16.sp),
+                                            SizedBox(width: 10.w),
+                                            Expanded(
+                                              child: Text(
+                                                s['description'] as String,
+                                                style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w600, color: context.primaryTextColor),
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                          ],
                         ),
                       ],
                     ),

@@ -148,7 +148,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                    FittedBox(
                     fit: BoxFit.scaleDown,
                     alignment: Alignment.centerLeft,
-                    child: Text(l10n.number, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32.sp, letterSpacing: -1, color: Color(0xFF1E60FF), height: 1.1.h)),
+                    child: Text(l10n.number, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 32.sp, letterSpacing: -1, color: AppTheme.primaryBlue, height: 1.1.h)),
                   ),
                   SizedBox(height: 16.h),
                   Text('${l10n.otpEntryHint}\n+91 ${widget.phoneNumber}', style: TextStyle(fontSize: 12.sp, fontWeight: FontWeight.w600, color: context.primaryTextColor, height: 1.5.h)),
@@ -172,6 +172,10 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                           style: TextStyle(color: Colors.transparent, fontSize: 1.sp),
                           decoration: const InputDecoration(
                             border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            errorBorder: InputBorder.none,
+                            disabledBorder: InputBorder.none,
                             counterText: '',
                             fillColor: Colors.transparent,
                             filled: true,
@@ -192,7 +196,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                   if (_isLoading)
                     Padding(
                       padding: EdgeInsets.only(top: 24.0.h),
-                      child: Center(child: CircularProgressIndicator(color: Color(0xFF1E60FF))),
+                      child: Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue)),
                     ),
                   
                   SizedBox(height: 32.h),
@@ -210,7 +214,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                                 ? ' ${l10n.resendIn} 00:${_timerSeconds.toString().padLeft(2, '0')}'
                                 : ' ${l10n.resendOTP}', 
                               style: TextStyle(
-                                color: _timerSeconds > 0 ? Colors.grey : const Color(0xFF1E60FF), 
+                                color: _timerSeconds > 0 ? Colors.grey : AppTheme.primaryBlue, 
                                 fontWeight: FontWeight.bold
                               )
                             ),

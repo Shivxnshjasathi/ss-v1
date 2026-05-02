@@ -290,7 +290,7 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
             Container(
               padding: EdgeInsets.all(20.w),
               decoration: BoxDecoration(
-                color: const Color(0xFFF4FAFD),
+                color: AppTheme.primaryBlue.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(16.w),
                 border: Border.all(
                   color: AppTheme.primaryBlue.withValues(alpha: 0.1),

@@ -108,17 +108,36 @@ class AuthRepository {
 
   Future<UserCredential?> signInWithGoogle() async {
     try {
-      final GoogleSignInAccount googleUser = await GoogleSignIn.instance.authenticate();
-      final googleAuth = googleUser.authentication;
+      LoggerService.i('Auth: Starting Google Sign In');
+      
+      // Explicitly pass the web client ID from google-services.json (client_type: 3)
+      // to prevent DEVELOPER_ERROR on Android.
+      final GoogleSignIn googleSignIn = GoogleSignIn(
+        serverClientId: '987957373561-166rstgm0sr92vu36evpqe5j80qgdkuq.apps.googleusercontent.com',
+        scopes: ['email'],
+      );
+      
+      // Sign out first to ensure a clean session and force account picker
+      await googleSignIn.signOut();
+      
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      if (googleUser == null) {
+        LoggerService.w('Auth: Google Sign In cancelled by user');
+        return null;
+      }
+
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
       final OAuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: null, // accessToken is not directly available in authentication getter in this version, usually null for ID token auth
+        accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      return await _auth.signInWithCredential(credential);
+      final userCredential = await _auth.signInWithCredential(credential);
+      LoggerService.i('Auth: Google Sign In Success. UID: ${userCredential.user?.uid}');
+      return userCredential;
     } catch (e, st) {
-      LoggerService.e('Auth: Error during Google sign in: $e', error: e, stack: st);
+      LoggerService.e('Auth: Error during Google sign in', error: e, stack: st);
       rethrow;
     }
   }

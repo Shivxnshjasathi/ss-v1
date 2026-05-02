@@ -25,6 +25,10 @@ final isPropertySavedProvider = StreamProvider.family<bool, ({String userId, Str
   return ref.watch(propertyRepositoryProvider).isPropertySaved(arg.userId, arg.propertyId);
 });
 
+final propertiesByOwnerProvider = StreamProvider.family<List<PropertyModel>, String>((ref, ownerId) {
+  return ref.watch(propertyRepositoryProvider).streamPropertiesByOwner(ownerId);
+});
+
 class PropertyRepository {
   final FirebaseFirestore _firestore;
   final FirebaseStorage _storage;
@@ -123,6 +127,28 @@ class PropertyRepository {
       LoggerService.e('Property: Failed to delete property $propertyId', error: e, stack: st);
       rethrow;
     }
+  }
+
+  Future<void> updateProperty(PropertyModel property) async {
+    LoggerService.i('Property: Updating property ${property.id}');
+    try {
+      await _firestore.collection('properties').doc(property.id).update(property.toMap());
+      LoggerService.i('Property: Successfully updated property ${property.id}');
+    } catch (e, st) {
+      LoggerService.e('Property: Failed to update property ${property.id}', error: e, stack: st);
+      rethrow;
+    }
+  }
+
+  Stream<List<PropertyModel>> streamPropertiesByOwner(String ownerId) {
+    LoggerService.i('Property: Streaming properties for owner $ownerId');
+    return _firestore
+        .collection('properties')
+        .where('ownerId', isEqualTo: ownerId)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) => PropertyModel.fromMap(doc.data(), doc.id)).toList();
+    });
   }
 
   Stream<List<PropertyModel>> streamProperties({String? city, String? type}) {

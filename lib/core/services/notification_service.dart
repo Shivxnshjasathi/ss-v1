@@ -1,9 +1,12 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sampatti_bazar/core/services/logger_service.dart';
 
 class NotificationService {
   static final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   /// Initialize FCM listeners for foreground, background tap, and token refresh.
   static Future<void> initialize(BuildContext context) async {
@@ -24,12 +27,35 @@ class NotificationService {
     // Handle token refresh
     _messaging.onTokenRefresh.listen((newToken) {
       LoggerService.i('FCM Token refreshed: $newToken');
-      // TODO: Send updated token to your backend/Firestore
+      _syncTokenToFirestore(newToken);
     });
+
+    // Sync initial token
+    final token = await getToken();
+    if (token != null) {
+      _syncTokenToFirestore(token);
+    }
 
     // Subscribe to a topic for broadcast notifications
     await _messaging.subscribeToTopic('all_users');
     LoggerService.i('FCM subscribed to topic: all_users');
+  }
+
+  static Future<void> _syncTokenToFirestore(String token) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        await _firestore.collection('users').doc(user.uid).update({
+          'fcmToken': token,
+          'lastTokenUpdate': FieldValue.serverTimestamp(),
+        });
+        LoggerService.i('FCM Token synced to Firestore for user ${user.uid}');
+      } catch (e) {
+        // If document doesn't exist or fails, we might need to set it, 
+        // but update is safer if the user profile already exists.
+        LoggerService.e('FCM: Error syncing token to Firestore', error: e);
+      }
+    }
   }
 
   /// Show an in-app banner notification when a message arrives in the foreground

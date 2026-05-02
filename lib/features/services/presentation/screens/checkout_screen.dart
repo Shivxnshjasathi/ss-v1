@@ -65,7 +65,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator(color: Color(0xFF1E60FF))),
+      builder: (context) => const Center(child: CircularProgressIndicator(color: AppTheme.primaryBlue)),
     );
 
     final l10n = AppLocalizations.of(context)!;

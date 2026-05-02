@@ -204,6 +204,28 @@ class _MyPropertyCard extends ConsumerWidget {
                     ],
                   ),
                   SizedBox(height: 12.h),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 42.h,
+                    child: ElevatedButton.icon(
+                      onPressed: () => context.push('/properties/manage/${property.id}'),
+                      icon: Icon(LucideIcons.shieldCheck, size: 16.sp, color: Colors.white),
+                      label: Text(
+                        'MANAGE PROPERTY',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 12.sp,
+                          color: Colors.white,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.primaryBlue,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.w)),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 12.h),
                   // Delete button
                   SizedBox(
                     width: double.infinity,

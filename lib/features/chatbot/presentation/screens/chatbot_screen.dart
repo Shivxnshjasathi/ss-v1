@@ -234,7 +234,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
               ),
               child: Icon(
                 Icons.smart_toy,
-                color: Color(0xFF1E60FF),
+                color: AppTheme.primaryBlue,
                 size: 16.w,
               ),
             ),
@@ -489,7 +489,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
                   Container(
                     margin: EdgeInsets.only(right: 4.w),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF80B3FF),
+                      color: AppTheme.primaryBlue,
                       borderRadius: BorderRadius.circular(6.w),
                     ),
                     child: IconButton(

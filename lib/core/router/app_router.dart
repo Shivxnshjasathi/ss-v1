@@ -41,6 +41,7 @@ import 'package:sampatti_bazar/features/financial/presentation/screens/financial
 import 'package:sampatti_bazar/features/chat/presentation/screens/chat_list_screen.dart';
 import 'package:sampatti_bazar/features/chat/presentation/screens/chat_detail_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/offers_screen.dart';
+import 'package:sampatti_bazar/features/properties/presentation/screens/property_management_screen.dart';
 import 'package:sampatti_bazar/features/properties/presentation/screens/my_properties_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -157,6 +158,13 @@ final goRouter = GoRouter(
         GoRoute(
           path: 'my',
           builder: (context, state) => const MyPropertiesScreen(),
+        ),
+        GoRoute(
+          path: 'manage/:id',
+          builder: (context, state) {
+            final id = state.pathParameters['id'] ?? '';
+            return PropertyManagementScreen(propertyId: id);
+          },
         ),
         GoRoute(
           path: 'media',

@@ -103,144 +103,130 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
 
     return Scaffold(
       backgroundColor: context.scaffoldColor,
-      body: CustomScrollView(
-        slivers: [
-          _buildSliverAppBar(l10n),
-          SliverToBoxAdapter(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildSearchBar(l10n),
-                _buildCategorySection(l10n),
-                if (_selectedCategoryId != 'all' && _searchQuery.isEmpty) _buildSubcategorySection(l10n),
-                _buildProductHeader(l10n, filtered.length),
-              ],
-            ),
-          ),
-          if (filtered.isEmpty)
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.search_off, size: 64.w, color: Colors.grey.withValues(alpha: 0.3)),
-                    SizedBox(height: 16.h),
-                    Text(l10n.noProductsFound, style: const TextStyle(color: Colors.grey)),
-                    if (_searchQuery.isNotEmpty)
-                      TextButton(
-                        onPressed: () => setState(() {
-                          _searchController.clear();
-                          _searchQuery = '';
-                        }),
-                        child: const Text("Clear Search", style: TextStyle(color: AppTheme.primaryBlue)),
-                      ),
-                  ],
+      appBar: _buildNormalAppBar(l10n),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSearchBar(l10n),
+            _buildCategorySection(l10n),
+            if (_selectedCategoryId != 'all' && _searchQuery.isEmpty) _buildSubcategorySection(l10n),
+            _buildProductHeader(l10n, filtered.length),
+            if (filtered.isEmpty)
+              Padding(
+                padding: EdgeInsets.only(top: 100.h),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.search_off, size: 64.w, color: Colors.grey.withValues(alpha: 0.3)),
+                      SizedBox(height: 16.h),
+                      Text(l10n.noProductsFound, style: const TextStyle(color: Colors.grey)),
+                      if (_searchQuery.isNotEmpty)
+                        TextButton(
+                          onPressed: () => setState(() {
+                            _searchController.clear();
+                            _searchQuery = '';
+                          }),
+                          child: const Text("Clear Search", style: TextStyle(color: AppTheme.primaryBlue)),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-            )
-          else
-            SliverPadding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              sliver: SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 0.62,
-                ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
+              )
+            else
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
+                    childAspectRatio: 0.52,
+                  ),
+                  itemCount: filtered.length,
+                  itemBuilder: (context, index) {
                     final product = filtered[index];
                     return _buildProductCard(product, l10n);
                   },
-                  childCount: filtered.length,
                 ),
               ),
-            ),
-          SliverToBoxAdapter(child: SizedBox(height: 32.h)),
-        ],
+            SizedBox(height: 32.h),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildSliverAppBar(AppLocalizations l10n) {
-    return SliverAppBar(
-      pinned: true,
-      expandedHeight: 120.h,
+  PreferredSizeWidget _buildNormalAppBar(AppLocalizations l10n) {
+    return AppBar(
       backgroundColor: context.scaffoldColor,
       elevation: 0,
       automaticallyImplyLeading: false,
-      leading: null,
-      flexibleSpace: FlexibleSpaceBar(
-        titlePadding: EdgeInsets.only(left: 16.w, bottom: 16.h),
-        centerTitle: false,
-        title: Row(
-          children: [
-            GestureDetector(
-              onTap: () => context.pop(),
-              child: Container(
-                padding: EdgeInsets.all(8.w),
-                decoration: BoxDecoration(
-                  color: context.cardColor,
-                  border: Border.all(color: context.borderColor),
-                  borderRadius: BorderRadius.circular(12.sp),
-                ),
-                child: Icon(
-                  Icons.arrow_back_ios_new,
-                  color: context.iconColor,
-                  size: 14.sp,
-                ),
+      title: Row(
+        children: [
+          GestureDetector(
+            onTap: () => context.pop(),
+            child: Container(
+              padding: EdgeInsets.all(10.w),
+              decoration: BoxDecoration(
+                color: context.cardColor,
+                border: Border.all(color: context.borderColor),
+                borderRadius: BorderRadius.circular(14.sp),
+              ),
+              child: Icon(
+                Icons.arrow_back_ios_new,
+                color: context.iconColor,
+                size: 14.sp,
               ),
             ),
-            SizedBox(width: 16.w),
-            Text(
-              l10n.marketplace,
-              style: TextStyle(
-                fontWeight: FontWeight.w900,
-                color: context.primaryTextColor,
-                fontSize: 24.sp,
-                fontFamily: 'Poppins',
-              ),
+          ),
+          SizedBox(width: 16.w),
+          Text(
+            l10n.marketplace,
+            style: TextStyle(
+              fontWeight: FontWeight.w900,
+              color: context.primaryTextColor,
+              fontSize: 20.sp,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       actions: [
         ListenableBuilder(
           listenable: cart,
           builder: (context, _) {
-            return Container(
-              margin: EdgeInsets.only(right: 16.w, top: 4.h, bottom: 4.h),
-              decoration: BoxDecoration(
-                color: context.cardColor,
-                border: Border.all(color: context.borderColor),
-                borderRadius: BorderRadius.circular(12.sp),
-              ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.shopping_bag_outlined, color: context.iconColor, size: 20.sp),
-                    onPressed: () => context.push('/services/marketplace/cart'),
-                  ),
-                  if (cart.itemCount > 0)
-                    Positioned(
-                      right: 8.w,
-                      top: 8.h,
-                      child: Container(
-                        padding: EdgeInsets.all(4.w),
+            return GestureDetector(
+              onTap: () => context.push('/services/marketplace/cart'),
+              child: Container(
+                margin: EdgeInsets.only(right: 16.w, top: 8.h, bottom: 8.h),
+                padding: EdgeInsets.symmetric(horizontal: 12.w),
+                decoration: BoxDecoration(
+                  color: context.cardColor,
+                  border: Border.all(color: context.borderColor),
+                  borderRadius: BorderRadius.circular(14.sp),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.shopping_bag_outlined, color: context.iconColor, size: 18.sp),
+                    if (cart.itemCount > 0) ...[
+                      SizedBox(width: 8.w),
+                      Container(
+                        padding: EdgeInsets.all(6.w),
                         decoration: BoxDecoration(
                           color: AppTheme.primaryBlue,
                           shape: BoxShape.circle,
                         ),
                         child: Text(
                           '${cart.itemCount}',
-                          style: TextStyle(color: Colors.white, fontSize: 8.sp, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: Colors.white, fontSize: 10.sp, fontWeight: FontWeight.bold),
                         ),
                       ),
-                    ),
-                ],
+                    ],
+                  ],
+                ),
               ),
             );
           },
@@ -587,7 +573,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                 SizedBox(height: 12.h),
                 SizedBox(
                   width: double.infinity,
-                  height: 38.h,
+                  height: 44.h,
                   child: ElevatedButton(
                     onPressed: () => _addToCart(product),
                     style: ElevatedButton.styleFrom(
@@ -596,13 +582,19 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                         borderRadius: BorderRadius.circular(12.w),
                       ),
                       elevation: 0,
+                      padding: EdgeInsets.zero,
                     ),
-                    child: Text(
-                      l10n.addToCart,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w900,
-                        fontSize: 12.sp,
-                        color: Colors.white,
+                    child: FittedBox(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.w),
+                        child: Text(
+                          l10n.addToCart,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w900,
+                            fontSize: 12.sp,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ),
                   ),

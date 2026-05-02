@@ -27,7 +27,7 @@ class _FinancialCenterScreenState extends ConsumerState<FinancialCenterScreen> w
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -35,6 +35,17 @@ class _FinancialCenterScreenState extends ConsumerState<FinancialCenterScreen> w
     _tabController.dispose();
     super.dispose();
   }
+
+  // Rent vs Buy State
+  double _rentAmount = 25000;
+  double _buyPrice = 6000000;
+  double _appreciationRate = 6.0;
+  double _investmentReturn = 10.0;
+
+  // Tax State
+  double _annualInterestPaid = 350000;
+  double _annualPrincipalPaid = 150000;
+  double _taxBracket = 30.0;
 
   double get _calculatedEmi {
     double p = _loanAmount;
@@ -56,6 +67,11 @@ class _FinancialCenterScreenState extends ConsumerState<FinancialCenterScreen> w
     return _maxEligibleEmi * (pow(1 + r, n) - 1) / (r * pow(1 + r, n));
   }
 
+  // Tax Logic
+  double get _interestDeduction => min(_annualInterestPaid, 200000); // Section 24
+  double get _principalDeduction => min(_annualPrincipalPaid, 150000); // Section 80C
+  double get _totalTaxSaved => (_interestDeduction + _principalDeduction) * (_taxBracket / 100);
+
   String _formatCurrency(double amount) {
     if (amount >= 10000000) {
       return '₹${(amount / 10000000).toStringAsFixed(2)} Cr';
@@ -75,12 +91,15 @@ class _FinancialCenterScreenState extends ConsumerState<FinancialCenterScreen> w
         centerTitle: true,
         bottom: TabBar(
           controller: _tabController,
+          isScrollable: true,
           indicatorColor: Theme.of(context).colorScheme.primary,
           labelColor: Theme.of(context).colorScheme.primary,
           unselectedLabelColor: Colors.grey,
           tabs: const [
-            Tab(text: 'EMI Calculator', icon: Icon(Icons.calculate)),
-            Tab(text: 'Loan Eligibility', icon: Icon(Icons.verified_user)),
+            Tab(text: 'EMI Calc', icon: Icon(Icons.calculate)),
+            Tab(text: 'Eligibility', icon: Icon(Icons.verified_user)),
+            Tab(text: 'Rent vs Buy', icon: Icon(Icons.compare_arrows)),
+            Tab(text: 'Tax Planner', icon: Icon(Icons.savings)),
           ],
         ),
       ),
@@ -89,6 +108,8 @@ class _FinancialCenterScreenState extends ConsumerState<FinancialCenterScreen> w
         children: [
           _buildEmiCalculator(context),
           _buildEligibilityChecker(context),
+          _buildRentVsBuy(context),
+          _buildTaxPlanner(context),
         ],
       ),
     );
@@ -354,6 +375,168 @@ class _FinancialCenterScreenState extends ConsumerState<FinancialCenterScreen> w
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildRentVsBuy(BuildContext context) {
+    // Sophisticated 10-year projection logic
+    // We compare buying a house vs renting and investing the down payment
+    double downPayment = _buyPrice * 0.20; 
+    double totalRentPaid = _rentAmount * 12 * 10;
+    
+    // Future value of the house
+    double projectedHouseValue = _buyPrice * pow(1 + (_appreciationRate / 100), 10);
+    double appreciationGain = projectedHouseValue - _buyPrice;
+    
+    // Opportunity cost: What if you invested the down payment instead?
+    double investmentGains = downPayment * (pow(1 + (_investmentReturn / 100), 10) - 1);
+    
+    double netBuyWealth = appreciationGain;
+    double netRentWealth = investmentGains - totalRentPaid;
+
+    bool buyingWins = netBuyWealth > netRentWealth;
+    
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(16.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildResultCard(
+            title: '10-Year Wealth Difference',
+            amount: (netBuyWealth - netRentWealth).abs(),
+            subtext: buyingWins ? 'Buying is mathematically better' : 'Renting & Investing is better',
+            color: buyingWins ? Colors.indigo : Colors.deepOrange,
+          ),
+          SizedBox(height: 24.h),
+          _buildSliderWithInput(
+            label: 'Current Monthly Rent',
+            value: _rentAmount,
+            min: 5000,
+            max: 200000,
+            divisions: 195,
+            displayValue: _formatCurrency(_rentAmount),
+            onChanged: (val) => setState(() => _rentAmount = val),
+          ),
+          SizedBox(height: 16.h),
+          _buildSliderWithInput(
+            label: 'Property Purchase Price',
+            value: _buyPrice,
+            min: 1000000,
+            max: 100000000,
+            divisions: 99,
+            displayValue: _formatCurrency(_buyPrice),
+            onChanged: (val) => setState(() => _buyPrice = val),
+          ),
+          SizedBox(height: 16.h),
+          _buildSliderWithInput(
+            label: 'Annual Appreciation (%)',
+            value: _appreciationRate,
+            min: 1.0,
+            max: 15.0,
+            divisions: 140,
+            displayValue: '${_appreciationRate.toStringAsFixed(1)}%',
+            onChanged: (val) => setState(() => _appreciationRate = val),
+          ),
+          SizedBox(height: 16.h),
+          _buildSliderWithInput(
+            label: 'Invest. Return (Opportunity Cost)',
+            value: _investmentReturn,
+            min: 1.0,
+            max: 20.0,
+            divisions: 190,
+            displayValue: '${_investmentReturn.toStringAsFixed(1)}%',
+            onChanged: (val) => setState(() => _investmentReturn = val),
+          ),
+          SizedBox(height: 32.h),
+          Text('Market Assumptions', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
+          SizedBox(height: 8.h),
+          Text('This analysis assumes a 20% down payment (₹${_formatCurrency(downPayment)}) which is either used to buy the house or invested in the market at ${_investmentReturn.toStringAsFixed(1)}% annual return.', 
+               style: TextStyle(fontSize: 12.sp, color: Colors.grey, height: 1.4)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTaxPlanner(BuildContext context) {
+    return SingleChildScrollView(
+      padding: EdgeInsets.all(16.w),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildResultCard(
+            title: 'Annual Tax Savings',
+            amount: _totalTaxSaved,
+            subtext: 'Potential savings under Section 24 & 80C',
+            color: Colors.teal,
+          ),
+          SizedBox(height: 24.h),
+          _buildSliderWithInput(
+            label: 'Annual Interest Paid',
+            value: _annualInterestPaid,
+            min: 0,
+            max: 1000000,
+            divisions: 100,
+            displayValue: _formatCurrency(_annualInterestPaid),
+            onChanged: (val) => setState(() => _annualInterestPaid = val),
+          ),
+          SizedBox(height: 16.h),
+          _buildSliderWithInput(
+            label: 'Annual Principal Repaid',
+            value: _annualPrincipalPaid,
+            min: 0,
+            max: 500000,
+            divisions: 100,
+            displayValue: _formatCurrency(_annualPrincipalPaid),
+            onChanged: (val) => setState(() => _annualPrincipalPaid = val),
+          ),
+          SizedBox(height: 16.h),
+          _buildSliderWithInput(
+            label: 'Your Tax Bracket (%)',
+            value: _taxBracket,
+            min: 5,
+            max: 30,
+            divisions: 5,
+            displayValue: '${_taxBracket.toInt()}%',
+            onChanged: (val) => setState(() => _taxBracket = val),
+          ),
+          SizedBox(height: 32.h),
+          _buildTaxBreakdownCard(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTaxBreakdownCard() {
+    return Container(
+      padding: EdgeInsets.all(20.w),
+      decoration: BoxDecoration(
+        color: context.cardColor,
+        borderRadius: BorderRadius.circular(16.w),
+        border: Border.all(color: context.borderColor),
+      ),
+      child: Column(
+        children: [
+          _buildTaxRow('Sec 24 (Interest)', _interestDeduction, 200000),
+          Divider(height: 24.h),
+          _buildTaxRow('Sec 80C (Principal)', _principalDeduction, 150000),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTaxRow(String label, double deduction, double limit) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.bold)),
+            Text('Limit: ${_formatCurrency(limit)}', style: TextStyle(fontSize: 12.sp, color: Colors.grey)),
+          ],
+        ),
+        Text('Eligible: ${_formatCurrency(deduction)}', style: TextStyle(fontSize: 14.sp, color: Colors.green, fontWeight: FontWeight.bold)),
+      ],
     );
   }
 

@@ -23,6 +23,20 @@ class BuilderAgentDashboardScreen extends ConsumerStatefulWidget {
 
 class _BuilderAgentDashboardScreenState extends ConsumerState<BuilderAgentDashboardScreen> {
   int _currentIndex = 0;
+  PropertyModel? _editingProperty;
+
+  void _onEdit(PropertyModel property) {
+    setState(() {
+      _editingProperty = property;
+      _currentIndex = 0; // Switch to Add Listing tab
+    });
+  }
+
+  void _onDoneEditing() {
+    setState(() {
+      _editingProperty = null;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,9 +59,14 @@ class _BuilderAgentDashboardScreenState extends ConsumerState<BuilderAgentDashbo
       ),
       body: IndexedStack(
         index: _currentIndex,
-        children: const [
-          _ListingFormView(),
-          _VisitorRequestsView(),
+        children: [
+          _ListingFormView(
+            propertyToEdit: _editingProperty,
+            onCancelEdit: _onDoneEditing,
+            onSuccess: _onDoneEditing,
+          ),
+          _MyListingsView(onEdit: _onEdit),
+          const _VisitorRequestsView(),
         ],
       ),
       bottomNavigationBar: Container(
@@ -63,13 +82,18 @@ class _BuilderAgentDashboardScreenState extends ConsumerState<BuilderAgentDashbo
         ),
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
-          onTap: (index) => setState(() => _currentIndex = index),
+          onTap: (index) {
+            if (index != 0) _onDoneEditing();
+            setState(() => _currentIndex = index);
+          },
           backgroundColor: context.scaffoldColor,
           selectedItemColor: AppTheme.primaryBlue,
           unselectedItemColor: Colors.grey,
           elevation: 0,
+          type: BottomNavigationBarType.fixed,
           items: const [
             BottomNavigationBarItem(icon: Icon(Icons.add_business_outlined), activeIcon: Icon(Icons.add_business), label: 'Add Listing'),
+            BottomNavigationBarItem(icon: Icon(Icons.inventory_2_outlined), activeIcon: Icon(Icons.inventory_2), label: 'My Listings'),
             BottomNavigationBarItem(icon: Icon(Icons.visibility_outlined), activeIcon: Icon(Icons.visibility), label: 'Visitor Requests'),
           ],
         ),
@@ -79,7 +103,11 @@ class _BuilderAgentDashboardScreenState extends ConsumerState<BuilderAgentDashbo
 }
 
 class _ListingFormView extends ConsumerStatefulWidget {
-  const _ListingFormView();
+  final PropertyModel? propertyToEdit;
+  final VoidCallback? onCancelEdit;
+  final VoidCallback? onSuccess;
+
+  const _ListingFormView({this.propertyToEdit, this.onCancelEdit, this.onSuccess});
 
   @override
   ConsumerState<_ListingFormView> createState() => _ListingFormViewState();
@@ -94,6 +122,38 @@ class _ListingFormViewState extends ConsumerState<_ListingFormView> {
   final _descriptionController = TextEditingController();
   bool _isLoading = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _prefillData();
+  }
+
+  @override
+  void didUpdateWidget(_ListingFormView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.propertyToEdit != oldWidget.propertyToEdit) {
+      _prefillData();
+    }
+  }
+
+  void _prefillData() {
+    if (widget.propertyToEdit != null) {
+      _nameController.text = widget.propertyToEdit!.title;
+      _cityController.text = widget.propertyToEdit!.city;
+      _addressController.text = widget.propertyToEdit!.location;
+      _priceController.text = widget.propertyToEdit!.price.toString();
+      _areaController.text = widget.propertyToEdit!.areaSqFt.toString();
+      _descriptionController.text = widget.propertyToEdit!.description;
+    } else {
+      _nameController.clear();
+      _cityController.clear();
+      _addressController.clear();
+      _priceController.clear();
+      _areaController.clear();
+      _descriptionController.clear();
+    }
+  }
+
   Future<void> _submitListing() async {
     final user = ref.read(currentUserDataProvider).value;
     if (user == null) return;
@@ -101,32 +161,33 @@ class _ListingFormViewState extends ConsumerState<_ListingFormView> {
     setState(() => _isLoading = true);
     try {
       final property = PropertyModel(
-        id: const Uuid().v4(),
+        id: widget.propertyToEdit?.id ?? const Uuid().v4(),
         ownerId: user.uid,
         title: _nameController.text,
         description: _descriptionController.text,
-        type: 'Sale', // Default
-        propertyType: 'Apartment', // Default
+        type: widget.propertyToEdit?.type ?? 'Sale',
+        propertyType: widget.propertyToEdit?.propertyType ?? 'Apartment',
         price: double.tryParse(_priceController.text) ?? 0.0,
         location: _addressController.text,
         city: _cityController.text,
-        bedrooms: 2, // Mock defaults
-        bathrooms: 2,
+        bedrooms: widget.propertyToEdit?.bedrooms ?? 2,
+        bathrooms: widget.propertyToEdit?.bathrooms ?? 2,
         areaSqFt: double.tryParse(_areaController.text) ?? 0.0,
-        imageUrls: [],
-        createdAt: DateTime.now(),
+        imageUrls: widget.propertyToEdit?.imageUrls ?? [],
+        createdAt: widget.propertyToEdit?.createdAt ?? DateTime.now(),
       );
 
-      await ref.read(propertyRepositoryProvider).addProperty(property, []);
+      if (widget.propertyToEdit != null) {
+        await ref.read(propertyRepositoryProvider).updateProperty(property);
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Listing Updated Successfully!')));
+      } else {
+        await ref.read(propertyRepositoryProvider).addProperty(property, []);
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Listing Published Successfully!')));
+      }
       
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Listing Published Successfully!')));
-        _nameController.clear();
-        _cityController.clear();
-        _addressController.clear();
-        _priceController.clear();
-        _areaController.clear();
-        _descriptionController.clear();
+        widget.onSuccess?.call();
+        _prefillData();
       }
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
@@ -142,7 +203,22 @@ class _ListingFormViewState extends ConsumerState<_ListingFormView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Publish Property', style: Theme.of(context).textTheme.displayMedium?.copyWith(fontSize: 24.sp)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                widget.propertyToEdit != null ? 'Edit Property' : 'Publish Property', 
+                style: Theme.of(context).textTheme.displayMedium?.copyWith(fontSize: 24.sp)
+              ),
+              if (widget.propertyToEdit != null)
+                TextButton.icon(
+                  onPressed: widget.onCancelEdit,
+                  icon: const Icon(Icons.close, size: 16),
+                  label: const Text('CANCEL'),
+                  style: TextButton.styleFrom(foregroundColor: Colors.red),
+                ),
+            ],
+          ),
           SizedBox(height: 8.h),
           Text('List new properties directly to the Sampatti feed.', style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color, fontSize: 13.sp)),
           SizedBox(height: 32.h),
@@ -193,7 +269,7 @@ class _ListingFormViewState extends ConsumerState<_ListingFormView> {
               ),
               child: _isLoading 
                 ? const CircularProgressIndicator(color: Colors.white)
-                : Text('PUBLISH LISTING', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13.sp, color: Colors.white, letterSpacing: 1)),
+                : Text(widget.propertyToEdit != null ? 'UPDATE LISTING' : 'PUBLISH LISTING', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13.sp, color: Colors.white, letterSpacing: 1)),
             ),
           ),
           SizedBox(height: 32.h),
@@ -613,6 +689,116 @@ class _VisitorRequestsViewState extends ConsumerState<_VisitorRequestsView> {
           );
         }).toList(),
       ),
+    );
+  }
+}
+
+class _MyListingsView extends ConsumerWidget {
+  final Function(PropertyModel) onEdit;
+  const _MyListingsView({required this.onEdit});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(currentUserDataProvider).value;
+    if (user == null) return const Center(child: Text('User not found'));
+
+    final propertiesAsync = ref.watch(propertiesByOwnerProvider(user.uid));
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.all(24.sp),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('My Listings', style: Theme.of(context).textTheme.displayMedium?.copyWith(fontSize: 24.sp)),
+              SizedBox(height: 8.h),
+              Text('Manage and edit your active property listings.', style: TextStyle(color: Colors.grey, fontSize: 13.sp)),
+            ],
+          ),
+        ),
+        Expanded(
+          child: propertiesAsync.when(
+            data: (properties) {
+              if (properties.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.inventory_2_outlined, size: 48.sp, color: Colors.grey.withValues(alpha: 0.3)),
+                      SizedBox(height: 16.h),
+                      const Text('You haven\'t listed any properties yet.', style: TextStyle(color: Colors.grey)),
+                    ],
+                  ),
+                );
+              }
+              return ListView.builder(
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
+                itemCount: properties.length,
+                itemBuilder: (context, index) {
+                  final p = properties[index];
+                  return Container(
+                    margin: EdgeInsets.only(bottom: 16.h),
+                    padding: EdgeInsets.all(12.w),
+                    decoration: BoxDecoration(
+                      color: context.cardColor,
+                      borderRadius: BorderRadius.circular(16.sp),
+                      border: Border.all(color: context.borderColor),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 80.w,
+                          height: 80.w,
+                          decoration: BoxDecoration(
+                            color: context.surfaceColor,
+                            borderRadius: BorderRadius.circular(12.sp),
+                            image: p.imageUrls.isNotEmpty 
+                                ? DecorationImage(image: NetworkImage(p.imageUrls.first), fit: BoxFit.cover)
+                                : null,
+                          ),
+                          child: p.imageUrls.isEmpty ? Icon(Icons.image_outlined, color: Colors.grey.withValues(alpha: 0.5)) : null,
+                        ),
+                        SizedBox(width: 16.w),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(p.title, style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp), maxLines: 1, overflow: TextOverflow.ellipsis),
+                              SizedBox(height: 4.h),
+                              Text('${p.city}, ${p.location}', style: TextStyle(color: Colors.grey, fontSize: 11.sp), maxLines: 1, overflow: TextOverflow.ellipsis),
+                              SizedBox(height: 8.h),
+                              Text('₹${p.price.toStringAsFixed(0)}', style: TextStyle(color: AppTheme.primaryBlue, fontWeight: FontWeight.w900, fontSize: 13.sp)),
+                            ],
+                          ),
+                        ),
+                        Column(
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.edit_outlined, color: AppTheme.primaryBlue, size: 20.sp),
+                              onPressed: () => onEdit(p),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.delete_outline, color: Colors.red, size: 20.sp),
+                              onPressed: () {
+                                // Add delete logic if needed
+                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Delete functionality coming soon')));
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (e, st) => Center(child: Text('Error: $e')),
+          ),
+        ),
+      ],
     );
   }
 }

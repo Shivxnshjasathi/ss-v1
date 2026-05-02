@@ -47,6 +47,40 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
   List<Map<String, dynamic>> _placePredictions = [];
   bool _showPredictions = false;
 
+  final List<String> _aiTags = [
+    "Sunny", "Near Park", "Modular Kitchen", "Spacious Balcony", 
+    "Quiet Neighborhood", "Modern Fittings", "Vaastu Compliant", 
+    "Power Backup", "Gated Community", "High Floor"
+  ];
+  final List<String> _selectedAiTags = [];
+  final List<String> _selectedAmenities = [];
+
+  final List<String> _commonAmenities = [
+    'Swimming Pool', 'Gym', 'Parking', 'Security', 'Power Backup',
+    'Club House', 'Park', 'Elevator', 'Intercom', 'Water Softener',
+    'Fire Safety', 'Gas Pipeline', 'Jogging Track', 'CCTV'
+  ];
+
+  void _generateAiDescription() {
+    final tags = _selectedAiTags.join(", ");
+    final type = _propertyType;
+    final bhk = _bhk;
+    final city = _cityController.text;
+
+    final description = "Experience modern living in this beautiful $bhk $type located in the heart of $city. This stunning home features $tags, making it the perfect choice for families seeking comfort and style. The property is meticulously designed with attention to detail and offers a perfect blend of luxury and convenience. Don't miss out on this incredible opportunity!";
+
+    setState(() {
+      _descriptionController.text = description;
+    });
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('✨ Description generated with AI!'),
+        backgroundColor: AppTheme.primaryBlue,
+      ),
+    );
+  }
+
   final List<File> _selectedImages = [];
 
   final List<String> _propertyTypes = [
@@ -198,7 +232,7 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
             latitude: _latitude,
             longitude: _longitude,
             panoramaUrl: _panoramaUrlController.text.isNotEmpty ? _panoramaUrlController.text : null,
-            amenities: [],
+            amenities: _selectedAmenities,
             isVerified: false,
             isZeroBrokerage: false,
           );
@@ -379,12 +413,12 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
               backgroundColor: context.surfaceColor,
-              selectedColor: Theme.of(context).colorScheme.primary,
+              selectedColor: AppTheme.primaryBlue,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20.w),
                 side: BorderSide(
                   color: isSelected
-                      ? Theme.of(context).colorScheme.primary
+                      ? AppTheme.primaryBlue
                       : Colors.grey.shade300,
                 ),
               ),
@@ -591,12 +625,12 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
               backgroundColor: context.surfaceColor,
-              selectedColor: Theme.of(context).colorScheme.primary,
+              selectedColor: AppTheme.primaryBlue,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20.w),
                 side: BorderSide(
                   color: isSelected
-                      ? Theme.of(context).colorScheme.primary
+                      ? AppTheme.primaryBlue
                       : Colors.grey.shade300,
                 ),
               ),
@@ -685,6 +719,41 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
             ),
           ],
         ),
+        SizedBox(height: 24.h),
+        _buildLabel('Amenities'),
+        SizedBox(height: 12.h),
+        Wrap(
+          spacing: 8.w,
+          runSpacing: 8.h,
+          children: _commonAmenities.map((amenity) {
+            final isSelected = _selectedAmenities.contains(amenity);
+            return FilterChip(
+              label: Text(amenity),
+              selected: isSelected,
+              onSelected: (selected) {
+                setState(() {
+                  if (selected) {
+                    _selectedAmenities.add(amenity);
+                  } else {
+                    _selectedAmenities.remove(amenity);
+                  }
+                });
+              },
+              selectedColor: AppTheme.primaryBlue.withValues(alpha: 0.2),
+              checkmarkColor: AppTheme.primaryBlue,
+              labelStyle: TextStyle(
+                color: isSelected ? AppTheme.primaryBlue : context.primaryTextColor,
+                fontSize: 12.sp,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+              backgroundColor: context.surfaceColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.w),
+                side: BorderSide(color: isSelected ? AppTheme.primaryBlue : context.borderColor),
+              ),
+            );
+          }).toList(),
+        ),
       ],
     );
   }
@@ -726,12 +795,64 @@ class _AddPropertyScreenState extends ConsumerState<AddPropertyScreen> {
         ],
 
         _buildLabel(l10n.propertyDescription),
-        SizedBox(height: 8.h),
+        SizedBox(height: 12.h),
+        Text(
+          'Select features to generate a professional description with AI:',
+          style: TextStyle(fontSize: 12.sp, color: Colors.grey[600], fontWeight: FontWeight.w500),
+        ),
+        SizedBox(height: 12.h),
+        Wrap(
+          spacing: 8.w,
+          runSpacing: 8.h,
+          children: _aiTags.map((tag) {
+            final isSelected = _selectedAiTags.contains(tag);
+            return FilterChip(
+              label: Text(tag),
+              selected: isSelected,
+              onSelected: (selected) {
+                setState(() {
+                  if (selected) {
+                    _selectedAiTags.add(tag);
+                  } else {
+                    _selectedAiTags.remove(tag);
+                  }
+                });
+              },
+              selectedColor: AppTheme.primaryBlue.withValues(alpha: 0.2),
+              checkmarkColor: AppTheme.primaryBlue,
+              labelStyle: TextStyle(
+                color: isSelected ? AppTheme.primaryBlue : context.primaryTextColor,
+                fontSize: 11.sp,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+              backgroundColor: context.surfaceColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.w),
+                side: BorderSide(color: isSelected ? AppTheme.primaryBlue : context.borderColor),
+              ),
+            );
+          }).toList(),
+        ),
+        SizedBox(height: 16.h),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: _selectedAiTags.isEmpty ? null : _generateAiDescription,
+            icon: const Icon(Icons.auto_awesome, size: 18, color: Colors.white),
+            label: const Text('GENERATE AI DESCRIPTION', style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1, color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryBlue,
+              padding: EdgeInsets.symmetric(vertical: 16.h),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.w)),
+            ),
+          ),
+        ),
+        SizedBox(height: 16.h),
         _buildTextField(
           l10n,
           'Write a few lines about your property...', // Localize later
           Icons.description_outlined,
-          maxLines: 4,
+          maxLines: 6,
           controller: _descriptionController,
         ),
 

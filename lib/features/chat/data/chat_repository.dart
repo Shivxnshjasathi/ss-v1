@@ -44,7 +44,32 @@ class ChatRepository {
         .orderBy('timestamp', descending: true)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.map((doc) => MessageModel.fromMap(doc.data(), doc.id)).toList();
+      final now = DateTime.now();
+      return snapshot.docs.map((doc) {
+        final message = MessageModel.fromMap(doc.data(), doc.id);
+        
+        // Ephemeral Photo Auto-Delete Logic
+        if (message.type == MessageType.image && message.isSeen && message.seenAt != null) {
+          final expirationTime = message.seenAt!.add(const Duration(hours: 24));
+          if (now.isAfter(expirationTime)) {
+            doc.reference.delete(); // Delete from Firestore
+          }
+        }
+        
+        return message;
+      }).toList();
+    });
+  }
+
+  Future<void> markMessageAsSeen(String chatId, String messageId) async {
+    await _firestore
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .doc(messageId)
+        .update({
+      'isSeen': true,
+      'seenAt': DateTime.now().toIso8601String(),
     });
   }
 

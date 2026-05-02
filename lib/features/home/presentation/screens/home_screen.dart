@@ -632,7 +632,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E60FF),
+                  color: AppTheme.primaryBlue,
                   borderRadius: BorderRadius.circular(20.sp),
                 ),
                 child: Text(
