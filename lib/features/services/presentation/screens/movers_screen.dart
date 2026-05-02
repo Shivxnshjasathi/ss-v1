@@ -862,7 +862,7 @@ class _MoversScreenState extends ConsumerState<MoversScreen> {
                                   shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemCount: _suggestions.length > 5 ? 5 : _suggestions.length,
-                                  separatorBuilder: (_, __) => Divider(height: 1, color: context.borderColor),
+                                  separatorBuilder: (_, _) => Divider(height: 1, color: context.borderColor),
                                   itemBuilder: (context, i) {
                                     final s = _suggestions[i];
                                     return InkWell(

@@ -834,6 +834,36 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                             ],
                           ),
                         ),
+                      SizedBox(width: 8.w),
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 10.w,
+                          vertical: 6.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.withValues(alpha: 0.9),
+                          borderRadius: BorderRadius.circular(8.sp),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              LucideIcons.flame,
+                              color: Colors.white,
+                              size: 12.sp,
+                            ),
+                            SizedBox(width: 6.w),
+                            Text(
+                              "HOT SALE",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 10.sp,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -923,15 +953,30 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                                 letterSpacing: 1.2,
                               ),
                             ),
-                            SizedBox(height: 2.h),
-                            Text(
-                              _formatPrice(property.price / 10), // Assuming price is in Lakhs for calculation here or already formatted
-                              style: TextStyle(
-                                color: AppTheme.primaryBlue,
-                                fontSize: 22.sp,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: -0.5,
-                              ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.baseline,
+                              textBaseline: TextBaseline.alphabetic,
+                              children: [
+                                Text(
+                                  _formatPrice(property.price / 10),
+                                  style: TextStyle(
+                                    color: AppTheme.primaryBlue,
+                                    fontSize: 22.sp,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: -0.5,
+                                  ),
+                                ),
+                                SizedBox(width: 8.w),
+                                Text(
+                                  _formatPrice(property.price * 1.12 / 10),
+                                  style: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.w500,
+                                    decoration: TextDecoration.lineThrough,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),

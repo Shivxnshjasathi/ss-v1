@@ -109,6 +109,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSearchBar(l10n),
+            _buildTodayDeals(l10n),
             _buildCategorySection(l10n),
             if (_selectedCategoryId != 'all' && _searchQuery.isEmpty) _buildSubcategorySection(l10n),
             _buildProductHeader(l10n, filtered.length),
@@ -232,6 +233,72 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
           },
         ),
       ],
+    );
+  }
+
+  Widget _buildTodayDeals(AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text("Today's Top Deals", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 14.sp, letterSpacing: 0.5)),
+              Text("VIEW ALL", style: TextStyle(color: AppTheme.primaryBlue, fontWeight: FontWeight.bold, fontSize: 10.sp)),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: 160.h,
+          child: PageView(
+            children: [
+              _buildDealBanner(
+                'Cement Monsoon Sale',
+                'Flat 10% Off on Ultratech',
+                const Color(0xFFFF9800),
+                'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800',
+              ),
+              _buildDealBanner(
+                'Electrical Bonanza',
+                'Up to 30% Off on Havells',
+                const Color(0xFFE91E63),
+                'https://images.unsplash.com/photo-1558002038-103792e07374?w=800',
+              ),
+            ],
+          ),
+        ),
+        SizedBox(height: 24.h),
+      ],
+    );
+  }
+
+  Widget _buildDealBanner(String title, String sub, Color color, String img) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16.w),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(20.w),
+        image: DecorationImage(image: NetworkImage(img), fit: BoxFit.cover, colorFilter: ColorFilter.mode(Colors.black.withValues(alpha: 0.3), BlendMode.darken)),
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(20.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(title, style: TextStyle(color: Colors.white, fontSize: 18.sp, fontWeight: FontWeight.w900)),
+            Text(sub, style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 12.sp, fontWeight: FontWeight.bold)),
+            const Spacer(),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8.w)),
+              child: Text('SHOP NOW', style: TextStyle(color: color, fontSize: 10.sp, fontWeight: FontWeight.w900)),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -496,6 +563,15 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                 ),
                 Positioned(
                   top: 8.w,
+                  left: 8.w,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                    decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(4.w)),
+                    child: Text('SALE', style: TextStyle(color: Colors.white, fontSize: 8.sp, fontWeight: FontWeight.w900)),
+                  ),
+                ),
+                Positioned(
+                  top: 8.w,
                   right: 8.w,
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
@@ -558,17 +634,19 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> {
                       ),
                     ),
                     SizedBox(width: 4.w),
-                    Flexible(
-                      child: Text(
-                        '/ ${product.unit}',
-                        style: TextStyle(
-                          fontSize: 10.sp,
-                          color: context.secondaryTextColor,
-                        ),
-                        overflow: TextOverflow.ellipsis,
+                    Text(
+                      _formatCurrency(product.price * 1.25),
+                      style: TextStyle(
+                        fontSize: 10.sp,
+                        color: Colors.grey,
+                        decoration: TextDecoration.lineThrough,
                       ),
                     ),
                   ],
+                ),
+                Text(
+                  '25% OFF',
+                  style: TextStyle(color: Colors.green, fontSize: 10.sp, fontWeight: FontWeight.w900),
                 ),
                 SizedBox(height: 12.h),
                 SizedBox(

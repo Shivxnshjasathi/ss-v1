@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/core/services/google_cloud_service.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sampatti_bazar/features/chatbot/data/chatbot_repository.dart';
+import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
+import 'package:sampatti_bazar/features/properties/data/property_repository.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
 
 class ChatbotScreen extends ConsumerStatefulWidget {
@@ -27,10 +28,65 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
   ];
 
   bool _isTyping = false;
+  bool _contextInjected = false;
 
   // Track translated messages: index -> translated text
   final Map<int, String> _translatedMessages = {};
   final Map<int, bool> _showTranslation = {};
+
+  @override
+  void initState() {
+    super.initState();
+    // Inject context after first frame so providers are ready
+    WidgetsBinding.instance.addPostFrameCallback((_) => _injectAppContext());
+  }
+
+  Future<void> _injectAppContext() async {
+    if (_contextInjected) return;
+    try {
+      final user = ref.read(currentUserDataProvider).value;
+      if (user == null) return;
+
+      // Fetch user's own listed properties (max 5 for context)
+      final propertiesAsync = ref.read(propertiesByOwnerProvider(user.uid));
+      final myProperties = propertiesAsync.value ?? [];
+
+      ref.read(chatbotRepositoryProvider).injectContext(
+        user: user,
+        myProperties: myProperties,
+      );
+      _contextInjected = true;
+
+      // Update the greeting with the user's name
+      if (mounted && user.name != null && user.name!.isNotEmpty) {
+        setState(() {
+          _messages[0]['text'] =
+              'Namaste, ${user.name!.split(' ').first}! 🙏\nI\'m your Sampatti Bot — your personal real estate advisor.\nAsk me anything about properties, loans, legal docs, or movers!'
+              '${myProperties.isNotEmpty ? '\n\nI can see you have ${myProperties.length} listed propert${myProperties.length == 1 ? "y" : "ies"} — ask me about them anytime.' : ''}';
+        });
+      }
+    } catch (e) {
+      // Context injection is best-effort; chat still works without it
+    }
+  }
+
+  void _clearChat() {
+    ref.read(chatbotRepositoryProvider).clearHistory();
+    setState(() {
+      _messages
+        ..clear()
+        ..add({
+          'role': 'ai',
+          'text': 'New conversation started!\nHow can I help you today?',
+          'time': _getCurrentTime(),
+        });
+      _translatedMessages.clear();
+      _showTranslation.clear();
+      _contextInjected = false;
+    });
+    // Re-inject context for the fresh session
+    _injectAppContext();
+  }
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -131,28 +187,33 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
           ),
           onPressed: () => context.pop(),
         ),
-        title: Text(
-          'Sampatti Bot',
-          style: TextStyle(
-            color: context.primaryTextColor,
-            fontWeight: FontWeight.w900,
-            fontSize: 18.sp,
-          ),
-        ),
-        actions: [
-          Center(
-            child: Padding(
-              padding: EdgeInsets.only(right: 24.0.w),
-              child: Text(
-                'Online',
-                style: TextStyle(
-                  color: context.primaryTextColor,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 10.sp,
-                ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Sampatti Bot',
+              style: TextStyle(
+                color: context.primaryTextColor,
+                fontWeight: FontWeight.w900,
+                fontSize: 18.sp,
               ),
             ),
+            Row(
+              children: [
+                Container(width: 6.w, height: 6.w, decoration: const BoxDecoration(color: Colors.green, shape: BoxShape.circle)),
+                SizedBox(width: 4.w),
+                Text('Gemini 2.0 Flash • Online', style: TextStyle(color: Colors.green, fontSize: 9.sp, fontWeight: FontWeight.w700)),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add_comment_outlined, color: context.iconColor, size: 20.w),
+            tooltip: 'New Chat',
+            onPressed: _clearChat,
           ),
+          SizedBox(width: 8.w),
         ],
       ),
       body: Column(
@@ -377,6 +438,21 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
   }
 
   Widget _buildQuickActions() {
+    final user = ref.watch(currentUserDataProvider).value;
+    final city = user?.location ?? 'your city';
+    final role = user?.role ?? 'buyer';
+
+    final chips = [
+      (Icons.calculate_outlined, 'Calculate EMI'),
+      (Icons.search, 'Find property in $city'),
+      if (role.toLowerCase().contains('builder') || role.toLowerCase().contains('agent'))
+        (Icons.add_business_outlined, 'Add new listing')
+      else
+        (Icons.home_work_outlined, 'Properties for rent'),
+      (Icons.local_shipping_outlined, 'Book movers'),
+      (Icons.gavel_outlined, 'Legal document help'),
+    ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -394,7 +470,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
                   letterSpacing: 0.5,
                 ),
               ),
-              Icon(Icons.auto_awesome, color: Color(0xFF00E5FF), size: 14.w),
+              Icon(Icons.auto_awesome, color: const Color(0xFF00E5FF), size: 14.w),
             ],
           ),
         ),
@@ -403,13 +479,12 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
           child: ListView(
             scrollDirection: Axis.horizontal,
             padding: EdgeInsets.symmetric(horizontal: 24.w),
-            children: [
-              _buildActionChip(Icons.calculate_outlined, 'EMI Calculator'),
-              SizedBox(width: 12.w),
-              _buildActionChip(Icons.local_shipping_outlined, 'Track Mover'),
-              SizedBox(width: 12.w),
-              _buildActionChip(Icons.description_outlined, 'Schedule Visit'),
-            ],
+            children: chips.map((c) {
+              return Padding(
+                padding: EdgeInsets.only(right: 12.w),
+                child: _buildActionChip(c.$1, c.$2),
+              );
+            }).toList(),
           ),
         ),
         SizedBox(height: 16.h),
