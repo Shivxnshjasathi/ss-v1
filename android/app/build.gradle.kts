@@ -3,6 +3,7 @@ plugins {
     // START: FlutterFire Configuration
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
+    id("com.google.firebase.firebase-perf")
     // END: FlutterFire Configuration
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -45,4 +46,12 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    // Import the BoM for the Firebase platform
+    implementation(platform("com.google.firebase:firebase-bom:34.12.0"))
+
+    // Add the dependency for the Performance Monitoring library
+    implementation("com.google.firebase:firebase-perf")
 }

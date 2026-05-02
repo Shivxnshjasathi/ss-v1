@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/core/services/google_cloud_service.dart';
@@ -104,6 +105,9 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
     final text = _messageController.text.trim();
     if (text.isEmpty) return;
 
+    final user = ref.read(currentUserDataProvider).value;
+    final repo = ref.read(chatbotRepositoryProvider);
+
     setState(() {
       _messages.add({'role': 'user', 'text': text, 'time': _getCurrentTime()});
       _messageController.clear();
@@ -111,21 +115,31 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
     });
     _scrollToBottom();
 
+    // Persist to Firebase if user is logged in
+    if (user != null) {
+      repo.saveMessage(userId: user.uid, text: text, role: 'user');
+    }
+
     try {
-      final response = await ref
-          .read(chatbotRepositoryProvider)
-          .getResponse(text);
+      final response = await repo.getResponse(text);
       if (!mounted) return;
 
       setState(() {
         _isTyping = false;
         _messages.add({
           'role': 'ai',
-          'text': response,
+          'text': response.text.trim(),
+          'data': response.data,
+          'dataType': response.dataType,
           'time': _getCurrentTime(),
         });
       });
       _scrollToBottom();
+
+      // Persist AI response to Firebase
+      if (user != null) {
+        repo.saveMessage(userId: user.uid, text: response.text, role: 'ai');
+      }
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -200,9 +214,19 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
             ),
             Row(
               children: [
-                Container(width: 6.w, height: 6.w, decoration: const BoxDecoration(color: Colors.green, shape: BoxShape.circle)),
-                SizedBox(width: 4.w),
-                Text('Gemini 2.0 Flash • Online', style: TextStyle(color: Colors.green, fontSize: 9.sp, fontWeight: FontWeight.w700)),
+                Container(
+                  width: 6.w,
+                  height: 6.w,
+                  decoration: BoxDecoration(
+                    color: Colors.green,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(color: Colors.green.withValues(alpha: 0.5), blurRadius: 4, spreadRadius: 1),
+                    ],
+                  ),
+                ),
+                SizedBox(width: 6.w),
+                Text('Gemini 2.5 • Active', style: TextStyle(color: Colors.green, fontSize: 10.sp, fontWeight: FontWeight.w700)),
               ],
             ),
           ],
@@ -216,60 +240,42 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
           SizedBox(width: 8.w),
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              padding: EdgeInsets.symmetric(
-                horizontal: 24.0.w,
-                vertical: 16.0.h,
-              ),
-              itemCount: _messages.length + (_isTyping ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  return Column(
-                    children: [
-                      _buildDateBadge(),
-                      SizedBox(height: 24.h),
-                      _buildChatBubble(_messages[index], index),
-                    ],
-                  );
-                }
-
-                if (index == _messages.length && _isTyping) {
-                  return _buildTypingIndicator();
-                }
-
-                return _buildChatBubble(_messages[index], index);
-              },
-            ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              context.scaffoldColor,
+              context.scaffoldColor.withValues(alpha: 0.95),
+              context.scaffoldColor.withValues(alpha: 0.9),
+            ],
           ),
-          _buildQuickActions(),
-          _buildInputArea(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDateBadge() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-      decoration: BoxDecoration(
-        color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(4.w),
-      ),
-      child: Text(
-        'TODAY',
-        style: TextStyle(
-          fontSize: 8.sp,
-          fontWeight: FontWeight.w900,
-          color: context.primaryTextColor,
-          letterSpacing: 0.5,
+        ),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                controller: _scrollController,
+                physics: const BouncingScrollPhysics(),
+                padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 20.h),
+                itemCount: _messages.length + (_isTyping ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (index == _messages.length && _isTyping) {
+                    return _buildTypingIndicator();
+                  }
+                  return _buildChatBubble(_messages[index], index);
+                },
+              ),
+            ),
+            _buildInputArea(),
+          ],
         ),
       ),
     );
   }
+
+
 
   Widget _buildChatBubble(Map<String, dynamic> msg, int index) {
     final isUser = msg['role'] == 'user';
@@ -278,153 +284,281 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
         ? (_translatedMessages[index] ?? msg['text'] ?? '')
         : (msg['text'] ?? '');
 
+    if (!isUser) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildAIMessage(displayText, msg['time'] ?? '', index, isTranslated),
+          if (msg['data'] != null) _buildDataContent(msg['data'], msg['dataType']),
+        ],
+      );
+    }
+
     return Padding(
       padding: EdgeInsets.only(bottom: 24.0.h),
       child: Row(
-        mainAxisAlignment: isUser
-            ? MainAxisAlignment.end
-            : MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.end,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          if (!isUser) ...[
-            Container(
-              padding: EdgeInsets.all(4.w),
-              decoration: BoxDecoration(
-                color: context.surfaceColor,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.smart_toy,
-                color: AppTheme.primaryBlue,
-                size: 16.w,
-              ),
-            ),
-            SizedBox(width: 8.w),
-          ],
           Flexible(
-            child: Column(
-              crossAxisAlignment: isUser
-                  ? CrossAxisAlignment.end
-                  : CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: EdgeInsets.all(16.0.w),
-                  decoration: BoxDecoration(
-                    color: isUser ? AppTheme.primaryBlue : context.surfaceColor,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(16.w),
-                      topRight: Radius.circular(16.w),
-                      bottomLeft: Radius.circular(isUser ? 16 : 4),
-                      bottomRight: Radius.circular(isUser ? 4 : 16),
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        displayText,
-                        style: TextStyle(
-                          color: isUser ? Colors.white : context.primaryTextColor,
-                          fontSize: 13.sp,
-                          height: 1.5.h,
-                          fontWeight: isUser ? FontWeight.w600 : FontWeight.w500,
-                        ),
-                      ),
-                      if (isTranslated)
-                        Padding(
-                          padding: EdgeInsets.only(top: 8.h),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.translate,
-                                size: 10.w,
-                                color: isUser ? Colors.white70 : Colors.grey,
-                              ),
-                              SizedBox(width: 4.w),
-                              Text(
-                                'Translated',
-                                style: TextStyle(
-                                  fontSize: 9.sp,
-                                  fontStyle: FontStyle.italic,
-                                  color: isUser ? Colors.white70 : Colors.grey,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                    ],
-                  ),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [AppTheme.primaryGradientStart, AppTheme.primaryGradientEnd],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-                SizedBox(height: 6.h),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      msg['time'] ?? '',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 9.sp,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                    SizedBox(width: 8.w),
-                    // Translate button for every message
-                    GestureDetector(
-                      onTap: () => _translateMessage(index),
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
-                        decoration: BoxDecoration(
-                          color: isTranslated
-                              ? AppTheme.primaryBlue.withValues(alpha: 0.1)
-                              : context.surfaceColor,
-                          borderRadius: BorderRadius.circular(4.w),
-                          border: Border.all(
-                            color: isTranslated ? AppTheme.primaryBlue : context.borderColor,
-                            width: 0.5,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.translate,
-                              size: 10.w,
-                              color: isTranslated ? AppTheme.primaryBlue : Colors.grey,
-                            ),
-                            SizedBox(width: 3.w),
-                            Text(
-                              isTranslated ? 'Original' : 'Translate',
-                              style: TextStyle(
-                                fontSize: 8.sp,
-                                fontWeight: FontWeight.w700,
-                                color: isTranslated ? AppTheme.primaryBlue : Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20.w),
+                  topRight: Radius.circular(20.w),
+                  bottomLeft: Radius.circular(20.w),
+                  bottomRight: Radius.circular(4.w),
                 ),
-              ],
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.primaryBlue.withValues(alpha: 0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Text(
+                displayText,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w500,
+                  height: 1.4,
+                ),
+              ),
             ),
           ),
-          if (isUser) SizedBox(width: 24.w),
         ],
       ),
     );
   }
 
+  Widget _buildAIMessage(String text, String time, int index, bool isTranslated) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 8.0.h),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(4.w),
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.auto_awesome, color: AppTheme.primaryBlue, size: 12.w),
+              ),
+              SizedBox(width: 8.w),
+              Text(
+                'Sampatti Bot',
+                style: TextStyle(
+                  fontSize: 11.sp,
+                  fontWeight: FontWeight.w800,
+                  color: context.primaryTextColor,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const Spacer(),
+              _buildTranslateButton(index, isTranslated),
+            ],
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: 32.w, top: 2.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                MarkdownBody(
+                  data: text.trim(),
+                  shrinkWrap: true,
+                  styleSheet: MarkdownStyleSheet(
+                    p: TextStyle(
+                      color: context.primaryTextColor.withValues(alpha: 0.9),
+                      fontSize: 13.5.sp,
+                      height: 1.4,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    strong: const TextStyle(fontWeight: FontWeight.bold),
+                    em: const TextStyle(fontStyle: FontStyle.italic),
+                    listBullet: TextStyle(color: AppTheme.primaryBlue, fontSize: 13.5.sp),
+                    pPadding: EdgeInsets.zero,
+                  ),
+                ),
+                if (isTranslated)
+                  Padding(
+                    padding: EdgeInsets.only(top: 8.h),
+                    child: Text(
+                      '• Translated from original',
+                      style: TextStyle(fontSize: 10.sp, color: Colors.grey, fontStyle: FontStyle.italic),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTranslateButton(int index, bool isTranslated) {
+    return GestureDetector(
+      onTap: () => _translateMessage(index),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20.w),
+          border: Border.all(color: context.borderColor),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.translate, size: 10.w, color: Colors.grey),
+            SizedBox(width: 4.w),
+            Text(
+              isTranslated ? 'Original' : 'Translate',
+              style: TextStyle(fontSize: 9.sp, fontWeight: FontWeight.w600, color: Colors.grey),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDataContent(List<dynamic> data, String? type) {
+    if (type == 'property') {
+      return Container(
+        height: 180.h,
+        margin: EdgeInsets.only(left: 36.w, bottom: 24.h),
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          itemCount: data.length,
+          itemBuilder: (context, index) {
+            final item = data[index] as Map<String, dynamic>;
+            return Container(
+              width: 140.w,
+              margin: EdgeInsets.only(right: 12.w),
+              decoration: BoxDecoration(
+                color: context.surfaceColor,
+                borderRadius: BorderRadius.circular(16.w),
+                border: Border.all(color: context.borderColor),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(16.w)),
+                    child: Container(
+                      height: 80.h,
+                      width: double.infinity,
+                      color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                      child: Icon(Icons.home_outlined, color: AppTheme.primaryBlue, size: 30.w),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(8.w),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              item['title'] ?? 'Property',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: 10.sp, fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(height: 4.h),
+                            Text(
+                              '₹${item['price'] ?? 'Contact for price'}',
+                              style: TextStyle(fontSize: 10.sp, color: AppTheme.primaryBlue, fontWeight: FontWeight.w700),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 8.h),
+                        Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.symmetric(vertical: 4.h),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryBlue,
+                            borderRadius: BorderRadius.circular(8.w),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text('VIEW', style: TextStyle(color: Colors.white, fontSize: 8.sp, fontWeight: FontWeight.w800)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      );
+    }
+
+    if (type == 'service') {
+      return Column(
+        children: data.map((s) {
+          final item = s as Map<String, dynamic>;
+          return Container(
+            margin: EdgeInsets.only(left: 36.w, bottom: 12.h),
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              color: context.surfaceColor,
+              borderRadius: BorderRadius.circular(12.w),
+              border: Border.all(color: context.borderColor),
+            ),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  backgroundColor: Colors.orange.withValues(alpha: 0.1),
+                  child: const Icon(Icons.build_circle_outlined, color: Colors.orange),
+                ),
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(item['serviceType'] ?? 'Service Request', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12.sp)),
+                      Text('Status: ${item['status'] ?? 'Pending'}', style: TextStyle(fontSize: 10.sp, color: Colors.grey)),
+                    ],
+                  ),
+                ),
+                Icon(Icons.arrow_forward_ios, size: 12.w, color: Colors.grey),
+              ],
+            ),
+          );
+        }).toList(),
+      );
+    }
+
+    return const SizedBox.shrink();
+  }
+
   Widget _buildTypingIndicator() {
     return Padding(
-      padding: EdgeInsets.only(bottom: 24.0.h),
+      padding: EdgeInsets.only(bottom: 16.0.h, left: 8.w),
       child: Row(
         children: [
-          Icon(Icons.more_horiz, color: Colors.grey, size: 24.w),
-          SizedBox(width: 8.w),
+          SizedBox(
+            width: 12.w,
+            height: 12.w,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryBlue.withValues(alpha: 0.5)),
+            ),
+          ),
+          SizedBox(width: 12.w),
           Text(
-            'SAMPATTI BOT IS THINKING....',
+            'TYPING...',
             style: TextStyle(
               fontSize: 8.sp,
               fontWeight: FontWeight.w900,
@@ -437,159 +571,125 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
     );
   }
 
-  Widget _buildQuickActions() {
-    final user = ref.watch(currentUserDataProvider).value;
-    final city = user?.location ?? 'your city';
-    final role = user?.role ?? 'buyer';
-
-    final chips = [
-      (Icons.calculate_outlined, 'Calculate EMI'),
-      (Icons.search, 'Find property in $city'),
-      if (role.toLowerCase().contains('builder') || role.toLowerCase().contains('agent'))
-        (Icons.add_business_outlined, 'Add new listing')
-      else
-        (Icons.home_work_outlined, 'Properties for rent'),
-      (Icons.local_shipping_outlined, 'Book movers'),
-      (Icons.gavel_outlined, 'Legal document help'),
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(height: 1.h, color: context.borderColor),
-        Padding(
-          padding: EdgeInsets.fromLTRB(24, 16, 24, 12),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'QUICK ACTIONS',
-                style: TextStyle(
-                  fontSize: 10.sp,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 0.5,
-                ),
-              ),
-              Icon(Icons.auto_awesome, color: const Color(0xFF00E5FF), size: 14.w),
-            ],
+  Widget _buildInputArea() {
+    return Container(
+      padding: EdgeInsets.fromLTRB(20.w, 10.h, 20.w, 30.h),
+      decoration: BoxDecoration(
+        color: context.scaffoldColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 20,
+            offset: const Offset(0, -5),
           ),
-        ),
-        SizedBox(
-          height: 44.h,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.symmetric(horizontal: 24.w),
-            children: chips.map((c) {
-              return Padding(
-                padding: EdgeInsets.only(right: 12.w),
-                child: _buildActionChip(c.$1, c.$2),
-              );
-            }).toList(),
-          ),
-        ),
-        SizedBox(height: 16.h),
-      ],
-    );
-  }
-
-  Widget _buildActionChip(IconData icon, String label) {
-    return GestureDetector(
-      onTap: () {
-        _messageController.text = label;
-        _sendMessage();
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16.w),
-        decoration: BoxDecoration(
-          color: context.cardColor,
-          borderRadius: BorderRadius.circular(8.w),
-          border: Border.all(color: context.borderColor),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 14.w, color: AppTheme.primaryBlue),
-            SizedBox(width: 8.w),
-            Text(
-              label,
-              style: TextStyle(
-                fontWeight: FontWeight.w900,
-                fontSize: 11.sp,
-                color: context.primaryTextColor,
-              ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildQuickActions(),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
+            decoration: BoxDecoration(
+              color: context.surfaceColor,
+              borderRadius: BorderRadius.circular(30.w),
+              border: Border.all(color: context.borderColor),
             ),
-          ],
-        ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _messageController,
+                    style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
+                    decoration: InputDecoration(
+                      hintText: 'Ask Sampatti Bot...',
+                      hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14.sp),
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 12.h),
+                    ),
+                    onSubmitted: (_) => _sendMessage(),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: _sendMessage,
+                  child: Container(
+                    padding: EdgeInsets.all(10.w),
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [AppTheme.primaryGradientStart, AppTheme.primaryGradientEnd],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.arrow_upward, color: Colors.white, size: 20.w),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: 12.h),
+          Text(
+            'Powered by Gemini 2.5 • Official AI Advisor',
+            style: TextStyle(
+              fontSize: 9.sp,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey.withValues(alpha: 0.7),
+              letterSpacing: 0.2,
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildInputArea() {
-    return SafeArea(
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(24, 0, 24, 16),
-        child: Column(
-          children: [
-            Container(
-              padding: EdgeInsets.all(4.w),
-              decoration: BoxDecoration(
-                color: context.surfaceColor,
-                borderRadius: BorderRadius.circular(8.w),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _messageController,
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w500,
-                        color: context.primaryTextColor,
-                      ),
-                      decoration: InputDecoration(
-                        hintText: 'Ask me anything...',
-                        hintStyle: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 14.sp,
-                        ),
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 16.w,
-                          vertical: 14.h,
-                        ),
-                      ),
-                      onSubmitted: (_) => _sendMessage(),
+  Widget _buildQuickActions() {
+    final user = ref.watch(currentUserDataProvider).value;
+    final city = user?.location ?? 'Indore';
+
+    final chips = [
+      (Icons.search, 'Search properties in $city'),
+      (Icons.assignment_outlined, 'Track my services'),
+      (Icons.calendar_today, 'My bookings'),
+      (Icons.account_balance_wallet_outlined, 'Check loan status'),
+    ];
+
+    return Padding(
+      padding: EdgeInsets.only(bottom: 16.h),
+      child: SizedBox(
+        height: 36.h,
+        child: ListView(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          children: chips.map((c) {
+            return GestureDetector(
+              onTap: () {
+                _messageController.text = c.$2;
+                _sendMessage();
+              },
+              child: Container(
+                margin: EdgeInsets.only(right: 10.w),
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20.w),
+                  border: Border.all(color: context.borderColor),
+                  color: context.cardColor.withValues(alpha: 0.5),
+                ),
+                child: Row(
+                  children: [
+                    Icon(c.$1, size: 14.w, color: AppTheme.primaryBlue),
+                    SizedBox(width: 6.w),
+                    Text(
+                      c.$2,
+                      style: TextStyle(fontSize: 11.sp, fontWeight: FontWeight.w600, color: context.secondaryTextColor),
                     ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(right: 4.w),
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryBlue,
-                      borderRadius: BorderRadius.circular(6.w),
-                    ),
-                    child: IconButton(
-                      icon: Icon(Icons.send, color: Colors.white, size: 18.w),
-                      onPressed: _sendMessage,
-                      constraints: const BoxConstraints(
-                        minWidth: 40,
-                        minHeight: 40,
-                      ),
-                      padding: EdgeInsets.zero,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            SizedBox(height: 16.h),
-            Text(
-              'Gemini Powered Intelligence • Cloud Translation • Secure Encryption',
-              style: TextStyle(
-                fontSize: 8.sp,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey,
-              ),
-            ),
-          ],
+            );
+          }).toList(),
         ),
       ),
     );
