@@ -144,10 +144,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   alignment: Alignment.bottomRight,
                   children: [
                     CircleAvatar(
-                      backgroundImage: const CachedNetworkImageProvider(
-                        'https://i.pravatar.cc/150?u=a042581f4e29026704d',
-                      ),
                       radius: 20.sp,
+                      backgroundColor: context.surfaceColor,
+                      backgroundImage: userAsync.value?.profileImageUrl != null
+                          ? CachedNetworkImageProvider(userAsync.value!.profileImageUrl!)
+                          : null,
+                      child: userAsync.value?.profileImageUrl == null
+                          ? Icon(LucideIcons.user, size: 20.sp, color: context.iconColor)
+                          : null,
                     ),
                     Container(
                       width: 12.w,

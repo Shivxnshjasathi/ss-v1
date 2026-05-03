@@ -9,6 +9,7 @@ import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
 import 'package:feature_discovery/feature_discovery.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -87,18 +88,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       backgroundColor: context.isDarkMode
                           ? Colors.grey[800]
                           : Colors.grey[200],
-                      child: Text(
-                        (userAsync.value?.name ?? 'U')
-                            .substring(0, 1)
-                            .toUpperCase(),
-                        style: TextStyle(
-                          fontSize: 40.sp,
-                          fontWeight: FontWeight.w900,
-                          color: context.isDarkMode
-                              ? Colors.white70
-                              : Colors.black54,
-                        ),
-                      ),
+                      backgroundImage: userAsync.value?.profileImageUrl != null
+                          ? CachedNetworkImageProvider(userAsync.value!.profileImageUrl!)
+                          : null,
+                      child: userAsync.value?.profileImageUrl == null
+                          ? Text(
+                              (userAsync.value?.name ?? 'U')
+                                  .substring(0, 1)
+                                  .toUpperCase(),
+                              style: TextStyle(
+                                fontSize: 40.sp,
+                                fontWeight: FontWeight.w900,
+                                color: context.isDarkMode
+                                    ? Colors.white70
+                                    : Colors.black54,
+                              ),
+                            )
+                          : null,
                     ),
                   ),
                   Positioned(
