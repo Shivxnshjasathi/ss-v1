@@ -24,6 +24,7 @@ class PropertyModel {
   final String? areaName;
   final String? videoUrl;
   final String? panoramaUrl;
+  final Map<String, String>? vaultDocuments;
 
   PropertyModel({
     required this.id,
@@ -51,6 +52,7 @@ class PropertyModel {
     this.areaName,
     this.videoUrl,
     this.panoramaUrl,
+    this.vaultDocuments,
   });
 
   Map<String, dynamic> toMap() {
@@ -80,6 +82,7 @@ class PropertyModel {
       'areaName': areaName,
       'videoUrl': videoUrl,
       'panoramaUrl': panoramaUrl,
+      'vaultDocuments': vaultDocuments,
     };
   }
 
@@ -110,6 +113,7 @@ class PropertyModel {
       areaName: map['areaName'],
       videoUrl: map['videoUrl'],
       panoramaUrl: map['panoramaUrl'],
+      vaultDocuments: map['vaultDocuments'] != null ? Map<String, String>.from(map['vaultDocuments']) : null,
     );
   }
 }

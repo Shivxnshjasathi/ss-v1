@@ -1,6 +1,10 @@
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
@@ -22,6 +26,8 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
   final _emiController = TextEditingController();
   final _propertyValueController = TextEditingController();
   bool _isLoading = false;
+  bool _isUploading = false;
+  final Map<String, String> _uploadedDocs = {};
 
   final List<Map<String, dynamic>> _bankRates = [
     {
@@ -42,6 +48,44 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
     _emiController.dispose();
     _propertyValueController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickDocument() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
+      );
+
+      if (result != null && result.files.single.path != null) {
+        setState(() => _isUploading = true);
+        
+        final file = File(result.files.single.path!);
+        final fileName = 'loan_doc_${DateTime.now().millisecondsSinceEpoch}.${result.files.single.extension}';
+        final storageRef = FirebaseStorage.instance.ref().child('service_requests/loans/$fileName');
+        
+        await storageRef.putFile(file);
+        final downloadUrl = await storageRef.getDownloadURL();
+        
+        setState(() {
+          _uploadedDocs['Identity/Income Proof'] = downloadUrl;
+          _isUploading = false;
+        });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('✅ Document uploaded successfully!'), backgroundColor: Colors.green),
+          );
+        }
+      }
+    } catch (e) {
+      setState(() => _isUploading = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('❌ Upload failed: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
   }
 
   Future<void> _submitApplication() async {
@@ -162,7 +206,7 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
             ),
             SizedBox(width: 16.w),
             Text(
-              l10n.homeLoans,
+              'Loan Services',
               style: TextStyle(
                 fontWeight: FontWeight.w900,
                 color: context.primaryTextColor,
@@ -223,27 +267,24 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
                     children: [
                       Expanded(
                         child: _buildTextField(
-                          labelText: l10n.annualIncome,
-                          hintText: 'e.g. 12,00,000',
-                          type: TextInputType.number,
+                          l10n.annualIncome,
+                          'e.g. 12,00,000',
+                          TextInputType.number,
                           controller: _incomeController,
-                          validator: (val) =>
-                              val == null || val.isEmpty ? '*' : null,
+                          validator: (val) => val == null || val.isEmpty ? '*' : null,
                         ),
                       ),
                       SizedBox(width: 16.w),
                       Expanded(
                         child: _buildTextField(
-                          labelText: l10n.cibilScore,
-                          hintText: 'e.g. 750',
-                          type: TextInputType.number,
+                          l10n.cibilScore,
+                          'e.g. 750',
+                          TextInputType.number,
                           controller: _cibilController,
                           validator: (val) {
                             if (val == null || val.isEmpty) return '*';
                             final score = int.tryParse(val);
-                            if (score == null || score < 300 || score > 900) {
-                              return 'Invalid';
-                            }
+                            if (score == null || score < 300 || score > 900) return 'Invalid';
                             return null;
                           },
                         ),
@@ -255,20 +296,19 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
                     children: [
                       Expanded(
                         child: _buildTextField(
-                          labelText: l10n.monthlyEmi,
-                          hintText: 'e.g. 15,000 (0 if none)',
-                          type: TextInputType.number,
+                          l10n.monthlyEmi,
+                          'e.g. 15,000 (0 if none)',
+                          TextInputType.number,
                           controller: _emiController,
-                          validator: (val) =>
-                              val == null || val.isEmpty ? '*' : null,
+                          validator: (val) => val == null || val.isEmpty ? '*' : null,
                         ),
                       ),
                       SizedBox(width: 16.w),
                       Expanded(
                         child: _buildTextField(
-                          labelText: l10n.propertyValue,
-                          hintText: 'e.g. 75,00,000',
-                          type: TextInputType.number,
+                          l10n.propertyValue,
+                          'e.g. 75,00,000',
+                          TextInputType.number,
                           controller: _propertyValueController,
                         ),
                       ),
@@ -333,6 +373,14 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
                 ],
               ),
             ),
+            SizedBox(height: 32.h),
+            Text(
+              'DOCUMENT UPLOAD',
+              style: TextStyle(fontWeight: FontWeight.w900, fontSize: 10.sp, color: AppTheme.primaryBlue, letterSpacing: 1.5),
+            ),
+            SizedBox(height: 12.h),
+            _buildUploadBox('Upload Income Proof / ID (Salary Slip, PAN, Aadhar)'),
+            SizedBox(height: 48.h),
           ],
         ),
       ),
@@ -349,6 +397,7 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
           ],
         ),
         child: SafeArea(
+          top: false,
           child: SizedBox(
             width: double.infinity,
             height: 54.h,
@@ -373,7 +422,7 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
                       ),
                     )
                   : Text(
-                      'SUBMIT APPLICATION',
+                      'APPLY FOR LOAN',
                       style: TextStyle(
                         fontWeight: FontWeight.w900,
                         fontSize: 14.sp,
@@ -395,88 +444,81 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
         Text(
           title,
           style: TextStyle(
+            fontSize: 24.sp,
             fontWeight: FontWeight.w900,
-            fontSize: 22.sp,
-            fontFamily: 'Poppins',
             color: context.primaryTextColor,
+            letterSpacing: -0.5,
+            height: 1.1,
           ),
         ),
-        SizedBox(height: 6.h),
+        SizedBox(height: 8.h),
         Text(
           subtitle,
           style: TextStyle(
-            color: context.secondaryTextColor,
             fontSize: 13.sp,
+            color: context.secondaryTextColor,
             height: 1.4,
-            fontWeight: FontWeight.w500,
-            fontFamily: 'Poppins',
           ),
         ),
       ],
     );
   }
 
-  Widget _buildTextField({
-    required String labelText,
-    required String hintText,
-    required TextInputType type,
+  Widget _buildTextField(
+    String label,
+    String hint,
+    TextInputType type, {
     TextEditingController? controller,
     String? Function(String?)? validator,
+    int maxLines = 1,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          labelText.toUpperCase(),
+          label.toUpperCase(),
           style: TextStyle(
-            fontWeight: FontWeight.w900,
             fontSize: 10.sp,
-            color: context.primaryTextColor,
-            letterSpacing: 0.5,
+            fontWeight: FontWeight.w900,
+            color: AppTheme.primaryBlue,
+            letterSpacing: 1.5,
           ),
         ),
-        SizedBox(height: 8.h),
-        Container(
-          decoration: BoxDecoration(
-            color: context.surfaceColor,
-            borderRadius: BorderRadius.circular(12.w),
+        SizedBox(height: 10.h),
+        TextFormField(
+          controller: controller,
+          keyboardType: type,
+          maxLines: maxLines,
+          validator: validator,
+          style: TextStyle(
+            fontSize: 15.sp,
+            fontWeight: FontWeight.w600,
+            color: context.primaryTextColor,
           ),
-          child: TextFormField(
-            controller: controller,
-            keyboardType: type,
-            style: TextStyle(
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w600,
-              color: context.primaryTextColor,
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: TextStyle(
+              color: context.secondaryTextColor.withValues(alpha: 0.3),
+              fontSize: 13.sp,
             ),
-            decoration: InputDecoration(
-              hintText: hintText,
-              hintStyle: TextStyle(
-                color: Colors.grey.shade400,
-                fontWeight: FontWeight.w500,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.w),
-                borderSide: BorderSide.none,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.w),
-                borderSide: BorderSide(
-                  color: AppTheme.primaryBlue,
-                  width: 1.5.w,
-                ),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.w),
-                borderSide: const BorderSide(color: Colors.redAccent),
-              ),
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: 16.w,
-                vertical: 16.h,
-              ),
-              isDense: true,
+            filled: true,
+            fillColor: context.cardColor,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16.sp),
+              borderSide: BorderSide(color: context.borderColor),
             ),
-            validator: validator,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16.sp),
+              borderSide: BorderSide(color: context.borderColor),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16.sp),
+              borderSide: BorderSide(color: AppTheme.primaryBlue, width: 1.5),
+            ),
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 20.w,
+              vertical: 18.h,
+            ),
           ),
         ),
       ],
@@ -605,6 +647,54 @@ class _HomeLoanScreenState extends ConsumerState<HomeLoanScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildUploadBox(String subtitle) {
+    final bool isUploaded = _uploadedDocs.isNotEmpty;
+
+    return GestureDetector(
+      onTap: _isUploading ? null : _pickDocument,
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(vertical: 32.h, horizontal: 24.w),
+        decoration: BoxDecoration(
+          color: isUploaded ? Colors.green.withValues(alpha: 0.05) : context.cardColor,
+          borderRadius: BorderRadius.circular(20.sp),
+          border: Border.all(
+            color: isUploaded ? Colors.green : context.borderColor,
+            width: isUploaded ? 2 : 1,
+          ),
+        ),
+        child: Column(
+          children: [
+            if (_isUploading)
+              const CircularProgressIndicator(color: AppTheme.primaryBlue)
+            else ...[
+              Icon(
+                isUploaded ? LucideIcons.circleCheck : LucideIcons.upload,
+                color: isUploaded ? Colors.green : AppTheme.primaryBlue,
+                size: 40.sp,
+              ),
+              SizedBox(height: 16.h),
+              Text(
+                isUploaded ? 'Document Uploaded' : 'Tap to Upload',
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 16.sp,
+                  color: isUploaded ? Colors.green : context.primaryTextColor,
+                ),
+              ),
+              SizedBox(height: 4.h),
+              Text(
+                subtitle,
+                style: TextStyle(color: context.secondaryTextColor, fontSize: 12.sp),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }

@@ -10,6 +10,7 @@ import 'package:sampatti_bazar/features/properties/data/property_repository.dart
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/core/services/logger_service.dart';
 import 'package:sampatti_bazar/features/properties/domain/property_model.dart';
+import 'package:sampatti_bazar/core/utils/currency_utils.dart';
 import 'package:sampatti_bazar/features/chat/data/chat_repository.dart';
 import 'package:sampatti_bazar/l10n/app_localizations.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
@@ -270,7 +271,7 @@ class PropertyDetailScreen extends ConsumerWidget {
                                   ),
                                   SizedBox(height: 6.h),
                                   Text(
-                                    '₹${property.price.toInt()}',
+                                    CurrencyUtils.formatPrice(property.price),
                                     style: TextStyle(
                                       color: AppTheme.primaryBlue,
                                       fontSize: 28.sp,
@@ -345,8 +346,14 @@ class PropertyDetailScreen extends ConsumerWidget {
                       _buildSectionHeader(l10n.amenities.toUpperCase()),
                       SizedBox(height: 16.h),
                       _buildAmenities(context, property.amenities, l10n),
-
                       SizedBox(height: 32.h),
+
+                      if (property.vaultDocuments != null &&
+                          property.vaultDocuments!.values.any((url) => url.toLowerCase().contains('.pdf'))) ...[
+                        _buildSectionHeader('VERIFIED PROPERTY DOCUMENTS'),
+                        _buildDocumentsList(context, property.vaultDocuments!),
+                        SizedBox(height: 32.h),
+                      ],
 
                       Text(
                         l10n.propertyDescription,
@@ -1132,7 +1139,62 @@ class PropertyDetailScreen extends ConsumerWidget {
           .toList(),
     );
   }
+  Widget _buildDocumentsList(BuildContext context, Map<String, String> documents) {
+    final pdfDocs = documents.entries.where((e) => e.value.toLowerCase().contains('.pdf')).toList();
 
+    return Column(
+      children: pdfDocs.map((doc) {
+        return Container(
+          margin: EdgeInsets.only(bottom: 12.h),
+          padding: EdgeInsets.all(16.w),
+          decoration: BoxDecoration(
+            color: context.cardColor,
+            borderRadius: BorderRadius.circular(16.sp),
+            border: Border.all(color: context.borderColor),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(10.w),
+                decoration: BoxDecoration(
+                  color: Colors.red.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10.w),
+                ),
+                child: Icon(LucideIcons.fileText, color: Colors.red, size: 20.sp),
+              ),
+              SizedBox(width: 16.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      doc.key,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 14.sp,
+                        color: context.primaryTextColor,
+                      ),
+                    ),
+                    Text(
+                      'Official PDF Document',
+                      style: TextStyle(
+                        fontSize: 11.sp,
+                        color: context.secondaryTextColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: Icon(LucideIcons.download, color: AppTheme.primaryBlue, size: 20.sp),
+                onPressed: () => launchUrl(Uri.parse(doc.value)),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    );
+  }
 }
 
 // ==============================

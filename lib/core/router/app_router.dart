@@ -24,6 +24,8 @@ import 'package:sampatti_bazar/features/services/presentation/screens/movers_scr
 import 'package:sampatti_bazar/features/services/presentation/screens/services_hub_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/other_services_screen.dart';
 import 'package:sampatti_bazar/features/services/presentation/screens/service_tracking_screen.dart';
+import 'package:sampatti_bazar/features/services/presentation/screens/insurance_screen.dart';
+import 'package:sampatti_bazar/features/services/presentation/screens/maintenance_service_screen.dart';
 import 'package:sampatti_bazar/features/profile/presentation/screens/profile_screen.dart';
 import 'package:sampatti_bazar/features/profile/presentation/screens/edit_profile_screen.dart';
 import 'package:sampatti_bazar/features/profile/presentation/screens/documents_screen.dart';
@@ -179,6 +181,14 @@ final goRouter = GoRouter(
     GoRoute(
       path: '/services/loan',
       builder: (context, state) => const HomeLoanScreen(),
+    ),
+    GoRoute(
+      path: '/services/insurance',
+      builder: (context, state) => const InsuranceScreen(),
+    ),
+    GoRoute(
+      path: '/services/maintenance',
+      builder: (context, state) => const MaintenanceServiceScreen(),
     ),
     GoRoute(
       path: '/services/emi-calculator',

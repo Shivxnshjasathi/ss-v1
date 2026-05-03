@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
+import 'package:sampatti_bazar/core/utils/currency_utils.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/properties/data/property_repository.dart';
 import 'package:sampatti_bazar/features/properties/domain/property_model.dart';
@@ -187,7 +188,7 @@ class SavedPropertiesScreen extends ConsumerWidget {
                   ),
                   SizedBox(height: 8.h),
                   Text(
-                    '₹${property.price.toInt()}',
+                    CurrencyUtils.formatPrice(property.price),
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.primary,
                       fontSize: 18.sp,

@@ -9,6 +9,7 @@ import 'package:sampatti_bazar/features/properties/data/property_repository.dart
 import 'package:sampatti_bazar/features/properties/domain/property_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:sampatti_bazar/core/utils/currency_utils.dart';
 
 class MyPropertiesScreen extends ConsumerWidget {
   const MyPropertiesScreen({super.key});
@@ -30,6 +31,7 @@ class MyPropertiesScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: context.scaffoldColor,
         elevation: 0,
+        centerTitle: true,
         leading: IconButton(
           icon: Icon(LucideIcons.chevronLeft, color: context.iconColor, size: 20.w),
           onPressed: () => context.pop(),
@@ -104,12 +106,6 @@ class _MyPropertyCard extends ConsumerWidget {
 
   const _MyPropertyCard({required this.property});
 
-  String _formatPrice(double amount) {
-    if (amount >= 10000000) return '₹${(amount / 10000000).toStringAsFixed(1)} Cr';
-    if (amount >= 100000) return '₹${(amount / 100000).toStringAsFixed(1)} L';
-    if (amount >= 1000) return '₹${(amount / 1000).toStringAsFixed(1)} K';
-    return '₹${amount.toStringAsFixed(0)}';
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -193,7 +189,7 @@ class _MyPropertyCard extends ConsumerWidget {
                       ),
                       SizedBox(width: 12.w),
                       Text(
-                        _formatPrice(property.price),
+                        CurrencyUtils.formatPrice(property.price),
                         style: TextStyle(
                           fontSize: 18.sp,
                           fontWeight: FontWeight.w900,
@@ -205,8 +201,8 @@ class _MyPropertyCard extends ConsumerWidget {
                   SizedBox(height: 12.h),
                   SizedBox(
                     width: double.infinity,
-                    height: 42.h,
-                    child: ElevatedButton.icon(
+                    height: 50.h,
+                    child: ElevatedButton(
                       onPressed: () {
                         FirebaseAnalytics.instance.logEvent(
                           name: 'property_manage_click',
@@ -214,19 +210,26 @@ class _MyPropertyCard extends ConsumerWidget {
                         );
                         context.push('/properties/manage/${property.id}');
                       },
-                      icon: Icon(LucideIcons.shieldCheck, size: 16.sp, color: Colors.white),
-                      label: Text(
-                        'MANAGE PROPERTY',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w900,
-                          fontSize: 12.sp,
-                          color: Colors.white,
-                        ),
-                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.primaryBlue,
                         elevation: 0,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.w)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.w)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(LucideIcons.shieldCheck, size: 18.sp, color: Colors.white),
+                          SizedBox(width: 10.w),
+                          Text(
+                            'MANAGE PROPERTY',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 14.sp,
+                              color: Colors.white,
+                              letterSpacing: 1.0,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -234,8 +237,8 @@ class _MyPropertyCard extends ConsumerWidget {
                   // Delete button
                   SizedBox(
                     width: double.infinity,
-                    height: 42.h,
-                    child: OutlinedButton.icon(
+                    height: 50.h,
+                    child: OutlinedButton(
                       onPressed: () {
                         FirebaseAnalytics.instance.logEvent(
                           name: 'property_delete_click',
@@ -243,18 +246,26 @@ class _MyPropertyCard extends ConsumerWidget {
                         );
                         _confirmDelete(context, ref);
                       },
-                      icon: Icon(LucideIcons.trash2, size: 16.sp, color: Colors.redAccent),
-                      label: Text(
-                        'DELETE LISTING',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w900,
-                          fontSize: 12.sp,
-                          color: Colors.redAccent,
-                        ),
-                      ),
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.redAccent.withValues(alpha: 0.3)),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.w)),
+                        side: BorderSide(color: Colors.redAccent, width: 1.5),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.w)),
+                        elevation: 0,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(LucideIcons.trash2, size: 18.sp, color: Colors.redAccent),
+                          SizedBox(width: 10.w),
+                          Text(
+                            'DELETE LISTING',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w900,
+                              fontSize: 14.sp,
+                              color: Colors.redAccent,
+                              letterSpacing: 1.0,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

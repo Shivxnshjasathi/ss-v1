@@ -12,6 +12,7 @@ import 'package:sampatti_bazar/core/widgets/skeleton_loaders.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:feature_discovery/feature_discovery.dart';
+import 'package:sampatti_bazar/core/utils/currency_utils.dart';
 import 'package:sampatti_bazar/features/properties/presentation/widgets/property_map_view.dart';
 
 class PropertyFeedScreen extends ConsumerStatefulWidget {
@@ -464,13 +465,6 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
     );
   }
 
-  String _formatPrice(double value) {
-    if (value >= 10) {
-      return '₹${(value / 10).toStringAsFixed(1)} ${AppLocalizations.of(context)!.croreSuffix}';
-    } else {
-      return '₹${value.toInt() * 10} ${AppLocalizations.of(context)!.lakhSuffix}';
-    }
-  }
 
   void _showFilterSheet(BuildContext context, AppLocalizations l10n) {
     // Local state for the modal until "Apply" is pressed
@@ -590,7 +584,7 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        _formatPrice(tempPriceRange.start),
+                        CurrencyUtils.formatPrice(tempPriceRange.start * 1000000),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: context.primaryTextColor,
@@ -598,8 +592,8 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                       ),
                       Text(
                         tempPriceRange.end >= 100
-                            ? '${_formatPrice(tempPriceRange.end)}+'
-                            : _formatPrice(tempPriceRange.end),
+                            ? '${CurrencyUtils.formatPrice(tempPriceRange.end * 1000000)}+'
+                            : CurrencyUtils.formatPrice(tempPriceRange.end * 1000000),
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: context.primaryTextColor,
@@ -953,25 +947,24 @@ class _PropertyFeedScreenState extends ConsumerState<PropertyFeedScreen> {
                                 letterSpacing: 1.2,
                               ),
                             ),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.baseline,
-                              textBaseline: TextBaseline.alphabetic,
+                            Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              spacing: 8.w,
                               children: [
                                 Text(
-                                  _formatPrice(property.price / 10),
+                                  CurrencyUtils.formatPrice(property.price),
                                   style: TextStyle(
                                     color: AppTheme.primaryBlue,
-                                    fontSize: 22.sp,
+                                    fontSize: 20.sp,
                                     fontWeight: FontWeight.w900,
                                     letterSpacing: -0.5,
                                   ),
                                 ),
-                                SizedBox(width: 8.w),
                                 Text(
-                                  _formatPrice(property.price * 1.12 / 10),
+                                  CurrencyUtils.formatPrice(property.price * 1.12),
                                   style: TextStyle(
                                     color: Colors.grey,
-                                    fontSize: 12.sp,
+                                    fontSize: 11.sp,
                                     fontWeight: FontWeight.w500,
                                     decoration: TextDecoration.lineThrough,
                                   ),

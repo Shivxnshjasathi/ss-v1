@@ -129,6 +129,19 @@ class PropertyRepository {
     }
   }
 
+  Future<void> updatePropertyDocuments(String propertyId, Map<String, String> documents) async {
+    LoggerService.i('Property: Updating documents for property $propertyId');
+    try {
+      await _firestore.collection('properties').doc(propertyId).update({
+        'vaultDocuments': documents,
+      });
+      LoggerService.i('Property: Successfully updated documents for $propertyId');
+    } catch (e, st) {
+      LoggerService.e('Property: Failed to update documents for $propertyId', error: e, stack: st);
+      rethrow;
+    }
+  }
+
   Future<void> updateProperty(PropertyModel property) async {
     LoggerService.i('Property: Updating property ${property.id}');
     try {

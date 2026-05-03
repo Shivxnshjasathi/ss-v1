@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
+import 'package:sampatti_bazar/core/utils/currency_utils.dart';
 import 'package:sampatti_bazar/features/auth/data/user_repository.dart';
 import 'package:sampatti_bazar/features/properties/data/offer_repository.dart';
 import 'package:sampatti_bazar/features/properties/domain/property_model.dart';
@@ -26,14 +27,6 @@ class _OfferBottomSheetState extends ConsumerState<OfferBottomSheet> {
     _offerAmount = widget.property.price;
   }
 
-  String _formatCurrency(double amount) {
-    if (amount >= 10000000) {
-      return '₹${(amount / 10000000).toStringAsFixed(2)} Cr';
-    } else if (amount >= 100000) {
-      return '₹${(amount / 100000).toStringAsFixed(2)} L';
-    }
-    return '₹${amount.toStringAsFixed(0)}';
-  }
 
   Future<void> _submitOffer() async {
     final user = ref.read(currentUserDataProvider).value;
@@ -114,7 +107,7 @@ class _OfferBottomSheetState extends ConsumerState<OfferBottomSheet> {
           ),
           SizedBox(height: 8.h),
           Text(
-            'Asking Price: ${_formatCurrency(widget.property.price)}',
+            'Asking Price: ${CurrencyUtils.formatPrice(widget.property.price)}',
             style: TextStyle(
               fontSize: 14.sp,
               color: context.secondaryTextColor,
@@ -124,7 +117,7 @@ class _OfferBottomSheetState extends ConsumerState<OfferBottomSheet> {
           SizedBox(height: 32.h),
           Center(
             child: Text(
-              _formatCurrency(_offerAmount),
+              CurrencyUtils.formatPrice(_offerAmount),
               style: TextStyle(
                 fontSize: 40.sp,
                 fontWeight: FontWeight.w900,
@@ -159,8 +152,8 @@ class _OfferBottomSheetState extends ConsumerState<OfferBottomSheet> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(_formatCurrency(minOffer), style: TextStyle(color: context.secondaryTextColor, fontSize: 12.sp)),
-              Text(_formatCurrency(maxOffer), style: TextStyle(color: context.secondaryTextColor, fontSize: 12.sp)),
+              Text(CurrencyUtils.formatPrice(minOffer), style: TextStyle(color: context.secondaryTextColor, fontSize: 12.sp)),
+              Text(CurrencyUtils.formatPrice(maxOffer), style: TextStyle(color: context.secondaryTextColor, fontSize: 12.sp)),
             ],
           ),
           SizedBox(height: 40.h),

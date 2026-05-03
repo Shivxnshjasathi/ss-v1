@@ -72,12 +72,19 @@ class _ServicesHubScreenState extends State<ServicesHubScreen> {
                   children: [
                     _buildServiceGridItem(
                       context,
-                      l10n.homeLoans,
+                      'Loans',
                       LucideIcons.landmark,
                       l10n.instantApproval,
                       '/services/loan',
                       isHot: true,
                       hotLabel: l10n.hot,
+                    ),
+                    _buildServiceGridItem(
+                      context,
+                      'Insurance',
+                      LucideIcons.shieldCheck,
+                      'Protect your assets',
+                      '/services/insurance',
                     ),
                     _buildServiceGridItem(
                       context,
@@ -131,6 +138,13 @@ class _ServicesHubScreenState extends State<ServicesHubScreen> {
                         l10n.materialsAndMore,
                         '/services/marketplace',
                       ),
+                    ),
+                    _buildServiceGridItem(
+                      context,
+                      'Maintenance',
+                      LucideIcons.settings,
+                      'Keep your home healthy',
+                      '/services/maintenance',
                     ),
                     _buildServiceGridItem(
                       context,
@@ -294,7 +308,7 @@ class _ServicesHubScreenState extends State<ServicesHubScreen> {
     return GestureDetector(
       onTap: () => context.push(route),
       child: Container(
-        padding: EdgeInsets.all(20.sp),
+        padding: EdgeInsets.all(16.sp),
         decoration: BoxDecoration(
           color: context.cardColor,
           borderRadius: BorderRadius.circular(20.sp),
@@ -348,7 +362,7 @@ class _ServicesHubScreenState extends State<ServicesHubScreen> {
                   ),
               ],
             ),
-            SizedBox(height: 16.h),
+            SizedBox(height: 12.h),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -505,9 +519,15 @@ class _ServicesHubScreenState extends State<ServicesHubScreen> {
 class GlobalSearchDelegate extends SearchDelegate {
   List<Map<String, dynamic>> _getFeatures(AppLocalizations l10n) => [
     {
-      'name': l10n.homeLoans,
+      'name': 'Loans',
       'route': '/services/loan',
       'icon': LucideIcons.landmark,
+      'cat': l10n.finance,
+    },
+    {
+      'name': 'Insurance',
+      'route': '/services/insurance',
+      'icon': LucideIcons.shieldCheck,
       'cat': l10n.finance,
     },
     {
@@ -533,6 +553,12 @@ class GlobalSearchDelegate extends SearchDelegate {
       'route': '/services/marketplace',
       'icon': LucideIcons.shoppingBag,
       'cat': l10n.materials,
+    },
+    {
+      'name': 'Property Maintenance',
+      'route': '/services/maintenance',
+      'icon': LucideIcons.settings,
+      'cat': l10n.servicesLabel,
     },
     {
       'name': 'Other Services',

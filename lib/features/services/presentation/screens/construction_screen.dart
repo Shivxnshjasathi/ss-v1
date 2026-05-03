@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -92,6 +95,47 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
   
   String _borewellPurpose = 'Residential Water Supply';
   String _outputRequired = 'Conceptual Plan';
+  
+  final Map<String, String> _uploadedDocs = {};
+  bool _isUploading = false;
+
+  Future<void> _pickDocument() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
+      );
+
+      if (result != null && result.files.single.path != null) {
+        setState(() => _isUploading = true);
+        
+        final file = File(result.files.single.path!);
+        final fileName = 'construction_doc_${DateTime.now().millisecondsSinceEpoch}.${result.files.single.extension}';
+        final storageRef = FirebaseStorage.instance.ref().child('service_requests/docs/$fileName');
+        
+        await storageRef.putFile(file);
+        final downloadUrl = await storageRef.getDownloadURL();
+        
+        setState(() {
+          _uploadedDocs['Plot Map / Approvals'] = downloadUrl;
+          _isUploading = false;
+        });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('✅ Document uploaded successfully!'), backgroundColor: Colors.green),
+          );
+        }
+      }
+    } catch (e) {
+      setState(() => _isUploading = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('❌ Upload failed: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -151,6 +195,7 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
           'timeline': _timelineController.text,
           'constructionType': _typeController.text,
           'category': _selectedCategory,
+          'documents': _uploadedDocs,
         };
       } else if (_selectedService == 'Architecture') {
         details = {
@@ -1079,59 +1124,72 @@ class _ConstructionScreenState extends ConsumerState<ConstructionScreen> {
     );
   }
 
-  Widget _buildUploadBox(String subtitle) {
+   Widget _buildUploadBox(String subtitle) {
     final l10n = AppLocalizations.of(context)!;
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(vertical: 32.h, horizontal: 24.w),
-      decoration: BoxDecoration(
-        color: context.cardColor,
-        border: Border.all(color: context.borderColor),
-        borderRadius: BorderRadius.circular(20.sp),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.all(16.w),
-            decoration: BoxDecoration(
-              color: AppTheme.primaryBlue.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(18.sp),
+    final bool isUploaded = _uploadedDocs.containsKey('Plot Map / Approvals');
+
+    return GestureDetector(
+      onTap: _isUploading ? null : _pickDocument,
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(vertical: 32.h, horizontal: 24.w),
+        decoration: BoxDecoration(
+          color: context.cardColor,
+          border: Border.all(color: isUploaded ? AppTheme.primaryBlue : context.borderColor),
+          borderRadius: BorderRadius.circular(20.sp),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
             ),
-            child: Icon(
-              Icons.cloud_upload_outlined,
-              color: AppTheme.primaryBlue,
-              size: 28.sp,
+          ],
+        ),
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.all(16.w),
+              decoration: BoxDecoration(
+                color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(18.sp),
+              ),
+              child: _isUploading
+                  ? SizedBox(
+                      height: 28.sp,
+                      width: 28.sp,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.primaryBlue),
+                    )
+                  : Icon(
+                      isUploaded ? Icons.check_circle : Icons.cloud_upload_outlined,
+                      color: AppTheme.primaryBlue,
+                      size: 28.sp,
+                    ),
             ),
-          ),
-          SizedBox(height: 20.h),
-          Text(
-            l10n.tapToUpload,
-            style: TextStyle(
-              fontWeight: FontWeight.w900,
-              fontSize: 16.sp,
-              color: context.primaryTextColor,
-              fontFamily: 'Poppins',
+            SizedBox(height: 20.h),
+            Text(
+              _isUploading
+                  ? 'UPLOADING...'
+                  : (isUploaded ? 'DOCUMENT UPLOADED' : l10n.tapToUpload),
+              style: TextStyle(
+                fontWeight: FontWeight.w900,
+                fontSize: 16.sp,
+                color: context.primaryTextColor,
+                fontFamily: 'Poppins',
+              ),
             ),
-          ),
-          SizedBox(height: 6.h),
-          Text(
-            subtitle,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 12.sp,
-              color: context.secondaryTextColor,
-              fontWeight: FontWeight.w500,
-              fontFamily: 'Poppins',
+            SizedBox(height: 6.h),
+            Text(
+              isUploaded ? 'Tap to replace the document' : subtitle,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12.sp,
+                color: context.secondaryTextColor,
+                fontWeight: FontWeight.w500,
+                fontFamily: 'Poppins',
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

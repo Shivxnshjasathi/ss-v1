@@ -8,6 +8,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:sampatti_bazar/core/theme/app_theme.dart';
 import 'package:sampatti_bazar/core/utils/responsive.dart';
 import 'package:sampatti_bazar/features/properties/data/property_repository.dart';
+import 'package:sampatti_bazar/features/properties/domain/property_model.dart';
 
 class PropertyManagementScreen extends ConsumerStatefulWidget {
   final String propertyId;
@@ -42,6 +43,14 @@ class _PropertyManagementScreenState extends ConsumerState<PropertyManagementScr
         final storageRef = FirebaseStorage.instance.ref().child('property_vault/${widget.propertyId}/$fileName');
         
         await storageRef.putFile(file);
+        final downloadUrl = await storageRef.getDownloadURL();
+        
+        final property = await ref.read(propertyRepositoryProvider).getProperty(widget.propertyId);
+        if (property != null) {
+          final updatedDocs = Map<String, String>.from(property.vaultDocuments ?? {});
+          updatedDocs[category] = downloadUrl;
+          await ref.read(propertyRepositoryProvider).updatePropertyDocuments(widget.propertyId, updatedDocs);
+        }
         
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -71,6 +80,7 @@ class _PropertyManagementScreenState extends ConsumerState<PropertyManagementScr
       appBar: AppBar(
         backgroundColor: context.scaffoldColor,
         elevation: 0,
+        centerTitle: true,
         leading: IconButton(
           icon: Icon(LucideIcons.chevronLeft, color: context.iconColor),
           onPressed: () => context.pop(),
@@ -96,7 +106,7 @@ class _PropertyManagementScreenState extends ConsumerState<PropertyManagementScr
           return TabBarView(
             controller: _tabController,
             children: [
-              _buildDigitalVault(context),
+              _buildDigitalVault(context, property),
               _buildMaintenanceScheduler(context),
             ],
           );
@@ -107,7 +117,7 @@ class _PropertyManagementScreenState extends ConsumerState<PropertyManagementScr
     );
   }
 
-  Widget _buildDigitalVault(BuildContext context) {
+  Widget _buildDigitalVault(BuildContext context, PropertyModel property) {
     return ListView(
       padding: EdgeInsets.all(20.w),
       children: [
@@ -128,10 +138,10 @@ class _PropertyManagementScreenState extends ConsumerState<PropertyManagementScr
           crossAxisSpacing: 16.w,
           childAspectRatio: 1.1,
           children: [
-            _buildVaultItem('Property Deed', LucideIcons.fileText, '2.4 MB', true),
-            _buildVaultItem('Tax Receipts', LucideIcons.receipt, '1.1 MB', true),
-            _buildVaultItem('Insurance', LucideIcons.shield, '0.8 MB', false),
-            _buildVaultItem('Floor Plans', LucideIcons.map, 'Empty', false),
+            _buildVaultItem('Property Deed', LucideIcons.fileText, property.vaultDocuments?['Property Deed']),
+            _buildVaultItem('Tax Receipts', LucideIcons.receipt, property.vaultDocuments?['Tax Receipts']),
+            _buildVaultItem('Insurance', LucideIcons.shield, property.vaultDocuments?['Insurance']),
+            _buildVaultItem('Floor Plans', LucideIcons.map, property.vaultDocuments?['Floor Plans']),
           ],
         ),
         SizedBox(height: 32.h),
@@ -150,7 +160,8 @@ class _PropertyManagementScreenState extends ConsumerState<PropertyManagementScr
     );
   }
 
-  Widget _buildVaultItem(String title, IconData icon, String size, bool isUploaded) {
+  Widget _buildVaultItem(String title, IconData icon, String? url) {
+    final bool isUploaded = url != null;
     final bool isUploading = _uploadingStates[title] ?? false;
 
     return GestureDetector(
@@ -172,7 +183,7 @@ class _PropertyManagementScreenState extends ConsumerState<PropertyManagementScr
             const Spacer(),
             Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13.sp)),
             SizedBox(height: 4.h),
-            Text(isUploading ? 'Uploading...' : (isUploaded ? size : 'Tap to upload'), 
+            Text(isUploading ? 'Uploading...' : (isUploaded ? 'Uploaded' : 'Tap to upload'), 
                  style: TextStyle(fontSize: 11.sp, color: Colors.grey)),
           ],
         ),
@@ -184,11 +195,44 @@ class _PropertyManagementScreenState extends ConsumerState<PropertyManagementScr
     return ListView(
       padding: EdgeInsets.all(20.w),
       children: [
-        _buildInfoCard(
-          'Smart Maintenance',
-          'We notify you when it\'s time for routine checks to keep your property value high.',
-          LucideIcons.sparkles,
-          Colors.orange,
+        Container(
+          padding: EdgeInsets.all(24.w),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFFF8F1),
+            borderRadius: BorderRadius.circular(24.sp),
+            border: Border.all(color: Colors.orange.withValues(alpha: 0.1)),
+          ),
+          child: Row(
+            children: [
+              Icon(LucideIcons.sparkles, color: Colors.orange, size: 40.sp),
+              SizedBox(width: 20.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Smart Maintenance',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 20.sp,
+                        color: Colors.orange[800],
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      'We notify you when it\'s time for routine checks to keep your property value high.',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        color: Colors.orange[800]?.withValues(alpha: 0.8),
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
         SizedBox(height: 24.h),
         _buildMaintenanceItem('AC Servicing', 'Next due: 15 June 2024', LucideIcons.snowflake, 'OVERDUE', Colors.red),
